@@ -1,0 +1,23 @@
+{
+  "name": "IronPlate",
+  "short_name": "Iron",
+  "description": "Votre Coach Personnel en Fitness et Alimentation - Suivez vos entraînements, calories et progressez vers vos objectifs",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#6366F1",
+  "categories": ["health", "fitness", "lifestyle", "food"],
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "fr",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "icons": [
+        {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
