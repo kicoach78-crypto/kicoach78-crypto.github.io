@@ -3350,6 +3350,199 @@
             box-shadow: var(--shadow);
         }
 
+/* ==================== MODAL FICHE EXERCICE DÉTAILLÉE ==================== */
+.exercise-detail-modal-content {
+    max-height: 80vh;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.exercise-detail-header {
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.exercise-detail-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    color: white;
+    font-size: var(--font-size-3xl);
+    box-shadow: var(--shadow-xl);
+}
+
+.exercise-detail-title {
+    font-size: var(--font-size-xl);
+    font-weight: 900;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.exercise-detail-subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.exercise-detail-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    display: inline-block;
+}
+
+.exercise-detail-section {
+    background: var(--card-bg);
+    border-radius: var(--radius-sm);
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border);
+}
+
+.exercise-detail-section-title {
+    font-size: var(--font-size-base);
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.exercise-detail-description {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.exercise-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.exercise-detail-stat {
+    text-align: center;
+    padding: 12px;
+    background: var(--card-bg);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+}
+
+.exercise-detail-stat-value {
+    font-size: var(--font-size-base);
+    font-weight: 900;
+    margin-bottom: 5px;
+}
+
+.exercise-detail-stat-label {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.exercise-detail-equipment-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.exercise-detail-equipment-item {
+    background: var(--card-bg);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: var(--font-size-sm);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.exercise-detail-video-btn {
+    background: linear-gradient(135deg, #FF0000, #CC0000);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: var(--radius);
+    font-weight: 800;
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.exercise-detail-video-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+}
+
+.exercise-detail-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.exercise-difficulty-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: var(--font-size-xs);
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.difficulty-beginner {
+    background: linear-gradient(135deg, #10B981, #059669);
+    color: white;
+}
+
+.difficulty-intermediate {
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+    color: white;
+}
+
+.difficulty-advanced {
+    background: linear-gradient(135deg, #EF4444, #DC2626);
+    color: white;
+}
+
+.exercise-muscle-badge {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: var(--font-size-xs);
+    font-weight: 900;
+}
+
+.exercise-category-badge {
+    background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: var(--font-size-xs);
+    font-weight: 900;
+}
+
         /* ==================== FOOD ITEM IMPROVED ==================== */
         .food-item-improved {
             background: var(--card-bg);
@@ -4234,7 +4427,7 @@
         <div class="header">
             <div class="header-left">
                 <div class="user-avatar" onclick="showScreen('profile-screen')" id="user-avatar">JD</div>
-                <h1 class="app-title">IP</h1>
+                <h1 class="app-title">IRON</h1>
             </div>
             <div class="header-actions">
                 <button class="icon-btn" onclick="showSettingsModal()" title="Paramètres">
@@ -4617,7 +4810,7 @@
                     <div id="workout-history-list">
                         <div class="component-box">
                             <div class="component-box-title" style="justify-content: space-between;">
-                                <span>📊 Historique des Séances</span>
+                                <span>Historique des Séances</span>
                                 <button class="action-btn" onclick="showClearHistoryModal()">
                                     <i class="fas fa-trash"></i> Tout supprimer
                                 </button>
@@ -4664,7 +4857,7 @@
                     
                     <div class="component-box">
                         <div class="component-box-title" style="justify-content: space-between;">
-                            <span>📊 Historique Nutrition</span>
+                            <span>Historique Nutrition</span>
                             <button class="action-btn" onclick="showClearNutritionHistoryModal()">
                                 <i class="fas fa-trash"></i> Tout supprimer
                             </button>
@@ -4774,7 +4967,7 @@
                 
                 <div class="controls" style="padding: 0 20px;">
                     <button class="btn btn-success" onclick="showSaveDataModal()">Terminer l'entraînement</button>
-                    <button class="add-exercise-btn mt-4" onclick="addExerciseToWorkout()">➕ Ajouter un exercice</button>
+                    <button class="add-exercise-btn mt-4" onclick="addExerciseToWorkout()">Ajouter un exercice</button>
                 </div>
             </div>
         </div>
@@ -4830,7 +5023,7 @@
     <div class="modal" id="create-workout-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">➕ Créer une séance</h3>
+                <h3 class="modal-title">Créer une séance</h3>
                 <button class="modal-close" onclick="hideModal('create-workout-modal'); resetCreateWorkoutModal()">×</button>
             </div>
             <div class="modal-body">
@@ -4838,7 +5031,7 @@
                 
                 <div class="food-search-btn-container">
                     <button class="btn food-search-btn" onclick="showExerciseSelectionForCreate()">🏃 Choisir exercice</button>
-                    <button class="btn food-search-btn btn-success" onclick="showCustomExerciseModalForCreate()">➕ Créer exercice</button>
+                    <button class="btn food-search-btn btn-success" onclick="showCustomExerciseModalForCreate()">Créer exercice</button>
                 </div>
                 
                 <div id="workout-exercises-selection">
@@ -4862,7 +5055,7 @@
                 
                 <div class="food-search-btn-container">
                     <button class="btn food-search-btn" onclick="showExerciseSelectionForEdit()">🏃 Choisir exercice</button>
-                    <button class="btn food-search-btn btn-success" onclick="showCustomExerciseModalForEdit()">➕ Créer exercice</button>
+                    <button class="btn food-search-btn btn-success" onclick="showCustomExerciseModalForEdit()">Créer exercice</button>
                 </div>
                 
                 <div id="edit-workout-exercises-selection">
@@ -5022,20 +5215,20 @@
         </div>
     </div>
 
-    <!-- MODAL DÉTAIL EXERCICE - AMÉLIORÉ -->
-    <div class="modal" id="exercise-detail-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="exercise-detail-title">Détail de l'exercice</h3>
-                <button class="modal-close" onclick="hideModal('exercise-detail-modal')">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="modal-scrollable" id="exercise-detail-content">
-                    <!-- Contenu généré dynamiquement -->
-                </div>
+<!-- MODAL FICHE EXERCICE DÉTAILLÉE PREMIUM -->
+<div class="modal" id="exercise-detail-modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+            <h3 class="modal-title" id="exercise-detail-title">📋 Fiche Exercice</h3>
+            <button class="modal-close" onclick="hideModal('exercise-detail-modal')">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="exercise-detail-modal-content" id="exercise-detail-content">
+                <!-- Contenu généré dynamiquement -->
             </div>
         </div>
     </div>
+</div>
 
     <!-- MODAL SUPPRIMER EXERCICE PERSONNALISÉ -->
     <div class="modal" id="delete-custom-exercise-modal">
@@ -5636,6 +5829,7 @@
                             <span class="slider"></span>
                         </label>
                     </div>
+
                     
                     <div class="settings-item">
                         <div>
@@ -5668,6 +5862,18 @@
         <span class="slider"></span>
     </label>
 </div>
+
+
+`<div class="settings-item">
+    <div>
+        <div style="font-weight: 700; color: var(--text-primary);">🎵 Test audio/vibration</div>
+        <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Tester les alertes sonores et vibrations</div>
+    </div>
+    <button class="btn btn-secondary" onclick="testAudioVibration()" style="padding: 8px 16px; font-size: var(--font-size-sm);">
+        Tester
+    </button>
+</div>`
+
                 </div>
             </div>
         </div>
@@ -5686,6 +5892,69 @@
                     <button class="btn btn-success" onclick="addFavoriteFoodToMeal()" style="flex: 1;">Oui, ajouter un repas</button>
                     <button class="btn btn-secondary" onclick="hideModal('favorite-food-modal')" style="flex: 1;">Non, merci</button>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Notes Premium -->
+<div class="modal" id="exercise-notes-modal">
+    <div class="modal-content" style="max-width: 380px;">
+        <div class="modal-header">
+            <h3 class="modal-title">📝 Notes de l'exercice</h3>
+            <button class="modal-close" onclick="hideModal('exercise-notes-modal')">×</button>
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom: 20px; text-align: center;">
+                <div class="profile-avatar" id="notes-exercise-icon" style="width: 60px; height: 60px; margin: 0 auto 15px; background: linear-gradient(135deg, #8B5CF6, #EC4899); font-size: 24px;">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <h4 id="notes-exercise-name" style="margin: 0 0 10px 0; color: var(--text-primary);">Nom de l'exercice</h4>
+                <div id="notes-exercise-details" style="font-size: var(--font-size-sm); color: var(--text-secondary);">
+                    <!-- Détails de l'exercice -->
+                </div>
+            </div>
+            
+            <div class="input-group" style="margin-bottom: 20px;">
+                <div class="input-label">
+                    <i class="fas fa-edit"></i> Votre note
+                </div>
+                <textarea 
+                    class="number-input notes-wrap" 
+                    id="exercise-notes-text" 
+                    placeholder="Ex: Technique à améliorer, sensation pendant l'exercice, objectif pour la prochaine fois..."
+                    style="height: 150px; resize: vertical; width: 100%; padding: 15px; font-size: var(--font-size-base);"
+                    oninput="autoSaveNotes()"
+                ></textarea>
+                <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                    <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">
+                        <i class="fas fa-history"></i> Sauvegarde automatique
+                    </div>
+                    <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">
+                        <span id="notes-char-count">0</span>/500 caractères
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.05)); padding: 15px; border-radius: var(--radius); margin-bottom: 20px; border: 1px solid rgba(139, 92, 246, 0.2);">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <div style="width: 30px; height: 30px; background: linear-gradient(135deg, #8B5CF6, #EC4899); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div style="font-weight: 700; color: var(--text-primary);">Conseil</div>
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">
+                    Notez vos sensations, la technique utilisée, le niveau de difficulté ou vos objectifs pour la prochaine séance.
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success" onclick="saveExerciseNotes()" style="flex: 1; background: linear-gradient(135deg, #8B5CF6, #EC4899);">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+                <button class="btn btn-secondary" onclick="clearExerciseNotes()" style="flex: 1;">
+                    <i class="fas fa-eraser"></i> Effacer
+                </button>
             </div>
         </div>
     </div>
@@ -5739,11 +6008,115 @@ let settings = {
     compactMode: false  // AJOUTER CETTE LIGNE
 };
 
+// ==================== GESTION DU SON ET VIBRATIONS ====================
+function playSound(type = 'beep') {
+    if (!settings.sounds) return;
+    
+    try {
+        // Créer un contexte audio
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Configurer le son selon le type
+        switch(type) {
+            case 'beep':
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime); // Fréquence du bip
+                oscillator.type = 'sine';
+                // Enveloppe ADSR pour un bip court
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.15);
+                break;
+                
+            case 'timer_end':
+                oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.5);
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.4, audioContext.currentTime + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.8);
+                break;
+                
+            case 'success':
+                // Bip de succès plus mélodieux
+                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // Do
+                oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // Mi
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.05);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+                break;
+        }
+    } catch (error) {
+        console.error('Erreur de son:', error);
+    }
+}
 
+function vibrate(pattern = [100, 50, 100]) {
+    if (!settings.vibrations || !navigator.vibrate) return;
+    
+    try {
+        navigator.vibrate(pattern);
+    } catch (error) {
+        console.error('Erreur de vibration:', error);
+    }
+}
+
+function playTimerEndAlert() {
+    // Jouer le son de fin de timer
+    playSound('timer_end');
+    
+    // Vibrer
+    vibrate([200, 100, 200, 100, 200]);
+    
+    // Notification visuelle supplémentaire
+    if (document.getElementById('timer-container').classList.contains('active')) {
+        const timerDisplay = document.getElementById('timer-display');
+        timerDisplay.style.color = '#EF4444';
+        timerDisplay.style.animation = 'shake 0.5s ease-in-out';
+        
+        setTimeout(() => {
+            timerDisplay.style.color = '';
+            timerDisplay.style.animation = '';
+        }, 500);
+    }
+}
+
+function playSetCompleteAlert() {
+    // Bip pour série terminée
+    playSound('success');
+    vibrate([100]);
+    
+    // Flash visuel
+    if (document.querySelector('.set-item.completed:last-child')) {
+        const lastCompletedSet = document.querySelector('.set-item.completed:last-child');
+        lastCompletedSet.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.5)';
+        
+        setTimeout(() => {
+            lastCompletedSet.style.boxShadow = '';
+        }, 300);
+    }
+}
 
 // ==================== FONCTIONS D'INITIALISATION ====================
 function initApp() {
     loadFromLocalStorage();
+    
+    // ACTIVER LE MODE COMPACT PAR DÉFAUT SI CE N'EST PAS DÉJÀ DÉFINI
+    if (settings.compactMode === undefined) {
+        settings.compactMode = true;
+    }
+    
     calculateNutritionNeeds();
     updateDailyNutritionDisplay();
     loadMuscleGroups();
@@ -5756,6 +6129,9 @@ function initApp() {
     updateRecommendedPrograms();
     updateNavbar();
     checkAndApplyTheme();
+    
+    // Mettre à jour la case à cocher dans les paramètres
+    updateCompactModeCheckbox();
 }
 
 function loadFromLocalStorage() {
@@ -5790,9 +6166,14 @@ function loadFromLocalStorage() {
         const savedCompactMode = localStorage.getItem('fitfuel_compactMode');
 	if (savedCompactMode !== null) {
     	settings.compactMode = JSON.parse(savedCompactMode);
-}
+} else {
+            // Si non défini dans le localStorage, activer par défaut
+            settings.compactMode = true;
+        }
     } catch (e) {
         console.error('Erreur lors du chargement depuis localStorage:', e);
+        // En cas d'erreur, activer le mode compact par défaut
+        settings.compactMode = true;
     }
 }
 
@@ -5810,6 +6191,14 @@ function saveToLocalStorage() {
         localStorage.setItem('fitfuel_compactMode', JSON.stringify(settings.compactMode));
     } catch (e) {
         console.error('Erreur lors de la sauvegarde dans localStorage:', e);
+    }
+}
+
+// Nouvelle fonction pour mettre à jour la case à cocher
+function updateCompactModeCheckbox() {
+    const checkbox = document.getElementById('compact-mode-toggle');
+    if (checkbox) {
+        checkbox.checked = settings.compactMode;
     }
 }
 
@@ -5910,6 +6299,26 @@ function showNotification(message, type = 'success', duration = 3000) {
     
     document.body.appendChild(notification);
     
+    // Jouer un son selon le type de notification
+    switch(type) {
+        case 'success':
+            playSound('success');
+            vibrate([50]);
+            break;
+        case 'error':
+            playSound('beep');
+            vibrate([200, 100, 200]);
+            break;
+        case 'warning':
+            playSound('beep');
+            vibrate([300]);
+            break;
+        case 'info':
+            playSound('beep');
+            vibrate([100]);
+            break;
+    }
+    
     setTimeout(() => {
         notification.classList.add('hiding');
         setTimeout(() => {
@@ -5932,6 +6341,9 @@ function checkAndApplyTheme() {
         document.getElementById('dark-mode-toggle').checked = false;
 	// Cocher la case du mode compact si activé
 	document.getElementById('compact-mode-toggle').checked = settings.compactMode;
+    
+// S'assurer que la case du mode compact est à jour
+    updateCompactModeCheckbox();
     }
 }
 
@@ -6250,6 +6662,195 @@ filteredExercises.sort((a, b) => {
         
         exerciseList.appendChild(exerciseItem);
     });
+}
+
+// ==================== FICHE DÉTAILLÉE EXERCICE ====================
+function showExerciseDetail(exerciseId, isCustom) {
+    let exercise;
+    
+    if (isCustom) {
+        exercise = customExercises.find(ex => ex.id === exerciseId);
+    } else {
+        // Chercher d'abord dans les exercices personnalisés (pour les favoris)
+        exercise = customExercises.find(ex => ex.originalId === exerciseId);
+        if (!exercise) {
+            exercise = exercises.find(ex => ex.id === exerciseId);
+        }
+    }
+    
+    if (!exercise) {
+        showNotification('Exercice non trouvé', 'error');
+        return;
+    }
+    
+    // Récupérer les données complètes depuis data.js si disponibles
+    let fullExerciseData = null;
+    if (!isCustom && exercise.originalId) {
+        fullExerciseData = exercises.find(ex => ex.id === exercise.originalId);
+    } else if (!isCustom) {
+        fullExerciseData = exercise;
+    }
+    
+    // Si on a des données complètes, les utiliser, sinon utiliser l'exercice de base
+    const displayExercise = fullExerciseData || exercise;
+    
+    // Trouver le groupe musculaire
+    const muscle = muscleGroups.find(m => m.id === displayExercise.muscleGroup);
+    
+    // Préparer le contenu HTML premium
+    let contentHTML = `
+        <div class="exercise-detail-header">
+            <div class="exercise-detail-icon">
+                <i class="fas fa-dumbbell"></i>
+            </div>
+            <div class="exercise-detail-title">${displayExercise.name}</div>
+            <div class="exercise-detail-subtitle">
+                <span class="exercise-muscle-badge">${muscle ? muscle.name : displayExercise.muscleGroup}</span>
+                <span class="exercise-difficulty-badge ${displayExercise.difficulty.toLowerCase().includes('débutant') ? 'difficulty-beginner' : displayExercise.difficulty.toLowerCase().includes('intermédiaire') ? 'difficulty-intermediate' : 'difficulty-advanced'}">
+                    ${displayExercise.difficulty}
+                </span>
+                ${displayExercise.category ? `<span class="exercise-category-badge">${displayExercise.category}</span>` : ''}
+            </div>
+        </div>
+        
+        ${displayExercise.description ? `
+            <div class="exercise-detail-section">
+                <div class="exercise-detail-section-title">
+                    <i class="fas fa-align-left"></i> Description
+                </div>
+                <div class="exercise-detail-description">
+                    ${displayExercise.description}
+                </div>
+            </div>
+        ` : ''}
+        
+        <div class="exercise-detail-section">
+            <div class="exercise-detail-section-title">
+                <i class="fas fa-chart-bar"></i> Informations
+            </div>
+            <div class="exercise-detail-grid">
+                <div class="exercise-detail-stat">
+                    <div class="exercise-detail-stat-value">${muscle ? muscle.name : displayExercise.muscleGroup}</div>
+                    <div class="exercise-detail-stat-label">Groupe Musculaire</div>
+                </div>
+                
+                <div class="exercise-detail-stat">
+                    <div class="exercise-detail-stat-value">${displayExercise.difficulty}</div>
+                    <div class="exercise-detail-stat-label">Niveau</div>
+                </div>
+                
+                ${displayExercise.category ? `
+                    <div class="exercise-detail-stat">
+                        <div class="exercise-detail-stat-value">${displayExercise.category}</div>
+                        <div class="exercise-detail-stat-label">Catégorie</div>
+                    </div>
+                ` : ''}
+                
+                ${displayExercise.equipment && displayExercise.equipment.length > 0 ? `
+                    <div class="exercise-detail-stat">
+                        <div class="exercise-detail-stat-value">${displayExercise.equipment.length}</div>
+                        <div class="exercise-detail-stat-label">Équipements</div>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+        
+        ${displayExercise.equipment && displayExercise.equipment.length > 0 ? `
+            <div class="exercise-detail-section">
+                <div class="exercise-detail-section-title">
+                    <i class="fas fa-tools"></i> Équipement requis
+                </div>
+                <div class="exercise-detail-equipment-list">
+                    ${displayExercise.equipment.map(eq => `
+                        <div class="exercise-detail-equipment-item">
+                            <i class="fas fa-dumbbell"></i> ${eq}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        ` : ''}
+        
+        ${displayExercise.instructions ? `
+            <div class="exercise-detail-section">
+                <div class="exercise-detail-section-title">
+                    <i class="fas fa-graduation-cap"></i> Instructions d'exécution
+                </div>
+                <div class="exercise-detail-description">
+                    ${displayExercise.instructions}
+                </div>
+            </div>
+        ` : ''}
+        
+        ${displayExercise.tips ? `
+            <div class="exercise-detail-section">
+                <div class="exercise-detail-section-title">
+                    <i class="fas fa-lightbulb"></i> Conseils & Astuces
+                </div>
+                <div class="exercise-detail-description">
+                    ${displayExercise.tips}
+                </div>
+            </div>
+        ` : ''}
+        
+        ${displayExercise.commonMistakes ? `
+            <div class="exercise-detail-section">
+                <div class="exercise-detail-section-title">
+                    <i class="fas fa-exclamation-triangle"></i> Erreurs courantes
+                </div>
+                <div class="exercise-detail-description">
+                    ${displayExercise.commonMistakes}
+                </div>
+            </div>
+        ` : ''}
+        
+        ${displayExercise.variations ? `
+            <div class="exercise-detail-section">
+                <div class="exercise-detail-section-title">
+                    <i class="fas fa-exchange-alt"></i> Variations
+                </div>
+                <div class="exercise-detail-description">
+                    ${displayExercise.variations}
+                </div>
+            </div>
+        ` : ''}
+    `;
+    
+    // Bouton vidéo si disponible
+    if (displayExercise.videoUrl) {
+        contentHTML += `
+            <button class="exercise-detail-video-btn" onclick="window.open('${displayExercise.videoUrl}', '_blank')">
+                <i class="fab fa-youtube"></i> Voir la vidéo démo
+            </button>
+        `;
+    }
+    
+    // Actions
+    contentHTML += `
+        <div class="exercise-detail-actions">
+            <button class="btn btn-success" onclick="addToWorkout('${exercise.id}')" style="flex: 2;">
+                <i class="fas fa-plus"></i> Ajouter à une séance
+            </button>
+            <button class="btn ${exercise.favorite ? 'btn-warning' : 'btn-secondary'}" onclick="toggleExerciseFavorite('${exercise.id}', ${isCustom})" style="flex: 1;">
+                <i class="fas ${exercise.favorite ? 'fa-star' : 'fa-star'}"></i>
+            </button>
+        </div>
+        
+        ${isCustom ? `
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="btn btn-secondary" onclick="editCustomExercise('${exercise.id}')" style="flex: 1;">
+                    <i class="fas fa-edit"></i> Modifier
+                </button>
+                <button class="btn btn-danger" onclick="deleteCustomExercise('${exercise.id}')" style="flex: 1;">
+                    <i class="fas fa-trash"></i> Supprimer
+                </button>
+            </div>
+        ` : ''}
+    `;
+    
+    // Afficher le modal
+    document.getElementById('exercise-detail-content').innerHTML = contentHTML;
+    document.getElementById('exercise-detail-title').textContent = '📋 Fiche Exercice';
+    showModal('exercise-detail-modal');
 }
 
 function filterExercises() {
@@ -7327,17 +7928,42 @@ function startWorkoutWithExercises(workoutName, exerciseIds) {
         totalWeight: 0
     };
     
+    // Chercher la séance complète dans Workouts pour avoir les détails (sets, reps, weight, rest)
+    let workoutDetails = null;
+    
+    // Chercher dans les séances prédéfinies
+    Object.values(Workouts).forEach(workout => {
+        if (workout.name === workoutName) {
+            workoutDetails = workout;
+        }
+    });
+    
     exerciseIds.forEach(exerciseId => {
         const exercise = getAllExercises().find(ex => ex.id === exerciseId);
         if (exercise) {
+            // Chercher les détails spécifiques de cet exercice dans la séance
+            let exerciseDetails = null;
+            if (workoutDetails && workoutDetails.exercises) {
+                exerciseDetails = workoutDetails.exercises.find(ex => ex.exerciseId === exerciseId);
+            }
+            
+            // Utiliser les valeurs de data.js si disponibles, sinon les valeurs par défaut du profil
+            const defaultSets = exerciseDetails ? exerciseDetails.sets : userProfile.defaultSets;
+            const defaultReps = exerciseDetails ? exerciseDetails.reps : userProfile.defaultReps;
+            const defaultWeight = exerciseDetails ? exerciseDetails.weight : userProfile.defaultWeight;
+            const defaultRest = exerciseDetails ? exerciseDetails.rest : userProfile.defaultRest;
+            const notes = exerciseDetails ? exerciseDetails.notes : '';
+            
             activeWorkout.exercises.push({
                 ...exercise,
-                sets: Array(userProfile.defaultSets).fill().map((_, i) => ({
+                sets: Array(defaultSets).fill().map((_, i) => ({
                     number: i + 1,
-                    reps: userProfile.defaultReps,
-                    weight: userProfile.defaultWeight,
+                    reps: defaultReps,  // Utilise les reps de data.js
+                    weight: defaultWeight,  // Utilise le poids de data.js
                     completed: false
-                }))
+                })),
+                customRest: defaultRest,  // Utilise le temps de repos de data.js
+                notes: notes  // Utilise les notes de data.js
             });
         }
     });
@@ -7430,7 +8056,32 @@ exerciseElement.innerHTML = `
                 <i class="fas fa-link"></i>
             </button>
         `}
-        <button class="action-btn" onclick="removeExerciseFromWorkout(${exerciseIndex})" title="Supprimer l'exercice">
+        
+<!-- BOUTON NOTES (NOUVEAU) -->
+
+<button class="action-btn" onclick="showExerciseNotesModal(${exerciseIndex})" 
+        title="Notes de l'exercice" 
+        style="background: ${exercise.notes ? 'linear-gradient(135deg, #3B82F6, #1D4ED8)' : 'linear-gradient(135deg, #8B5CF6, #EC4899)'}; color: white;">
+    <i class="fas fa-sticky-note"></i>
+</button>
+
+<!-- NOUVEAU BOUTON VIDÉO -->
+        ${exercise.videoUrl ? `
+            <button class="action-btn" onclick="window.open('${exercise.videoUrl}', '_blank')" 
+                    title="Voir la vidéo de l'exercice" 
+                    style="background: linear-gradient(135deg, #FF0000, #CC0000); color: white;">
+                <i class="fas fa-play"></i>
+            </button>
+        ` : ''}
+
+<!-- NOUVEAU BOUTON MODE -->
+    <button class="action-btn" onclick="toggleExerciseCompactMode(${exerciseIndex})" 
+            title="${exercise.compactModeOverride === true ? 'Mode compact forcé' : exercise.compactModeOverride === false ? 'Mode normal forcé' : 'Utilise le paramètre global'}" 
+            style="background: ${exercise.compactModeOverride === true ? 'var(--primary)' : exercise.compactModeOverride === false ? 'var(--warning)' : 'var(--secondary)'}; color: white;">
+        <i class="fas fa-${exercise.compactModeOverride === true ? 'mobile-alt' : exercise.compactModeOverride === false ? 'file-alt' : 'cog'}"></i>
+    </button>
+
+<button class="action-btn" onclick="removeExerciseFromWorkout(${exerciseIndex})" title="Supprimer l'exercice">
             <i class="fas fa-trash"></i>
         </button>
     </div>
@@ -7465,8 +8116,24 @@ function createSetElement(exerciseIndex, setIndex, set) {
     
     if (isCollapsed) return '';
     
+// DÉTERMINER LE MODE D'AFFICHAGE POUR CET EXERCICE
+    const useCompactMode = exercise.compactModeOverride !== undefined 
+        ? exercise.compactModeOverride 
+        : settings.compactMode;
+
+    // NOUVELLE LOGIQUE: Vérifier si c'est une reprise de séance avec données historiques
+    const isRedoWorkout = exercise.historicalSets && exercise.historicalSets.length > 0;
+    const historicalSet = isRedoWorkout ? exercise.historicalSets[setIndex] : null;
+    
+    // Si c'est une reprise avec données historiques, utiliser les valeurs historiques
+    if (isRedoWorkout && historicalSet) {
+        // Appliquer les valeurs historiques exactes pour la série correspondante
+        set.reps = historicalSet.reps !== undefined ? historicalSet.reps : userProfile.defaultReps;
+        set.weight = historicalSet.weight !== undefined ? historicalSet.weight : userProfile.defaultWeight;
+    }
+    
     // Mode compact
-    if (settings.compactMode) {
+    if (useCompactMode) {
         const setElement = document.createElement('div');
         setElement.className = `set-item-compact ${set.completed ? 'completed' : ''}`;
         setElement.id = `set-${exerciseIndex}-${setIndex}`;
@@ -7478,32 +8145,43 @@ function createSetElement(exerciseIndex, setIndex, set) {
         setElement.style.alignItems = 'center';
         setElement.style.transition = 'none';
         
-        // RÉPARATION: S'assurer que les valeurs ne soient pas undefined
+        // S'assurer que les valeurs ne soient pas undefined
         const repsValue = set.reps !== undefined ? set.reps : userProfile.defaultReps;
         const weightValue = set.weight !== undefined ? set.weight : userProfile.defaultWeight;
         
+        // NOUVELLE LOGIQUE: Affichage des informations historiques
         let previousSetInfo = '';
-        if (setIndex === 0) {
+        if (isRedoWorkout && historicalSet) {
+            // Pour une reprise: montrer les valeurs exactes de la série historique correspondante
+            previousSetInfo = `
+                <div class="previous-set-info-compact" style="grid-column: 1 / -1; font-size: 9px; color: var(--text-secondary); margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border); font-style: italic;">
+                    <i class="fas fa-history" style="margin-right: 4px;"></i>Série précédente (historique): ${historicalSet.reps} reps × ${historicalSet.weight}kg
+                </div>
+            `;
+        } else if (setIndex > 0) {
+            // Pour une nouvelle séance sans historique: montrer la série précédente de CETTE séance
+            const prevSet = activeWorkout.exercises[exerciseIndex].sets[setIndex - 1];
+            if (prevSet) {
+                const prevReps = prevSet.reps !== undefined ? prevSet.reps : userProfile.defaultReps;
+                const prevWeight = prevSet.weight !== undefined ? prevSet.weight : userProfile.defaultWeight;
+                
+                previousSetInfo = `
+                    <div class="previous-set-info-compact" style="grid-column: 1 / -1; font-size: 9px; color: var(--text-secondary); margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border); font-style: italic;">
+                        <i class="fas fa-arrow-up" style="margin-right: 4px;"></i>Série précédente: ${prevReps} reps × ${prevWeight}kg
+                    </div>
+                `;
+            }
+        } else if (!isRedoWorkout) {
+            // Pour la première série d'une nouvelle séance sans historique: montrer la dernière performance globale
             const exerciseName = activeWorkout.exercises[exerciseIndex].name;
             const previousData = findPreviousExerciseData(exerciseName);
             if (previousData) {
-                previousSetInfo = `<div style="grid-column: 1 / -1; font-size: 9px; color: var(--text-secondary); margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border); font-style: italic;">
-                    Dernière fois: ${previousData.reps} reps × ${previousData.weight}kg
-                </div>`;
-                
-                // Mettre à jour les valeurs seulement si elles sont undefined
-                if (set.reps === undefined) {
-                    set.reps = previousData.reps;
-                }
-                if (set.weight === undefined) {
-                    set.weight = previousData.weight;
-                }
+                previousSetInfo = `
+                    <div class="previous-set-info-compact" style="grid-column: 1 / -1; font-size: 9px; color: var(--text-secondary); margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border); font-style: italic;">
+                        <i class="fas fa-history" style="margin-right: 4px;"></i>Dernière performance (séance différente): ${previousData.reps} reps × ${previousData.weight}kg
+                    </div>
+                `;
             }
-        } else if (setIndex > 0) {
-            const prevSet = activeWorkout.exercises[exerciseIndex].sets[setIndex-1];
-            previousSetInfo = `<div style="grid-column: 1 / -1; font-size: 9px; color: var(--text-secondary); margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border); font-style: italic;">
-                Série précédente: ${prevSet.reps || userProfile.defaultReps} reps × ${prevSet.weight || userProfile.defaultWeight}kg
-            </div>`;
         }
         
         const isSuperset = exercise.supersetId;
@@ -7613,36 +8291,40 @@ function createSetElement(exerciseIndex, setIndex, set) {
     setElement.className = `set-item ${set.completed ? 'completed' : ''}`;
     setElement.id = `set-${exerciseIndex}-${setIndex}`;
     
-    // RÉPARATION: S'assurer que les valeurs ne soient pas undefined
+    // S'assurer que les valeurs sont définies
     const repsValue = set.reps !== undefined ? set.reps : userProfile.defaultReps;
     const weightValue = set.weight !== undefined ? set.weight : userProfile.defaultWeight;
     
+    // NOUVELLE LOGIQUE: Affichage des informations historiques
     let previousSetInfo = '';
-    if (setIndex === 0) {
+    if (isRedoWorkout && historicalSet) {
+        // Pour une reprise: montrer les valeurs exactes de la série historique correspondante
+        previousSetInfo = `
+            <div class="previous-set-info">
+                <i class="fas fa-history"></i> Série précédente (historique): ${historicalSet.reps} reps × ${historicalSet.weight}kg
+            </div>
+        `;
+    } else if (setIndex > 0) {
+        // Pour une nouvelle séance sans historique: montrer la série précédente de CETTE séance
+        const prevSet = activeWorkout.exercises[exerciseIndex].sets[setIndex-1];
+        if (prevSet) {
+            previousSetInfo = `
+                <div class="previous-set-info">
+                    <i class="fas fa-arrow-up"></i> Série précédente: ${prevSet.reps || userProfile.defaultReps} reps × ${prevSet.weight || userProfile.defaultWeight}kg
+                </div>
+            `;
+        }
+    } else if (!isRedoWorkout) {
+        // Pour la première série d'une nouvelle séance sans historique: montrer la dernière performance globale
         const exerciseName = activeWorkout.exercises[exerciseIndex].name;
         const previousData = findPreviousExerciseData(exerciseName);
         if (previousData) {
             previousSetInfo = `
                 <div class="previous-set-info">
-                    <i class="fas fa-history"></i> Dernière fois: ${previousData.reps} reps × ${previousData.weight}kg
+                    <i class="fas fa-history"></i> Dernière performance (séance différente): ${previousData.reps} reps × ${previousData.weight}kg
                 </div>
             `;
-            
-            // Mettre à jour les valeurs seulement si elles sont undefined
-            if (set.reps === undefined) {
-                set.reps = previousData.reps;
-            }
-            if (set.weight === undefined) {
-                set.weight = previousData.weight;
-            }
         }
-    } else if (setIndex > 0) {
-        const prevSet = activeWorkout.exercises[exerciseIndex].sets[setIndex-1];
-        previousSetInfo = `
-            <div class="previous-set-info">
-                <i class="fas fa-arrow-up"></i> Série précédente: ${prevSet.reps || userProfile.defaultReps} reps × ${prevSet.weight || userProfile.defaultWeight}kg
-            </div>
-        `;
     }
     
     const isSuperset = exercise.supersetId;
@@ -7705,32 +8387,40 @@ function createSetElement(exerciseIndex, setIndex, set) {
 }
 
 function findPreviousExerciseData(exerciseName) {
-    let latestSession = null;
-    let latestExercise = null;
-    let latestSet = null;
+    if (!workoutHistory || workoutHistory.length === 0) {
+        return null;
+    }
     
-    // Trouver la session la plus récente contenant cet exercice
+    // Chercher la DERNIÈRE SÉANCE où cet exercice a été fait
     for (const session of workoutHistory) {
         for (const exercise of session.exercises) {
             if (exercise.name === exerciseName && exercise.sets && exercise.sets.length > 0) {
-                // Prendre la dernière session
-                if (!latestSession || new Date(session.date) > new Date(latestSession.date)) {
-                    latestSession = session;
-                    latestExercise = exercise;
-                    // Prendre la dernière série de cet exercice
-                    latestSet = exercise.sets[exercise.sets.length - 1];
+                // Calculer la MOYENNE des séries de la dernière séance
+                let totalReps = 0;
+                let totalWeight = 0;
+                let setCount = 0;
+                
+                exercise.sets.forEach(set => {
+                    const reps = parseInt(set.reps) || 0;
+                    const weight = parseFloat(set.weight) || 0;
+                    
+                    if (reps > 0 && weight > 0) {
+                        totalReps += reps;
+                        totalWeight += weight;
+                        setCount++;
+                    }
+                });
+                
+                if (setCount > 0) {
+                    return {
+                        reps: Math.round(totalReps / setCount),
+                        weight: Math.round((totalWeight / setCount) * 10) / 10, // 1 décimale
+                        sessionDate: session.date,
+                        isAverage: true // Indiquer que c'est une moyenne
+                    };
                 }
-                break;
             }
         }
-    }
-    
-    // Retourner les données de la dernière série si disponibles
-    if (latestSet) {
-        return {
-            reps: latestSet.reps || userProfile.defaultReps,
-            weight: latestSet.weight || userProfile.defaultWeight
-        };
     }
     
     return null;
@@ -7792,6 +8482,9 @@ function completeSet(exerciseIndex, setIndex) {
         recalculateTotalWeight();
         updateSetDisplay(exerciseIndex, setIndex);
         
+        // ALERTE SONORE ET VIBRATION POUR SÉRIE TERMINÉE
+        playSetCompleteAlert();
+        
         // Démarrer le timer pour le superset
         if (settings.autoTimer) {
             const restTime = exercise.customRest || userProfile.defaultRest;
@@ -7825,6 +8518,9 @@ function completeSet(exerciseIndex, setIndex) {
         
         recalculateTotalWeight();
         updateSetDisplay(exerciseIndex, setIndex);
+        
+        // ALERTE SONORE ET VIBRATION POUR SÉRIE TERMINÉE
+        playSetCompleteAlert();
         
         // Gérer le timer automatique pour les séances normales
         if (settings.autoTimer) {
@@ -8271,6 +8967,31 @@ function showCustomRestModal(exerciseIndex) {
     
     // Sauvegarder l'index de l'exercice dans le modal
     modal.dataset.exerciseIndex = exerciseIndex;
+}
+
+// Fonction pour basculer le mode compact par exercice
+function toggleExerciseCompactMode(exerciseIndex) {
+    if (!activeWorkout || !activeWorkout.exercises[exerciseIndex]) return;
+    
+    const exercise = activeWorkout.exercises[exerciseIndex];
+    
+    // Cycle: undefined → true → false → undefined
+    if (exercise.compactModeOverride === undefined) {
+        // Étape 1: Forcer mode compact
+        exercise.compactModeOverride = true;
+        showNotification(`Mode compact forcé pour "${exercise.name}"`, 'info');
+    } else if (exercise.compactModeOverride === true) {
+        // Étape 2: Forcer mode non-compact
+        exercise.compactModeOverride = false;
+        showNotification(`Mode normal forcé pour "${exercise.name}"`, 'info');
+    } else {
+        // Étape 3: Revenir au paramètre global
+        exercise.compactModeOverride = undefined;
+        showNotification(`Mode global utilisé pour "${exercise.name}"`, 'info');
+    }
+    
+    // Recharger l'affichage de l'exercice
+    updateWorkoutDisplay();
 }
 
 // ==================== PICKER 3D AVANCÉ ====================
@@ -9288,27 +10009,43 @@ function saveWorkoutData(saveToHistory = true) {
     const duration = Math.floor((endTime - activeWorkoutStartTime) / 1000);
     
     if (saveToHistory) {
-        // RÉPARATION: Sauvegarder les informations de supersets
-        const supersetInfo = {};
+        // SAUVEGARDE DES SUPERSETS POUR CETTE SÉANCE UNIQUEMENT
+const supersetInfo = {};
+
+// Collecter les supersets avec leur ORDRE ORIGINAL dans la séance
+activeWorkout.exercises.forEach((exercise, index) => {
+    if (exercise.supersetId) {
+        if (!supersetInfo[exercise.supersetId]) {
+            supersetInfo[exercise.supersetId] = {
+                id: exercise.supersetId,
+                name: exercise.supersetName || `Superset`,
+                color: exercise.supersetColor || '#8B5CF6',
+                exercises: [],
+                // NOUVEAU: Sauvegarder l'index original pour maintenir l'ordre
+                originalOrder: []
+            };
+        }
         
-        // Collecter les informations des supersets
-        activeWorkout.exercises.forEach((exercise, index) => {
-            if (exercise.supersetId) {
-                if (!supersetInfo[exercise.supersetId]) {
-                    supersetInfo[exercise.supersetId] = {
-                        id: exercise.supersetId,
-                        name: exercise.supersetName || `Superset ${Object.keys(supersetInfo).length + 1}`,
-                        color: exercise.supersetColor || '#8B5CF6',
-                        exercises: []
-                    };
-                }
-                supersetInfo[exercise.supersetId].exercises.push({
-                    exerciseIndex: index,
-                    name: exercise.name,
-                    order: exercise.supersetOrder || 1
-                });
-            }
+        // Sauvegarder l'exercice avec son index ORIGINAL dans la séance
+        supersetInfo[exercise.supersetId].exercises.push({
+            originalIndex: index, // Index dans la séance active
+            exerciseIndex: index, // Garder pour compatibilité
+            name: exercise.name,
+            order: exercise.supersetOrder || 1,
+            notes: exercise.notes || '' // Sauvegarder les notes aussi
         });
+        
+        // Garder la trace de l'ordre
+        supersetInfo[exercise.supersetId].originalOrder.push(index);
+    }
+});
+
+// Trier les supersets par leur premier exercice pour maintenir l'ordre
+const sortedSupersetInfo = Object.values(supersetInfo).sort((a, b) => {
+    const firstA = Math.min(...a.originalOrder);
+    const firstB = Math.min(...b.originalOrder);
+    return firstA - firstB;
+});
         
         // Sauvegarder dans l'historique
         const historyEntry = {
@@ -9316,27 +10053,31 @@ function saveWorkoutData(saveToHistory = true) {
             name: activeWorkout.name,
             date: new Date().toISOString(),
             duration: duration,
-            exercises: activeWorkout.exercises.map(exercise => ({
-                name: exercise.name,
-                muscleGroup: exercise.muscleGroup,
-                sets: exercise.sets.filter(set => set.completed).map(set => ({
-                    reps: set.reps,
-                    weight: set.weight
-                })),
-                // RÉPARATION: Sauvegarder les infos de superset
-                supersetId: exercise.supersetId,
-                supersetName: exercise.supersetName,
-                supersetColor: exercise.supersetColor,
-                supersetOrder: exercise.supersetOrder,
-                customRest: exercise.customRest || userProfile.defaultRest
+exercises: activeWorkout.exercises.map(exercise => ({
+    name: exercise.name,
+    muscleGroup: exercise.muscleGroup,
+    sets: exercise.sets.filter(set => set.completed).map(set => ({
+        reps: set.reps,
+        weight: set.weight
+    })),
+    // CORRECTION: Sauvegarder les infos de superset
+    supersetId: exercise.supersetId,
+    supersetName: exercise.supersetName,
+    supersetColor: exercise.supersetColor,
+    supersetOrder: exercise.supersetOrder,
+    customRest: exercise.customRest || userProfile.defaultRest,
+    // CORRECTION: BIEN sauvegarder les notes
+                notes: exercise.notes || '',  // S'assurer que c'est sauvegardé
+// SAUVEGARDER LE MODE COMPACT POUR CET EXERCICE
+    compactModeOverride: exercise.compactModeOverride
             })),
             stats: {
                 totalSets: activeWorkout.completedSets,
                 totalWeight: activeWorkout.totalWeight,
                 totalExercises: activeWorkout.exercises.length
             },
-            // RÉPARATION: Sauvegarder la structure des supersets
-            supersets: Object.values(supersetInfo)
+            // CORRECTION: Sauvegarder les supersets TRIÉS par ordre original
+supersets: sortedSupersetInfo
         };
         
         workoutHistory.unshift(historyEntry);
@@ -9398,6 +10139,10 @@ function startTimer() {
     isTimerRunning = true;
     document.getElementById('timer-toggle-btn').textContent = 'Pause';
     
+    // Bip de démarrage
+    playSound('beep');
+    vibrate([50]);
+    
     const startTime = Date.now();
     const totalSeconds = currentTimerSeconds;
     
@@ -9410,6 +10155,36 @@ function startTimer() {
         const elapsed = Math.floor((Date.now() - startTime) / 1000);
         const remaining = totalSeconds - elapsed;
         
+        // Bip d'avertissement à 10 secondes avant la fin
+        if (remaining === 10) {
+            playSound('beep');
+            vibrate([100]);
+        }
+        
+        // Bip d'avertissement à 5 secondes avant la fin
+        if (remaining === 5) {
+            playSound('beep');
+            vibrate([100]);
+        }
+        
+        // Bip d'avertissement à 3 secondes avant la fin
+        if (remaining === 3) {
+            playSound('beep');
+            vibrate([100]);
+        }
+        
+        // Bip d'avertissement à 2 secondes avant la fin
+        if (remaining === 2) {
+            playSound('beep');
+            vibrate([100]);
+        }
+        
+        // Bip d'avertissement à 1 seconde avant la fin
+        if (remaining === 1) {
+            playSound('beep');
+            vibrate([100]);
+        }
+        
         if (remaining <= 0) {
             clearInterval(timerInterval);
             if (timerProgressInterval) {
@@ -9420,6 +10195,9 @@ function startTimer() {
             updateTimerDisplay();
             isTimerRunning = false;
             document.getElementById('timer-toggle-btn').textContent = 'Démarrer';
+            
+            // ALERTE SONORE ET VIBRATION À LA FIN DU TIMER
+            playTimerEndAlert();
             
             // Gérer la fin du timer pour les supersets
             if (currentSupersetExerciseIndex !== null && currentSupersetSetIndex !== null && currentSupersetRoundInfo) {
@@ -9435,9 +10213,8 @@ function startTimer() {
                 }, 2000);
             }
             
-            if (settings.sounds) {
-                showNotification('⏱️ Temps écoulé !');
-            }
+            // Message de notification
+            showNotification('⏱️ Temps écoulé ! Bip et vibration activés.');
             
             updateTimerProgress(100);
         } else {
@@ -11026,6 +11803,22 @@ function showWorkoutHistoryDetail(index) {
                         Max: ${maxWeight}kg
                     </div>
                 </div>
+                
+                <!-- SECTION NOTES DE L'EXERCICE (NOUVEAU) -->
+                ${exercise.notes ? `
+                    <div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.05)); border-radius: var(--radius-sm); border-left: 3px solid #8B5CF6;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #8B5CF6, #EC4899); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">
+                                <i class="fas fa-sticky-note"></i>
+                            </div>
+                            <div style="font-weight: 700; color: #8B5CF6;">Notes</div>
+                        </div>
+                        <div style="color: var(--text-primary); font-size: var(--font-size-sm); white-space: pre-wrap; line-height: 1.5; padding: 0 4px;">
+                            ${exercise.notes}
+                        </div>
+                    </div>
+                ` : ''}
+                
             </div>
         `;
     });
@@ -11084,6 +11877,22 @@ function showWorkoutHistoryDetail(index) {
                                 Poids: ${totalWeight}kg
                             </div>
                         </div>
+                        
+                        <!-- SECTION NOTES POUR EXERCICES EN SUPERSET (NOUVEAU) -->
+                        ${exercise.notes ? `
+                            <div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.05)); border-radius: var(--radius-sm); border-left: 3px solid ${supersetColor};">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                    <div style="width: 24px; height: 24px; background: linear-gradient(135deg, ${supersetColor}, ${adjustColor(supersetColor, 40)}); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">
+                                        <i class="fas fa-sticky-note"></i>
+                                    </div>
+                                    <div style="font-weight: 700; color: ${supersetColor};">Notes</div>
+                                </div>
+                                <div style="color: var(--text-primary); font-size: var(--font-size-sm); white-space: pre-wrap; line-height: 1.5; padding: 0 4px;">
+                                    ${exercise.notes}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
                     </div>
                 `;
             });
@@ -11097,7 +11906,7 @@ function showWorkoutHistoryDetail(index) {
             
             <div class="history-detail-actions">
                 <button class="btn btn-success" onclick="redoWorkout(${index})" style="flex: 1;">
-                    <i class="fas fa-redo"></i> Refaire cette séance (avec supersets)
+                    <i class="fas fa-redo"></i> Refaire
                 </button>
                 <button class="btn btn-danger" onclick="deleteWorkoutHistory(${index})" style="flex: 1;">
                     <i class="fas fa-trash"></i> Supprimer
@@ -11134,83 +11943,87 @@ function redoWorkout(index) {
     const workoutData = {
         name: entry.name,
         exercises: [],
-        supersets: entry.supersets || {}
+        supersets: entry.supersets || []
     };
     
-    // RÉPARATION: Utiliser les supersets sauvegardés
-    const supersetMap = {};
-    if (entry.supersets && Array.isArray(entry.supersets)) {
-        entry.supersets.forEach(superset => {
-            supersetMap[superset.id] = {
-                id: superset.id,
-                name: superset.name,
-                color: superset.color,
-                exercises: superset.exercises || []
-            };
-        });
-    } else {
-        // Fallback: recréer les supersets à partir des exercices
-        entry.exercises.forEach((exercise, exIndex) => {
-            if (exercise.supersetId) {
-                if (!supersetMap[exercise.supersetId]) {
-                    supersetMap[exercise.supersetId] = {
-                        id: exercise.supersetId,
-                        name: exercise.supersetName || `Superset ${Object.keys(supersetMap).length + 1}`,
-                        color: exercise.supersetColor || '#8B5CF6',
-                        exercises: []
-                    };
-                }
-                supersetMap[exercise.supersetId].exercises.push({
-                    exerciseIndex: exIndex,
-                    name: exercise.name,
-                    order: exercise.supersetOrder || 1
-                });
-            }
-        });
-    }
+    // CORRECTION CRITIQUE: Restaurer l'ordre EXACT de la séance originale
+    const exercisesByOriginalOrder = [];
+    const exercisesBySuperset = {};
     
-    // Stocker les supersets
-    workoutData.supersets = supersetMap;
-    
-    // Préparer les exercices avec leurs séries historiques ET supersets
+    // 1. Organiser tous les exercices avec leur position ORIGINALE
     entry.exercises.forEach((exercise, exIndex) => {
         const matchingExercise = getAllExercises().find(ex => 
             ex.name.toLowerCase() === exercise.name.toLowerCase()
         );
         
         if (matchingExercise) {
-            // Récupérer les séries historiques complètes
-            const historicalSets = exercise.sets || [];
+            const exerciseData = {
+                ...exercise,
+                matchingExercise: matchingExercise,
+                historicalSets: exercise.sets || [],
+                originalIndex: exIndex,
+                notes: exercise.notes || '',
+                customRest: exercise.customRest || userProfile.defaultRest
+            };
             
-            // RÉPARATION: Trouver l'ordre du superset dans la structure sauvegardée
-            let supersetOrder = exercise.supersetOrder;
-            let supersetInfo = null;
-            
-            if (exercise.supersetId && supersetMap[exercise.supersetId]) {
-                const superset = supersetMap[exercise.supersetId];
-                const supersetExercise = superset.exercises.find(e => 
-                    e.exerciseIndex === exIndex || e.name === exercise.name
-                );
-                if (supersetExercise) {
-                    supersetOrder = supersetExercise.order;
+            // Organiser par superset ou standalone
+            if (exercise.supersetId) {
+                if (!exercisesBySuperset[exercise.supersetId]) {
+                    exercisesBySuperset[exercise.supersetId] = [];
                 }
-                supersetInfo = superset;
+                exercisesBySuperset[exercise.supersetId].push(exerciseData);
+            } else {
+                // Exercice standalone - garder sa position exacte
+                exercisesByOriginalOrder[exIndex] = exerciseData;
             }
-            
-            workoutData.exercises.push({
-                ...matchingExercise,
-                id: matchingExercise.id,
-                historicalSets: historicalSets,
-                // RÉPARATION: Restaurer toutes les infos de superset
-                supersetId: exercise.supersetId,
-                supersetName: exercise.supersetName,
-                supersetColor: exercise.supersetColor,
-                supersetOrder: supersetOrder,
-                customRest: exercise.customRest || userProfile.defaultRest,
-                supersetInfo: supersetInfo
-            });
         }
     });
+    
+    // 2. Si nous avons des supersets sauvegardés, les utiliser pour reconstruire l'ordre
+    if (workoutData.supersets && workoutData.supersets.length > 0) {
+        // Trier les supersets par leur PREMIER exercice dans l'ordre original
+        const sortedSupersets = workoutData.supersets.sort((a, b) => {
+            const firstA = a.exercises && a.exercises.length > 0 ? 
+                Math.min(...a.exercises.map(e => e.exerciseIndex)) : Infinity;
+            const firstB = b.exercises && b.exercises.length > 0 ? 
+                Math.min(...b.exercises.map(e => e.exerciseIndex)) : Infinity;
+            return firstA - firstB;
+        });
+        
+        // 3. Reconstruire la séance EXACTEMENT comme elle était
+        const reorderedExercises = [];
+        
+        // Pour chaque position dans la séance originale
+        for (let i = 0; i < entry.exercises.length; i++) {
+            // Vérifier si cette position est occupée par un exercice standalone
+            if (exercisesByOriginalOrder[i]) {
+                reorderedExercises.push(exercisesByOriginalOrder[i]);
+            } else {
+                // Sinon, vérifier si c'est la position d'un superset
+                const supersetAtThisPosition = sortedSupersets.find(superset => {
+                    return superset.exercises && superset.exercises.some(e => e.exerciseIndex === i);
+                });
+                
+                if (supersetAtThisPosition && exercisesBySuperset[supersetAtThisPosition.id]) {
+                    // Ajouter TOUS les exercices de ce superset
+                    const supersetExercises = exercisesBySuperset[supersetAtThisPosition.id]
+                        .sort((a, b) => (a.supersetOrder || 0) - (b.supersetOrder || 0));
+                    
+                    supersetExercises.forEach(ex => {
+                        reorderedExercises.push(ex);
+                    });
+                    
+                    // Avancer l'index pour sauter les autres exercices de ce superset
+                    i += supersetExercises.length - 1;
+                }
+            }
+        }
+        
+        workoutData.exercises = reorderedExercises;
+    } else {
+        // Sans supersets, garder simplement l'ordre original
+        workoutData.exercises = exercisesByOriginalOrder.filter(ex => ex);
+    }
     
     if (workoutData.exercises.length > 0) {
         // Démarrer la séance avec toutes les données historiques
@@ -11264,19 +12077,24 @@ function startRedoWorkout(workoutData) {
             });
         }
         
-        // Ajouter l'exercice avec ses supersets
+        // CORRECTION: Charger les notes de l'exercice
         const exerciseData = {
-            ...exercise,
-            sets: sets,
-            customRest: exercise.customRest || userProfile.defaultRest,
-            // RÉPARATION: Conserver toutes les infos de superset
-            supersetId: exercise.supersetId,
-            supersetName: exercise.supersetName,
-            supersetColor: exercise.supersetColor,
-            supersetOrder: exercise.supersetOrder,
-            supersetInfo: exercise.supersetInfo
+            ...exercise.matchingExercise,
+    sets: sets,
+    customRest: exercise.customRest || userProfile.defaultRest,
+    // CORRECTION: Restaurer toutes les infos de superset
+    supersetId: exercise.supersetId,
+    supersetName: exercise.supersetName,
+    supersetColor: exercise.supersetColor,
+    supersetOrder: exercise.supersetOrder,
+    supersetInfo: exercise.supersetInfo,
+// Restaurer le mode compact si sauvegardé
+compactModeOverride: exercise.compactModeOverride,
+    // CORRECTION: Bien charger les notes sauvegardées
+            notes: exercise.notes || '',  // Charger depuis les données de reprise
+        // Garder les données historiques pour référence
+            historicalSets: exercise.historicalSets || []
         };
-        
         // Organiser les exercices par superset
         if (exercise.supersetId) {
             if (!exercisesBySuperset[exercise.supersetId]) {
@@ -11291,6 +12109,7 @@ function startRedoWorkout(workoutData) {
     // RÉPARATION: Reconstruire l'ordre correct des exercices
     const allExercises = [...standaloneExercises];
     
+
     // Ajouter les supersets dans l'ordre original
     if (workoutData.supersets && typeof workoutData.supersets === 'object') {
         Object.values(workoutData.supersets).forEach(superset => {
@@ -12504,6 +13323,23 @@ function toggleVibrations(checked) {
     showNotification(checked ? 'Vibrations activées' : 'Vibrations désactivées');
 }
 
+// Puis ajoutez la fonction de test :
+function testAudioVibration() {
+    if (settings.sounds) {
+        playSound('timer_end');
+        showNotification('Test audio : vous devriez entendre un bip');
+    }
+    
+    if (settings.vibrations) {
+        vibrate([200, 100, 200]);
+        showNotification('Test vibration : votre téléphone devrait vibrer');
+    }
+    
+    if (!settings.sounds && !settings.vibrations) {
+        showNotification('Activez les sons ou vibrations d\'abord', 'warning');
+    }
+}
+
 function toggleKeepScreenOn(checked) {
     settings.keepScreenOn = checked;
     saveToLocalStorage();
@@ -12525,12 +13361,98 @@ function toggleCompactMode(checked) {
     settings.compactMode = checked;
     saveToLocalStorage();
     
-    // Recharger l'affichage si une séance est active
+    // Ne mettre à jour que les exercices qui utilisent le paramètre global
     if (activeWorkout) {
+        activeWorkout.exercises.forEach((exercise, index) => {
+            if (exercise.compactModeOverride === undefined) {
+                // Cet exercice utilise le paramètre global, on peut le mettre à jour
+                // L'affichage sera mis à jour lors du prochain updateWorkoutDisplay()
+            }
+        });
         updateWorkoutDisplay();
     }
     
     showNotification(checked ? 'Mode compact activé' : 'Mode compact désactivé');
+}
+
+// ==================== GESTION DES NOTES D'EXERCICE ====================
+
+function showExerciseNotesModal(exerciseIndex) {
+    if (!activeWorkout || !activeWorkout.exercises[exerciseIndex]) return;
+    
+    const exercise = activeWorkout.exercises[exerciseIndex];
+    
+    // Mettre à jour les informations de l'exercice
+    document.getElementById('notes-exercise-name').textContent = exercise.name;
+    
+    const muscle = muscleGroups.find(m => m.id === exercise.muscleGroup);
+    const muscleName = muscle ? muscle.name : exercise.muscleGroup;
+    
+    document.getElementById('notes-exercise-details').innerHTML = `
+        <div>${muscleName} • ${exercise.difficulty}</div>
+        ${exercise.supersetId ? `<div style="color: ${exercise.supersetColor || '#8B5CF6'};">Superset "${exercise.supersetName || 'Sans nom'}"</div>` : ''}
+    `;
+    
+    // Charger les notes existantes
+    const notesTextarea = document.getElementById('exercise-notes-text');
+    notesTextarea.value = exercise.notes || '';
+    
+    // Mettre à jour le compteur de caractères
+    updateNotesCharCount();
+    
+    // Sauvegarder l'index de l'exercice
+    document.getElementById('exercise-notes-modal').dataset.exerciseIndex = exerciseIndex;
+    
+    showModal('exercise-notes-modal');
+}
+
+function autoSaveNotes() {
+    const exerciseIndex = parseInt(document.getElementById('exercise-notes-modal').dataset.exerciseIndex);
+    if (isNaN(exerciseIndex) || !activeWorkout || !activeWorkout.exercises[exerciseIndex]) return;
+    
+    const notes = document.getElementById('exercise-notes-text').value;
+    activeWorkout.exercises[exerciseIndex].notes = notes;
+    
+    // Mettre à jour le compteur de caractères
+    updateNotesCharCount();
+}
+
+function updateNotesCharCount() {
+    const textarea = document.getElementById('exercise-notes-text');
+    const charCount = textarea.value.length;
+    document.getElementById('notes-char-count').textContent = charCount;
+    
+    // Changer la couleur si on approche de la limite
+    if (charCount > 450) {
+        document.getElementById('notes-char-count').style.color = '#EF4444';
+    } else if (charCount > 400) {
+        document.getElementById('notes-char-count').style.color = '#F59E0B';
+    } else {
+        document.getElementById('notes-char-count').style.color = 'var(--text-secondary)';
+    }
+}
+
+function saveExerciseNotes() {
+    const exerciseIndex = parseInt(document.getElementById('exercise-notes-modal').dataset.exerciseIndex);
+    if (isNaN(exerciseIndex) || !activeWorkout || !activeWorkout.exercises[exerciseIndex]) return;
+    
+    const notes = document.getElementById('exercise-notes-text').value;
+    activeWorkout.exercises[exerciseIndex].notes = notes;
+    
+    hideModal('exercise-notes-modal');
+    showNotification('📝 Notes enregistrées pour cet exercice');
+}
+
+function clearExerciseNotes() {
+    if (confirm('Voulez-vous vraiment effacer toutes les notes de cet exercice ?')) {
+        const exerciseIndex = parseInt(document.getElementById('exercise-notes-modal').dataset.exerciseIndex);
+        if (!isNaN(exerciseIndex) && activeWorkout && activeWorkout.exercises[exerciseIndex]) {
+            activeWorkout.exercises[exerciseIndex].notes = '';
+            document.getElementById('exercise-notes-text').value = '';
+            updateNotesCharCount();
+            showNotification('Notes effacées');
+        }
+    }
 }
 
 // ==================== INITIALISATION ====================
