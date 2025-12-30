@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ==================== VARIABLES ET RESET AVANCÉS ==================== */
+                /* ==================== VARIABLES ET RESET AVANCÉS ==================== */
         :root {
             --primary: #6366F1;
             --primary-light: #818CF8;
@@ -74,6 +74,7 @@
             --font-size-4xl: 32px;
         }
 
+        /* ==================== THÈMES ==================== */
         .dark-mode {
             --background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
             --card-bg: #1E293B;
@@ -87,6 +88,102 @@
             --shadow-xl: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
             --shadow-2xl: 0 40px 80px -20px rgba(0, 0, 0, 0.7);
             --success-dark: #047857;
+        }
+
+        .theme-blue {
+            --primary: #3B82F6;
+            --primary-light: #60A5FA;
+            --primary-dark: #1D4ED8;
+            --background: linear-gradient(135deg, #DBEAFE 0%, #EFF6FF 100%);
+            --card-bg: #FFFFFF;
+            --text-primary: #1E3A8A;
+            --text-secondary: #4B5563;
+            --border: #BFDBFE;
+            --gradient-premium: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+        }
+
+        .theme-green {
+            --primary: #10B981;
+            --primary-light: #34D399;
+            --primary-dark: #047857;
+            --background: linear-gradient(135deg, #D1FAE5 0%, #ECFDF5 100%);
+            --card-bg: #FFFFFF;
+            --text-primary: #064E3B;
+            --text-secondary: #4B5563;
+            --border: #A7F3D0;
+            --gradient-premium: linear-gradient(135deg, #10B981 0%, #047857 100%);
+        }
+
+        .theme-purple {
+            --primary: #8B5CF6;
+            --primary-light: #A78BFA;
+            --primary-dark: #7C3AED;
+            --background: linear-gradient(135deg, #EDE9FE 0%, #F5F3FF 100%);
+            --card-bg: #FFFFFF;
+            --text-primary: #5B21B6;
+            --text-secondary: #4B5563;
+            --border: #DDD6FE;
+            --gradient-premium: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+        }
+
+        .theme-red {
+            --primary: #EF4444;
+            --primary-light: #FCA5A5;
+            --primary-dark: #DC2626;
+            --background: linear-gradient(135deg, #FEE2E2 0%, #FEF2F2 100%);
+            --card-bg: #FFFFFF;
+            --text-primary: #7F1D1D;
+            --text-secondary: #4B5563;
+            --border: #FECACA;
+            --gradient-premium: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        }
+
+        .theme-sunset {
+            --primary: #F59E0B;
+            --primary-light: #FBBF24;
+            --primary-dark: #D97706;
+            --background: linear-gradient(135deg, #FEF3C7 0%, #FFFBEB 100%);
+            --card-bg: #FFFFFF;
+            --text-primary: #92400E;
+            --text-secondary: #4B5563;
+            --border: #FDE68A;
+            --gradient-premium: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+        }
+
+        /* Styles pour combiner dark-mode avec d'autres thèmes */
+        .dark-mode.theme-blue {
+            --background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%);
+            --card-bg: #1E40AF;
+            --text-primary: #DBEAFE;
+            --border: #3B82F6;
+        }
+
+        .dark-mode.theme-green {
+            --background: linear-gradient(135deg, #064E3B 0%, #047857 100%);
+            --card-bg: #047857;
+            --text-primary: #D1FAE5;
+            --border: #10B981;
+        }
+
+        .dark-mode.theme-purple {
+            --background: linear-gradient(135deg, #5B21B6 0%, #7C3AED 100%);
+            --card-bg: #7C3AED;
+            --text-primary: #EDE9FE;
+            --border: #8B5CF6;
+        }
+
+        .dark-mode.theme-red {
+            --background: linear-gradient(135deg, #7F1D1D 0%, #DC2626 100%);
+            --card-bg: #DC2626;
+            --text-primary: #FEE2E2;
+            --border: #EF4444;
+        }
+
+        .dark-mode.theme-sunset {
+            --background: linear-gradient(135deg, #92400E 0%, #D97706 100%);
+            --card-bg: #D97706;
+            --text-primary: #FEF3C7;
+            --border: #F59E0B;
         }
 
         * {
@@ -4418,6 +4515,72 @@
     margin-top: 15px; /* Réduit */
 }
 
+        /* ==================== STYLES POUR LE MODAL DE THÈME ==================== */
+        .theme-options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .theme-option {
+            background: var(--card-bg);
+            border-radius: var(--radius-sm);
+            padding: 15px;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            text-align: center;
+        }
+
+        .theme-option:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .theme-option.selected {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .theme-preview {
+            width: 100%;
+            height: 60px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .theme-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .theme-check {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: var(--transition);
+        }
+
+        .theme-option.selected .theme-check {
+            opacity: 1;
+            transform: scale(1);
+        }
 
     </style>
 </head>
@@ -5788,7 +5951,7 @@
         </div>
     </div>
 
-    <!-- Modal Paramètres - AMÉLIORÉ -->
+        <!-- Modal Paramètres - AMÉLIORÉ -->
     <div class="modal" id="settings-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -5797,6 +5960,17 @@
             </div>
             <div class="modal-body">
                 <div class="settings-list">
+                    <!-- NOUVEAU : Bouton Thème -->
+                    <div class="settings-item" onclick="showThemeSelection()" style="cursor: pointer;">
+                        <div>
+                            <div style="font-weight: 700; color: var(--text-primary);">🎨 Thème</div>
+                            <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Changer le thème de couleur</div>
+                        </div>
+                        <div style="color: var(--primary); font-weight: 700;">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                    </div>
+                    
                     <div class="settings-item">
                         <div>
                             <div style="font-weight: 700; color: var(--text-primary);">🌙 Mode sombre</div>
@@ -5804,6 +5978,17 @@
                         </div>
                         <label class="toggle-switch">
                             <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkModeSetting(this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div>
+                            <div style="font-weight: 700; color: var(--text-primary);">🔊 Sons</div>
+                            <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Activer/désactiver les sons</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="sounds-toggle" checked onchange="toggleSounds(this.checked)">
                             <span class="slider"></span>
                         </label>
                     </div>
@@ -5864,7 +6049,7 @@
 </div>
 
 
-`<div class="settings-item">
+<div class="settings-item">
     <div>
         <div style="font-weight: 700; color: var(--text-primary);">🎵 Test audio/vibration</div>
         <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Tester les alertes sonores et vibrations</div>
@@ -5872,8 +6057,64 @@
     <button class="btn btn-secondary" onclick="testAudioVibration()" style="padding: 8px 16px; font-size: var(--font-size-sm);">
         Tester
     </button>
-</div>`
+</div>
 
+    <!-- Modal Sélection Thème -->
+    <div class="modal" id="theme-selection-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">🎨 Choisir un thème</h3>
+                <button class="modal-close" onclick="hideModal('theme-selection-modal')">×</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; color: var(--text-secondary); text-align: center;">
+                    Sélectionnez un thème de couleur pour l'application
+                </p>
+                
+                <div class="theme-options-grid">
+                    <div class="theme-option" data-theme="default" onclick="selectTheme('default')">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #6366F1, #818CF8);"></div>
+                        <div class="theme-name">Par défaut</div>
+                        <div class="theme-check"><i class="fas fa-check"></i></div>
+                    </div>
+                    
+                    <div class="theme-option" data-theme="blue" onclick="selectTheme('blue')">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #3B82F6, #60A5FA);"></div>
+                        <div class="theme-name">Bleu</div>
+                        <div class="theme-check"><i class="fas fa-check"></i></div>
+                    </div>
+                    
+                    <div class="theme-option" data-theme="green" onclick="selectTheme('green')">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #10B981, #34D399);"></div>
+                        <div class="theme-name">Vert</div>
+                        <div class="theme-check"><i class="fas fa-check"></i></div>
+                    </div>
+                    
+                    <div class="theme-option" data-theme="purple" onclick="selectTheme('purple')">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);"></div>
+                        <div class="theme-name">Violet</div>
+                        <div class="theme-check"><i class="fas fa-check"></i></div>
+                    </div>
+                    
+                    <div class="theme-option" data-theme="red" onclick="selectTheme('red')">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #EF4444, #FCA5A5);"></div>
+                        <div class="theme-name">Rouge</div>
+                        <div class="theme-check"><i class="fas fa-check"></i></div>
+                    </div>
+                    
+                    <div class="theme-option" data-theme="sunset" onclick="selectTheme('sunset')">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);"></div>
+                        <div class="theme-name">Soleil</div>
+                        <div class="theme-check"><i class="fas fa-check"></i></div>
+                    </div>
+                </div>
+                
+                    <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center;">
+   			 <button class="btn btn-secondary" onclick="hideModal('theme-selection-modal')" style="width: 100%;">
+       			 Retour aux paramètres
+   			 </button>
+		    </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -6007,6 +6248,7 @@ let settings = {
     darkMode: false,
     compactMode: false  // AJOUTER CETTE LIGNE
 };
+let currentTheme = 'default'; // 'default', 'blue', 'green', 'purple', 'red', 'sunset'
 
 // ==================== GESTION DU SON ET VIBRATIONS ====================
 function playSound(type = 'beep') {
@@ -6166,6 +6408,9 @@ function loadFromLocalStorage() {
         const savedCompactMode = localStorage.getItem('fitfuel_compactMode');
 	if (savedCompactMode !== null) {
     	settings.compactMode = JSON.parse(savedCompactMode);
+	
+	const savedCurrentTheme = localStorage.getItem('fitfuel_currentTheme');
+        if (savedCurrentTheme) currentTheme = savedCurrentTheme;
 } else {
             // Si non défini dans le localStorage, activer par défaut
             settings.compactMode = true;
@@ -6174,7 +6419,8 @@ function loadFromLocalStorage() {
         console.error('Erreur lors du chargement depuis localStorage:', e);
         // En cas d'erreur, activer le mode compact par défaut
         settings.compactMode = true;
-    }
+
+	    }
 }
 
 function saveToLocalStorage() {
@@ -6189,9 +6435,10 @@ function saveToLocalStorage() {
         localStorage.setItem('fitfuel_settings', JSON.stringify(settings));
         localStorage.setItem('fitfuel_theme', theme);
         localStorage.setItem('fitfuel_compactMode', JSON.stringify(settings.compactMode));
+	localStorage.setItem('fitfuel_currentTheme', currentTheme);
     } catch (e) {
         console.error('Erreur lors de la sauvegarde dans localStorage:', e);
-    }
+	    }
 }
 
 // Nouvelle fonction pour mettre à jour la case à cocher
@@ -6331,6 +6578,13 @@ function showNotification(message, type = 'success', duration = 3000) {
 
 // ==================== GESTION DU THÈME ====================
 function checkAndApplyTheme() {
+    // Appliquer le thème de couleur
+    document.body.className = document.body.className.replace(/\btheme-\w+\b/g, '');
+    if (currentTheme !== 'default') {
+        document.body.classList.add(`theme-${currentTheme}`);
+    }
+    
+    // Appliquer le mode sombre
     if (settings.darkMode) {
         document.body.classList.add('dark-mode');
         theme = 'dark';
@@ -6339,12 +6593,13 @@ function checkAndApplyTheme() {
         document.body.classList.remove('dark-mode');
         theme = 'light';
         document.getElementById('dark-mode-toggle').checked = false;
-	// Cocher la case du mode compact si activé
-	document.getElementById('compact-mode-toggle').checked = settings.compactMode;
-    
-// S'assurer que la case du mode compact est à jour
-    updateCompactModeCheckbox();
     }
+    
+    // Cocher la case du mode compact si activé
+    document.getElementById('compact-mode-toggle').checked = settings.compactMode;
+    
+    // S'assurer que la case du mode compact est à jour
+    updateCompactModeCheckbox();
 }
 
 function toggleTheme() {
@@ -13555,6 +13810,66 @@ document.addEventListener('click', function(e) {
         }
     }
 });
+
+// ==================== GESTION DES THÈMES ====================
+function showThemeSelection() {
+    // NE PAS fermer le modal des paramètres
+    // hideModal('settings-modal');
+    
+    // Mettre à jour la sélection actuelle
+    document.querySelectorAll('.theme-option').forEach(option => {
+        option.classList.remove('selected');
+        if (option.dataset.theme === currentTheme) {
+            option.classList.add('selected');
+        }
+    });
+    
+    showModal('theme-selection-modal');
+}
+
+function selectTheme(themeName) {
+    currentTheme = themeName;
+    
+    // Appliquer le thème immédiatement
+    checkAndApplyTheme();
+    
+    // Sauvegarder
+    saveToLocalStorage();
+    
+    // Mettre à jour la sélection visuelle
+    document.querySelectorAll('.theme-option').forEach(option => {
+        option.classList.remove('selected');
+        if (option.dataset.theme === themeName) {
+            option.classList.add('selected');
+        }
+    });
+    
+    // Afficher une notification
+    const themeNames = {
+        'default': 'Par défaut',
+        'blue': 'Bleu',
+        'green': 'Vert',
+        'purple': 'Violet',
+        'red': 'Rouge',
+        'sunset': 'Soleil'
+    };
+    
+    showNotification(`Thème "${themeNames[themeName]}" appliqué !`);
+    
+    // Fermer le modal des thèmes et revenir aux paramètres
+    setTimeout(() => {
+        hideModal('theme-selection-modal');
+        // Le modal des paramètres reste ouvert en arrière-plan
+    }, 800);
+}
+
+// Modifier la fonction toggleDarkModeSetting pour prendre en compte les thèmes
+function toggleDarkModeSetting(checked) {
+    settings.darkMode = checked;
+    checkAndApplyTheme();
+    saveToLocalStorage();
+    showNotification(settings.darkMode ? 'Mode sombre activé' : 'Mode clair activé');
+}
 
 </script>
 </body>
