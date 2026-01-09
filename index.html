@@ -1884,9 +1884,17 @@
         }
 
         .modal.active {
-            display: flex;
-            animation: fadeIn 0.4s ease;
-        }
+    display: flex !important;
+    animation: fadeIn 0.4s ease;
+}
+
+/* Forcer l'affichage du modal des notes */
+#exercise-notes-modal.active {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 999999 !important;
+}
 
         .modal-content {
             background: var(--card-bg);
@@ -5951,92 +5959,81 @@
         </div>
     </div>
 
-        <!-- Modal Paramètres - AMÉLIORÉ -->
-    <div class="modal" id="settings-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">⚙️ Paramètres</h3>
-                <button class="modal-close" onclick="hideModal('settings-modal')">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="settings-list">
-                    <!-- NOUVEAU : Bouton Thème -->
-                    <div class="settings-item" onclick="showThemeSelection()" style="cursor: pointer;">
-                        <div>
-                            <div style="font-weight: 700; color: var(--text-primary);">🎨 Thème</div>
-                            <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Changer le thème de couleur</div>
-                        </div>
-                        <div style="color: var(--primary); font-weight: 700;">
-                            <i class="fas fa-palette"></i>
-                        </div>
+<!-- Modal Paramètres - AMÉLIORÉ -->
+<div class="modal" id="settings-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">⚙️ Paramètres</h3>
+            <button class="modal-close" onclick="hideModal('settings-modal')">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="settings-list">
+                <!-- NOUVEAU : Bouton Thème -->
+                <div class="settings-item" onclick="showThemeSelection()" style="cursor: pointer;">
+                    <div>
+                        <div style="font-weight: 700; color: var(--text-primary);">🎨 Thème</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Changer le thème de couleur</div>
                     </div>
-                    
-                    <div class="settings-item">
-                        <div>
-                            <div style="font-weight: 700; color: var(--text-primary);">🌙 Mode sombre</div>
-                            <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Activer/désactiver le thème sombre</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkModeSetting(this.checked)">
-                            <span class="slider"></span>
-                        </label>
+                    <div style="color: var(--primary); font-weight: 700;">
+                        <i class="fas fa-palette"></i>
                     </div>
-                    
-                    <div class="settings-item">
-                        <div>
-                            <div style="font-weight: 700; color: var(--text-primary);">🔊 Sons</div>
-                            <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Activer/désactiver les sons</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="sounds-toggle" checked onchange="toggleSounds(this.checked)">
-                            <span class="slider"></span>
-                        </label>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div style="font-weight: 700; color: var(--text-primary);">🌙 Mode sombre</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Activer/désactiver le thème sombre</div>
                     </div>
-                    
-                    <div class="settings-item">
-                        <div>
-                            <div style="font-weight: 700; color: var(--text-primary);">🔊 Sons</div>
-                            <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Activer/désactiver les sons</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="sounds-toggle" checked onchange="toggleSounds(this.checked)">
-                            <span class="slider"></span>
-                        </label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkModeSetting(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div style="font-weight: 700; color: var(--text-primary);">🔊 Sons</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Activer/désactiver les sons</div>
                     </div>
-                    
-                    <div class="settings-item">
-                        <div>
-                            <div style="font-weight: 700; color: var(--text-primary);">📳 Vibrations</div>
-                            <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Activer/désactiver les vibrations</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="vibrations-toggle" checked onchange="toggleVibrations(this.checked)">
-                            <span class="slider"></span>
-                        </label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="sounds-toggle" checked onchange="toggleSounds(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div style="font-weight: 700; color: var(--text-primary);">📳 Vibrations</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Activer/désactiver les vibrations</div>
                     </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="vibrations-toggle" checked onchange="toggleVibrations(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
 
-                    
-                    <div class="settings-item">
-                        <div>
-                            <div style="font-weight: 700; color: var(--text-primary);">🔒 Écran toujours actif</div>
-                            <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Garder l'écran allumé pendant les séances</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="keep-screen-on-toggle" onchange="toggleKeepScreenOn(this.checked)">
-                            <span class="slider"></span>
-                        </label>
+                
+                <div class="settings-item">
+                    <div>
+                        <div style="font-weight: 700; color: var(--text-primary);">🔒 Écran toujours actif</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Garder l'écran allumé pendant les séances</div>
                     </div>
-                    
-                    <div class="settings-item">
-                        <div>
-                            <div style="font-weight: 700; color: var(--text-primary);">⏱️ Timer auto</div>
-                            <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Démarrer le timer automatiquement</div>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="auto-timer-toggle" checked onchange="toggleAutoTimer(this.checked)">
-                            <span class="slider"></span>
-                        </label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="keep-screen-on-toggle" onchange="toggleKeepScreenOn(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="settings-item">
+                    <div>
+                        <div style="font-weight: 700; color: var(--text-primary);">⏱️ Timer auto</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Démarrer le timer automatiquement</div>
                     </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="auto-timer-toggle" checked onchange="toggleAutoTimer(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
 <div class="settings-item">
     <div>
         <div style="font-weight: 700; color: var(--text-primary);">📐 Mode compact</div>
@@ -6058,87 +6055,71 @@
         Tester
     </button>
 </div>
-
-    <!-- Modal Sélection Thème -->
-    <div class="modal" id="theme-selection-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">🎨 Choisir un thème</h3>
-                <button class="modal-close" onclick="hideModal('theme-selection-modal')">×</button>
-            </div>
-            <div class="modal-body">
-                <p style="margin-bottom: 20px; color: var(--text-secondary); text-align: center;">
-                    Sélectionnez un thème de couleur pour l'application
-                </p>
-                
-                <div class="theme-options-grid">
-                    <div class="theme-option" data-theme="default" onclick="selectTheme('default')">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #6366F1, #818CF8);"></div>
-                        <div class="theme-name">Par défaut</div>
-                        <div class="theme-check"><i class="fas fa-check"></i></div>
-                    </div>
-                    
-                    <div class="theme-option" data-theme="blue" onclick="selectTheme('blue')">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #3B82F6, #60A5FA);"></div>
-                        <div class="theme-name">Bleu</div>
-                        <div class="theme-check"><i class="fas fa-check"></i></div>
-                    </div>
-                    
-                    <div class="theme-option" data-theme="green" onclick="selectTheme('green')">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #10B981, #34D399);"></div>
-                        <div class="theme-name">Vert</div>
-                        <div class="theme-check"><i class="fas fa-check"></i></div>
-                    </div>
-                    
-                    <div class="theme-option" data-theme="purple" onclick="selectTheme('purple')">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);"></div>
-                        <div class="theme-name">Violet</div>
-                        <div class="theme-check"><i class="fas fa-check"></i></div>
-                    </div>
-                    
-                    <div class="theme-option" data-theme="red" onclick="selectTheme('red')">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #EF4444, #FCA5A5);"></div>
-                        <div class="theme-name">Rouge</div>
-                        <div class="theme-check"><i class="fas fa-check"></i></div>
-                    </div>
-                    
-                    <div class="theme-option" data-theme="sunset" onclick="selectTheme('sunset')">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);"></div>
-                        <div class="theme-name">Soleil</div>
-                        <div class="theme-check"><i class="fas fa-check"></i></div>
-                    </div>
-                </div>
-                
-                    <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center;">
-   			 <button class="btn btn-secondary" onclick="hideModal('theme-selection-modal')" style="width: 100%;">
-       			 Retour aux paramètres
-   			 </button>
-		    </div>
-                </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Aliment Favori -->
-    <div class="modal" id="favorite-food-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">⭐ Ajouter un repas avec cet aliment</h3>
-                <button class="modal-close" onclick="hideModal('favorite-food-modal')">×</button>
-            </div>
-            <div class="modal-body">
-                <p style="margin-bottom: 18px; color: var(--text-primary);" id="favorite-food-message">Voulez-vous ajouter un repas avec cet aliment favori ?</p>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-success" onclick="addFavoriteFoodToMeal()" style="flex: 1;">Oui, ajouter un repas</button>
-                    <button class="btn btn-secondary" onclick="hideModal('favorite-food-modal')" style="flex: 1;">Non, merci</button>
-                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Notes Premium -->
+<!-- MODAL DE SÉLECTION DE THÈME - DÉPLACÉ ICI -->
+<div class="modal" id="theme-selection-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">🎨 Choisir un thème</h3>
+            <button class="modal-close" onclick="hideModal('theme-selection-modal')">×</button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 20px; color: var(--text-secondary); text-align: center;">
+                Sélectionnez un thème de couleur pour l'application
+            </p>
+            
+            <div class="theme-options-grid">
+                <div class="theme-option" data-theme="default" onclick="selectTheme('default')">
+                    <div class="theme-preview" style="background: linear-gradient(135deg, #6366F1, #818CF8);"></div>
+                    <div class="theme-name">Par défaut</div>
+                    <div class="theme-check"><i class="fas fa-check"></i></div>
+                </div>
+                
+                <div class="theme-option" data-theme="blue" onclick="selectTheme('blue')">
+                    <div class="theme-preview" style="background: linear-gradient(135deg, #3B82F6, #60A5FA);"></div>
+                    <div class="theme-name">Bleu</div>
+                    <div class="theme-check"><i class="fas fa-check"></i></div>
+                </div>
+                
+                <div class="theme-option" data-theme="green" onclick="selectTheme('green')">
+                    <div class="theme-preview" style="background: linear-gradient(135deg, #10B981, #34D399);"></div>
+                    <div class="theme-name">Vert</div>
+                    <div class="theme-check"><i class="fas fa-check"></i></div>
+                </div>
+                
+                <div class="theme-option" data-theme="purple" onclick="selectTheme('purple')">
+                    <div class="theme-preview" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);"></div>
+                    <div class="theme-name">Violet</div>
+                    <div class="theme-check"><i class="fas fa-check"></i></div>
+                </div>
+                
+                <div class="theme-option" data-theme="red" onclick="selectTheme('red')">
+                    <div class="theme-preview" style="background: linear-gradient(135deg, #EF4444, #FCA5A5);"></div>
+                    <div class="theme-name">Rouge</div>
+                    <div class="theme-check"><i class="fas fa-check"></i></div>
+                </div>
+                
+                <div class="theme-option" data-theme="sunset" onclick="selectTheme('sunset')">
+                    <div class="theme-preview" style="background: linear-gradient(135deg, #F59E0B, #FBBF24);"></div>
+                    <div class="theme-name">Soleil</div>
+                    <div class="theme-check"><i class="fas fa-check"></i></div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center;">
+                <button class="btn btn-secondary" onclick="hideModal('theme-selection-modal')" style="width: 100%;">
+                    Retour aux paramètres
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL NOTES PREMIUM - DÉPLACÉ ICI (PLUS À L'EXTÉRIEUR) -->
 <div class="modal" id="exercise-notes-modal">
     <div class="modal-content" style="max-width: 380px;">
         <div class="modal-header">
@@ -6196,6 +6177,23 @@
                 <button class="btn btn-secondary" onclick="clearExerciseNotes()" style="flex: 1;">
                     <i class="fas fa-eraser"></i> Effacer
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ALIMENT FAVORI -->
+<div class="modal" id="favorite-food-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">⭐ Ajouter un repas avec cet aliment</h3>
+            <button class="modal-close" onclick="hideModal('favorite-food-modal')">×</button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 18px; color: var(--text-primary);" id="favorite-food-message">Voulez-vous ajouter un repas avec cet aliment favori ?</p>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success" onclick="addFavoriteFoodToMeal()" style="flex: 1;">Oui, ajouter un repas</button>
+                <button class="btn btn-secondary" onclick="hideModal('favorite-food-modal')" style="flex: 1;">Non, merci</button>
             </div>
         </div>
     </div>
@@ -6533,6 +6531,7 @@ function hideModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.remove('active');
+        // Réinitialiser le z-index pour éviter l'accumulation
         modal.style.zIndex = '';
     }
 }
@@ -13556,6 +13555,9 @@ function showProgramDetail(program) {
 
 // ==================== PARAMÈTRES ====================
 function showSettingsModal() {
+    // FERMER le modal des notes s'il est ouvert
+    hideModal('exercise-notes-modal');
+    
     // Charger les paramètres actuels
     document.getElementById('sounds-toggle').checked = settings.sounds;
     document.getElementById('vibrations-toggle').checked = settings.vibrations;
@@ -13563,7 +13565,11 @@ function showSettingsModal() {
     document.getElementById('auto-timer-toggle').checked = settings.autoTimer;
     document.getElementById('dark-mode-toggle').checked = settings.darkMode;
     
+    // S'assurer d'utiliser showModal pour une gestion correcte du z-index
     showModal('settings-modal');
+    
+    // Notification pour debug
+    console.log('Settings modal ouvert');
 }
 
 function toggleSounds(checked) {
@@ -13633,32 +13639,85 @@ function toggleCompactMode(checked) {
 // ==================== GESTION DES NOTES D'EXERCICE ====================
 
 function showExerciseNotesModal(exerciseIndex) {
-    if (!activeWorkout || !activeWorkout.exercises[exerciseIndex]) return;
+    console.log('showExerciseNotesModal appelé avec index:', exerciseIndex);
+    
+    if (!activeWorkout) {
+        console.error('Aucune séance active!');
+        return;
+    }
+    
+    if (!activeWorkout.exercises[exerciseIndex]) {
+        console.error('Exercice non trouvé à l\'index:', exerciseIndex);
+        return;
+    }
     
     const exercise = activeWorkout.exercises[exerciseIndex];
+    console.log('Exercice trouvé:', exercise.name);
+    
+    // Vérifier si les éléments HTML existent
+    const nameElement = document.getElementById('notes-exercise-name');
+    const detailsElement = document.getElementById('notes-exercise-details');
+    const textareaElement = document.getElementById('exercise-notes-text');
+    
+    if (!nameElement) console.error('Élément notes-exercise-name non trouvé!');
+    if (!detailsElement) console.error('Élément notes-exercise-details non trouvé!');
+    if (!textareaElement) console.error('Élément exercise-notes-text non trouvé!');
     
     // Mettre à jour les informations de l'exercice
-    document.getElementById('notes-exercise-name').textContent = exercise.name;
+    if (nameElement) nameElement.textContent = exercise.name;
     
     const muscle = muscleGroups.find(m => m.id === exercise.muscleGroup);
     const muscleName = muscle ? muscle.name : exercise.muscleGroup;
     
-    document.getElementById('notes-exercise-details').innerHTML = `
-        <div>${muscleName} • ${exercise.difficulty}</div>
-        ${exercise.supersetId ? `<div style="color: ${exercise.supersetColor || '#8B5CF6'};">Superset "${exercise.supersetName || 'Sans nom'}"</div>` : ''}
-    `;
+    if (detailsElement) {
+        detailsElement.innerHTML = `
+            <div>${muscleName} • ${exercise.difficulty}</div>
+            ${exercise.supersetId ? `<div style="color: ${exercise.supersetColor || '#8B5CF6'};">Superset "${exercise.supersetName || 'Sans nom'}"</div>` : ''}
+        `;
+    }
     
     // Charger les notes existantes
-    const notesTextarea = document.getElementById('exercise-notes-text');
-    notesTextarea.value = exercise.notes || '';
+    if (textareaElement) {
+        textareaElement.value = exercise.notes || '';
+        updateNotesCharCount();
+    }
     
-    // Mettre à jour le compteur de caractères
-    updateNotesCharCount();
+    // Vérifier si le modal existe
+    const notesModal = document.getElementById('exercise-notes-modal');
+    if (!notesModal) {
+        console.error('Modal exercise-notes-modal non trouvé dans le DOM!');
+        showNotification('Erreur: Modal des notes non trouvé', 'error');
+        return;
+    }
     
     // Sauvegarder l'index de l'exercice
-    document.getElementById('exercise-notes-modal').dataset.exerciseIndex = exerciseIndex;
+    notesModal.dataset.exerciseIndex = exerciseIndex;
     
+    console.log('Tentative d\'ouverture du modal...');
+    
+    // ESSAYER plusieurs méthodes pour ouvrir le modal:
+    
+    // Méthode 1: Utiliser showModal
     showModal('exercise-notes-modal');
+    
+    // Méthode 2: Forcer l'affichage (au cas où)
+    setTimeout(() => {
+        const modal = document.getElementById('exercise-notes-modal');
+        if (modal) {
+            console.log('Modal après showModal:', modal.classList);
+            
+            // Si toujours pas ouvert, forcer
+            if (!modal.classList.contains('active')) {
+                console.log('Forcer l\'ouverture du modal...');
+                modal.style.display = 'flex';
+                modal.style.opacity = '1';
+                modal.style.visibility = 'visible';
+                modal.style.zIndex = '9999';
+            }
+        }
+    }, 100);
+    
+    console.log('Fonction showExerciseNotesModal terminée');
 }
 
 function autoSaveNotes() {
