@@ -5,120 +5,120 @@ const muscleGroups = [
     {
         id: 'pectoraux',
         name: 'Pectoraux',
-        color: '#EF4444',
-        image: '👨‍🦰',
+        color: '#1761FD',
+        image: '',
         description: 'Muscles de la poitrine',
         subGroups: ['Grand pectoral', 'Petit pectoral', 'Sterno-costal']
     },
     {
         id: 'dos',
         name: 'Dos',
-        color: '#10B981',
-        image: '💪',
+        color: '#1761FD',
+        image: '',
         description: 'Muscles du dos',
         subGroups: ['Grand dorsal', 'Trapèzes', 'Rhomboides', 'Lombaires', 'Érecteurs du rachis']
     },
     {
         id: 'epaules',
         name: 'Épaules',
-        color: '#3B82F6',
-        image: '🏋️‍♂️',
+        color: '#1761FD',
+        image: '',
         description: 'Muscles des épaules',
         subGroups: ['Deltoïde antérieur', 'Deltoïde moyen', 'Deltoïde postérieur']
     },
     {
         id: 'jambes',
         name: 'Jambes',
-        color: '#8B5CF6',
-        image: '🦵',
+        color: '#1761FD',
+        image: '',
         description: 'Muscles des jambes',
         subGroups: ['Quadriceps', 'Ischio-jambiers', 'Fessiers', 'Mollets', 'Adducteurs']
     },
     {
         id: 'biceps',
         name: 'Biceps',
-        color: '#F59E0B',
-        image: '💪',
+        color: '#1761FD',
+        image: '',
         description: 'Muscles des bras (face avant)',
         subGroups: ['Biceps brachial', 'Brachial antérieur', 'Long supinateur']
     },
     {
         id: 'triceps',
         name: 'Triceps',
-        color: '#DC2626',
-        image: '💪',
+        color: '#1761FD',
+        image: '',
         description: 'Muscles des bras (face arrière)',
         subGroups: ['Triceps brachial', 'Tête longue', 'Tête latérale', 'Tête médiale']
     },
     {
         id: 'abdos',
         name: 'Abdominaux',
-        color: '#06B6D4',
-        image: '🏃‍♂️',
+        color: '#1761FD',
+        image: '',
         description: 'Muscles abdominaux',
         subGroups: ['Grand droit', 'Obliques', 'Transverse']
     },
     {
         id: 'avant-bras',
         name: 'Avant-bras',
-        color: '#EC4899',
-        image: '🤲',
+        color: '#1761FD',
+        image: '',
         description: 'Muscles de l\'avant-bras',
         subGroups: ['Fléchisseurs', 'Extenseurs', 'Supinateurs']
     },
     {
         id: 'fessiers',
         name: 'Fessiers',
-        color: '#8B5CF6',
-        image: '🍑',
+        color: '#1761FD',
+        image: '',
         description: 'Muscles fessiers',
         subGroups: ['Grand fessier', 'Moyen fessier', 'Petit fessier']
     },
     {
         id: 'mollets',
         name: 'Mollets',
-        color: '#6366F1',
-        image: '🦶',
+        color: '#1761FD',
+        image: '',
         description: 'Muscles du mollet',
         subGroups: ['Gastrocnémien', 'Soléaire']
     },
     {
         id: 'lombaires',
         name: 'Lombaires',
-        color: '#059669',
-        image: '🧘‍♂️',
+        color: '#1761FD',
+        image: '',
         description: 'Muscles lombaires',
         subGroups: ['Érecteurs du rachis', 'Carré des lombes']
     },
     {
         id: 'trapezes',
         name: 'Trapèzes',
-        color: '#3B82F6',
-        image: '👔',
+        color: '#1761FD',
+        image: '',
         description: 'Muscles trapèzes',
         subGroups: ['Trapèze supérieur', 'Trapèze moyen', 'Trapèze inférieur']
     },
     {
         id: 'ischio',
         name: 'Ischio-jambiers',
-        color: '#8B5CF6',
-        image: '🦵',
+        color: '#1761FD',
+        image: '',
         description: 'Muscles ischio-jambiers',
         subGroups: ['Biceps fémoral', 'Semi-tendineux', 'Semi-membraneux']
     },
     {
         id: 'cardio',
         name: 'Cardio',
-        color: '#10B981',
-        image: '🏃',
+        color: '#1761FD',
+        image: '',
         description: 'Exercices cardiovasculaires',
         subGroups: ['HIIT', 'LISS', 'Endurance']
     },
     {
         id: 'core',
         name: 'Core',
-        color: '#06B6D4',
-        image: '⚡',
+        color: '#1761FD',
+        image: '',
         description: 'Muscles stabilisateurs du tronc',
         subGroups: ['Abdominaux', 'Lombaires', 'Obliques']
     }
