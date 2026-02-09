@@ -7218,6 +7218,304 @@ textarea:focus {
     max-height: 44px !important;
 }
 
+/* ==================== NOUVEAUX STYLES POUR HISTORIQUE NUTRITION ==================== */
+.nutrition-period {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+
+.nutrition-period.active {
+    display: block;
+}
+
+/* Assurer que toutes les périodes ont la même architecture */
+#nutrition-history-day .nutrition-history-item,
+#nutrition-history-week .nutrition-history-item,
+#nutrition-history-month .nutrition-history-item {
+    /* Styles identiques pour toutes les périodes */
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin: 0 20px 16px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+#nutrition-history-day .nutrition-history-item::before,
+#nutrition-history-week .nutrition-history-item::before,
+#nutrition-history-month .nutrition-history-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-success);
+}
+
+/* Style des boutons de période */
+.history-nav-btn {
+    transition: all 0.3s ease;
+}
+
+.history-nav-btn.active {
+    background: var(--gradient-primary);
+    color: white;
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* ==================== ANIMATIONS POUR RETOUR NUTRITION ==================== */
+@keyframes modalSlideOutToLeft {
+    0% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translateX(-20px) scale(0.95);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateX(-100%) scale(0.9);
+        opacity: 0;
+    }
+}
+
+@keyframes nutritionPageSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    70% {
+        opacity: 0.8;
+        transform: translateX(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes buttonLoadingPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(0.98);
+    }
+}
+
+/* Classes d'animation */
+.modal-exit-to-nutrition {
+    animation: modalSlideOutToLeft 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+}
+
+.nutrition-screen-enter {
+    animation: nutritionPageSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both !important;
+}
+
+.save-button-loading {
+    animation: buttonLoadingPulse 1.5s ease-in-out infinite;
+}
+
+/* Styles pour le bouton de sauvegarde avec état */
+#save-meal-button {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#save-meal-button:active {
+    transform: scale(0.97);
+}
+
+#save-meal-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.save-button-text, .save-button-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.save-button-loading i {
+    font-size: 14px;
+}
+
+/* État de chargement du bouton */
+#save-meal-button.loading {
+    background: linear-gradient(135deg, #047857, #059669) !important;
+}
+
+/* Overlay pour modal pendant l'animation de sortie */
+#add-meal-modal.modal-exit-to-nutrition .modal-content {
+    position: relative;
+    z-index: 2002;
+}
+
+/* Assurer que la page Nutrition soit visible */
+#nutrition-screen.nutrition-screen-enter {
+    position: relative;
+    z-index: 1;
+}
+
+/* ==================== ANIMATIONS POUR RETOUR SÉANCES ==================== */
+@keyframes modalSlideOutToWorkouts {
+    0% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translateX(-15px) scale(0.96);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateX(-100%) scale(0.92);
+        opacity: 0;
+    }
+}
+
+@keyframes workoutsPageSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateX(80%) scale(0.95);
+    }
+    60% {
+        opacity: 0.9;
+        transform: translateX(-5px) scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes workoutButtonSuccess {
+    0% {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: scale(1);
+    }
+    50% {
+        background: linear-gradient(135deg, #047857, #10B981);
+        transform: scale(0.98);
+        box-shadow: 0 0 20px rgba(5, 150, 105, 0.3);
+    }
+    100% {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: scale(1);
+    }
+}
+
+/* Classes d'animation spécifiques aux séances */
+.modal-exit-to-workouts {
+    animation: modalSlideOutToWorkouts 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+}
+
+.workouts-screen-enter {
+    animation: workoutsPageSlideIn 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s both !important;
+}
+
+.save-workout-loading {
+    animation: buttonLoadingPulse 1.4s ease-in-out infinite;
+}
+
+/* Styles pour le bouton de sauvegarde de séance */
+#save-workout-button {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+}
+
+#save-workout-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+}
+
+#save-workout-button:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+#save-workout-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+#save-workout-button.success-animation {
+    animation: workoutButtonSuccess 0.8s ease-in-out;
+}
+
+.save-workout-text, .save-workout-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.save-workout-loading i {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Effet de brillance sur le bouton pendant le chargement */
+#save-workout-button.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    animation: shimmer 1.5s infinite;
+}
+
+/* Overlay pour modal de séance pendant l'animation */
+#create-workout-modal.modal-exit-to-workouts .modal-content {
+    position: relative;
+    z-index: 2002;
+    transform-origin: center center;
+}
+
+/* Style pour la page Séances quand elle apparaît */
+#workouts-screen.workouts-screen-enter {
+    position: relative;
+    z-index: 1;
+    transform-origin: center center;
+}
+
+/* Badge de nouvelle séance (optionnel) */
+.new-workout-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: linear-gradient(135deg, #DC2626, #EF4444);
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 4px 8px;
+    border-radius: 12px;
+    animation: pulse-glow 1.5s infinite;
+    z-index: 10;
+}
+
     </style>
 </head>
 <body>
@@ -7232,12 +7530,12 @@ textarea:focus {
                 <button class="icon-btn" onclick="showSettingsModal()" title="Paramètres">
                     <i class="fas fa-cog"></i>
                 </button>
-                <button class="icon-btn primary" onclick="showCreateWorkoutModal()" title="Créer une séance">
+                <button class="icon-btn primary" onclick="showCreateWorkoutModal(true)" title="Créer une séance">
                     <i class="fas fa-dumbbell"></i>
                 </button>
-                <button class="icon-btn success" onclick="showAddMealModal()" title="Ajouter un repas">
-                    <i class="fas fa-utensils"></i>
-                </button>
+                <button class="icon-btn success" onclick="showAddMealModal(true)" title="Ajouter un repas">
+    		    <i class="fas fa-utensils"></i>
+		</button>
                 <button class="icon-btn" onclick="toggleTheme()" title="Changer de thème">
                     <i class="fas fa-moon"></i>
                 </button>
@@ -7644,9 +7942,9 @@ textarea:focus {
                 <!-- Historique nutrition -->
                 <div id="nutrition-history-tab" class="hidden">
                     <div class="history-nav-buttons">
-                        <button class="history-nav-btn active" onclick="showNutritionHistoryView('day')">Jour</button>
-                        <button class="history-nav-btn" onclick="showNutritionHistoryView('week')">Semaine</button>
-                        <button class="history-nav-btn" onclick="showNutritionHistoryView('month')">Mois</button>
+                        <button class="history-nav-btn" onclick="showNutritionHistoryView('day', this)">Jour</button>
+<button class="history-nav-btn" onclick="showNutritionHistoryView('week', this)">Semaine</button>
+<button class="history-nav-btn" onclick="showNutritionHistoryView('month', this)">Mois</button>
                     </div>
                     
                     <div class="component-box">
@@ -7658,8 +7956,21 @@ textarea:focus {
                         </div>
                         <div class="component-box-content">
                             <div id="nutrition-history">
-                                <!-- Historique nutrition généré dynamiquement -->
-                            </div>
+    <!-- Structure initiale VISIBLE pour "jour" -->
+    <div id="nutrition-history-day" class="nutrition-period active">
+        <!-- L'architecture "jour" sera ici -->
+    </div>
+    
+    <!-- Structure pour "semaine" (cachée initialement) -->
+    <div id="nutrition-history-week" class="nutrition-period hidden">
+        <!-- Même architecture que "jour" -->
+    </div>
+    
+    <!-- Structure pour "mois" (cachée initialement) -->
+    <div id="nutrition-history-month" class="nutrition-period hidden">
+        <!-- Même architecture que "jour" -->
+    </div>
+</div>
                         </div>
                     </div>
                 </div>
@@ -7713,7 +8024,7 @@ textarea:focus {
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
                         <h3 style="margin: 0;">🍽️ Repas du jour</h3>
-                        <button onclick="showAddMealModal()" style="
+                        <button onclick="showAddMealModal(false)" style="
     background: linear-gradient(135deg, #059669, #047857);
     color: white;
     border: none;
@@ -7778,7 +8089,12 @@ textarea:focus {
                 </div>
                 
                 <div class="controls" style="padding: 0 20px;">
-                    <button class="btn btn-success" onclick="showSaveDataModal()">Terminer l'entraînement</button>
+                    <button class="btn btn-success" onclick="completeWorkoutAndReturnToWorkouts()" id="complete-workout-button">
+    <span class="complete-workout-text">Terminer l'entraînement</span>
+    <span class="complete-workout-loading" style="display: none;">
+        <i class="fas fa-spinner fa-spin"></i> Sauvegarde...
+    </span>
+</button>
                     <button class="add-exercise-btn mt-4" onclick="addExerciseToWorkout()">Ajouter un exercice</button>
                 </div>
             </div>
@@ -7850,7 +8166,14 @@ textarea:focus {
                     <!-- Exercices à ajouter - Afficher l'ordre -->
                 </div>
                 
-                <button class="btn btn-success" onclick="saveCustomWorkout()" style="width: 100%; margin-top: 14px; margin-bottom: 10px;">💾 Sauvegarder la séance</button>
+                <button class="btn btn-success" onclick="saveCustomWorkoutAndReturnToWorkouts()" 
+        style="width: 100%; margin-top: 14px; margin-bottom: 10px;"
+        id="save-workout-button">
+    <span class="save-workout-text">💾 Sauvegarder la séance</span>
+    <span class="save-workout-loading" style="display: none;">
+        <i class="fas fa-spinner fa-spin"></i> Création en cours...
+    </span>
+</button>
             </div>
         </div>
     </div>
@@ -8159,7 +8482,14 @@ textarea:focus {
                     
                     <textarea class="number-input notes-wrap" id="meal-notes" placeholder="Notes (optionnel)" style="height: 70px; resize: vertical; margin-top: 14px;"></textarea>
                     
-                    <button class="btn btn-success" onclick="saveMeal()" style="width: 100%; margin-top: 14px; margin-bottom: 10px;">💾 Sauvegarder le repas</button>
+                    <button class="btn btn-success" onclick="saveMealAndReturnToNutrition()" 
+       			 style="width: 100%; margin-top: 14px; margin-bottom: 10px;"
+       			 id="save-meal-button">
+    			<span class="save-button-text">💾 Sauvegarder le repas</span>
+    			<span class="save-button-loading" style="display: none;">
+     			   <i class="fas fa-spinner fa-spin"></i> Sauvegarde en cours...
+   			 </span>
+		    </button>
                 </div>
             </div>
         </div>
@@ -9010,7 +9340,7 @@ function initApp() {
     loadCustomWorkouts();
     loadPredefinedWorkouts();
     loadWorkoutHistory();
-    loadNutritionHistory();
+    // loadNutritionHistory(); // ← SUPPRIMÉ
     updateFavoriteFoods();
     updateRecommendedPrograms();
     updateNavbar();
@@ -9031,6 +9361,38 @@ function initApp() {
         });
         updateTodaysMealCount(todaysMeals.length);
     }, 500);
+    
+    // Initialiser l'historique nutritionnel avec la nouvelle structure
+    initializeNutritionHistory();
+}
+
+function initializeNutritionHistory() {
+    // Initialiser les 3 périodes
+    loadNutritionHistoryData('day');
+    loadNutritionHistoryData('week');
+    loadNutritionHistoryData('month');
+    
+    // S'assurer que le jour est actif
+    document.querySelectorAll('.nutrition-period').forEach(el => {
+        el.classList.remove('active');
+        el.classList.add('hidden');
+    });
+    
+    const dayElement = document.getElementById('nutrition-history-day');
+    if (dayElement) {
+        dayElement.classList.remove('hidden');
+        dayElement.classList.add('active');
+    }
+    
+    // Activer le bouton "Jour"
+    document.querySelectorAll('.history-nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    const dayBtn = document.querySelector('.history-nav-btn[onclick*="day"]');
+    if (dayBtn) {
+        dayBtn.classList.add('active');
+    }
 }
 
 function loadFromLocalStorage() {
@@ -9155,7 +9517,11 @@ function showScreen(screenId) {
             break;
         case 'history-screen':
             loadWorkoutHistory();
-            loadNutritionHistory();
+            // loadNutritionHistory(); // ← SUPPRIMÉ
+            // À la place, s'assurer que l'historique nutritionnel est initialisé
+            if (!document.getElementById('nutrition-history-day').innerHTML) {
+                loadNutritionHistoryData('day');
+            }
             break;
         case 'nutrition-screen':
             updateDailyNutritionDisplay();
@@ -9201,6 +9567,13 @@ function hideModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.remove('active');
+        
+        // Retirer les classes d'animation spécifiques
+        modal.classList.remove('nutrition-return-transition');
+        modal.classList.remove('nutrition-page-enter');
+        modal.classList.remove('modal-exit-to-workouts'); // AJOUTER CETTE LIGNE
+        modal.classList.remove('workouts-screen-enter');  // AJOUTER CETTE LIGNE
+
         // Réinitialiser le z-index pour éviter l'accumulation
         modal.style.zIndex = '';
     }
@@ -10586,8 +10959,85 @@ function loadCustomWorkouts() {
     });
 }
 
-function showCreateWorkoutModal() {
+function highlightNewWorkout(workoutId) {
+    setTimeout(() => {
+        const workoutCards = document.querySelectorAll('.workout-card, .workout-card-luxury');
+        workoutCards.forEach(card => {
+            const workoutName = card.querySelector('.workout-name');
+            if (workoutName && workoutName.textContent) {
+                // Vérifier si cette carte correspond à la nouvelle séance
+                const workoutText = workoutName.textContent.trim().toLowerCase();
+                const workoutIdLower = workoutId.toString().toLowerCase();
+                
+                // Si on trouve un match par nom ou ID
+                if (workoutText.includes(workoutIdLower) || 
+                    card.dataset.workoutId === workoutId ||
+                    card.textContent.toLowerCase().includes(workoutIdLower)) {
+                    
+                    // Ajouter une animation de surbrillance
+                    card.style.animation = 'workoutButtonSuccess 0.8s ease-in-out';
+                    card.style.boxShadow = '0 0 20px rgba(5, 150, 105, 0.4)';
+                    card.style.border = '2px solid #10B981';
+                    card.style.position = 'relative';
+                    card.style.zIndex = '10';
+                    
+                    // Ajouter un badge "Nouveau" temporaire
+                    const newBadge = document.createElement('div');
+                    newBadge.className = 'new-workout-badge';
+                    newBadge.textContent = 'NOUVEAU';
+                    newBadge.style.position = 'absolute';
+                    newBadge.style.top = '-8px';
+                    newBadge.style.right = '-8px';
+                    newBadge.style.background = 'linear-gradient(135deg, #DC2626, #EF4444)';
+                    newBadge.style.color = 'white';
+                    newBadge.style.fontSize = '10px';
+                    newBadge.style.fontWeight = '800';
+                    newBadge.style.padding = '4px 8px';
+                    newBadge.style.borderRadius = '12px';
+                    newBadge.style.zIndex = '20';
+                    newBadge.style.animation = 'pulse 1.5s infinite';
+                    
+                    card.appendChild(newBadge);
+                    
+                    // Retirer l'effet après l'animation
+                    setTimeout(() => {
+                        card.style.animation = '';
+                        card.style.boxShadow = '';
+                        card.style.border = '';
+                        if (newBadge.parentNode) {
+                            newBadge.remove();
+                        }
+                    }, 3000);
+                }
+            }
+        });
+    }, 1200); // Délai pour laisser le temps à la page de charger
+}
+
+// Si la keyframe pulse n'existe pas, ajoutez-la
+if (!document.querySelector('#pulse-keyframes')) {
+    const style = document.createElement('style');
+    style.id = 'pulse-keyframes';
+    style.textContent = `
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+function showCreateWorkoutModal(fromHeader = true) {
+    // Stocker d'où on vient
+    localStorage.setItem('workoutModalSource', fromHeader ? 'header' : 'workouts');
+    localStorage.setItem('previousScreenBeforeWorkout', currentScreen || 'workouts-screen');
+    
+    console.log('Ouverture modal séance - Source:', fromHeader ? 'header' : 'workouts', 'Écran actuel:', currentScreen);
+    
+    // Ouvrir le modal
     showModal('create-workout-modal');
+    resetCreateWorkoutModal();
 }
 
 function showExerciseSelectionForCreate() {
@@ -10719,6 +11169,85 @@ function removeExerciseFromSelection(button) {
 }
 
 function saveCustomWorkout() {
+    // Utiliser la nouvelle fonction pour plus de cohérence
+    saveCustomWorkoutAndReturnToWorkouts();
+}
+
+async function saveCustomWorkoutAndReturnToWorkouts() {
+    console.log('Début sauvegarde séance avec retour...');
+    
+    // 1. Récupérer les données
+    const workoutData = getWorkoutFormData();
+    
+    // 2. Validation
+    if (!workoutData.name || !workoutData.exercises || workoutData.exercises.length === 0) {
+        showNotification('Nom et exercices requis', 'error');
+        return;
+    }
+    
+    // 3. État de chargement
+    const saveBtn = document.getElementById('save-workout-button');
+    const saveText = saveBtn?.querySelector('.save-workout-text');
+    const loadingText = saveBtn?.querySelector('.save-workout-loading');
+    
+    if (saveText && loadingText) {
+        saveText.style.display = 'none';
+        loadingText.style.display = 'flex';
+    }
+    if (saveBtn) saveBtn.disabled = true;
+    
+    try {
+        // 4. Sauvegarder
+        const saved = await saveCustomWorkoutToStorage(workoutData);
+        
+        if (saved) {
+            // 5. Animation de sortie
+            const modal = document.getElementById('create-workout-modal');
+            if (modal) modal.classList.add('modal-exit-to-workouts');
+            
+            // 6. Après animation, retourner aux Séances
+            setTimeout(() => {
+                hideModal('create-workout-modal');
+                resetCreateWorkoutModal();
+                
+                // TOUJOURS retourner à la page Séances
+                showScreen('workouts-screen');
+                
+                // Animation d'entrée
+                const workoutsScreen = document.getElementById('workouts-screen');
+                if (workoutsScreen) {
+                    workoutsScreen.classList.add('workouts-screen-enter');
+                    setTimeout(() => workoutsScreen.classList.remove('workouts-screen-enter'), 900);
+                }
+                
+                // Actualiser la liste
+                loadCustomWorkouts();
+                
+                // Notification
+                showNotification('Séance créée avec succès !', 'success');
+                
+                // Nettoyer le storage
+                localStorage.removeItem('workoutModalSource');
+                localStorage.removeItem('previousScreenBeforeWorkout');
+                
+            }, 550);
+        }
+    } catch (error) {
+        console.error('Erreur lors de la sauvegarde:', error);
+        showNotification('Erreur de sauvegarde', 'error');
+    } finally {
+        // Réactiver le bouton
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            if (saveText && loadingText) {
+                saveText.style.display = 'flex';
+                loadingText.style.display = 'none';
+            }
+        }
+    }
+}
+
+function getWorkoutFormData() {
     const name = document.getElementById('workout-name').value.trim();
     const exercises = [];
     
@@ -10726,35 +11255,36 @@ function saveCustomWorkout() {
         exercises.push(item.dataset.exerciseId);
     });
     
-    if (!name) {
-        showNotification('Veuillez saisir un nom pour la séance', 'error');
-        return;
-    }
-    
-    if (exercises.length === 0) {
-        showNotification('Veuillez ajouter au moins un exercice', 'error');
-        return;
-    }
-    
-    const newWorkout = {
-        id: Date.now().toString(),
+    return {
         name: name,
         exercises: exercises,
         description: 'Séance personnalisée',
         custom: true
     };
-    
-    customWorkouts.push(newWorkout);
-    saveToLocalStorage();
-    loadCustomWorkouts();
-    
-    // MODIFICATION ICI
-    hideModal('create-workout-modal');
-    
-    document.getElementById('workout-name').value = '';
-    document.getElementById('workout-exercises-selection').innerHTML = '';
-    
-    showNotification('Séance créée avec succès !');
+}
+
+async function saveCustomWorkoutToStorage(workoutData) {
+    return new Promise((resolve, reject) => {
+        try {
+            const newWorkout = {
+                id: Date.now().toString(),
+                name: workoutData.name,
+                exercises: workoutData.exercises,
+                description: workoutData.description || 'Séance personnalisée',
+                custom: true
+            };
+            
+            customWorkouts.push(newWorkout);
+            saveToLocalStorage();
+            
+            // Après customWorkouts.push(newWorkout);
+            setTimeout(() => highlightNewWorkout(newWorkout.id), 1200);
+            
+            resolve(true);
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 function resetCreateWorkoutModal() {
@@ -13426,6 +13956,20 @@ function updateDailyNutritionDisplay() {
     updateMealsList();
 }
 
+function loadDailyMeals() {
+    // C'est un alias pour updateDailyNutritionDisplay()
+    updateDailyNutritionDisplay();
+    
+    // Ajouter un effet visuel de rafraîchissement
+    const mealsList = document.getElementById('meals-list');
+    if (mealsList) {
+        mealsList.style.opacity = '0.7';
+        setTimeout(() => {
+            mealsList.style.opacity = '1';
+        }, 300);
+    }
+}
+
 function updateMealsList() {
     const container = document.getElementById('meals-list');
     if (!container) return;
@@ -13446,7 +13990,7 @@ function updateMealsList() {
                 <div class="empty-state-icon">🍽️</div>
                 <p>Aucun repas aujourd'hui</p>
                 <p style="font-size: var(--font-size-sm); margin-top: 6px;">Ajoutez votre premier repas !</p>
-                <button class="btn btn-success mt-4" onclick="showAddMealModal()">
+                <button class="btn btn-success mt-4" onclick="showAddMealModal(false)">
                     <i class="fas fa-plus"></i> Ajouter un repas
                 </button>
             </div>
@@ -13582,8 +14126,36 @@ function getMealTypeLabel(type) {
     }
 }
 
-function showAddMealModal() {
+function showAddMealModal(fromHeader = false) {
+    console.log('Ouverture modal repas depuis:', currentScreen, 'header:', fromHeader);
+    
+    // Stocker la page courante
+    let screenToRemember = currentScreen || 'nutrition-screen';
+    
+    // Si on vient du header et qu'on n'est pas déjà sur Nutrition
+    // On force à retourner sur Nutrition après sauvegarde
+    if (fromHeader && currentScreen !== 'nutrition-screen') {
+        screenToRemember = 'nutrition-screen';
+    }
+    
+    localStorage.setItem('previousScreen', screenToRemember);
+    localStorage.setItem('mealModalSource', fromHeader ? 'header' : 'nutrition');
+    
     showModal('add-meal-modal');
+    
+    // S'assurer que le bouton de sauvegarde est dans l'état initial
+    setTimeout(() => {
+        const saveButton = document.getElementById('save-meal-button');
+        if (saveButton) {
+            saveButton.disabled = false;
+            const saveText = saveButton.querySelector('.save-button-text');
+            const loadingText = saveButton.querySelector('.save-button-loading');
+            if (saveText && loadingText) {
+                saveText.style.display = 'flex';
+                loadingText.style.display = 'none';
+            }
+        }
+    }, 100);
 }
 
 function selectMealType(type) {
@@ -13941,16 +14513,122 @@ function showAddFoodFromMeal(context) {
 }
 
 function saveMeal() {
-    const name = document.getElementById('meal-name').value.trim();
-    const type = document.getElementById('meal-type').value;
-    const notes = document.getElementById('meal-notes').value.trim();
+    // Utiliser la nouvelle fonction pour plus de cohérence
+    saveMealAndReturnToNutrition();
+}
+
+// ==================== SAUVEGARDE AVEC RETOUR À LA PAGE NUTRITION ====================
+
+async function saveMealAndReturnToNutrition() {
+    console.log('Début de la sauvegarde avec retour...');
     
-    if (!name) {
-        showNotification('Veuillez saisir un nom pour le repas', 'error');
+    // 1. Récupérer les données du formulaire
+    const mealData = getMealFormData();
+    
+    // 2. Validation basique
+    if (!mealData.name || !mealData.foods || mealData.foods.length === 0) {
+        showNotification('Veuillez remplir tous les champs obligatoires', 'error');
         return;
     }
     
-    // Récupérer les aliments
+    // 3. Afficher l'état de chargement
+    const saveButton = document.getElementById('save-meal-button');
+    const saveText = saveButton ? saveButton.querySelector('.save-button-text') : null;
+    const loadingText = saveButton ? saveButton.querySelector('.save-button-loading') : null;
+    
+    if (saveText && loadingText) {
+        saveText.style.display = 'none';
+        loadingText.style.display = 'flex';
+    }
+    
+    // 4. Désactiver le bouton pendant la sauvegarde
+    if (saveButton) {
+        saveButton.disabled = true;
+    }
+    
+    try {
+        // 5. Sauvegarder le repas
+        const saved = await saveMealToStorage(mealData);
+        
+        if (saved) {
+            // 6. Animation de fermeture du modal
+            const modal = document.getElementById('add-meal-modal');
+            if (modal) {
+                modal.classList.add('nutrition-return-transition');
+            }
+            
+            // 7. Attendre un peu pour l'animation
+            setTimeout(() => {
+                // 8. Fermer le modal
+                hideModal('add-meal-modal');
+                
+                // 9. Réinitialiser le formulaire
+                resetMealForm();
+                
+                // 10. DÉTERMINER OÙ RETOURNER
+                let screenToReturn = 'nutrition-screen';
+                const modalSource = localStorage.getItem('mealModalSource');
+                const previousScreen = localStorage.getItem('previousScreen');
+                
+                // Logique de décision :
+                if (modalSource === 'header') {
+                    // Vient du header -> toujours Nutrition
+                    screenToReturn = 'nutrition-screen';
+                } else if (previousScreen === 'nutrition-screen') {
+                    // Vient de Nutrition -> reste sur Nutrition
+                    screenToReturn = 'nutrition-screen';
+                } else if (previousScreen && previousScreen !== currentScreen) {
+                    // Vient d'un autre écran -> y retourner
+                    screenToReturn = previousScreen;
+                }
+                // Sinon : par défaut Nutrition
+                
+                // 11. Nettoyer le localStorage
+                localStorage.removeItem('previousScreen');
+                localStorage.removeItem('mealModalSource');
+                
+                // 12. Retourner à l'écran déterminé
+                showScreen(screenToReturn);
+                
+                // 13. Animation d'entrée si on retourne sur Nutrition
+                if (screenToReturn === 'nutrition-screen') {
+                    const nutritionScreen = document.getElementById('nutrition-screen');
+                    if (nutritionScreen) {
+                        nutritionScreen.classList.add('nutrition-page-enter');
+                        
+                        setTimeout(() => {
+                            nutritionScreen.classList.remove('nutrition-page-enter');
+                        }, 800);
+                    }
+                }
+                
+                // 14. Actualiser l'affichage des repas
+                updateDailyNutritionDisplay();
+                
+                // 15. Afficher une confirmation
+                showNotification('Repas sauvegardé avec succès !', 'success');
+                
+            }, 500);
+        }
+        
+    } catch (error) {
+        console.error('Erreur lors de la sauvegarde du repas:', error);
+        showNotification('Erreur lors de la sauvegarde', 'error');
+        
+    } finally {
+        // 16. Réactiver le bouton
+        if (saveButton) {
+            saveButton.disabled = false;
+            if (saveText && loadingText) {
+                saveText.style.display = 'flex';
+                loadingText.style.display = 'none';
+            }
+        }
+    }
+}
+
+function getMealFormData() {
+    // Récupérer les aliments du formulaire
     const foods = [];
     document.querySelectorAll('#meal-foods-list .meal-food-item').forEach(item => {
         foods.push({
@@ -13959,39 +14637,43 @@ function saveMeal() {
         });
     });
     
-    if (foods.length === 0) {
-        showNotification('Veuillez ajouter au moins un aliment', 'error');
-        return;
-    }
-    
-    // Créer le repas avec la date d'aujourd'hui
-    const newMeal = {
-        id: Date.now().toString(),
-        name: name,
-        type: type,
+    return {
+        name: document.getElementById('meal-name')?.value.trim() || '',
+        type: document.getElementById('meal-type')?.value || 'petit-dejeuner',
         foods: foods,
-        notes: notes,
-        date: new Date().toISOString() // IMPORTANT: date actuelle
+        notes: document.getElementById('meal-notes')?.value.trim() || '',
+        date: new Date().toISOString()
     };
-    
-    // Ajouter au journal du jour
-    dailyNutrition.meals.push(newMeal);
-    nutritionHistory.push(newMeal);
+}
 
-    // Recalculer les totaux nutritionnels
-    updateNutritionTotals();
-    
-    // Sauvegarder
-    saveToLocalStorage();
-    
-    // Mettre à jour l'affichage
-    updateDailyNutritionDisplay();
-    
-    // Réinitialiser le formulaire
-    resetMealForm();
-    
-    hideModal('add-meal-modal');
-    showNotification('Repas ajouté avec succès !');
+async function saveMealToStorage(mealData) {
+    return new Promise((resolve, reject) => {
+        try {
+            // Créer le repas avec un ID unique
+            const newMeal = {
+                id: Date.now().toString(),
+                name: mealData.name,
+                type: mealData.type,
+                foods: mealData.foods,
+                notes: mealData.notes,
+                date: mealData.date
+            };
+            
+            // Ajouter au journal du jour
+            dailyNutrition.meals.push(newMeal);
+            nutritionHistory.push(newMeal);
+
+            // Recalculer les totaux nutritionnels
+            updateNutritionTotals();
+            
+            // Sauvegarder
+            saveToLocalStorage();
+            
+            resolve(true);
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 function resetMealForm() {
@@ -14519,7 +15201,7 @@ function showHistoryTab(tab) {
     if (tab === 'workouts') {
         loadWorkoutHistory();
     } else if (tab === 'nutrition') {
-        loadNutritionHistory();
+        // loadNutritionHistory(); // ← SUPPRIMÉ
     }
 }
 
@@ -15069,6 +15751,257 @@ function showWorkoutHistoryDetail(index) {
     showModal('history-detail-modal');
 }
 
+// ==================== NOUVEAU SYSTÈME D'HISTORIQUE NUTRITIONNEL ====================
+
+function loadNutritionHistoryData(period = 'day') {
+    console.log('Chargement données période:', period);
+    const containerId = `nutrition-history-${period}`;
+    const container = document.getElementById(containerId);
+    
+    if (!container) {
+        console.error('Container non trouvé:', containerId);
+        return;
+    }
+    
+    // Générer le HTML avec l'architecture UNIFIÉE
+    container.innerHTML = generateNutritionHistoryHTML(period);
+}
+
+function generateNutritionHistoryHTML(period) {
+    // Filtrer les données selon la période
+    const filteredData = getNutritionDataForPeriod(period);
+    
+    if (filteredData.length === 0) {
+        return `
+            <div class="empty-state">
+                <div class="empty-state-icon">🍽️</div>
+                <p>Aucun historique nutritionnel pour cette période</p>
+                <p style="font-size: var(--font-size-sm); margin-top: 6px;">Votre historique nutritionnel apparaîtra ici</p>
+            </div>
+        `;
+    }
+    
+    let html = '';
+    
+    // Utiliser la MÊME structure pour toutes les périodes
+    filteredData.forEach(item => {
+        const calorieNeeds = userProfile.calorieNeeds || 2500;
+        const calorieBalance = item.totalCalories - calorieNeeds;
+        
+        html += `
+            <div class="nutrition-history-item">
+                <div class="nutrition-history-header">
+                    <div class="nutrition-history-title">${formatDateForPeriod(item.date, period)}</div>
+                    <div class="nutrition-history-date">${item.mealCount} repas</div>
+                </div>
+                
+                <div class="nutrition-history-totals">
+                    <div class="nutrition-history-total">
+                        <div class="nutrition-history-total-value">${Math.round(item.totalCalories)}</div>
+                        <div class="nutrition-history-total-label">Calories</div>
+                        <div class="history-calories-balance ${calorieBalance <= 0 ? 'positive' : 'negative'}">
+                            ${calorieBalance >= 0 ? '+' : ''}${Math.round(calorieBalance)} kcal
+                        </div>
+                    </div>
+                    <div class="nutrition-history-total">
+                        <div class="nutrition-history-total-value protein">${Math.round(item.totalProtein)}g</div>
+                        <div class="nutrition-history-total-label">Protéines</div>
+                    </div>
+                    <div class="nutrition-history-total">
+                        <div class="nutrition-history-total-value carbs">${Math.round(item.totalCarbs)}g</div>
+                        <div class="nutrition-history-total-label">Glucides</div>
+                    </div>
+                    <div class="nutrition-history-total">
+                        <div class="nutrition-history-total-value fat">${Math.round(item.totalFat)}g</div>
+                        <div class="nutrition-history-total-label">Lipides</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 16px;">
+                    ${item.meals.map(meal => {
+                        const mealDate = new Date(meal.date);
+                        return `
+                        <div class="food-item-improved" style="margin-bottom: 10px; cursor: pointer;" onclick="showMealDetail('${meal.id}')">
+                            <div class="food-item-improved-header">
+                                <div class="food-item-improved-name">${meal.name}</div>
+                                <div class="meal-type-badge">${getMealTypeLabel(meal.type)}</div>
+                            </div>
+                            <div class="food-item-improved-details">
+                                <span>${meal.foods.length} aliments</span>
+                                <span>${mealDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}</span>
+                            </div>
+                            ${meal.notes ? `
+                                <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-top: 8px; font-style: italic;">
+                                    "${meal.notes}"
+                                </div>
+                            ` : ''}
+                        </div>
+                    `}).join('')}
+                </div>
+            </div>
+        `;
+    });
+    
+    return html;
+}
+
+function getNutritionDataForPeriod(period) {
+    const now = new Date();
+    let filteredMeals = [...nutritionHistory];
+    
+    console.log('Total repas dans historique:', nutritionHistory.length);
+    
+    // Filtrer par période
+    if (period === 'day') {
+        const today = now.toISOString().split('T')[0];
+        filteredMeals = nutritionHistory.filter(meal => {
+            const mealDate = new Date(meal.date).toISOString().split('T')[0];
+            return mealDate === today;
+        });
+        console.log('Repas aujourd\'hui:', filteredMeals.length);
+    } else if (period === 'week') {
+        const oneWeekAgo = new Date(now);
+        oneWeekAgo.setDate(now.getDate() - 7);
+        filteredMeals = nutritionHistory.filter(meal => {
+            const mealDate = new Date(meal.date);
+            return mealDate >= oneWeekAgo;
+        });
+        console.log('Repas dernière semaine:', filteredMeals.length);
+    } else if (period === 'month') {
+        const oneMonthAgo = new Date(now);
+        oneMonthAgo.setMonth(now.getMonth() - 1);
+        filteredMeals = nutritionHistory.filter(meal => {
+            const mealDate = new Date(meal.date);
+            return mealDate >= oneMonthAgo;
+        });
+        console.log('Repas dernier mois:', filteredMeals.length);
+    }
+    
+    // Grouper par date selon la période
+    const groupedData = {};
+    
+    filteredMeals.forEach(meal => {
+        const mealDate = new Date(meal.date);
+        let dateKey;
+        
+        if (period === 'day') {
+            dateKey = mealDate.toLocaleDateString('fr-FR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+        } else if (period === 'week') {
+            // Grouper par semaine (lundi-dimanche)
+            const weekStart = new Date(mealDate);
+            weekStart.setDate(mealDate.getDate() - mealDate.getDay() + 1); // Lundi
+            dateKey = `Semaine du ${weekStart.toLocaleDateString('fr-FR', {day: '2-digit', month: '2-digit'})}`;
+        } else if (period === 'month') {
+            // Grouper par mois
+            dateKey = mealDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+        }
+        
+        if (!groupedData[dateKey]) {
+            groupedData[dateKey] = {
+                date: dateKey,
+                meals: [],
+                totalCalories: 0,
+                totalProtein: 0,
+                totalCarbs: 0,
+                totalFat: 0,
+                mealCount: 0
+            };
+        }
+        
+        // Calculer les macros de ce repas
+        let mealCalories = 0;
+        let mealProtein = 0;
+        let mealCarbs = 0;
+        let mealFat = 0;
+        
+        meal.foods.forEach(foodItem => {
+            const food = getAllFoods().find(f => f.id === foodItem.foodId);
+            if (food) {
+                const ratio = foodItem.quantity / food.quantity;
+                mealCalories += food.calories * ratio;
+                mealProtein += food.protein * ratio;
+                mealCarbs += food.carbs * ratio;
+                mealFat += food.fat * ratio;
+            }
+        });
+        
+        groupedData[dateKey].meals.push({
+            ...meal,
+            calculatedCalories: Math.round(mealCalories),
+            calculatedProtein: Math.round(mealProtein),
+            calculatedCarbs: Math.round(mealCarbs),
+            calculatedFat: Math.round(mealFat)
+        });
+        
+        groupedData[dateKey].totalCalories += mealCalories;
+        groupedData[dateKey].totalProtein += mealProtein;
+        groupedData[dateKey].totalCarbs += mealCarbs;
+        groupedData[dateKey].totalFat += mealFat;
+        groupedData[dateKey].mealCount++;
+    });
+    
+    // Convertir en tableau et trier
+    const result = Object.values(groupedData).sort((a, b) => {
+        // Essayer de parser la date pour le tri
+        try {
+            return new Date(b.date) - new Date(a.date);
+        } catch (e) {
+            // Si on ne peut pas parser, trier par ordre alphabétique inversé
+            return b.date.localeCompare(a.date);
+        }
+    });
+    
+    console.log('Données groupées:', result.length, 'groupes');
+    return result;
+}
+
+function formatDateForPeriod(dateStr, period) {
+    if (period === 'day' || period === 'week') {
+        return dateStr;
+    } else if (period === 'month') {
+        // Capitaliser la première lettre du mois
+        return dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+    }
+    return dateStr;
+}
+
+function initializeNutritionHistory() {
+    console.log('Initialisation historique nutritionnel...');
+    
+    // Initialiser les 3 périodes
+    loadNutritionHistoryData('day');
+    loadNutritionHistoryData('week');
+    loadNutritionHistoryData('month');
+    
+    // S'assurer que le jour est actif par défaut
+    document.querySelectorAll('.nutrition-period').forEach(el => {
+        el.classList.remove('active');
+        el.classList.add('hidden');
+    });
+    
+    const dayElement = document.getElementById('nutrition-history-day');
+    if (dayElement) {
+        dayElement.classList.remove('hidden');
+        dayElement.classList.add('active');
+    }
+    
+    // Activer le bouton "Jour"
+    document.querySelectorAll('.history-nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    const dayBtn = document.querySelector('.history-nav-btn[onclick*="day"]');
+    if (dayBtn) {
+        dayBtn.classList.add('active');
+    }
+    
+    console.log('Historique nutritionnel initialisé');
+}
+
 // MODIFICATION: Fonction pour calculer le total des répétitions
 function calculateTotalReps(workoutEntry) {
     let totalReps = 0;
@@ -15346,122 +16279,204 @@ function deleteWorkoutHistory(index) {
     }
 }
 
-function loadNutritionHistory() {
-    const container = document.getElementById('nutrition-history');
+function loadNutritionHistoryData(period = 'day') {
+    const containerId = `nutrition-history-${period}`;
+    const container = document.getElementById(containerId);
+    
     if (!container) return;
     
-    container.innerHTML = '';
+    // Générer le HTML avec l'architecture UNIFIÉE
+    container.innerHTML = generateNutritionHistoryHTML(period);
+}
+
+function generateNutritionHistoryHTML(period) {
+    // Filtrer les données selon la période
+    const filteredData = getNutritionDataForPeriod(period);
     
-    if (nutritionHistory.length === 0) {
-        container.innerHTML = `
+    if (filteredData.length === 0) {
+        return `
             <div class="empty-state">
                 <div class="empty-state-icon">🍽️</div>
-                <p>Aucun historique nutritionnel</p>
+                <p>Aucun historique nutritionnel pour cette période</p>
                 <p style="font-size: var(--font-size-sm); margin-top: 6px;">Votre historique nutritionnel apparaîtra ici</p>
             </div>
         `;
-        return;
-
-    
     }
     
-    // Grouper les repas par date
-    const mealsByDate = {};
+    let html = '';
     
-    nutritionHistory.forEach(meal => {
-        const date = new Date(meal.date);
-        const dateKey = date.toLocaleDateString('fr-FR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-        });
-        
-        if (!mealsByDate[dateKey]) {
-            mealsByDate[dateKey] = [];
-        }
-        
-        mealsByDate[dateKey].push(meal);
-    });
-    
-    // Afficher par date (les plus récentes en premier)
-    Object.entries(mealsByDate).sort(([dateA], [dateB]) => {
-        return new Date(dateB.split('/').reverse().join('-')) - new Date(dateA.split('/').reverse().join('-'));
-    }).forEach(([date, meals]) => {
-        const dateElement = document.createElement('div');
-        dateElement.className = 'nutrition-history-item';
-        
-        // Calculer les totaux pour cette date
-        let totalCalories = 0;
-        let totalProtein = 0;
-        let totalCarbs = 0;
-        let totalFat = 0;
-        
-        meals.forEach(meal => {
-            meal.foods.forEach(foodItem => {
-                const food = getAllFoods().find(f => f.id === foodItem.foodId);
-                if (food) {
-                    const ratio = foodItem.quantity / food.quantity;
-                    totalCalories += food.calories * ratio;
-                    totalProtein += food.protein * ratio;
-                    totalCarbs += food.carbs * ratio;
-                    totalFat += food.fat * ratio;
-                }
-            });
-        });
-        
+    // Utiliser la MÊME structure pour toutes les périodes
+    filteredData.forEach(item => {
         const calorieNeeds = userProfile.calorieNeeds || 2500;
-        const calorieBalance = totalCalories - calorieNeeds;
+        const calorieBalance = item.totalCalories - calorieNeeds;
         
-        dateElement.innerHTML = `
-            <div class="nutrition-history-header">
-                <div class="nutrition-history-title">${date}</div>
-                <div class="nutrition-history-date">${meals.length} repas</div>
-            </div>
-            
-            <div class="nutrition-history-totals">
-                <div class="nutrition-history-total">
-                    <div class="nutrition-history-total-value">${Math.round(totalCalories)}</div>
-                    <div class="nutrition-history-total-label">Calories</div>
+        html += `
+            <div class="nutrition-history-item">
+                <div class="nutrition-history-header">
+                    <div class="nutrition-history-title">${formatDateForPeriod(item.date, period)}</div>
+                    <div class="nutrition-history-date">${item.mealCount} repas</div>
                 </div>
-                <div class="nutrition-history-total">
-                    <div class="nutrition-history-total-value">${Math.round(totalProtein)}g</div>
-                    <div class="nutrition-history-total-label">Protéines</div>
-                </div>
-                <div class="nutrition-history-total">
-                    <div class="nutrition-history-total-value">${Math.round(totalCarbs)}g</div>
-                    <div class="nutrition-history-total-label">Glucides</div>
-                </div>
-                <div class="nutrition-history-total">
-                    <div class="nutrition-history-total-value">${Math.round(totalFat)}g</div>
-                    <div class="nutrition-history-total-label">Lipides</div>
-                </div>
-            </div>
-            
-            <div style="margin-top: 16px;">
-                ${meals.map(meal => {
-                    const mealDate = new Date(meal.date);
-                    return `
-                    <div class="food-item-improved" style="margin-bottom: 10px; cursor: pointer;" onclick="showMealDetail('${meal.id}')">
-                        <div class="food-item-improved-header">
-                            <div class="food-item-improved-name">${meal.name}</div>
-                            <div class="meal-type-badge">${getMealTypeLabel(meal.type)}</div>
+                
+                <div class="nutrition-history-totals">
+                    <div class="nutrition-history-total">
+                        <div class="nutrition-history-total-value">${Math.round(item.totalCalories)}</div>
+                        <div class="nutrition-history-total-label">Calories</div>
+                        <div class="history-calories-balance ${calorieBalance <= 0 ? 'positive' : 'negative'}">
+                            ${calorieBalance >= 0 ? '+' : ''}${Math.round(calorieBalance)} kcal
                         </div>
-                        <div class="food-item-improved-details">
-                            <span>${meal.foods.length} aliments</span>
-                            <span>${mealDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}</span>
-                        </div>
-                        ${meal.notes ? `
-                            <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-top: 8px; font-style: italic;">
-                                "${meal.notes}"
-                            </div>
-                        ` : ''}
                     </div>
-                `}).join('')}
+                    <div class="nutrition-history-total">
+                        <div class="nutrition-history-total-value protein">${Math.round(item.totalProtein)}g</div>
+                        <div class="nutrition-history-total-label">Protéines</div>
+                    </div>
+                    <div class="nutrition-history-total">
+                        <div class="nutrition-history-total-value carbs">${Math.round(item.totalCarbs)}g</div>
+                        <div class="nutrition-history-total-label">Glucides</div>
+                    </div>
+                    <div class="nutrition-history-total">
+                        <div class="nutrition-history-total-value fat">${Math.round(item.totalFat)}g</div>
+                        <div class="nutrition-history-total-label">Lipides</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 16px;">
+                    ${item.meals.map(meal => {
+                        const mealDate = new Date(meal.date);
+                        return `
+                        <div class="food-item-improved" style="margin-bottom: 10px; cursor: pointer;" onclick="showMealDetail('${meal.id}')">
+                            <div class="food-item-improved-header">
+                                <div class="food-item-improved-name">${meal.name}</div>
+                                <div class="meal-type-badge">${getMealTypeLabel(meal.type)}</div>
+                            </div>
+                            <div class="food-item-improved-details">
+                                <span>${meal.foods.length} aliments</span>
+                                <span>${mealDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}</span>
+                            </div>
+                            ${meal.notes ? `
+                                <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-top: 8px; font-style: italic;">
+                                    "${meal.notes}"
+                                </div>
+                            ` : ''}
+                        </div>
+                    `}).join('')}
+                </div>
             </div>
         `;
-        
-        container.appendChild(dateElement);
     });
+    
+    return html;
+}
+
+function getNutritionDataForPeriod(period) {
+    const now = new Date();
+    let filteredMeals = [...nutritionHistory];
+    
+    // Filtrer par période
+    if (period === 'day') {
+        const today = now.toISOString().split('T')[0];
+        filteredMeals = nutritionHistory.filter(meal => {
+            const mealDate = new Date(meal.date).toISOString().split('T')[0];
+            return mealDate === today;
+        });
+    } else if (period === 'week') {
+        const oneWeekAgo = new Date(now);
+        oneWeekAgo.setDate(now.getDate() - 7);
+        filteredMeals = nutritionHistory.filter(meal => {
+            const mealDate = new Date(meal.date);
+            return mealDate >= oneWeekAgo;
+        });
+    } else if (period === 'month') {
+        const oneMonthAgo = new Date(now);
+        oneMonthAgo.setMonth(now.getMonth() - 1);
+        filteredMeals = nutritionHistory.filter(meal => {
+            const mealDate = new Date(meal.date);
+            return mealDate >= oneMonthAgo;
+        });
+    }
+    
+    // Grouper par date selon la période
+    const groupedData = {};
+    
+    filteredMeals.forEach(meal => {
+        const mealDate = new Date(meal.date);
+        let dateKey;
+        
+        if (period === 'day') {
+            dateKey = mealDate.toLocaleDateString('fr-FR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+        } else if (period === 'week') {
+            // Grouper par semaine (lundi-dimanche)
+            const weekStart = new Date(mealDate);
+            weekStart.setDate(mealDate.getDate() - mealDate.getDay() + 1); // Lundi
+            dateKey = `Semaine du ${weekStart.toLocaleDateString('fr-FR', {day: '2-digit', month: '2-digit'})}`;
+        } else if (period === 'month') {
+            // Grouper par mois
+            dateKey = mealDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+        }
+        
+        if (!groupedData[dateKey]) {
+            groupedData[dateKey] = {
+                date: dateKey,
+                meals: [],
+                totalCalories: 0,
+                totalProtein: 0,
+                totalCarbs: 0,
+                totalFat: 0,
+                mealCount: 0
+            };
+        }
+        
+        // Calculer les macros de ce repas
+        let mealCalories = 0;
+        let mealProtein = 0;
+        let mealCarbs = 0;
+        let mealFat = 0;
+        
+        meal.foods.forEach(foodItem => {
+            const food = getAllFoods().find(f => f.id === foodItem.foodId);
+            if (food) {
+                const ratio = foodItem.quantity / food.quantity;
+                mealCalories += food.calories * ratio;
+                mealProtein += food.protein * ratio;
+                mealCarbs += food.carbs * ratio;
+                mealFat += food.fat * ratio;
+            }
+        });
+        
+        groupedData[dateKey].meals.push({
+            ...meal,
+            calculatedCalories: Math.round(mealCalories),
+            calculatedProtein: Math.round(mealProtein),
+            calculatedCarbs: Math.round(mealCarbs),
+            calculatedFat: Math.round(mealFat)
+        });
+        
+        groupedData[dateKey].totalCalories += mealCalories;
+        groupedData[dateKey].totalProtein += mealProtein;
+        groupedData[dateKey].totalCarbs += mealCarbs;
+        groupedData[dateKey].totalFat += mealFat;
+        groupedData[dateKey].mealCount++;
+    });
+    
+    // Convertir en tableau et trier
+    return Object.values(groupedData).sort((a, b) => {
+        // Pour le tri : journée -> plus récent en premier
+        // Pour semaine/mois : essayer de parser la date
+        return new Date(b.date) - new Date(a.date);
+    });
+}
+
+function formatDateForPeriod(dateStr, period) {
+    if (period === 'day' || period === 'week') {
+        return dateStr;
+    } else if (period === 'month') {
+        // Capitaliser la première lettre du mois
+        return dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+    }
+    return dateStr;
 }
 
 function showMealDetail(mealId) {
@@ -15605,195 +16620,51 @@ function deleteMealHistory(mealId) {
         if (index !== -1) {
             nutritionHistory.splice(index, 1);
             saveToLocalStorage();
-            loadNutritionHistory();
+            // loadNutritionHistory(); // ← SUPPRIMÉ
             hideModal('meal-detail-modal');
             showNotification('Repas supprimé de l\'historique');
         }
     }
 }
 
-function showNutritionHistoryView(period) {
-    // MODIFICATION: Filtrer par période
-    filterNutritionHistoryByPeriod(period);
+function showNutritionHistoryView(period, eventElement = null) {
+    console.log('Chargement période:', period, 'élément:', eventElement);
     
+    // 1. Gérer les boutons actifs
     document.querySelectorAll('.history-nav-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     
-    const activeBtn = document.querySelector(`.history-nav-btn[onclick*="${period}"]`);
-    if (activeBtn) {
-        activeBtn.classList.add('active');
-    }
-}
-
-// MODIFICATION: Filtrer l'historique nutrition par période
-
-function filterNutritionHistoryByPeriod(period) {
-    const container = document.getElementById('nutrition-history');
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    if (nutritionHistory.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">🍽️</div>
-                <p>Aucun historique nutritionnel</p>
-                <p style="font-size: var(--font-size-sm); margin-top: 6px;">Ajoutez des repas pour voir l'historique</p>
-            </div>
-        `;
-        return;
-    }
-    
-    const now = new Date();
-    let filteredMeals = [...nutritionHistory];
-    
-    // Filtrer par période
-    if (period === 'day') {
-        const today = now.toISOString().split('T')[0];
-        filteredMeals = nutritionHistory.filter(meal => {
-            const mealDate = new Date(meal.date).toISOString().split('T')[0];
-            return mealDate === today;
-        });
-    } else if (period === 'week') {
-        const oneWeekAgo = new Date(now);
-        oneWeekAgo.setDate(now.getDate() - 7);
-        filteredMeals = nutritionHistory.filter(meal => {
-            const mealDate = new Date(meal.date);
-            return mealDate >= oneWeekAgo;
-        });
-    } else if (period === 'month') {
-        const oneMonthAgo = new Date(now);
-        oneMonthAgo.setMonth(now.getMonth() - 1);
-        filteredMeals = nutritionHistory.filter(meal => {
-            const mealDate = new Date(meal.date);
-            return mealDate >= oneMonthAgo;
-        });
-    }
-    
-    // Grouper par date
-    const mealsByDate = {};
-    
-    filteredMeals.forEach(meal => {
-        const date = new Date(meal.date);
-        const dateKey = date.toLocaleDateString('fr-FR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-        });
-        
-        if (!mealsByDate[dateKey]) {
-            mealsByDate[dateKey] = [];
+    // 2. Activer le bouton cliqué
+    if (eventElement) {
+        eventElement.classList.add('active');
+    } else {
+        // Fallback : trouver le bouton correspondant
+        const periodBtn = document.querySelector(`.history-nav-btn[onclick*="${period}"]`);
+        if (periodBtn) {
+            periodBtn.classList.add('active');
         }
-        
-        mealsByDate[dateKey].push(meal);
-    });
-    
-    // Si pas de repas pour cette période
-    if (Object.keys(mealsByDate).length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon"></div>
-                <p>Aucun repas pour cette période</p>
-                <p style="font-size: var(--font-size-sm); margin-top: 6px;">Ajoutez des repas pour les voir ici</p>
-            </div>
-        `;
-        return;
     }
     
-    // Afficher par date (les plus récentes en premier)
-    Object.entries(mealsByDate).sort(([dateA], [dateB]) => {
-        return new Date(dateB.split('/').reverse().join('-')) - new Date(dateA.split('/').reverse().join('-'));
-    }).forEach(([date, meals]) => {
-        const dateElement = document.createElement('div');
-        dateElement.className = 'nutrition-history-box';
-        
-        // Calculer les totaux pour cette date
-        let totalCalories = 0;
-        let totalProtein = 0;
-        let totalCarbs = 0;
-        let totalFat = 0;
-        
-        meals.forEach(meal => {
-            meal.foods.forEach(foodItem => {
-                const food = getAllFoods().find(f => f.id === foodItem.foodId);
-                if (food) {
-                    const ratio = foodItem.quantity / food.quantity;
-                    totalCalories += food.calories * ratio;
-                    totalProtein += food.protein * ratio;
-                    totalCarbs += food.carbs * ratio;
-                    totalFat += food.fat * ratio;
-                }
-            });
-        });
-        
-        const calorieNeeds = userProfile.calorieNeeds || 2500;
-        const calorieBalance = totalCalories - calorieNeeds;
-        
-        dateElement.innerHTML = `
-            <div class="nutrition-history-date-header">
-                <div style="font-weight: 700; color: var(--text-primary);">${date}</div>
-                <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">${meals.length} repas</div>
-            </div>
-            
-            <div class="nutrition-history-totals-improved">
-                <div class="nutrition-history-total-improved">
-                    <div class="nutrition-history-total-value-improved">${Math.round(totalCalories)}</div>
-                    <div class="nutrition-history-total-label-improved">kcal</div>
-                    <div class="history-calories-balance ${calorieBalance <= 0 ? 'positive' : 'negative'}">
-                        ${calorieBalance >= 0 ? '+' : ''}${Math.round(calorieBalance)} kcal
-                    </div>
-                </div>
-                <div class="nutrition-history-total-improved">
-                    <div class="nutrition-history-total-value-improved protein">${Math.round(totalProtein)}g</div>
-                    <div class="nutrition-history-total-label-improved">Protéines</div>
-                </div>
-                <div class="nutrition-history-total-improved">
-                    <div class="nutrition-history-total-value-improved carbs">${Math.round(totalCarbs)}g</div>
-                    <div class="nutrition-history-total-label-improved">Glucides</div>
-                </div>
-            </div>
-            
-            <div style="margin-top: 15px;">
-                ${meals.map(meal => {
-                    const mealDate = new Date(meal.date);
-                    return `
-                    <div class="food-item-improved" style="margin-bottom: 10px; cursor: pointer;" onclick="showMealDetail('${meal.id}')">
-                        <div class="food-item-improved-header">
-                            <div class="food-item-improved-name">${meal.name}</div>
-                            <div class="meal-type-badge">${getMealTypeLabel(meal.type)}</div>
-                        </div>
-                        <div class="food-item-improved-details">
-                            <span>${meal.foods.length} aliments</span>
-                            <span>${mealDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}</span>
-                        </div>
-                        ${meal.notes ? `
-                            <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-top: 8px; font-style: italic;">
-                                "${meal.notes}"
-                            </div>
-                        ` : ''}
-                    </div>
-                `}).join('')}
-            </div>
-        `;
-        
-        container.appendChild(dateElement);
+    // 3. Cacher toutes les périodes
+    document.querySelectorAll('.nutrition-period').forEach(el => {
+        el.classList.remove('active');
+        el.classList.add('hidden');
     });
+    
+    // 4. Afficher la période sélectionnée
+    const periodElement = document.getElementById(`nutrition-history-${period}`);
+    if (periodElement) {
+        periodElement.classList.remove('hidden');
+        periodElement.classList.add('active');
+    } else {
+        console.error('Élément non trouvé:', `nutrition-history-${period}`);
+    }
+    
+    // 5. Charger les données pour cette période
+    loadNutritionHistoryData(period);
 }
 
-function showNutritionHistoryView(period) {
-    // Filtrer par période
-    filterNutritionHistoryByPeriod(period);
-    
-    // Mettre à jour les boutons actifs
-    document.querySelectorAll('.history-nav-btn').forEach(btn => {
-        btn.classList.remove('active');
-        const onclickAttr = btn.getAttribute('onclick');
-        if (onclickAttr && onclickAttr.includes(`'${period}'`)) {
-            btn.classList.add('active');
-        }
-    });
-}
 
 function getMonthNumber(monthName) {
     const months = {
@@ -15812,7 +16683,7 @@ function clearAllNutritionHistory() {
     if (confirm('Êtes-vous vraiment sûr de vouloir supprimer TOUT l\'historique nutritionnel ? Cette action est irréversible.')) {
         nutritionHistory = [];
         saveToLocalStorage();
-        loadNutritionHistory();
+        // loadNutritionHistory(); // ← SUPPRIMÉ
         hideModal('clear-nutrition-history-modal');
         showNotification('Historique nutritionnel entièrement supprimé');
     }
