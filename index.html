@@ -7516,6 +7516,229 @@ textarea:focus {
     z-index: 10;
 }
 
+/* ==================== CONTROLES ENTRAÎNEMENT ACTIF - NOUVEAU DESIGN ==================== */
+.workout-controls-container {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px;
+    margin: 20px 20px 90px; /* 90px pour laisser de la place à la navbar */
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-xl);
+    position: relative;
+}
+
+/* Style commun pour les deux boutons */
+.workout-action-btn {
+    width: 100%;
+    padding: 18px 24px;
+    border-radius: var(--radius);
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+    border: none;
+    min-height: 58px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Bouton Ajouter un exercice - Style spécifique */
+.add-exercise-action-btn {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+    order: 1;
+}
+
+.add-exercise-action-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.35);
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+}
+
+.add-exercise-action-btn:active {
+    transform: translateY(-1px) scale(0.99);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+/* Bouton Terminer l'entraînement - Style spécifique */
+.finish-workout-action-btn {
+    background: var(--gradient-success);
+    color: white;
+    box-shadow: 0 6px 20px rgba(5, 150, 105, 0.25);
+    order: 2;
+    position: relative;
+}
+
+.finish-workout-action-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(5, 150, 105, 0.35);
+    background: linear-gradient(135deg, var(--success-light), var(--success));
+}
+
+.finish-workout-action-btn:active {
+    transform: translateY(-1px) scale(0.99);
+    box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+}
+
+/* Animation de pulsation pour Terminer l'entraînement */
+@keyframes finishButtonGlow {
+    0%, 100% {
+        box-shadow: 0 6px 20px rgba(5, 150, 105, 0.25);
+    }
+    50% {
+        box-shadow: 0 6px 25px rgba(5, 150, 105, 0.4), 0 0 15px rgba(5, 150, 105, 0.2);
+    }
+}
+
+.finish-workout-action-btn {
+    animation: finishButtonGlow 3s ease-in-out infinite;
+}
+
+/* Effet de brillance au survol */
+.workout-action-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.15),
+        transparent
+    );
+    transition: 0.6s ease;
+}
+
+.workout-action-btn:hover::after {
+    left: 100%;
+}
+
+/* Styles pour le texte et icônes */
+.workout-action-btn i {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+}
+
+.workout-action-btn:hover i {
+    transform: scale(1.1);
+}
+
+.add-exercise-text, .complete-workout-text {
+    font-weight: 700;
+}
+
+.complete-workout-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+/* États désactivés */
+.workout-action-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+    animation: none !important;
+}
+
+/* Animation quand on termine */
+.finish-workout-action-btn.ending {
+    animation: workoutEndingSuccess 1s ease-in-out;
+}
+
+@keyframes workoutEndingSuccess {
+    0% {
+        transform: scale(1);
+        background: var(--gradient-success);
+    }
+    25% {
+        transform: scale(1.05);
+        background: linear-gradient(135deg, #10B981, #059669);
+    }
+    50% {
+        transform: scale(0.98);
+        background: linear-gradient(135deg, #059669, #047857);
+    }
+    75% {
+        transform: scale(1.02);
+        background: linear-gradient(135deg, #047857, #10B981);
+    }
+    100% {
+        transform: scale(1);
+        background: var(--gradient-success);
+    }
+}
+
+/* Responsive pour petits écrans */
+@media (max-width: 380px) {
+    .workout-controls-container {
+        padding: 16px;
+        margin: 16px 16px 85px;
+        border-radius: var(--radius);
+        gap: 12px;
+    }
+    
+    .workout-action-btn {
+        padding: 16px 20px;
+        font-size: var(--font-size-sm);
+        min-height: 52px;
+        letter-spacing: 0.3px;
+    }
+    
+    .workout-action-btn i {
+        font-size: 16px;
+    }
+    
+    .add-exercise-text, .complete-workout-text {
+        font-size: var(--font-size-sm);
+    }
+}
+
+/* Pour les écrans moyens et grands */
+@media (min-width: 768px) {
+    .workout-controls-container {
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: var(--radius-xl);
+    }
+}
+
+/* S'assurer que les textes sont bien alignés */
+.workout-action-btn span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Correction pour éviter que le bouton existant n'interfère */
+#complete-workout-button.btn {
+    display: none; /* Cache l'ancien style */
+}
+
+#complete-workout-button.workout-action-btn {
+    display: flex; /* Affiche le nouveau style */
+}
+
+/* Style pour le texte de chargement */
+.complete-workout-loading i {
+    animation: spin 1s linear infinite;
+}
+
     </style>
 </head>
 <body>
@@ -8088,15 +8311,19 @@ textarea:focus {
                     <!-- Exercices générés dynamiquement -->
                 </div>
                 
-                <div class="controls" style="padding: 0 20px;">
-                    <button class="btn btn-success" onclick="completeWorkoutAndReturnToWorkouts()" id="complete-workout-button">
-    <span class="complete-workout-text">Terminer l'entraînement</span>
-    <span class="complete-workout-loading" style="display: none;">
-        <i class="fas fa-spinner fa-spin"></i> Sauvegarde...
-    </span>
-</button>
-                    <button class="add-exercise-btn mt-4" onclick="addExerciseToWorkout()">Ajouter un exercice</button>
-                </div>
+                <div class="workout-controls-container">
+    <!-- 1. BOUTON AJOUTER UN EXERCICE (EN HAUT) -->
+    <button class="workout-action-btn add-exercise-action-btn" onclick="addExerciseToWorkout()" id="add-exercise-workout-btn">
+        <i class="fas fa-plus"></i>
+        <span class="add-exercise-text">Ajouter un exercice</span>
+    </button>
+    
+    <!-- 2. BOUTON TERMINER L'ENTRAÎNEMENT (EN BAS - AVEC FONCTION EXISTANTE) -->
+    <button class="workout-action-btn finish-workout-action-btn" onclick="showSaveDataModal()" id="finish-workout-btn">
+        <i class="fas fa-flag-checkered"></i>
+        <span class="finish-workout-text">Terminer l'entraînement</span>
+    </button>
+</div>
             </div>
         </div>
 
