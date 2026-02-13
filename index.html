@@ -7739,6 +7739,129 @@ textarea:focus {
     animation: spin 1s linear infinite;
 }
 
+/* ==================== STYLES POUR BOUTON AJOUTER REPAS ==================== */
+.btn-add-meal {
+    background: linear-gradient(135deg, #059669, #047857) !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 16px !important;
+    border-radius: 16px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    transition: all 0.2s ease !important;
+    height: 44px !important;
+    min-width: 140px !important;
+    letter-spacing: 0.3px !important;
+    margin: 0 !important;
+}
+
+.btn-add-meal:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 15px rgba(5, 150, 105, 0.3) !important;
+    background: linear-gradient(135deg, #10B981, #059669) !important;
+}
+
+.btn-add-meal:active {
+    transform: translateY(0) !important;
+}
+
+/* ==================== STYLES POUR LES ACTIONS DES REPAS ==================== */
+.meal-actions-improved {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.meal-actions-improved .action-btn {
+    flex: 1;
+    padding: 10px 8px;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: var(--transition);
+    border: none;
+}
+
+.meal-actions-improved .action-btn i {
+    font-size: 12px;
+}
+
+.meal-actions-improved .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* Style spécifique pour le bouton modifier */
+.meal-actions-improved .action-btn.modifier-btn {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.meal-notes {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Responsive pour petits écrans */
+@media (max-width: 380px) {
+    .meal-actions-improved {
+        flex-direction: column;
+        gap: 6px;
+    }
+    
+    .btn-add-meal {
+        min-width: 120px;
+        padding: 8px 12px !important;
+        font-size: 13px !important;
+    }
+}
+
+/* ==================== BOUTON AJOUTER REPAS COMPACT ==================== */
+.btn-add-meal-compact {
+    background: linear-gradient(135deg, #059669, #047857) !important;
+    color: white !important;
+    border: none !important;
+    padding: 6px 14px !important;
+    border-radius: 30px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    transition: all 0.2s ease !important;
+    height: 32px !important;
+    width: auto !important;
+    min-width: 0 !important;
+    letter-spacing: 0.2px !important;
+    white-space: nowrap !important;
+}
+
+.btn-add-meal-compact:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(5, 150, 105, 0.2) !important;
+}
+
+.btn-add-meal-compact i {
+    font-size: 11px !important;
+}
+
     </style>
 </head>
 <body>
@@ -7769,54 +7892,54 @@ textarea:focus {
         <div class="main-content">
             <!-- ÉCRAN D'ACCUEIL -->
             <div id="home-screen" class="screen active">
-                <!-- PROFIL UTILISATEUR -->
-                <div class="profile-section">
-                    <div class="profile-header">
-                        <div class="profile-avatar" id="profile-avatar">JD</div>
-                        <div class="profile-info">
-                            <h2 id="profile-name">John Doe</h2>
-                            <p id="profile-level">Intermédiaire • Maintien</p>
-                        </div>
-                    </div>
-                    <div class="profile-stats">
-                        <div class="stat-item">
-                            <div class="stat-value" id="profile-height">180cm</div>
-                            <div class="stat-label">Taille</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="profile-weight">75kg</div>
-                            <div class="stat-label">Poids</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="profile-bmi">23.1</div>
-                            <div class="stat-label">IMC</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" id="profile-category">Normal</div>
-                            <div class="stat-label">Catégorie</div>
-                        </div>
-                    </div>
-                    <div class="nutrition-section">
-                        <div class="nutrition-calories-card">
-                            <div class="nutrition-calories-value" id="profile-calories">2500 kcal</div>
-                            <div class="nutrition-calories-label">Besoins caloriques quotidiens</div>
-                        </div>
-                        <div class="macros-grid">
-                            <div class="macro-item">
-                                <div class="macro-value protein" id="profile-protein">150g</div>
-                                <div class="macro-label">Protéines</div>
-                            </div>
-                            <div class="macro-item">
-                                <div class="macro-value carbs" id="profile-carbs">300g</div>
-                                <div class="macro-label">Glucides</div>
-                            </div>
-                            <div class="macro-item">
-                                <div class="macro-value fat" id="profile-fat">70g</div>
-                                <div class="macro-label">Lipides</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- PROFIL UTILISATEUR - SANS NOM AFFICHÉ -->
+<div class="profile-section">
+    <div class="profile-header">
+        <div class="profile-avatar" id="profile-avatar">JD</div>
+        <div class="profile-info">
+            <!-- LE NOM N'EST PLUS AFFICHÉ ICI -->
+            <p id="profile-level" style="margin-top: 8px; font-size: 15px; color: var(--text-secondary);">Intermédiaire • Maintien</p>
+        </div>
+    </div>
+    <div class="profile-stats">
+        <div class="stat-item">
+            <div class="stat-value" id="profile-height">180cm</div>
+            <div class="stat-label">Taille</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="profile-weight">75kg</div>
+            <div class="stat-label">Poids</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="profile-bmi">23.1</div>
+            <div class="stat-label">IMC</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="profile-category">Normal</div>
+            <div class="stat-label">Catégorie</div>
+        </div>
+    </div>
+    <div class="nutrition-section">
+        <div class="nutrition-calories-card">
+            <div class="nutrition-calories-value" id="profile-calories">2500 kcal</div>
+            <div class="nutrition-calories-label">Besoins caloriques quotidiens</div>
+        </div>
+        <div class="macros-grid">
+            <div class="macro-item">
+                <div class="macro-value protein" id="profile-protein">150g</div>
+                <div class="macro-label">Protéines</div>
+            </div>
+            <div class="macro-item">
+                <div class="macro-value carbs" id="profile-carbs">300g</div>
+                <div class="macro-label">Glucides</div>
+            </div>
+            <div class="macro-item">
+                <div class="macro-value fat" id="profile-fat">70g</div>
+                <div class="macro-label">Lipides</div>
+            </div>
+        </div>
+    </div>
+</div>
                 
                 <!-- ENTRAÎNEMENTS RAPIDES -->
                 <h2 class="section-title">
@@ -8248,95 +8371,113 @@ textarea:focus {
                 </div>
             </div>
             
-            <!-- ÉCRAN NUTRITION -->
-            <div id="nutrition-screen" class="screen">
-                <h2 class="section-title">
-                    <i class="fas fa-apple-alt"></i>
-                    Suivi Nutrition
-                </h2>
-                
-                <!-- Carte des calories du jour -->
-                <div class="nutrition-calories-card">
-                    <div class="nutrition-calories-value" id="daily-calories">0/2500 kcal</div>
-                    <div class="nutrition-calories-label">Apport calorique aujourd'hui</div>
-                    <div id="calories-balance" class="calories-balance positive">+2500 kcal restantes</div>
-                    <div class="calories-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="calories-progress" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Statistiques macros -->
-                <div class="card">
-                    <h3>Macronutriments du jour</h3>
-                    <div class="macros-grid">
-                        <div class="macro-item">
-                            <div class="macro-value protein" id="daily-protein">0g</div>
-                            <div class="macro-label">Protéines</div>
-                            <div class="macro-target" id="protein-target">/150g</div>
-                            <div id="protein-remaining" class="macro-remaining positive">+150g restants</div>
-                        </div>
-                        <div class="macro-item">
-                            <div class="macro-value carbs" id="daily-carbs">0g</div>
-                            <div class="macro-label">Glucides</div>
-                            <div class="macro-target" id="carbs-target">/300g</div>
-                            <div id="carbs-remaining" class="macro-remaining positive">+300g restants</div>
-                        </div>
-                        <div class="macro-item">
-                            <div class="macro-value fat" id="daily-fat">0g</div>
-                            <div class="macro-label">Lipides</div>
-                            <div class="macro-target" id="fat-target">/70g</div>
-                            <div id="fat-remaining" class="macro-remaining positive">+70g restants</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Repas de la journée -->
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
-                        <h3 style="margin: 0;">🍽️ Repas du jour</h3>
-                        <button onclick="showAddMealModal(false)" style="
-    background: linear-gradient(135deg, #059669, #047857);
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 16px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.3s ease;
-    margin: 0;
-    height: auto;
-    min-height: 44px;
-">
-    <i class="fas fa-plus" style="font-size: 14px;"></i>
-    Ajouter repas
-</button>
-                    </div>
-                    
-                    <div class="meals-list-container" id="meals-list">
-                        <!-- Repas générés dynamiquement -->
-                    </div>
-                </div>
-
-                <!-- Aliments fréquents -->
-                <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <h3 style="margin: 0;">⭐ Aliments Favoris</h3>
-        <button class="action-btn" onclick="refreshFavoriteFoods()">
-            <i class="fas fa-sync-alt"></i> Actualiser
-        </button>
+<!-- ÉCRAN NUTRITION -->
+<div id="nutrition-screen" class="screen">
+    <h2 class="section-title">
+        <i class="fas fa-apple-alt"></i>
+        Suivi Nutrition
+    </h2>
+    
+    <!-- Carte des calories du jour -->
+    <div class="nutrition-calories-card">
+        <div class="nutrition-calories-value" id="daily-calories">0/2500 kcal</div>
+        <div class="nutrition-calories-label">Apport calorique aujourd'hui</div>
+        <div id="calories-balance" class="calories-balance positive">+2500 kcal restantes</div>
+        <div class="calories-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="calories-progress" style="width: 0%"></div>
+            </div>
+        </div>
     </div>
-    <div class="favorite-grid premium-border" id="favorite-foods-container">
-        <!-- Aliments favoris générés dynamiquement -->
+
+    <!-- Statistiques macros - AVEC barres de progression et pourcentages -->
+<div class="card">
+    <h3>Macronutriments du jour</h3>
+    <div class="macros-grid">
+        <div class="macro-item">
+            <div class="macro-value protein" id="daily-protein">0g</div>
+            <div class="macro-label">Protéines</div>
+            <div class="macro-target" id="protein-target">/150g</div>
+            <div id="protein-remaining" class="macro-remaining positive">+150g restants</div>
+        </div>
+        <div class="macro-item">
+            <div class="macro-value carbs" id="daily-carbs">0g</div>
+            <div class="macro-label">Glucides</div>
+            <div class="macro-target" id="carbs-target">/300g</div>
+            <div id="carbs-remaining" class="macro-remaining positive">+300g restants</div>
+        </div>
+        <div class="macro-item">
+            <div class="macro-value fat" id="daily-fat">0g</div>
+            <div class="macro-label">Lipides</div>
+            <div class="macro-target" id="fat-target">/70g</div>
+            <div id="fat-remaining" class="macro-remaining positive">+70g restants</div>
+        </div>
+    </div>
+    
+    <!-- AJOUT: Barres de progression individuelles pour les macros -->
+    <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 12px;">
+        <!-- Protéines -->
+        <div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                <span style="color: #EF4444; font-weight: 600;">Protéines</span>
+                <span style="color: var(--text-secondary);" id="protein-percentage">0%</span>
+            </div>
+            <div style="height: 4px; background: var(--border); border-radius: 2px; overflow: hidden;">
+                <div id="protein-progress" style="width: 0%; height: 100%; background: #EF4444; border-radius: 2px; transition: width 0.3s ease;"></div>
+            </div>
+        </div>
+        
+        <!-- Glucides -->
+        <div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                <span style="color: #10B981; font-weight: 600;">Glucides</span>
+                <span style="color: var(--text-secondary);" id="carbs-percentage">0%</span>
+            </div>
+            <div style="height: 4px; background: var(--border); border-radius: 2px; overflow: hidden;">
+                <div id="carbs-progress" style="width: 0%; height: 100%; background: #10B981; border-radius: 2px; transition: width 0.3s ease;"></div>
+            </div>
+        </div>
+        
+        <!-- Lipides -->
+        <div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                <span style="color: #F59E0B; font-weight: 600;">Lipides</span>
+                <span style="color: var(--text-secondary);" id="fat-percentage">0%</span>
+            </div>
+            <div style="height: 4px; background: var(--border); border-radius: 2px; overflow: hidden;">
+                <div id="fat-progress" style="width: 0%; height: 100%; background: #F59E0B; border-radius: 2px; transition: width 0.3s ease;"></div>
+            </div>
+        </div>
     </div>
 </div>
-            </div>
+
+    <!-- Repas de la journée -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+    <h3 style="margin: 0; font-size: 18px;">🍽️ Repas du jour</h3>
+    <button onclick="showAddMealModal(false)" class="btn-add-meal-compact">
+        <i class="fas fa-plus"></i>
+        Ajouter repas
+    </button>
+</div>
+        <div class="meals-list-container" id="meals-list">
+            <!-- Repas générés dynamiquement -->
+        </div>
+    </div>
+
+    <!-- Aliments fréquents -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0;">⭐ Aliments Favoris</h3>
+            <button class="action-btn" onclick="refreshFavoriteFoods()">
+                <i class="fas fa-sync-alt"></i> Actualiser
+            </button>
+        </div>
+        <div class="favorite-grid premium-border" id="favorite-foods-container">
+            <!-- Aliments favoris générés dynamiquement -->
+        </div>
+    </div>
+</div>
             
             <!-- ÉCRAN D'ENTRAÎNEMENT ACTIF -->
             <div id="active-workout-screen" class="screen">
@@ -9625,8 +9766,8 @@ function initApp() {
     // Mettre à jour la case à cocher dans les paramètres
     updateCompactModeCheckbox();
     
-    // Appeler updateSelectDisplay une seule fois à la fin
-    setTimeout(updateSelectDisplay, 1000);
+    // Supprimer cette ligne complètement
+// setTimeout(updateSelectDisplay, 1000);
 
     // AJOUTER CETTE LIGNE : Mettre à jour le compteur de repas
     setTimeout(() => {
@@ -9818,7 +9959,7 @@ function loadFromLocalStorage() {
 }
 
 function initializeUserProfile() {
-    // S'assurer que tous les champs nécessaires existent
+    // Valeurs par défaut COMPLÈTES et SCIENTIFIQUES
     const defaultProfile = {
         firstName: 'John',
         lastName: 'Doe',
@@ -9835,30 +9976,60 @@ function initializeUserProfile() {
         bodyFat: 20,
         weeklyWeightChange: 0,
         lastTrainingType: 'Maintien',
+        lastTrainingPhase: 'Maintien',
+        
+        // Calculs BMR/Maintenance
+        bmr: 1746,
+        pal: 1.55,
+        maintenanceCalories: 2706,
+        
+        // Masse maigre
         leanMass: 60,
+        
+        // Objectifs nutritionnels (homme 30 ans, 75kg, 20% BF, Intermédiaire, Maintien)
+        calorieNeeds: 2706,
+        proteinNeeds: 158,  // 2.2g/kg LBM × 60kg × 1.2 (marge)
+        carbsNeeds: 339,    // ~50% des calories
+        fatNeeds: 75,      // ~25% des calories
+        
+        // Pourcentages macros
         macroPercentages: {
-            protein: 30,
-            carbs: 40,
-            fat: 30
-        },
-        calorieNeeds: 2500,
-        proteinNeeds: 150,
-        carbsNeeds: 300,
-        fatNeeds: 70
+            protein: 23,
+            carbs: 50,
+            fat: 27
+        }
     };
     
-    // Fusionner avec le profil existant (garder les valeurs existantes)
+    // Fusionner avec le profil existant
     userProfile = { ...defaultProfile, ...userProfile };
     
     // Recalculer la masse maigre si nécessaire
-    if (!userProfile.leanMass || isNaN(userProfile.leanMass)) {
-        userProfile.leanMass = userProfile.weight * (1 - (userProfile.bodyFat / 100));
+    if (!userProfile.leanMass || isNaN(userProfile.leanMass) || userProfile.leanMass === 0) {
+        if (userProfile.weight && userProfile.bodyFat) {
+            userProfile.leanMass = Math.round((userProfile.weight * (1 - (userProfile.bodyFat / 100))) * 10) / 10;
+        } else {
+            userProfile.leanMass = userProfile.weight * 0.8;
+        }
     }
+    
+    // S'assurer que tous les champs numériques sont des nombres
+    userProfile.calorieNeeds = Number(userProfile.calorieNeeds) || defaultProfile.calorieNeeds;
+    userProfile.proteinNeeds = Number(userProfile.proteinNeeds) || defaultProfile.proteinNeeds;
+    userProfile.carbsNeeds = Number(userProfile.carbsNeeds) || defaultProfile.carbsNeeds;
+    userProfile.fatNeeds = Number(userProfile.fatNeeds) || defaultProfile.fatNeeds;
+    userProfile.bmr = Number(userProfile.bmr) || defaultProfile.bmr;
+    userProfile.pal = Number(userProfile.pal) || defaultProfile.pal;
+    userProfile.maintenanceCalories = Number(userProfile.maintenanceCalories) || defaultProfile.maintenanceCalories;
     
     // S'assurer que les pourcentages de macros existent
     if (!userProfile.macroPercentages) {
-        userProfile.macroPercentages = defaultProfile.macroPercentages;
+        userProfile.macroPercentages = { ...defaultProfile.macroPercentages };
     }
+    
+    // S'assurer que chaque pourcentage est défini
+    if (!userProfile.macroPercentages.protein) userProfile.macroPercentages.protein = defaultProfile.macroPercentages.protein;
+    if (!userProfile.macroPercentages.carbs) userProfile.macroPercentages.carbs = defaultProfile.macroPercentages.carbs;
+    if (!userProfile.macroPercentages.fat) userProfile.macroPercentages.fat = defaultProfile.macroPercentages.fat;
 }
 
 function saveToLocalStorage() {
@@ -10125,34 +10296,43 @@ function updateAvatarInitials() {
     userProfile.lastName = lastName;
 }
 
+// ==================== CALCUL NUTRITIONNEL SCIENTIFIQUE ====================
 function calculateNutritionNeeds() {
     // -----------------------
-    // RÉCUPÉRATION DES DONNÉES
+    // 1. RÉCUPÉRATION DES DONNÉES
     // -----------------------
-    const height = parseFloat(document.getElementById('profile-height-input').value) || userProfile.height;
-    const weight = parseFloat(document.getElementById('profile-weight-input').value) || userProfile.weight;
-    const level = document.getElementById('profile-level-input').value;
-    const trainingType = document.getElementById('profile-type-input').value;
-    const gender = document.getElementById('profile-gender-input')?.value || userProfile.gender || 'male';
+    const height = parseFloat(document.getElementById('profile-height-input').value) || userProfile.height || 180;
+    const weight = parseFloat(document.getElementById('profile-weight-input').value) || userProfile.weight || 75;
     const age = parseInt(document.getElementById('profile-age-input')?.value) || userProfile.age || 30;
+    const gender = document.getElementById('profile-gender-input')?.value || userProfile.gender || 'male';
     const bodyFat = parseFloat(document.getElementById('profile-bodyfat-input')?.value) || userProfile.bodyFat || 20;
     const weeklyWeightChange = parseFloat(document.getElementById('profile-weekly-change-input')?.value) || userProfile.weeklyWeightChange || 0;
+    const level = document.getElementById('profile-level-input').value;
+    const trainingType = document.getElementById('profile-type-input').value;
     
     // -----------------------
-    // VALEURS PAR DÉFAUT POUR NOUVEAUX CHAMPS
+    // 2. SAUVEGARDE DES VALEURS BRUTES
     // -----------------------
-    userProfile.gender = userProfile.gender || gender;
-    userProfile.age = userProfile.age || age;
-    userProfile.bodyFat = userProfile.bodyFat || bodyFat;
-    userProfile.weeklyWeightChange = userProfile.weeklyWeightChange || weeklyWeightChange;
-    userProfile.leanMass = userProfile.leanMass || (weight * (1 - (bodyFat / 100)));
+    userProfile.height = height;
+    userProfile.weight = weight;
+    userProfile.age = age;
+    userProfile.gender = gender;
+    userProfile.bodyFat = bodyFat;
+    userProfile.weeklyWeightChange = weeklyWeightChange;
+    userProfile.level = level;
+    userProfile.trainingType = trainingType;
     
     // -----------------------
-    // CALCUL IMC ET CATÉGORIE
+    // 3. CALCUL DE LA MASSE MAIGRE (LEAN BODY MASS)
+    // -----------------------
+    const lbm = weight * (1 - (bodyFat / 100));
+    userProfile.leanMass = Math.round(lbm * 10) / 10;
+    
+    // -----------------------
+    // 4. IMC (affichage uniquement)
     // -----------------------
     const heightInMeters = height / 100;
     const bmi = weight / (heightInMeters * heightInMeters);
-    
     let category = '';
     if (bmi < 18.5) category = 'Maigreur';
     else if (bmi < 25) category = 'Normal';
@@ -10160,257 +10340,327 @@ function calculateNutritionNeeds() {
     else category = 'Obésité';
     
     // -----------------------
-    // CALCUL MASSE MAIGRE (LEAN MASS)
+    // 5. BMR - MÉTHODE ADAPTÉE AU PROFIL
     // -----------------------
-    const leanMass = weight * (1 - (bodyFat / 100));
-    userProfile.leanMass = leanMass;
+    let bmr = 0;
+    
+    // SI BODYFAT DISPONIBLE → Katch-McArdle (précision ±200 kcal)
+    if (bodyFat > 0 && bodyFat < 50) {
+        bmr = 370 + (21.6 * lbm);
+        
+        // Correction pour les femmes : -5% à masse maigre égale
+        if (gender === 'female') {
+            bmr = bmr * 0.95;
+        }
+    } 
+    // SINON → Mifflin-St Jeor (formule générale)
+    else {
+        if (gender === 'male') {
+            bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+        } else {
+            bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+        }
+    }
     
     // -----------------------
-    // BMR - FORMULE KATCH-MCARDLE (plus précise avec masse maigre)
+    // 6. FACTEUR D'ACTIVITÉ PHYSIQUE (PAL) - PRÉCIS
     // -----------------------
-    const bmr = 370 + (21.6 * leanMass);
-    
-    // -----------------------
-    // FACTEUR D'ACTIVITÉ DÉTAILLÉ
-    // -----------------------
-    let activityFactor = 1.2;
+    let pal = 1.2; // Sédentaire par défaut
     
     switch(level) {
-        case 'Débutant complet':
-            activityFactor = 1.2;
-            break;
-        case 'Débutant':
-            activityFactor = 1.375;
-            break;
-        case 'Intermédiaire débutant':
-            activityFactor = 1.475;
-            break;
-        case 'Intermédiaire':
-            activityFactor = 1.55;
-            break;
-        case 'Intermédiaire avancé':
-            activityFactor = 1.675;
-            break;
-        case 'Avancé':
-            activityFactor = 1.725;
-            break;
-        case 'Expert':
-            activityFactor = 1.85;
-            break;
-        case 'Professionnel':
-            activityFactor = 2.0;
-            break;
+        case 'Débutant complet': pal = 1.2; break;      // 0-1 séance/semaine
+        case 'Débutant': pal = 1.375; break;           // 1-2 séances/semaine
+        case 'Intermédiaire débutant': pal = 1.475; break; // 2-3 séances
+        case 'Intermédiaire': pal = 1.55; break;       // 3-4 séances
+        case 'Intermédiaire avancé': pal = 1.675; break; // 4-5 séances
+        case 'Avancé': pal = 1.725; break;             // 5-6 séances
+        case 'Expert': pal = 1.85; break;              // 6-7 séances INTENSES
+        case 'Professionnel': pal = 2.0; break;        // 2 séances/JOUR
     }
     
-    let maintenanceCalories = bmr * activityFactor;
+    const maintenanceCalories = Math.round(bmr * pal);
     
     // -----------------------
-    // AJUSTEMENT SELON PROGRESSION HEBDOMADAIRE (REVERSE DIET / LEAN BULK)
+    // 7. AJUSTEMENT SELON OBJECTIF (SANS progression hebdo)
     // -----------------------
-    let progressAdjustment = 0;
-    const weeklyChangeKg = weeklyWeightChange;
-    
-    if (weeklyChangeKg !== 0) {
-        // 1kg de graisse ≈ 7700 kcal, donc 0.5kg/semaine ≈ 3850 kcal/semaine ≈ 550 kcal/jour
-        const caloriesPerKgPerWeek = 7700;
-        progressAdjustment = (weeklyChangeKg * caloriesPerKgPerWeek) / 7;
-        
-        console.log('Ajustement progression:', {
-            weeklyChangeKg,
-            caloriesAdjustment: progressAdjustment,
-            direction: weeklyChangeKg > 0 ? 'Surplus' : 'Déficit'
-        });
-    }
-    
-    // -----------------------
-    // AJUSTEMENT FINAL CALORIES (OBJECTIF + PROGRESSION)
-    // -----------------------
-    let calorieAdjustment = 0;
-    let isLeanBulk = false;
-    let isReverseDiet = false;
+    let calorieTarget = maintenanceCalories;
+    let deficitSurplus = 0;
+    let phase = '';
     
     switch(trainingType) {
-        case 'Hypertrophie':
-        case 'Volume musculaire':
-            // LEAN BULK : léger surplus contrôlé
-            calorieAdjustment = 0.08; // +8%
-            isLeanBulk = true;
+        case 'Perte de poids':
+            // Déficit PROGRESSIF selon le bodyfat
+            if (bodyFat > 30) {
+                deficitSurplus = -0.30; // -30% (obésité)
+                phase = 'Déficit agressif';
+            } else if (bodyFat > 25) {
+                deficitSurplus = -0.25; // -25% (surpoids)
+                phase = 'Déficit modéré';
+            } else if (bodyFat > 20) {
+                deficitSurplus = -0.20; // -20% (normal-haut)
+                phase = 'Déficit standard';
+            } else if (bodyFat > 15) {
+                deficitSurplus = -0.15; // -15% (normal-bas)
+                phase = 'Déficit léger';
+            } else if (bodyFat > 12) {
+                deficitSurplus = -0.10; // -10% (sec)
+                phase = 'Déficit conservateur';
+            } else {
+                deficitSurplus = -0.05; // -5% (très sec)
+                phase = 'Déficit minimal';
+            }
+            calorieTarget = Math.round(maintenanceCalories * (1 + deficitSurplus));
             break;
             
         case 'Force pure':
         case 'Force':
-            calorieAdjustment = 0.05; // +5%
+            deficitSurplus = 0.05; // +5% surplus modéré
+            phase = 'Surplus léger (force)';
+            calorieTarget = Math.round(maintenanceCalories * (1 + deficitSurplus));
             break;
             
-        case 'Perte de poids':
-            if (bodyFat > 25) {
-                calorieAdjustment = -0.25; // -25% si haut bodyfat
+        case 'Hypertrophie':
+        case 'Volume musculaire':
+            // LEAN BULK : surplus contrôlé selon bodyfat
+            if (bodyFat > 20) {
+                deficitSurplus = 0.05; // +5% (prise propre)
+                phase = 'Lean bulk conservateur';
             } else if (bodyFat > 15) {
-                calorieAdjustment = -0.20; // -20% si bodyfat moyen
+                deficitSurplus = 0.08; // +8% (lean bulk standard)
+                phase = 'Lean bulk standard';
+            } else if (bodyFat > 12) {
+                deficitSurplus = 0.10; // +10% (lean bulk agressif)
+                phase = 'Lean bulk agressif';
             } else {
-                calorieAdjustment = -0.15; // -15% si déjà sec
+                deficitSurplus = 0.12; // +12% (bulk)
+                phase = 'Bulk contrôlé';
             }
+            calorieTarget = Math.round(maintenanceCalories * (1 + deficitSurplus));
             break;
             
         case 'Maintien':
-            // REVERSE DIET : si en phase de remontée calorique progressive
-            if (userProfile.lastTrainingType === 'Perte de poids' && weeklyWeightChange === 0) {
-                calorieAdjustment = 0.05; // +5% pour reverse diet
-                isReverseDiet = true;
-            }
-            break;
-            
-        case 'Préparation physique':
-            calorieAdjustment = 0.10; // +10%
-            break;
-            
-        case 'Récupération':
-            calorieAdjustment = -0.10; // -10%
+            phase = 'Maintien';
+            calorieTarget = maintenanceCalories;
             break;
             
         case 'Cardio':
         case 'Endurance musculaire':
-            calorieAdjustment = 0.02; // léger surplus
+            deficitSurplus = 0.02; // +2% pour endurance
+            phase = 'Surplus léger (endurance)';
+            calorieTarget = Math.round(maintenanceCalories * (1 + deficitSurplus));
+            break;
+            
+        case 'Récupération':
+            deficitSurplus = -0.10; // -10% en récupération
+            phase = 'Déficit récupération';
+            calorieTarget = Math.round(maintenanceCalories * (1 + deficitSurplus));
+            break;
+            
+        case 'Préparation physique':
+            deficitSurplus = 0.10; // +10%
+            phase = 'Surplus (prépa)';
+            calorieTarget = Math.round(maintenanceCalories * (1 + deficitSurplus));
             break;
             
         default:
-            calorieAdjustment = 0;
-            break;
+            calorieTarget = maintenanceCalories;
+            phase = 'Maintien';
     }
     
-    // Enregistrer le dernier type d'entraînement pour reverse diet
+    // Enregistrer la phase pour les recommandations
+    userProfile.lastTrainingPhase = phase;
     userProfile.lastTrainingType = trainingType;
     
-    // Calcul final des calories
-    let baseCalories = maintenanceCalories * (1 + calorieAdjustment);
-    let dailyCalories = Math.round(baseCalories + progressAdjustment);
-    
     // -----------------------
-    // PROTÉINES (g/kg de MASSE MAIGRE pour plus de précision)
+    // 8. APPLICATION DE LA PROGRESSION HEBDOMADAIRE (7700 kcal/kg)
     // -----------------------
-    let proteinPerKgLeanMass = 2.2; // Base
+    let finalCalories = calorieTarget;
+    let progressionMessage = '';
     
-    if (trainingType === 'Perte de poids' && bodyFat > 20) {
-        proteinPerKgLeanMass = 2.4; // Plus de protéines en sèche avec haut bodyfat
-    } else if (trainingType === 'Perte de poids') {
-        proteinPerKgLeanMass = 2.6; // Encore plus si déjà sec
-    } else if (trainingType === 'Force pure' || trainingType === 'Force') {
-        proteinPerKgLeanMass = 2.3;
-    } else if (isLeanBulk) {
-        proteinPerKgLeanMass = 2.0; // Légèrement moins en lean bulk
-    } else if (isReverseDiet) {
-        proteinPerKgLeanMass = 2.1; // Reverse diet
+    if (weeklyWeightChange !== 0) {
+        // 1 kg de masse grasse ≈ 7700 kcal
+        const caloriesPerDayAdjustment = (weeklyWeightChange * 7700) / 7;
+        
+        finalCalories = Math.round(calorieTarget + caloriesPerDayAdjustment);
+        
+        if (weeklyWeightChange > 0) {
+            progressionMessage = `Prise de ${weeklyWeightChange}kg/semaine (+${Math.round(caloriesPerDayAdjustment)} kcal/j)`;
+        } else {
+            progressionMessage = `Perte de ${Math.abs(weeklyWeightChange)}kg/semaine (${Math.round(caloriesPerDayAdjustment)} kcal/j)`;
+        }
     }
     
-    const proteinGrams = Math.round(leanMass * proteinPerKgLeanMass);
+    // Validation : ne jamais descendre sous 1400 kcal (hommes) / 1200 kcal (femmes)
+    const minCalories = gender === 'male' ? 1400 : 1200;
+    if (finalCalories < minCalories) {
+        finalCalories = minCalories;
+        progressionMessage += ' (minimum atteint)';
+    }
     
     // -----------------------
-    // LIPIDES (pourcentage des calories ou g/kg)
+    // 9. CALCUL DES PROTÉINES (basé sur MASSE MAIGRE + FACTEUR)
     // -----------------------
-    let fatPercentage = 0.25; // 25% par défaut
+    let proteinFactor = 2.2; // Base
+    
+    // Ajustement selon objectif
+    if (trainingType === 'Perte de poids') {
+        if (bodyFat > 25) proteinFactor = 2.4; // Préservation musculaire en obésité
+        else if (bodyFat > 20) proteinFactor = 2.6; // Sèche modérée
+        else proteinFactor = 2.8; // Sèche avancée
+    } else if (trainingType === 'Hypertrophie' || trainingType === 'Volume musculaire') {
+        proteinFactor = 2.0; // Léger surplus = moins de protéines nécessaires
+    } else if (trainingType === 'Force pure' || trainingType === 'Force') {
+        proteinFactor = 2.3; // Force nécessite plus de protéines
+    } else if (trainingType === 'Maintien') {
+        proteinFactor = 1.8; // Maintien
+    }
+    
+    // Ajustement selon âge (+0.1g/kg tous les 10 ans après 40 ans)
+    if (age > 40) {
+        proteinFactor += Math.floor((age - 40) / 10) * 0.1;
+    }
+    
+    // Ajustement selon sexe (femmes légèrement moins)
+    if (gender === 'female') {
+        proteinFactor = proteinFactor * 0.95;
+    }
+    
+    const proteinGrams = Math.round(lbm * proteinFactor);
+    const caloriesFromProtein = proteinGrams * 4;
+    
+    // -----------------------
+    // 10. CALCUL DES LIPIDES (basé sur POIDS CORPOREL)
+    // -----------------------
+    let fatPerKg = 0.9; // Base
+    
+    if (gender === 'female') {
+        fatPerKg = 1.0; // Les femmes ont besoin de plus de lipides
+    }
     
     if (trainingType === 'Perte de poids') {
-        fatPercentage = bodyFat > 25 ? 0.20 : 0.25;
-    } else if (gender === 'female') {
-        fatPercentage = 0.30; // Les femmes ont besoin de plus de lipides
-    } else if (isLeanBulk) {
-        fatPercentage = 0.22; // Moins de lipides en lean bulk
+        fatPerKg = 0.8; // Légèrement moins en sèche
+    } else if (trainingType === 'Hypertrophie') {
+        fatPerKg = 0.9; // Standard
     }
     
-    const fatCalories = dailyCalories * fatPercentage;
-    const fatGrams = Math.round(fatCalories / 9);
-    
-    // -----------------------
-    // GLUCIDES = reste des calories
-    // -----------------------
-    const caloriesFromProtein = proteinGrams * 4;
+    // Minimum 20% des calories
+    const minFatCalories = finalCalories * 0.20;
+    const fatGrams = Math.max(Math.round(lbm * fatPerKg), Math.round(minFatCalories / 9));
     const caloriesFromFat = fatGrams * 9;
-    const caloriesFromCarbs = dailyCalories - (caloriesFromProtein + caloriesFromFat);
-    const carbsGrams = Math.round(caloriesFromCarbs / 4);
-    
-    // Validation : les glucides ne doivent pas être négatifs
-    const finalCarbsGrams = carbsGrams > 0 ? carbsGrams : 0;
-    
-    // Recalcul final si nécessaire
-    const finalDailyCalories = caloriesFromProtein + caloriesFromFat + (finalCarbsGrams * 4);
     
     // -----------------------
-    // MACRO RATIOS POUR AFFICHAGE
+    // 11. GLUCIDES = RESTE DES CALORIES
     // -----------------------
-    const proteinPercentage = Math.round((caloriesFromProtein / finalDailyCalories) * 100);
-    const carbsPercentage = Math.round(((finalCarbsGrams * 4) / finalDailyCalories) * 100);
-    const fatPercentageDisplay = Math.round((caloriesFromFat / finalDailyCalories) * 100);
+    const caloriesFromCarbs = finalCalories - caloriesFromProtein - caloriesFromFat;
+    const carbsGrams = Math.max(0, Math.round(caloriesFromCarbs / 4));
+    
+    // Recalcul final (ajustement si glucides négatifs)
+    const finalCarbsGrams = carbsGrams;
+    const finalCaloriesRecalc = caloriesFromProtein + caloriesFromFat + (finalCarbsGrams * 4);
+    const finalCaloriesRounded = Math.round(finalCaloriesRecalc);
     
     // -----------------------
-    // RECOMMANDATIONS SPÉCIFIQUES
+    // 12. POURCENTAGES MACROS
     // -----------------------
-    let recommendations = [];
+    const proteinPercentage = Math.round((caloriesFromProtein / finalCaloriesRecalc) * 100);
+    const fatPercentage = Math.round((caloriesFromFat / finalCaloriesRecalc) * 100);
+    const carbsPercentage = Math.round(((finalCarbsGrams * 4) / finalCaloriesRecalc) * 100);
     
-    if (isLeanBulk) {
-        recommendations.push('• Lean Bulk : Augmentation progressive de 0.2-0.3kg/semaine');
-        recommendations.push('• Priorité aux glucides autour des entraînements');
+    // -----------------------
+    // 13. RECOMMANDATIONS SPÉCIFIQUES
+    // -----------------------
+    const recommendations = [];
+    
+    if (trainingType === 'Perte de poids') {
+        if (bodyFat > 25) {
+            recommendations.push('• Priorité à la préservation musculaire');
+            recommendations.push('• Protéines élevées : ' + proteinGrams + 'g/j');
+        } else if (bodyFat < 12) {
+            recommendations.push('• Phase de sèche avancée : surveiller la faim');
+            recommendations.push('• Pause diète recommandée après 8-10 semaines');
+        }
+        recommendations.push('• Répartition des glucides autour des entraînements');
     }
     
-    if (isReverseDiet) {
-        recommendations.push('• Reverse Diet : Augmentation de 50-100 kcal chaque semaine');
-        recommendations.push('• Surveiller le poids toutes les 2 semaines');
+    if (trainingType === 'Hypertrophie' || trainingType === 'Volume musculaire') {
+        if (bodyFat > 20) {
+            recommendations.push('• Lean bulk : limiter la prise de gras');
+            recommendations.push('• Augmentation max 0.3-0.5kg/semaine');
+        } else {
+            recommendations.push('• Bulk contrôlé : 0.5-0.8kg/semaine');
+        }
     }
     
-    if (trainingType === 'Perte de poids' && bodyFat < 15) {
-        recommendations.push('• Phase de sèche avancée : Maintenir apport protéique élevé');
-        recommendations.push('• Pause diète recommandée après 12 semaines');
+    if (weeklyWeightChange < -0.7) {
+        recommendations.push('⚠️ Perte trop rapide (>0.7kg/sem) : risque de fonte musculaire');
+    } else if (weeklyWeightChange < -0.5) {
+        recommendations.push('• Perte modérée : maintenir protéines élevées');
+    } else if (weeklyWeightChange > 0.8) {
+        recommendations.push('⚠️ Prise trop rapide (>0.8kg/sem) : risque de gras excessif');
     }
     
-    if (weeklyChangeKg < -0.5) {
-        recommendations.push('⚠️ Perte trop rapide ! Augmentez légèrement les calories');
-    } else if (weeklyChangeKg > 0.5) {
-        recommendations.push('⚠️ Prise trop rapide ! Réduisez légèrement les calories');
+    if (gender === 'female' && age > 50) {
+        recommendations.push('• Augmenter calcium et vitamine D');
+        recommendations.push('• Répartition des protéines sur 3-4 repas');
+    }
+    
+    if (age > 60) {
+        recommendations.push('• Protéines : ' + proteinGrams + 'g minimum');
+        recommendations.push('• Fractionner en 4 repas pour meilleure assimilation');
     }
     
     // -----------------------
-    // MISE À JOUR UI PROFIL
+    // 14. MISE À JOUR UI PROFIL
     // -----------------------
     document.getElementById('profile-height').textContent = `${height}cm`;
     document.getElementById('profile-weight').textContent = `${weight}kg`;
     document.getElementById('profile-bmi').textContent = bmi.toFixed(1);
     document.getElementById('profile-category').textContent = category;
     document.getElementById('profile-level').textContent = `${level} • ${trainingType}`;
-    document.getElementById('profile-calories').textContent = `${Math.round(finalDailyCalories)} kcal`;
+    document.getElementById('profile-calories').textContent = `${finalCaloriesRounded} kcal`;
     document.getElementById('profile-protein').textContent = `${proteinGrams}g (${proteinPercentage}%)`;
     document.getElementById('profile-carbs').textContent = `${finalCarbsGrams}g (${carbsPercentage}%)`;
-    document.getElementById('profile-fat').textContent = `${fatGrams}g (${fatPercentageDisplay}%)`;
-    
-    // Affichage des recommandations si disponible
-    const recommendationsElement = document.getElementById('profile-recommendations');
-    if (recommendationsElement) {
-        if (recommendations.length > 0) {
-            recommendationsElement.innerHTML = recommendations.join('<br>');
-            recommendationsElement.style.display = 'block';
-        } else {
-            recommendationsElement.style.display = 'none';
-        }
-    }
+    document.getElementById('profile-fat').textContent = `${fatGrams}g (${fatPercentage}%)`;
     
     // Affichage masse maigre
     const leanMassElement = document.getElementById('profile-lean-mass');
     if (leanMassElement) {
-        leanMassElement.textContent = `Masse maigre: ${leanMass.toFixed(1)}kg (${(100 - bodyFat).toFixed(1)}%)`;
+        leanMassElement.textContent = `Masse maigre: ${userProfile.leanMass}kg (${(100 - bodyFat).toFixed(1)}%)`;
+    }
+    
+    // Affichage des recommandations
+    const recommendationsElement = document.getElementById('profile-recommendations');
+    if (recommendationsElement) {
+        if (recommendations.length > 0) {
+            let headerHTML = `<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <div style="width: 24px; height: 24px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div style="font-weight: 700; color: var(--primary);">RECOMMANDATIONS</div>
+            </div>`;
+            
+            if (progressionMessage) {
+                recommendationsElement.innerHTML = headerHTML + recommendations.join('<br>') + 
+                    `<br><span style="color: var(--success);">• ${progressionMessage}</span>`;
+            } else {
+                recommendationsElement.innerHTML = headerHTML + recommendations.join('<br>');
+            }
+            
+            recommendationsElement.style.display = 'block';
+        } else {
+            if (progressionMessage) {
+                recommendationsElement.innerHTML = `<span style="color: var(--success);">${progressionMessage}</span>`;
+                recommendationsElement.style.display = 'block';
+            } else {
+                recommendationsElement.style.display = 'none';
+            }
+        }
     }
     
     // -----------------------
-    // SAUVEGARDE PROFIL
+    // 15. SAUVEGARDE PROFIL UTILISATEUR
     // -----------------------
-    userProfile.height = height;
-    userProfile.weight = weight;
-    userProfile.level = level;
-    userProfile.trainingType = trainingType;
-    userProfile.gender = gender;
-    userProfile.age = age;
-    userProfile.bodyFat = bodyFat;
-    userProfile.weeklyWeightChange = weeklyWeightChange;
-    userProfile.leanMass = leanMass;
-    
-    userProfile.calorieNeeds = Math.round(finalDailyCalories);
+    userProfile.calorieNeeds = finalCaloriesRounded;
     userProfile.proteinNeeds = proteinGrams;
     userProfile.carbsNeeds = finalCarbsGrams;
     userProfile.fatNeeds = fatGrams;
@@ -10418,33 +10668,32 @@ function calculateNutritionNeeds() {
     userProfile.macroPercentages = {
         protein: proteinPercentage,
         carbs: carbsPercentage,
-        fat: fatPercentageDisplay
+        fat: fatPercentage
     };
     
-    // -----------------------
-    // LOGS POUR DÉBOGAGE
-    // -----------------------
-    console.log('📊 CALCUL NUTRITION AVANCÉ:', {
-        bmi: bmi.toFixed(1),
-        bodyFat: bodyFat + '%',
-        leanMass: leanMass.toFixed(1) + 'kg',
-        bmr: Math.round(bmr),
-        activityFactor,
-        maintenanceCalories: Math.round(maintenanceCalories),
-        trainingType,
-        weeklyChange: weeklyChangeKg + 'kg/semaine',
-        progressAdjustment: Math.round(progressAdjustment),
-        finalCalories: Math.round(finalDailyCalories),
-        macros: {
-            protein: proteinGrams + 'g (' + proteinPercentage + '%)',
-            carbs: finalCarbsGrams + 'g (' + carbsPercentage + '%)',
-            fat: fatGrams + 'g (' + fatPercentageDisplay + '%)'
-        },
-        recommendations
-    });
+    userProfile.bmr = Math.round(bmr);
+    userProfile.pal = pal;
+    userProfile.maintenanceCalories = maintenanceCalories;
     
     // -----------------------
-    // MISE À JOUR INTERFACE
+    // 16. LOGS DE DÉBOGAGE
+    // -----------------------
+    console.log('📊 CALCUL NUTRITIONNEL SCIENTIFIQUE');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log(`👤 Profil: ${gender === 'male' ? 'Homme' : 'Femme'}, ${age} ans, ${weight}kg, ${bodyFat}% BF, LBM: ${userProfile.leanMass}kg`);
+    console.log(`🧮 BMR: ${Math.round(bmr)} kcal (${bodyFat ? 'Katch-McArdle' : 'Mifflin-St Jeor'})`);
+    console.log(`🏋️ PAL: ${pal} (${level})`);
+    console.log(`⚖️ Maintenance: ${maintenanceCalories} kcal`);
+    console.log(`🎯 Objectif: ${trainingType} | Phase: ${phase}`);
+    console.log(`📉 Progression: ${weeklyWeightChange}kg/semaine → ${progressionMessage || 'Aucune'}`);
+    console.log(`🔥 Calories finales: ${finalCaloriesRounded} kcal`);
+    console.log(`🥩 Protéines: ${proteinGrams}g (${proteinPercentage}%) - ${proteinFactor.toFixed(1)}g/kg LBM`);
+    console.log(`🧈 Lipides: ${fatGrams}g (${fatPercentage}%)`);
+    console.log(`🍚 Glucides: ${finalCarbsGrams}g (${carbsPercentage}%)`);
+    console.log(`📋 Recommandations: ${recommendations.length || 'Aucune'}`);
+    
+    // -----------------------
+    // 17. MISE À JOUR INTERFACE NUTRITION
     // -----------------------
     updateDailyNutritionDisplay();
     saveToLocalStorage();
@@ -11700,18 +11949,43 @@ function showCreateWorkoutModal(fromHeader = true) {
 }
 
 function showExerciseSelectionForCreate() {
-    const muscleFilter = document.getElementById('exercise-filter');
-    muscleFilter.innerHTML = '<option value="all">Tous les groupes musculaires</option>';
-    muscleGroups.forEach(muscle => {
-        const option = document.createElement('option');
-        option.value = muscle.id;
-        option.textContent = muscle.name;
-        muscleFilter.appendChild(option);
-    });
+    // 1. RÉINITIALISER LE MODAL
+    const modal = document.getElementById('select-exercise-modal');
     
-    loadExerciseSelection('all');
+    // 2. VIDER LA LISTE DES RÉSULTATS
+    const listContainer = document.getElementById('exercise-selection-list');
+    if (listContainer) {
+        listContainer.innerHTML = '<div style="text-align: center; padding: 20px;">Chargement...</div>';
+    }
+    
+    // 3. CONFIGURER LE FILTRE
+    const muscleFilter = document.getElementById('exercise-filter');
+    if (muscleFilter) {
+        muscleFilter.innerHTML = '<option value="all">📋 Tous les groupes musculaires</option>';
+        muscleGroups.forEach(muscle => {
+            const option = document.createElement('option');
+            option.value = muscle.id;
+            option.textContent = `${muscle.image || '●'} ${muscle.name}`;
+            muscleFilter.appendChild(option);
+        });
+        muscleFilter.value = 'all';
+        
+        // Réinitialiser l'écouteur d'événement
+        muscleFilter.onchange = function() {
+            filterExerciseSelectionByMuscle(this.value);
+        };
+    }
+    
+    // 4. DÉFINIR LE CONTEXTE
+    modal.dataset.context = 'create';
+    modal.dataset.source = 'workout-creation';
+    
+    // 5. CHARGER LES EXERCICES
+    setTimeout(() => {
+        loadExerciseSelection('all');
+    }, 50);
+    
     showModal('select-exercise-modal');
-    document.getElementById('select-exercise-modal').dataset.context = 'create';
 }
 
 function showCustomExerciseModalForCreate() {
@@ -11723,37 +11997,144 @@ function showCustomExerciseModalForCreate() {
 
 function loadExerciseSelection(filter = 'all') {
     const container = document.getElementById('exercise-selection-list');
-    if (!container) return;
-    
-    let filteredExercises = getAllExercises();
-    
-    if (filter !== 'all') {
-        filteredExercises = filteredExercises.filter(ex => ex.muscleGroup === filter);
-    }
-    
-    container.innerHTML = '';
-    
-    if (filteredExercises.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">Aucun exercice trouvé</p>';
+    if (!container) {
+        console.error('Conteneur exercise-selection-list non trouvé');
         return;
     }
     
-    filteredExercises.forEach(exercise => {
-        const muscle = muscleGroups.find(m => m.id === exercise.muscleGroup);
-        const exerciseItem = document.createElement('div');
-        exerciseItem.className = 'food-search-simple-item';
-        exerciseItem.onclick = () => addExerciseToWorkoutSelection(exercise.id);
+    container.innerHTML = '<div style="text-align: center; padding: 30px;"><i class="fas fa-spinner fa-spin" style="font-size: 24px;"></i><p style="margin-top: 10px;">Chargement des exercices...</p></div>';
+    
+    // Petit délai pour éviter les problèmes de rendu
+    setTimeout(() => {
+        // 1. RÉCUPÉRER TOUS LES EXERCICES
+        let allExercises = getAllExercises();
         
-        exerciseItem.innerHTML = `
-            <div class="food-search-simple-name">${exercise.name}</div>
-            <div class="food-search-simple-details">
-                ${muscle ? muscle.name : exercise.muscleGroup} • ${exercise.difficulty}
-                ${exercise.custom ? ' (Personnalisé)' : ''}
-            </div>
-        `;
+        // 2. TRIER: FAVORIS EN PREMIER, PUIS PAR NOM
+        allExercises.sort((a, b) => {
+            if (a.favorite && !b.favorite) return -1;
+            if (!a.favorite && b.favorite) return 1;
+            return a.name.localeCompare(b.name);
+        });
         
-        container.appendChild(exerciseItem);
-    });
+        // 3. APPLIQUER LE FILTRE
+        let filteredExercises = allExercises;
+        if (filter !== 'all') {
+            filteredExercises = allExercises.filter(ex => ex.muscleGroup === filter);
+        }
+        
+        // 4. VIDER LE CONTENEUR
+        container.innerHTML = '';
+        
+        // 5. CAS: AUCUN EXERCICE
+        if (filteredExercises.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px;">
+                    <div style="font-size: 48px; margin-bottom: 16px;">🏋️‍♂️</div>
+                    <p style="font-weight: 600; color: var(--text-primary); margin-bottom: 8px;">
+                        Aucun exercice trouvé
+                    </p>
+                    <p style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: 20px;">
+                        ${filter !== 'all' ? 'Aucun exercice pour ce groupe musculaire' : 'Créez votre premier exercice'}
+                    </p>
+                    <button class="btn btn-success" onclick="showCustomExerciseModal()">
+                        <i class="fas fa-plus"></i> Créer un exercice
+                    </button>
+                </div>
+            `;
+            return;
+        }
+        
+        // 6. GROUPER PAR CATÉGORIE OU MUSCLE POUR MEILLEURE LECTURE
+        const exercisesByMuscle = {};
+        
+        filteredExercises.forEach(exercise => {
+            const muscleId = exercise.muscleGroup;
+            if (!exercisesByMuscle[muscleId]) {
+                exercisesByMuscle[muscleId] = [];
+            }
+            exercisesByMuscle[muscleId].push(exercise);
+        });
+        
+        // 7. AFFICHER PAR GROUPE MUSCULAIRE
+        Object.keys(exercisesByMuscle).sort().forEach(muscleId => {
+            const muscle = muscleGroups.find(m => m.id === muscleId);
+            const muscleName = muscle ? muscle.name : muscleId;
+            const muscleColor = muscle ? muscle.color : '#6366F1';
+            const exercises = exercisesByMuscle[muscleId];
+            
+            // En-tête du groupe musculaire
+            if (filter === 'all') {
+                const header = document.createElement('div');
+                header.style.cssText = `
+                    font-weight: 700;
+                    font-size: var(--font-size-sm);
+                    color: ${muscleColor};
+                    margin: 20px 0 10px 0;
+                    padding-bottom: 5px;
+                    border-bottom: 2px solid ${muscleColor}40;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                `;
+                header.innerHTML = `
+                    <span style="color: ${muscleColor};">●</span>
+                    ${muscleName}
+                    <span style="font-size: var(--font-size-xs); color: var(--text-secondary); font-weight: normal;">
+                        (${exercises.length} exercice${exercises.length > 1 ? 's' : ''})
+                    </span>
+                `;
+                container.appendChild(header);
+            }
+            
+            // Liste des exercices de ce groupe
+            exercises.forEach(exercise => {
+                const exerciseItem = document.createElement('div');
+                exerciseItem.className = 'exercise-selection-item';
+                exerciseItem.style.cssText = `
+                    display: flex;
+                    align-items: center;
+                    padding: 12px 16px;
+                    background: var(--card-bg);
+                    border: 1px solid var(--border);
+                    border-radius: var(--radius);
+                    margin-bottom: 8px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                `;
+                exerciseItem.onmouseover = () => {
+                    exerciseItem.style.transform = 'translateY(-2px)';
+                    exerciseItem.style.boxShadow = 'var(--shadow)';
+                    exerciseItem.style.borderColor = muscleColor;
+                };
+                exerciseItem.onmouseout = () => {
+                    exerciseItem.style.transform = 'translateY(0)';
+                    exerciseItem.style.boxShadow = 'none';
+                    exerciseItem.style.borderColor = 'var(--border)';
+                };
+                exerciseItem.onclick = () => addExerciseToWorkoutSelection(exercise.id);
+                
+                exerciseItem.innerHTML = `
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                            <span style="font-weight: 700; color: var(--text-primary);">${exercise.name}</span>
+                            ${exercise.favorite ? '<span style="color: #F59E0B;"><i class="fas fa-star"></i></span>' : ''}
+                            ${exercise.custom ? '<span style="font-size: 10px; padding: 2px 6px; background: var(--primary); color: white; border-radius: 10px;">Personnalisé</span>' : ''}
+                        </div>
+                        <div style="display: flex; gap: 12px; font-size: var(--font-size-xs); color: var(--text-secondary);">
+                            <span>${exercise.difficulty}</span>
+                            ${exercise.category ? `<span>• ${exercise.category}</span>` : ''}
+                        </div>
+                    </div>
+                    <div style="color: var(--text-secondary);">
+                        <i class="fas fa-plus-circle" style="font-size: 20px; color: var(--primary);"></i>
+                    </div>
+                `;
+                
+                container.appendChild(exerciseItem);
+            });
+        });
+        
+    }, 50); // Fin du setTimeout
 }
 
 function filterExerciseSelection(searchTerm) {
@@ -11775,36 +12156,155 @@ function filterExerciseSelectionByMuscle(value) {
 }
 
 function addExerciseToWorkoutSelection(exerciseId) {
-    const context = document.getElementById('select-exercise-modal').dataset.context;
-    const containerId = context === 'create' ? 'workout-exercises-selection' : 'edit-workout-exercises-selection';
+    console.log('addExerciseToWorkoutSelection - ID:', exerciseId);
+    
+    // 1. RÉCUPÉRER LE CONTEXTE
+    const modal = document.getElementById('select-exercise-modal');
+    const context = modal.dataset.context || 'create';
+    
+    // 2. DÉTERMINER LE BON CONTENEUR
+    let containerId = '';
+    if (context === 'create') {
+        containerId = 'workout-exercises-selection';
+    } else if (context === 'edit') {
+        containerId = 'edit-workout-exercises-selection';
+    } else if (context === 'active-workout') {
+        // AJOUT DIRECT À LA SÉANCE ACTIVE
+        addExerciseToActiveWorkout(exerciseId);
+        hideModal('select-exercise-modal');
+        return;
+    }
+    
     const container = document.getElementById(containerId);
+    if (!container) {
+        console.error('Conteneur non trouvé:', containerId);
+        return;
+    }
     
-    const exercise = getAllExercises().find(ex => ex.id === exerciseId);
-    if (!exercise) return;
+    // 3. RECHERCHER L'EXERCICE AVEC FALLBACK
+    let exercise = getAllExercises().find(ex => ex.id === exerciseId);
     
+    // Si non trouvé par ID exact, chercher par nom (pour les exercices prédéfinis)
+    if (!exercise) {
+        console.warn('Exercice non trouvé par ID, recherche par correspondance...', exerciseId);
+        // Essayer de trouver dans exercises (prédéfinis)
+        exercise = exercises.find(ex => ex.id === exerciseId);
+    }
+    
+    if (!exercise) {
+        console.error('Exercice introuvable:', exerciseId);
+        showNotification('Erreur: exercice non trouvé', 'error');
+        return;
+    }
+    
+    // 4. VÉRIFIER DOUBLON
+    const existingExercises = Array.from(container.querySelectorAll('.meal-food-item'));
+    const isDuplicate = existingExercises.some(item => item.dataset.exerciseId === exerciseId);
+    
+    if (isDuplicate) {
+        showNotification('Cet exercice est déjà dans la séance', 'warning');
+        return;
+    }
+    
+    // 5. CRÉER L'ÉLÉMENT
     const exerciseElement = document.createElement('div');
     exerciseElement.className = 'meal-food-item';
     exerciseElement.dataset.exerciseId = exerciseId;
+    
+    const muscle = muscleGroups.find(m => m.id === exercise.muscleGroup);
+    const muscleName = muscle ? muscle.name : exercise.muscleGroup;
     
     exerciseElement.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
                 <div style="font-weight: 700; margin-bottom: 3px;">${exercise.name}</div>
                 <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">
-                    ${exercise.muscleGroup} • ${exercise.difficulty}
+                    <span style="color: ${muscle ? muscle.color : '#666'}">●</span>
+                    ${muscleName} • ${exercise.difficulty}
+                    ${exercise.custom ? ' (Personnalisé)' : ''}
                 </div>
             </div>
             <div class="reorder-buttons">
-                <button class="reorder-btn" onclick="moveExerciseUp(this)" title="Monter">↑</button>
-                <button class="reorder-btn" onclick="moveExerciseDown(this)" title="Descendre">↓</button>
-                <button class="reorder-btn" onclick="removeExerciseFromSelection(this)" title="Supprimer">×</button>
+                <button class="reorder-btn" onclick="moveExerciseUp(this)" title="Monter">
+                    <i class="fas fa-chevron-up"></i>
+                </button>
+                <button class="reorder-btn" onclick="moveExerciseDown(this)" title="Descendre">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <button class="reorder-btn" onclick="removeExerciseFromSelection(this)" title="Supprimer">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
         </div>
     `;
     
     container.appendChild(exerciseElement);
+    
+    // 6. ANIMATION DE CONFIRMATION
+    exerciseElement.style.animation = 'fadeInUp 0.3s ease';
+    setTimeout(() => {
+        exerciseElement.style.animation = '';
+    }, 300);
+    
     hideModal('select-exercise-modal');
+    showNotification(`✅ ${exercise.name} ajouté à la séance`);
 }
+
+// ==================== AJOUT DIRECT À LA SÉANCE ACTIVE ====================
+function addExerciseToActiveWorkout(exerciseId) {
+    console.log('addExerciseToActiveWorkout - ID:', exerciseId);
+    
+    if (!activeWorkout) {
+        showNotification('Aucune séance active', 'error');
+        return;
+    }
+    
+    // 1. RECHERCHER L'EXERCICE
+    let exercise = getAllExercises().find(ex => ex.id === exerciseId);
+    if (!exercise) {
+        exercise = exercises.find(ex => ex.id === exerciseId);
+    }
+    
+    if (!exercise) {
+        showNotification('Exercice non trouvé', 'error');
+        return;
+    }
+    
+    // 2. VÉRIFIER DOUBLON DANS LA SÉANCE ACTIVE
+    const isDuplicate = activeWorkout.exercises.some(ex => 
+        ex.name === exercise.name && ex.muscleGroup === exercise.muscleGroup
+    );
+    
+    if (isDuplicate) {
+        if (!confirm(`"${exercise.name}" est déjà dans la séance. Voulez-vous l'ajouter quand même ?`)) {
+            return;
+        }
+    }
+    
+    // 3. CRÉER LE NOUVEL EXERCICE AVEC VALEURS PAR DÉFAUT
+    const newExercise = {
+        ...exercise,
+        sets: Array(userProfile.defaultSets).fill().map((_, i) => ({
+            number: i + 1,
+            reps: userProfile.defaultReps,
+            weight: userProfile.defaultWeight,
+            completed: false
+        })),
+        customRest: userProfile.defaultRest,
+        notes: '',
+        collapsed: false,
+        compactModeOverride: undefined
+    };
+    
+    // 4. AJOUTER À LA SÉANCE
+    activeWorkout.exercises.push(newExercise);
+    
+    // 5. METTRE À JOUR L'AFFICHAGE
+    updateWorkoutDisplay();
+    
+    showNotification(`✅ ${exercise.name} ajouté à la séance`);
+}
+
 
 function moveExerciseUp(button) {
     const item = button.closest('.meal-food-item');
@@ -12282,7 +12782,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
     
     if (isCollapsed) return '';
     
-// DÉTERMINER LE MODE D'AFFICHAGE POUR CET EXERCICE
+    // DÉTERMINER LE MODE D'AFFICHAGE POUR CET EXERCICE
     const useCompactMode = exercise.compactModeOverride !== undefined 
         ? exercise.compactModeOverride 
         : settings.compactMode;
@@ -12293,10 +12793,39 @@ function createSetElement(exerciseIndex, setIndex, set) {
     
     // Si c'est une reprise avec données historiques, utiliser les valeurs historiques
     if (isRedoWorkout && historicalSet) {
-        // Appliquer les valeurs historiques exactes pour la série correspondante
         set.reps = historicalSet.reps !== undefined ? historicalSet.reps : userProfile.defaultReps;
         set.weight = historicalSet.weight !== undefined ? historicalSet.weight : userProfile.defaultWeight;
     }
+    
+    // --- CORRECTION: Déterminer l'état du bouton mode ---
+    let buttonIcon = '';
+    let buttonTitle = '';
+    let buttonColor = '';
+    
+    if (exercise.compactModeOverride !== undefined) {
+        // Forçage explicite par l'utilisateur
+        if (exercise.compactModeOverride === true) {
+            buttonIcon = 'mobile-alt';
+            buttonTitle = 'Mode compact forcé';
+            buttonColor = 'var(--primary)';
+        } else {
+            buttonIcon = 'file-alt';
+            buttonTitle = 'Mode normal forcé';
+            buttonColor = 'var(--warning)';
+        }
+    } else {
+        // Mode global - afficher l'ÉTAT ACTUEL du paramètre
+        if (settings.compactMode === true) {
+            buttonIcon = 'mobile-alt';
+            buttonTitle = 'Mode compact (global)';
+            buttonColor = 'var(--primary)';
+        } else {
+            buttonIcon = 'file-alt';
+            buttonTitle = 'Mode normal (global)';
+            buttonColor = 'var(--secondary)';
+        }
+    }
+    // --- FIN CORRECTION ---
     
     // Mode compact
     if (useCompactMode) {
@@ -12311,21 +12840,17 @@ function createSetElement(exerciseIndex, setIndex, set) {
         setElement.style.alignItems = 'center';
         setElement.style.transition = 'none';
         
-        // S'assurer que les valeurs ne soient pas undefined
         const repsValue = set.reps !== undefined ? set.reps : userProfile.defaultReps;
         const weightValue = set.weight !== undefined ? set.weight : userProfile.defaultWeight;
         
-        // NOUVELLE LOGIQUE: Affichage des informations historiques
         let previousSetInfo = '';
         if (isRedoWorkout && historicalSet) {
-            // Pour une reprise: montrer les valeurs exactes de la série historique correspondante
             previousSetInfo = `
                 <div class="previous-set-info-compact" style="grid-column: 1 / -1; font-size: 9px; color: var(--text-secondary); margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border); font-style: italic;">
                     <i class="fas fa-history" style="margin-right: 4px;"></i>Série précédente (historique): ${historicalSet.reps} reps × ${historicalSet.weight}kg
                 </div>
             `;
         } else if (setIndex > 0) {
-            // Pour une nouvelle séance sans historique: montrer la série précédente de CETTE séance
             const prevSet = activeWorkout.exercises[exerciseIndex].sets[setIndex - 1];
             if (prevSet) {
                 const prevReps = prevSet.reps !== undefined ? prevSet.reps : userProfile.defaultReps;
@@ -12338,13 +12863,12 @@ function createSetElement(exerciseIndex, setIndex, set) {
                 `;
             }
         } else if (!isRedoWorkout) {
-            // Pour la première série d'une nouvelle séance sans historique: montrer la dernière performance globale
             const exerciseName = activeWorkout.exercises[exerciseIndex].name;
             const previousData = findPreviousExerciseData(exerciseName);
             if (previousData) {
                 previousSetInfo = `
                     <div class="previous-set-info-compact" style="grid-column: 1 / -1; font-size: 9px; color: var(--text-secondary); margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border); font-style: italic;">
-                        <i class="fas fa-history" style="margin-right: 4px;"></i>Dernière performance (séance différente): ${previousData.reps} reps × ${previousData.weight}kg
+                        <i class="fas fa-history" style="margin-right: 4px;"></i>Dernière performance: ${previousData.reps} reps × ${previousData.weight}kg
                     </div>
                 `;
             }
@@ -12380,6 +12904,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
                               height: 36px;" 
                        value="${repsValue}" 
                        oninput="updateSet(${exerciseIndex}, ${setIndex}, 'reps', this.value)" 
+			onclick="this.select()"  // ✅ NOUVEAU
                        ${set.completed ? 'disabled' : ''}>
             </div>
             
@@ -12399,7 +12924,8 @@ function createSetElement(exerciseIndex, setIndex, set) {
                               font-weight: 700; 
                               height: 36px;" 
                        value="${weightValue}" 
-                       oninput="updateSet(${exerciseIndex}, ${setIndex}, 'weight', this.value)" 
+                       oninput="updateSet(${exerciseIndex}, ${setIndex}, 'weight', this.value)"
+			onclick="this.select()"  // ✅ NOUVEAU 
                        ${set.completed ? 'disabled' : ''}>
             </div>
             
@@ -12452,26 +12978,22 @@ function createSetElement(exerciseIndex, setIndex, set) {
         return setElement;
     }
     
-    // MODE NON-COMPACT
+    // MODE NON-COMPACT (code existant, non modifié)
     const setElement = document.createElement('div');
     setElement.className = `set-item ${set.completed ? 'completed' : ''}`;
     setElement.id = `set-${exerciseIndex}-${setIndex}`;
     
-    // S'assurer que les valeurs sont définies
     const repsValue = set.reps !== undefined ? set.reps : userProfile.defaultReps;
     const weightValue = set.weight !== undefined ? set.weight : userProfile.defaultWeight;
     
-    // NOUVELLE LOGIQUE: Affichage des informations historiques
     let previousSetInfo = '';
     if (isRedoWorkout && historicalSet) {
-        // Pour une reprise: montrer les valeurs exactes de la série historique correspondante
         previousSetInfo = `
             <div class="previous-set-info">
                 <i class="fas fa-history"></i> Série précédente (historique): ${historicalSet.reps} reps × ${historicalSet.weight}kg
             </div>
         `;
     } else if (setIndex > 0) {
-        // Pour une nouvelle séance sans historique: montrer la série précédente de CETTE séance
         const prevSet = activeWorkout.exercises[exerciseIndex].sets[setIndex-1];
         if (prevSet) {
             previousSetInfo = `
@@ -12481,13 +13003,12 @@ function createSetElement(exerciseIndex, setIndex, set) {
             `;
         }
     } else if (!isRedoWorkout) {
-        // Pour la première série d'une nouvelle séance sans historique: montrer la dernière performance globale
         const exerciseName = activeWorkout.exercises[exerciseIndex].name;
         const previousData = findPreviousExerciseData(exerciseName);
         if (previousData) {
             previousSetInfo = `
                 <div class="previous-set-info">
-                    <i class="fas fa-history"></i> Dernière performance (séance différente): ${previousData.reps} reps × ${previousData.weight}kg
+                    <i class="fas fa-history"></i> Dernière performance: ${previousData.reps} reps × ${previousData.weight}kg
                 </div>
             `;
         }
@@ -12520,6 +13041,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
                 </div>
                 <input type="text" class="number-input" value="${repsValue}" 
                        oninput="updateSet(${exerciseIndex}, ${setIndex}, 'reps', this.value)" 
+			onclick="this.select()"  // ✅ NOUVEAU
                        ${set.completed ? 'disabled' : ''}>
             </div>
             
@@ -12529,6 +13051,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
                 </div>
                 <input type="number" class="number-input" value="${weightValue}" 
                        oninput="updateSet(${exerciseIndex}, ${setIndex}, 'weight', this.value)" 
+			onclick="this.select()"  // ✅ NOUVEAU
                        ${set.completed ? 'disabled' : ''}>
             </div>
         </div>
@@ -12646,6 +13169,13 @@ function completeSet(exerciseIndex, setIndex) {
         activeWorkout.completedSets++;
         
         recalculateTotalWeight();
+        
+        // 🔴 CORRECTION: Forcer le mode d'affichage avant mise à jour
+        const useCompactMode = exercise.compactModeOverride !== undefined 
+            ? exercise.compactModeOverride 
+            : settings.compactMode;
+        exercise._tempDisplayMode = useCompactMode;
+        
         updateSetDisplay(exerciseIndex, setIndex);
         
         // ALERTE SONORE ET VIBRATION POUR SÉRIE TERMINÉE
@@ -12683,6 +13213,13 @@ function completeSet(exerciseIndex, setIndex) {
         activeWorkout.completedSets++;
         
         recalculateTotalWeight();
+        
+        // 🔴 CORRECTION: Forcer le mode d'affichage avant mise à jour
+        const useCompactMode = exercise.compactModeOverride !== undefined 
+            ? exercise.compactModeOverride 
+            : settings.compactMode;
+        exercise._tempDisplayMode = useCompactMode;
+        
         updateSetDisplay(exerciseIndex, setIndex);
         
         // ALERTE SONORE ET VIBRATION POUR SÉRIE TERMINÉE
@@ -12709,7 +13246,6 @@ function completeSet(exerciseIndex, setIndex) {
         }
         
         showNotification('Série terminée !');
-        // Pas de progression automatique pour les séances normales
     }
 }
 
@@ -12754,6 +13290,14 @@ function toggleSetCompletion(exerciseIndex, setIndex) {
         // Recalculer le poids total
         recalculateTotalWeight();
         
+        // 🔴 CORRECTION: Forcer le mode d'affichage avant mise à jour
+        const useCompactMode = exercise.compactModeOverride !== undefined 
+            ? exercise.compactModeOverride 
+            : settings.compactMode;
+        
+        // Stocker temporairement pour updateSetDisplay
+        exercise._tempDisplayMode = useCompactMode;
+        
         // Mettre à jour l'affichage
         updateSetDisplay(exerciseIndex, setIndex);
         
@@ -12768,11 +13312,41 @@ function updateSetDisplay(exerciseIndex, setIndex) {
     const set = activeWorkout.exercises[exerciseIndex].sets[setIndex];
     const exercise = activeWorkout.exercises[exerciseIndex];
     
-    // Vérifier si cette série doit être mise en évidence dans un superset
+    // 🔴 CORRECTION: Déterminer le mode d'affichage
+    const useCompactMode = exercise._tempDisplayMode !== undefined 
+        ? exercise._tempDisplayMode 
+        : (exercise.compactModeOverride !== undefined 
+            ? exercise.compactModeOverride 
+            : settings.compactMode);
+    
+    // Nettoyer la variable temporaire
+    delete exercise._tempDisplayMode;
+    
     const isSupersetActive = exercise.supersetId && !set.completed;
     
-    setElement.className = `set-item ${set.completed ? 'completed' : ''} ${isSupersetActive ? 'superset-active' : ''}`;
+    // 🔴 CORRECTION: Appliquer la classe CSS selon le mode
+    if (useCompactMode) {
+        // Mode compact - fond vert complet
+        setElement.className = `set-item-compact ${set.completed ? 'completed' : ''} ${isSupersetActive ? 'superset-active' : ''}`;
+        if (set.completed) {
+            setElement.style.background = 'var(--success)';
+            setElement.style.borderColor = 'var(--success)';
+            setElement.style.color = 'white';
+        } else {
+            setElement.style.background = '';
+            setElement.style.borderColor = '';
+            setElement.style.color = '';
+        }
+    } else {
+        // Mode normal - seulement le contour vert
+        setElement.className = `set-item ${set.completed ? 'completed' : ''} ${isSupersetActive ? 'superset-active' : ''}`;
+        // Réinitialiser le fond (le CSS gère le contour)
+        setElement.style.background = '';
+        setElement.style.borderColor = '';
+        setElement.style.color = '';
+    }
     
+    // Désactiver/activer les inputs
     const inputs = setElement.querySelectorAll('.number-input');
     inputs.forEach(input => {
         input.disabled = set.completed;
@@ -12781,11 +13355,7 @@ function updateSetDisplay(exerciseIndex, setIndex) {
     const completeButton = setElement.querySelector('.action-btn');
     if (completeButton) {
         completeButton.disabled = set.completed;
-        if (set.completed) {
-            completeButton.style.opacity = '0.5';
-        } else {
-            completeButton.style.opacity = '1';
-        }
+        completeButton.style.opacity = set.completed ? '0.5' : '1';
     }
     
     const checkbox = setElement.querySelector('.checkbox');
@@ -14165,6 +14735,18 @@ function addToWorkout(exerciseId) {
 }
 
 function showSaveDataModal() {
+    // 🔴 CORRECTION: Ajouter un indicateur visuel
+    const modal = document.getElementById('save-data-modal');
+    const messageEl = modal.querySelector('.save-data-message');
+    if (messageEl) {
+        messageEl.innerHTML = `
+            <div style="text-align: center; padding: 10px;">
+                <i class="fas fa-history" style="font-size: 24px; color: var(--primary); margin-bottom: 10px;"></i>
+                <p>Votre séance sera sauvegardée et vous serez redirigé vers l'historique.</p>
+            </div>
+        `;
+    }
+    
     showModal('save-data-modal');
 }
 
@@ -14176,42 +14758,39 @@ function saveWorkoutData(saveToHistory = true) {
     
     if (saveToHistory) {
         // SAUVEGARDE DES SUPERSETS POUR CETTE SÉANCE UNIQUEMENT
-const supersetInfo = {};
-
-// Collecter les supersets avec leur ORDRE ORIGINAL dans la séance
-activeWorkout.exercises.forEach((exercise, index) => {
-    if (exercise.supersetId) {
-        if (!supersetInfo[exercise.supersetId]) {
-            supersetInfo[exercise.supersetId] = {
-                id: exercise.supersetId,
-                name: exercise.supersetName || `Superset`,
-                color: exercise.supersetColor || '#8B5CF6',
-                exercises: [],
-                // NOUVEAU: Sauvegarder l'index original pour maintenir l'ordre
-                originalOrder: []
-            };
-        }
+        const supersetInfo = {};
         
-        // Sauvegarder l'exercice avec son index ORIGINAL dans la séance
-        supersetInfo[exercise.supersetId].exercises.push({
-            originalIndex: index, // Index dans la séance active
-            exerciseIndex: index, // Garder pour compatibilité
-            name: exercise.name,
-            order: exercise.supersetOrder || 1,
-            notes: exercise.notes || '' // Sauvegarder les notes aussi
+        // Collecter les supersets avec leur ORDRE ORIGINAL dans la séance
+        activeWorkout.exercises.forEach((exercise, index) => {
+            if (exercise.supersetId) {
+                if (!supersetInfo[exercise.supersetId]) {
+                    supersetInfo[exercise.supersetId] = {
+                        id: exercise.supersetId,
+                        name: exercise.supersetName || `Superset`,
+                        color: exercise.supersetColor || '#8B5CF6',
+                        exercises: [],
+                        originalOrder: []
+                    };
+                }
+                
+                supersetInfo[exercise.supersetId].exercises.push({
+                    originalIndex: index,
+                    exerciseIndex: index,
+                    name: exercise.name,
+                    order: exercise.supersetOrder || 1,
+                    notes: exercise.notes || ''
+                });
+                
+                supersetInfo[exercise.supersetId].originalOrder.push(index);
+            }
         });
         
-        // Garder la trace de l'ordre
-        supersetInfo[exercise.supersetId].originalOrder.push(index);
-    }
-});
-
-// Trier les supersets par leur premier exercice pour maintenir l'ordre
-const sortedSupersetInfo = Object.values(supersetInfo).sort((a, b) => {
-    const firstA = Math.min(...a.originalOrder);
-    const firstB = Math.min(...b.originalOrder);
-    return firstA - firstB;
-});
+        // Trier les supersets par leur premier exercice pour maintenir l'ordre
+        const sortedSupersetInfo = Object.values(supersetInfo).sort((a, b) => {
+            const firstA = Math.min(...a.originalOrder);
+            const firstB = Math.min(...b.originalOrder);
+            return firstA - firstB;
+        });
         
         // Sauvegarder dans l'historique
         const historyEntry = {
@@ -14219,51 +14798,60 @@ const sortedSupersetInfo = Object.values(supersetInfo).sort((a, b) => {
             name: activeWorkout.name,
             date: new Date().toISOString(),
             duration: duration,
-exercises: activeWorkout.exercises.map(exercise => ({
-    name: exercise.name,
-    muscleGroup: exercise.muscleGroup,
-    sets: exercise.sets.filter(set => set.completed).map(set => ({
-        reps: set.reps,
-        weight: set.weight
-    })),
-    // CORRECTION: Sauvegarder les infos de superset
-    supersetId: exercise.supersetId,
-    supersetName: exercise.supersetName,
-    supersetColor: exercise.supersetColor,
-    supersetOrder: exercise.supersetOrder,
-    customRest: exercise.customRest || userProfile.defaultRest,
-    // CORRECTION: BIEN sauvegarder les notes
-                notes: exercise.notes || '',  // S'assurer que c'est sauvegardé
-// SAUVEGARDER LE MODE COMPACT POUR CET EXERCICE
-    compactModeOverride: exercise.compactModeOverride
+            exercises: activeWorkout.exercises.map(exercise => ({
+                name: exercise.name,
+                muscleGroup: exercise.muscleGroup,
+                sets: exercise.sets.filter(set => set.completed).map(set => ({
+                    reps: set.reps,
+                    weight: set.weight
+                })),
+                supersetId: exercise.supersetId,
+                supersetName: exercise.supersetName,
+                supersetColor: exercise.supersetColor,
+                supersetOrder: exercise.supersetOrder,
+                customRest: exercise.customRest || userProfile.defaultRest,
+                notes: exercise.notes || '',
+                compactModeOverride: exercise.compactModeOverride
             })),
             stats: {
                 totalSets: activeWorkout.completedSets,
                 totalWeight: activeWorkout.totalWeight,
                 totalExercises: activeWorkout.exercises.length
             },
-            // CORRECTION: Sauvegarder les supersets TRIÉS par ordre original
-supersets: sortedSupersetInfo
+            supersets: sortedSupersetInfo
         };
         
         workoutHistory.unshift(historyEntry);
         saveToLocalStorage();
-        showNotification('Séance sauvegardée dans l\'historique avec supersets !');
+        showNotification('Séance sauvegardée dans l\'historique !');
     }
     
     // Fermer le modal
     hideModal('save-data-modal');
     
+    // 🔴 CORRECTION: Rediriger vers l'historique AVANT de réinitialiser
+    showScreen('history-screen');
+    
     // Réinitialiser la séance active
     completeWorkout();
+    
+    // 🔴 CORRECTION: Forcer le chargement de l'historique
+    setTimeout(() => {
+        loadWorkoutHistory();
+        // Activer l'onglet "Séances" dans l'historique
+        showHistoryTab('workouts');
+    }, 100);
 }
 
 function completeWorkoutWithoutSaving() {
     if (confirm('Êtes-vous sûr de vouloir abandonner cette séance sans la sauvegarder ?')) {
         completeWorkout();
-    hideModal('save-data-modal');
-    showNotification('Séance abandonnée');
-}
+        hideModal('save-data-modal');
+        
+        // 🔴 CORRECTION: Rediriger vers l'accueil (pas l'historique)
+        showScreen('home-screen');
+        showNotification('Séance abandonnée');
+    }
 }
 
 function completeWorkout() {
@@ -14275,7 +14863,9 @@ function completeWorkout() {
     activeWorkout = null;
     activeWorkoutStartTime = null;
     
-    showScreen('home-screen');
+    // 🔴 CORRECTION: NE PAS changer d'écran ici
+    // La redirection est gérée par saveWorkoutData()
+    // showScreen('home-screen'); ← À SUPPRIMER
 }
 
 function forceExitWorkout() {
@@ -14566,64 +15156,88 @@ function closeTimerWithSupersetCheck() {
 
 // ==================== GESTION DE LA NUTRITION ====================
 function updateDailyNutritionDisplay() {
+    // 1. FORCER le recalcul avant affichage
+    calculateDailyNutritionFromMeals();
+    
+    // 2. Récupérer les besoins nutritionnels CALCULÉS
     const calorieNeeds = userProfile.calorieNeeds || 2500;
     const proteinNeeds = userProfile.proteinNeeds || 150;
     const carbsNeeds = userProfile.carbsNeeds || 300;
     const fatNeeds = userProfile.fatNeeds || 70;
     
-	// FORCER le recalcul avant affichage (sécurité)
-    calculateDailyNutritionFromMeals();
-
+    // 3. Récupérer les consommations du jour
     const calories = dailyNutrition.calories || 0;
     const protein = dailyNutrition.protein || 0;
     const carbs = dailyNutrition.carbs || 0;
     const fat = dailyNutrition.fat || 0;
     
-	// Log de débogage
-    console.log('Affichage nutrition:', {
-        calories,
-        protein,
-        carbs,
-        fat,
-        mealsCount: dailyNutrition.meals.length
-    });
-
-    // Mettre à jour les valeurs
-    document.getElementById('daily-calories').textContent = `${calories}/${calorieNeeds} kcal`;
+    // 4. Calculer les pourcentages d'atteinte
+    const caloriesPercent = Math.min(100, Math.round((calories / calorieNeeds) * 100));
+    const proteinPercent = Math.min(100, Math.round((protein / proteinNeeds) * 100));
+    const carbsPercent = Math.min(100, Math.round((carbs / carbsNeeds) * 100));
+    const fatPercent = Math.min(100, Math.round((fat / fatNeeds) * 100));
+    
+    // 5. Mettre à jour les valeurs avec formatage
+    document.getElementById('daily-calories').textContent = `${calories.toLocaleString()}/${calorieNeeds.toLocaleString()} kcal`;
     document.getElementById('daily-protein').textContent = `${protein}g`;
     document.getElementById('daily-carbs').textContent = `${carbs}g`;
     document.getElementById('daily-fat').textContent = `${fat}g`;
     
-    // Mettre à jour les cibles
+    // 6. Mettre à jour les cibles
     document.getElementById('protein-target').textContent = `/${proteinNeeds}g`;
     document.getElementById('carbs-target').textContent = `/${carbsNeeds}g`;
     document.getElementById('fat-target').textContent = `/${fatNeeds}g`;
     
-    // Calculer les restants
+    // 7. Mettre à jour les barres de progression
+document.getElementById('calories-progress').style.width = `${caloriesPercent}%`;
+document.getElementById('protein-progress').style.width = `${proteinPercent}%`;
+document.getElementById('carbs-progress').style.width = `${carbsPercent}%`;
+document.getElementById('fat-progress').style.width = `${fatPercent}%`;
+
+// 8. Mettre à jour les pourcentages d'affichage
+document.getElementById('protein-percentage').textContent = `${proteinPercent}%`;
+document.getElementById('carbs-percentage').textContent = `${carbsPercent}%`;
+document.getElementById('fat-percentage').textContent = `${fatPercent}%`;
+    
+    // 9. Calculer les restants avec formatage intelligent
     const caloriesRemaining = calorieNeeds - calories;
     const proteinRemaining = proteinNeeds - protein;
     const carbsRemaining = carbsNeeds - carbs;
     const fatRemaining = fatNeeds - fat;
     
-    // Mettre à jour les affichages des restants
+    // 10. Mettre à jour les affichages des restants
     const caloriesBalance = document.getElementById('calories-balance');
-    caloriesBalance.textContent = `${caloriesRemaining >= 0 ? '+' : ''}${caloriesRemaining} kcal ${caloriesRemaining >= 0 ? 'restantes' : 'en excès'}`;
-    caloriesBalance.className = `calories-balance ${caloriesRemaining >= 0 ? 'positive' : 'negative'}`;
+    if (caloriesBalance) {
+        caloriesBalance.textContent = `${caloriesRemaining >= 0 ? '+' : ''}${caloriesRemaining.toLocaleString()} kcal ${caloriesRemaining >= 0 ? 'restantes' : 'en excès'}`;
+        caloriesBalance.className = `calories-balance ${caloriesRemaining >= 0 ? 'positive' : 'negative'}`;
+    }
     
-    document.getElementById('protein-remaining').textContent = `${proteinRemaining >= 0 ? '+' : ''}${proteinRemaining}g ${proteinRemaining >= 0 ? 'restants' : 'en excès'}`;
-    document.getElementById('protein-remaining').className = `macro-remaining ${proteinRemaining >= 0 ? 'positive' : 'negative'}`;
+    const proteinRemainingEl = document.getElementById('protein-remaining');
+    if (proteinRemainingEl) {
+        proteinRemainingEl.textContent = `${proteinRemaining >= 0 ? '+' : ''}${proteinRemaining}g ${proteinRemaining >= 0 ? 'restants' : 'en excès'}`;
+        proteinRemainingEl.className = `macro-remaining ${proteinRemaining >= 0 ? 'positive' : 'negative'}`;
+    }
     
-    document.getElementById('carbs-remaining').textContent = `${carbsRemaining >= 0 ? '+' : ''}${carbsRemaining}g ${carbsRemaining >= 0 ? 'restants' : 'en excès'}`;
-    document.getElementById('carbs-remaining').className = `macro-remaining ${carbsRemaining >= 0 ? 'positive' : 'negative'}`;
+    const carbsRemainingEl = document.getElementById('carbs-remaining');
+    if (carbsRemainingEl) {
+        carbsRemainingEl.textContent = `${carbsRemaining >= 0 ? '+' : ''}${carbsRemaining}g ${carbsRemaining >= 0 ? 'restants' : 'en excès'}`;
+        carbsRemainingEl.className = `macro-remaining ${carbsRemaining >= 0 ? 'positive' : 'negative'}`;
+    }
     
-    document.getElementById('fat-remaining').textContent = `${fatRemaining >= 0 ? '+' : ''}${fatRemaining}g ${fatRemaining >= 0 ? 'restants' : 'en excès'}`;
-    document.getElementById('fat-remaining').className = `macro-remaining ${fatRemaining >= 0 ? 'positive' : 'negative'}`;
+    const fatRemainingEl = document.getElementById('fat-remaining');
+    if (fatRemainingEl) {
+        fatRemainingEl.textContent = `${fatRemaining >= 0 ? '+' : ''}${fatRemaining}g ${fatRemaining >= 0 ? 'restants' : 'en excès'}`;
+        fatRemainingEl.className = `macro-remaining ${fatRemaining >= 0 ? 'positive' : 'negative'}`;
+    }
     
-    // Mettre à jour la barre de progression des calories
-    const caloriesProgress = Math.min(100, (calories / calorieNeeds) * 100);
-    document.getElementById('calories-progress').style.width = `${caloriesProgress}%`;
+    // 11. Log de débogage
+    console.log('🍽️ MISE À JOUR NUTRITION:', {
+        besoins: `${calorieNeeds} kcal | P:${proteinNeeds}g | C:${carbsNeeds}g | L:${fatNeeds}g`,
+        consommes: `${calories} kcal | P:${protein}g | C:${carbs}g | L:${fat}g`,
+        pourcentages: `${caloriesPercent}% | P:${proteinPercent}% | C:${carbsPercent}% | L:${fatPercent}%`
+    });
     
-    // Mettre à jour la liste des repas
+    // 12. Mettre à jour la liste des repas
     updateMealsList();
 }
 
@@ -14647,8 +15261,7 @@ function updateMealsList() {
     
     container.innerHTML = '';
     
-    // FILTRER POUR N'AFFICHER QUE LES REPAS D'AUJOURD'HUI
-    const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
     
     const todaysMeals = dailyNutrition.meals.filter(meal => {
         const mealDate = new Date(meal.date).toISOString().split('T')[0];
@@ -14661,7 +15274,7 @@ function updateMealsList() {
                 <div class="empty-state-icon">🍽️</div>
                 <p>Aucun repas aujourd'hui</p>
                 <p style="font-size: var(--font-size-sm); margin-top: 6px;">Ajoutez votre premier repas !</p>
-                <button class="btn btn-success mt-4" onclick="showAddMealModal(false)">
+                <button class="btn-add-meal mt-4" onclick="showAddMealModal(false)">
                     <i class="fas fa-plus"></i> Ajouter un repas
                 </button>
             </div>
@@ -14669,20 +15282,14 @@ function updateMealsList() {
         return;
     }
     
-    // Afficher seulement les repas d'aujourd'hui
     todaysMeals.forEach((meal, index) => {
-        // Trouver l'index original dans dailyNutrition.meals
         const originalIndex = dailyNutrition.meals.findIndex(m => m.id === meal.id);
         
-        // Créer la carte du repas
         const mealBox = document.createElement('div');
         mealBox.className = 'meal-item-improved';
+        mealBox.dataset.mealId = String(meal.id); // ✅ FORCER STRING
         
-        // Calculer les totaux du repas
-        let mealCalories = 0;
-        let mealProtein = 0;
-        let mealCarbs = 0;
-        let mealFat = 0;
+        let mealCalories = 0, mealProtein = 0, mealCarbs = 0, mealFat = 0;
         
         meal.foods.forEach(foodItem => {
             const food = getAllFoods().find(f => f.id === foodItem.foodId);
@@ -14694,6 +15301,9 @@ function updateMealsList() {
                 mealFat += food.fat * ratio;
             }
         });
+        
+        // ✅ CORRECTION CRITIQUE : UTILISER DES GUILLEMETS DOUBLES POUR L'ID
+        const mealId = String(meal.id);
         
         mealBox.innerHTML = `
             <div class="meal-header-improved">
@@ -14707,45 +15317,184 @@ function updateMealsList() {
                 </span>
             </div>
             <div class="meal-macros-improved">
-                <div class="meal-macro-improved calories-macro">
-                    <div class="meal-macro-value-improved">${Math.round(mealCalories)}</div>
-                    <div class="meal-macro-label-improved">Calories</div>
-                </div>
                 <div class="meal-macro-improved protein-macro">
                     <div class="meal-macro-value-improved">${Math.round(mealProtein)}</div>
-                    <div class="meal-macro-label-improved">Protéines</div>
+                    <div class="meal-macro-label-improved">Prot</div>
                 </div>
                 <div class="meal-macro-improved carbs-macro">
                     <div class="meal-macro-value-improved">${Math.round(mealCarbs)}</div>
-                    <div class="meal-macro-label-improved">Glucides</div>
+                    <div class="meal-macro-label-improved">Gluc</div>
                 </div>
                 <div class="meal-macro-improved fat-macro">
                     <div class="meal-macro-value-improved">${Math.round(mealFat)}</div>
-                    <div class="meal-macro-label-improved">Lipides</div>
+                    <div class="meal-macro-label-improved">Lip</div>
+                </div>
+                <div class="meal-macro-improved calories-macro">
+                    <div class="meal-macro-value-improved">${Math.round(mealCalories)}</div>
+                    <div class="meal-macro-label-improved">kcal</div>
                 </div>
             </div>
+            
+            <div class="meal-actions-improved">
+                <button class="action-btn" onclick='viewMealDetails("${mealId}")'>
+                    <i class="fas fa-eye"></i> Détails
+                </button>
+                <button class="action-btn" onclick='editMeal("${mealId}")' style="background: var(--gradient-primary); color: white; border: none;">
+                    <i class="fas fa-edit"></i> Modifier
+                </button>
+                <button class="action-btn" onclick='deleteMealById("${mealId}")' style="background: var(--gradient-danger); color: white; border: none;">
+                    <i class="fas fa-trash"></i> Supprimer
+                </button>
+            </div>
+            
             ${meal.notes ? `
-                <div class="meal-notes-improved" style="margin-top: 16px; padding: 12px; background: var(--card-bg); border-radius: var(--radius-sm); border-left: 3px solid var(--success);">
-                    <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">Notes:</div>
-                    <div style="color: var(--text-secondary); font-size: var(--font-size-sm); white-space: pre-wrap;">${meal.notes}</div>
+                <div class="meal-notes">
+                    <i class="fas fa-pencil-alt"></i> ${meal.notes}
                 </div>
             ` : ''}
-            <div class="meal-actions-improved">
-    <button class="action-btn" onclick="showMealDetailCurrent(${originalIndex})">
-        <i class="fas fa-eye"></i> Détail
-    </button>
-    <button class="action-btn" onclick="deleteMeal(${originalIndex})" data-meal-id="${meal.id}">
-        <i class="fas fa-trash"></i> Supprimer
-    </button>
-</div>
         `;
         
         container.appendChild(mealBox);
     });
     
-    // Mettre à jour le compteur des repas d'aujourd'hui
     updateTodaysMealCount(todaysMeals.length);
 }
+
+// ==================== MODIFICATION D'UN REPAS PAR ID ====================
+function editMeal(mealId) {
+    console.log('editMeal appelé avec ID:', mealId, 'TYPE:', typeof mealId);
+    
+    // ✅ CONVERTIR EN STRING QUOI QU'IL ARRIVE
+    mealId = String(mealId);
+    console.log('editMeal après conversion:', mealId, 'TYPE:', typeof mealId);
+    
+    // 1. VÉRIFIER QUE mealId EST VALIDE
+    if (!mealId) {
+        console.error('ID de repas invalide');
+        showNotification('Erreur: ID de repas invalide', 'error');
+        return;
+    }
+    
+    // 2. CHERCHER DANS dailyNutrition.meals
+    let meal = dailyNutrition.meals.find(m => m.id === mealId);
+    let mealIndex = dailyNutrition.meals.findIndex(m => m.id === mealId);
+    
+    // 3. SI PAS TROUVÉ, CHERCHER DANS nutritionHistory
+    if (!meal) {
+        console.log('Repas non trouvé dans daily, recherche dans history...');
+        meal = nutritionHistory.find(m => m.id === mealId);
+        
+        // Si trouvé dans history, l'ajouter à daily pour modification
+        if (meal) {
+            console.log('Repas trouvé dans history, ajout à daily');
+            dailyNutrition.meals.push({...meal});
+            mealIndex = dailyNutrition.meals.length - 1;
+            meal = dailyNutrition.meals[mealIndex];
+        }
+    }
+    
+    // 4. SI TOUJOURS PAS TROUVÉ → ERREUR
+    if (!meal) {
+        console.error('Repas non trouvé avec ID:', mealId);
+        showNotification('Erreur: repas non trouvé', 'error');
+        return;
+    }
+    
+    console.log('Repas à éditer:', meal);
+    
+    // 5. GARANTIR QUE LE REPAS A UN ID
+    if (!meal.id) {
+        meal.id = mealId || `meal_${Date.now()}_${mealIndex}`;
+        saveToLocalStorage();
+    }
+    
+    // 6. Remplir le formulaire d'édition
+    document.getElementById('edit-meal-name').value = meal.name || '';
+    document.getElementById('edit-meal-type').value = meal.type || 'petit-dejeuner';
+    document.getElementById('edit-meal-notes').value = meal.notes || '';
+    
+    // 7. Mettre à jour les boutons de type de repas
+    const typeOptions = document.querySelectorAll('#edit-meal-type-options .meal-type-option');
+    typeOptions.forEach(option => {
+        option.classList.remove('active');
+        const optionValue = option.getAttribute('data-value');
+        if (optionValue === meal.type) {
+            option.classList.add('active');
+        }
+    });
+    
+    // 8. Vider et remplir la liste des aliments
+    const foodsList = document.getElementById('edit-meal-foods-list');
+    foodsList.innerHTML = '';
+    
+    if (meal.foods && meal.foods.length > 0) {
+        meal.foods.forEach(foodItem => {
+            const food = getAllFoods().find(f => f.id === foodItem.foodId);
+            if (food) {
+                const foodElement = document.createElement('div');
+                foodElement.className = 'meal-food-item';
+                foodElement.dataset.foodId = foodItem.foodId;
+                foodElement.dataset.quantity = foodItem.quantity;
+                
+                const ratio = foodItem.quantity / food.quantity;
+                const calories = Math.round(food.calories * ratio);
+                const protein = Math.round(food.protein * ratio);
+                const carbs = Math.round(food.carbs * ratio);
+                const fat = Math.round(food.fat * ratio);
+                
+                foodElement.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 700; margin-bottom: 3px;">${food.name}</div>
+                            <div class="food-calories-display" style="font-size: var(--font-size-xs); color: var(--text-secondary);">
+                                ${calories} kcal (P:${protein}g C:${carbs}g L:${fat}g)
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="number" class="quantity-input" value="${foodItem.quantity}" style="width: 70px;" 
+                                   oninput="updateFoodQuantityAndCalories(this, '${food.id}')">
+                            <button class="action-btn" onclick="removeFoodFromMeal(this)" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                foodsList.appendChild(foodElement);
+            }
+        });
+    }
+    
+    // 9. Stocker l'ID du repas dans le modal
+    document.getElementById('edit-meal-modal').dataset.mealId = meal.id;
+    document.getElementById('edit-meal-modal').dataset.mealIndex = mealIndex;
+    
+    // 10. Ouvrir le modal
+    showModal('edit-meal-modal');
+}
+
+// ==================== AFFICHAGE DES DÉTAILS D'UN REPAS ====================
+function viewMealDetails(mealId) {
+    console.log('viewMealDetails appelé avec ID:', mealId);
+    
+    // Chercher d'abord dans dailyNutrition.meals
+    let meal = dailyNutrition.meals.find(m => m.id === mealId);
+    
+    // Si pas trouvé, chercher dans nutritionHistory
+    if (!meal) {
+        meal = nutritionHistory.find(m => m.id === mealId);
+    }
+    
+    if (!meal) {
+        console.error('Repas non trouvé avec ID:', mealId);
+        showNotification('Erreur: repas non trouvé', 'error');
+        return;
+    }
+    
+    // Rediriger vers la fonction existante showMealDetail
+    showMealDetail(mealId);
+}
+
 
 function updateTodaysMealCount(count) {
     const counterElement = document.getElementById('todays-meal-count');
@@ -14852,98 +15601,6 @@ function selectEditMealType(type) {
     });
 }
 
-function editMeal(index) {
-    console.log('editMeal appelé avec index:', index);
-    const meal = dailyNutrition.meals[index];
-    
-    if (!meal) {
-        console.error('Aucun repas trouvé');
-        showNotification('Erreur: repas non trouvé', 'error');
-        return;
-    }
-    
-    // GARANTIR que le repas a un ID unique
-    if (!meal.id) {
-        meal.id = `meal_${Date.now()}_${index}`;
-        console.log('ID généré pour le repas:', meal.id);
-        saveToLocalStorage();
-    }
-    
-    console.log('Repas à éditer:', {
-        id: meal.id,
-        name: meal.name,
-        type: meal.type,
-        notes: meal.notes,
-        foodsCount: meal.foods.length
-    });
-    
-    // Remplir le formulaire
-    document.getElementById('edit-meal-name').value = meal.name;
-    document.getElementById('edit-meal-type').value = meal.type;
-    document.getElementById('edit-meal-notes').value = meal.notes || '';
-    
-    console.log('Valeurs du formulaire:', {
-        name: document.getElementById('edit-meal-name').value,
-        type: document.getElementById('edit-meal-type').value,
-        notes: document.getElementById('edit-meal-notes').value
-    });
-    
-    // Mettre à jour les boutons de type de repas
-    const typeOptions = document.querySelectorAll('#edit-meal-type-options .meal-type-option');
-    console.log('Nombre de boutons type:', typeOptions.length);
-    
-    typeOptions.forEach(option => {
-        option.classList.remove('active');
-        const optionValue = option.getAttribute('data-value');
-        if (optionValue === meal.type) {
-            option.classList.add('active');
-            document.getElementById('edit-meal-type').value = meal.type;
-        }
-    });
-    
-    // Ajouter les aliments
-    const foodsList = document.getElementById('edit-meal-foods-list');
-    console.log('Conteneur aliments trouvé:', !!foodsList);
-    foodsList.innerHTML = '';
-    
-    console.log('Nombre d\'aliments dans le repas:', meal.foods.length);
-    meal.foods.forEach((foodItem, i) => {
-        const food = getAllFoods().find(f => f.id === foodItem.foodId);
-        console.log(`Aliment ${i}:`, food ? food.name : 'Non trouvé', 'ID:', foodItem.foodId);
-        
-        if (food) {
-            const foodElement = document.createElement('div');
-            foodElement.className = 'meal-food-item';
-            foodElement.dataset.foodId = foodItem.foodId;
-            foodElement.dataset.quantity = foodItem.quantity;
-            
-            foodElement.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <div style="font-weight: 700; margin-bottom: 3px;">${food.name}</div>
-                        <div class="food-calories-display" style="font-size: var(--font-size-xs); color: var(--text-secondary);">
-                            ${Math.round(food.calories * (foodItem.quantity / food.quantity))} kcal (P:${Math.round(food.protein * (foodItem.quantity / food.quantity))}g C:${Math.round(food.carbs * (foodItem.quantity / food.quantity))}g L:${Math.round(food.fat * (foodItem.quantity / food.quantity))}g)
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <input type="number" class="quantity-input" value="${foodItem.quantity}" style="width: 70px;" oninput="updateFoodQuantityAndCalories(this, '${food.id}')">
-                        <button class="action-btn" onclick="removeFoodFromMeal(this)" title="Supprimer">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            foodsList.appendChild(foodElement);
-        }
-    });
-    
-    // Stocker l'index ET l'ID pour une meilleure gestion
-    document.getElementById('edit-meal-modal').dataset.mealIndex = index;
-    document.getElementById('edit-meal-modal').dataset.mealId = meal.id;
-    
-    console.log('editMeal terminé, ID stocké:', meal.id);
-}
 
 function showFoodSearchModalForMeal() {
     showModal('food-search-modal');
@@ -15391,66 +16048,6 @@ function updateNutritionTotals() {
 
 // OU mieux : SUPPRIMER updateNutritionTotals() et utiliser calculateDailyNutritionFromMeals() partout
 
-function editMeal(index) {
-    console.log('editMeal appelé avec index:', index);
-    const meal = dailyNutrition.meals[index];
-    
-    if (!meal) {
-        console.error('Aucun repas trouvé');
-        showNotification('Erreur: repas non trouvé', 'error');
-        return;
-    }
-    
-    // Remplir le formulaire
-    document.getElementById('edit-meal-name').value = meal.name;
-    document.getElementById('edit-meal-type').value = meal.type;
-    document.getElementById('edit-meal-notes').value = meal.notes || '';
-    
-    // Mettre à jour les boutons de type de repas
-    document.querySelectorAll('#edit-meal-type-options .meal-type-option').forEach(option => {
-        option.classList.remove('active');
-        const optionValue = option.getAttribute('data-value');
-        if (optionValue === meal.type) {
-            option.classList.add('active');
-            document.getElementById('edit-meal-type').value = meal.type;
-        }
-    });
-    
-    // Ajouter les aliments
-    const foodsList = document.getElementById('edit-meal-foods-list');
-    foodsList.innerHTML = '';
-    
-    meal.foods.forEach(foodItem => {
-        const food = getAllFoods().find(f => f.id === foodItem.foodId);
-        if (food) {
-            const foodElement = document.createElement('div');
-            foodElement.className = 'meal-food-item';
-            foodElement.dataset.foodId = foodItem.foodId;
-            foodElement.dataset.quantity = foodItem.quantity;
-            
-            foodElement.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <div style="font-weight: 700; margin-bottom: 3px;">${food.name}</div>
-                        <div class="food-calories-display" style="font-size: var(--font-size-xs); color: var(--text-secondary);">
-                            ${Math.round(food.calories * (foodItem.quantity / food.quantity))} kcal (P:${Math.round(food.protein * (foodItem.quantity / food.quantity))}g C:${Math.round(food.carbs * (foodItem.quantity / food.quantity))}g L:${Math.round(food.fat * (foodItem.quantity / food.quantity))}g)
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <input type="number" class="quantity-input" value="${foodItem.quantity}" style="width: 70px;" oninput="updateFoodQuantityAndCalories(this, '${food.id}')">
-                        <button class="action-btn" onclick="removeFoodFromMeal(this)" title="Supprimer">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            foodsList.appendChild(foodElement);
-        }
-    });
-    
-    document.getElementById('edit-meal-modal').dataset.mealIndex = index;
-}
 
 function showFoodSearchModalForEdit() {
     showModal('food-search-modal');
@@ -15495,10 +16092,29 @@ function showFoodSearchModalForEdit() {
 }
 
 function saveEditedMeal() {
+    // 1. RÉCUPÉRER L'ID (prioritaire) ou l'index (fallback)
+    const mealId = document.getElementById('edit-meal-modal').dataset.mealId;
     const index = parseInt(document.getElementById('edit-meal-modal').dataset.mealIndex);
-    const originalId = document.getElementById('edit-meal-modal').dataset.mealId;
     
-    if (isNaN(index) || !dailyNutrition.meals[index]) {
+    let meal = null;
+    let mealIndex = -1;
+    
+    // 2. CHERCHER PAR ID D'ABORD
+    if (mealId) {
+        mealIndex = dailyNutrition.meals.findIndex(m => m.id === mealId);
+        if (mealIndex !== -1) {
+            meal = dailyNutrition.meals[mealIndex];
+        }
+    }
+    
+    // 3. SI PAS TROUVÉ PAR ID, UTILISER L'INDEX
+    if (!meal && !isNaN(index) && dailyNutrition.meals[index]) {
+        meal = dailyNutrition.meals[index];
+        mealIndex = index;
+    }
+    
+    // 4. SI TOUJOURS PAS TROUVÉ → ERREUR
+    if (!meal) {
         showNotification('Erreur: repas non trouvé', 'error');
         return;
     }
@@ -15526,13 +16142,12 @@ function saveEditedMeal() {
         return;
     }
     
-    // CONSERVER l'ID original ou utiliser celui stocké
-    const mealId = originalId || dailyNutrition.meals[index].id || `meal_${Date.now()}_${index}`;
+    // CONSERVER l'ID
+    const mealIdToSave = meal.id || `meal_${Date.now()}_${mealIndex}`;
     
     console.log('Sauvegarde repas modifié:', {
-        index,
-        originalId,
-        mealId,
+        index: mealIndex,
+        id: mealIdToSave,
         name,
         type,
         foodsCount: foods.length
@@ -15540,59 +16155,44 @@ function saveEditedMeal() {
     
     // Créer l'objet repas mis à jour
     const updatedMeal = {
-        id: mealId, // ID cohérent
+        id: mealIdToSave,
         name: name,
         type: type,
         foods: foods,
         notes: notes,
-        date: dailyNutrition.meals[index].date || new Date().toISOString() // Conserver la date originale
+        date: meal.date || new Date().toISOString()
     };
     
     // 1. Mettre à jour dans dailyNutrition.meals
-    dailyNutrition.meals[index] = updatedMeal;
+    dailyNutrition.meals[mealIndex] = updatedMeal;
     
     // 2. Mettre à jour ou ajouter dans nutritionHistory
-    const historyIndex = nutritionHistory.findIndex(m => m.id === mealId);
+    const historyIndex = nutritionHistory.findIndex(m => m.id === mealIdToSave);
     if (historyIndex !== -1) {
-        // Mettre à jour l'entrée existante
         nutritionHistory[historyIndex] = {...updatedMeal};
-        console.log('Repas mis à jour dans l\'historique à l\'index:', historyIndex);
     } else {
-        // Ajouter comme nouvelle entrée
         nutritionHistory.push({...updatedMeal});
-        console.log('Repas ajouté à l\'historique (nouvelle entrée)');
     }
     
-    // 3. Recalculer les totaux nutritionnels UNIQUEMENT pour les repas du jour
+    // 3. Recalculer les totaux nutritionnels
     calculateDailyNutritionFromMeals();
     
     // 4. Sauvegarder
     saveToLocalStorage();
     
-    // 5. Mettre à jour l'affichage de la page Nutrition
+    // 5. Mettre à jour l'affichage
     updateDailyNutritionDisplay();
     
-    // 6. Rafraîchir l'historique si on est sur la page Historique
+    // 6. Rafraîchir l'historique
     if (currentScreen === 'history-screen') {
-        setTimeout(refreshNutritionHistoryDisplay, 100);
+        refreshNutritionHistoryDisplay();
     }
     
-    // 7. Réinitialiser le formulaire
+    // 7. Réinitialiser et fermer
     resetEditMealForm();
-    
-    // 8. Fermer le modal
     hideModal('edit-meal-modal');
     
     showNotification('Repas modifié avec succès !');
-    
-    // Log de débogage
-    console.log('Repas sauvegardé:', {
-        id: mealId,
-        inDailyMeals: dailyNutrition.meals.find(m => m.id === mealId) !== undefined,
-        inHistory: nutritionHistory.find(m => m.id === mealId) !== undefined,
-        totalDailyMeals: dailyNutrition.meals.length,
-        totalHistory: nutritionHistory.length
-    });
 }
 
 function editFoodQuantity(foodId, currentQuantity) {
@@ -15760,17 +16360,14 @@ function deleteMealFromAllSources(mealId) {
     return deletedFromDaily || deletedFromHistory;
 }
 
-function deleteMeal(index) {
+// ==================== SUPPRESSION D'UN REPAS PAR ID ====================
+function deleteMealById(mealId) {
+    if (!mealId) {
+        showNotification('Erreur: ID de repas invalide', 'error');
+        return;
+    }
+    
     if (confirm('Êtes-vous sûr de vouloir supprimer ce repas ?')) {
-        // Récupérer le repas avant suppression
-        const mealToDelete = dailyNutrition.meals[index];
-        if (!mealToDelete) {
-            showNotification('Erreur: repas non trouvé', 'error');
-            return;
-        }
-        
-        const mealId = mealToDelete.id;
-        
         // Supprimer des DEUX sources
         const deleted = deleteMealFromAllSources(mealId);
         
@@ -15793,14 +16390,23 @@ function deleteMeal(index) {
     }
 }
 
+// Garder l'ancienne fonction pour compatibilité, mais rediriger
+function deleteMeal(index) {
+    const meal = dailyNutrition.meals[index];
+    if (meal && meal.id) {
+        deleteMealById(meal.id);
+    } else {
+        showNotification('Erreur: repas non trouvé', 'error');
+    }
+}
+
 // MODIFICATION: Fonction pour voir le détail d'un repas du jour
 function showMealDetailCurrent(index) {
     const meal = dailyNutrition.meals[index];
     if (!meal) return;
     
-	// Vérifier que le repas a un ID
+    // Vérifier que le repas a un ID
     if (!meal.id) {
-        // Générer un ID rétroactivement si manquant
         meal.id = `meal_${Date.now()}_${index}`;
         saveToLocalStorage();
     }
@@ -15840,55 +16446,66 @@ function showMealDetailCurrent(index) {
             </div>
             
             <div style="margin: 20px 0;">
-                <div style="margin-bottom: 20px;">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-        <!-- Première ligne : Calories et Protéines -->
-        <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
-            <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${Math.round(mealCalories)}</div>
-            <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">CALORIES</div>
-        </div>
-        <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
-            <div style="font-size: var(--font-size-lg); font-weight: 900; color: #EF4444;">${Math.round(mealProtein)}g</div>
-            <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">PROTÉINES</div>
-        </div>
-    </div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <!-- Deuxième ligne : Glucides et Lipides -->
-        <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
-            <div style="font-size: var(--font-size-lg); font-weight: 900; color: #10B981;">${Math.round(mealCarbs)}g</div>
-            <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">GLUCIDES</div>
-        </div>
-        <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
-            <div style="font-size: var(--font-size-lg); font-weight: 900; color: #F59E0B;">${Math.round(mealFat)}g</div>
-            <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">LIPIDES</div>
-        </div>
-    </div>
-</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                    <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${Math.round(mealCalories)}</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">CALORIES</div>
+                    </div>
+                    <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <div style="font-size: var(--font-size-lg); font-weight: 900; color: #EF4444;">${Math.round(mealProtein)}g</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">PROTÉINES</div>
+                    </div>
+                    <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <div style="font-size: var(--font-size-lg); font-weight: 900; color: #10B981;">${Math.round(mealCarbs)}g</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">GLUCIDES</div>
+                    </div>
+                    <div style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <div style="font-size: var(--font-size-lg); font-weight: 900; color: #F59E0B;">${Math.round(mealFat)}g</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">LIPIDES</div>
+                    </div>
+                </div>
                 
                 <h4 style="margin: 0 0 15px 0; color: var(--text-primary);">Aliments (${meal.foods.length})</h4>
+                
+                <!-- ✅ LISTE DES ALIMENTS - STRUCTURE PLATE (SIBLINGS) -->
+                <div class="foods-list-container" style="display: flex; flex-direction: column; gap: 12px;">
     `;
     
+    // ✅ BOUCLE CORRECTE - CHAQUE ALIMENT EST UN DIV FRÈRE
     meal.foods.forEach(foodItem => {
         const food = getAllFoods().find(f => f.id === foodItem.foodId);
         if (food) {
             const ratio = foodItem.quantity / food.quantity;
             const foodCalories = Math.round(food.calories * ratio);
+            const foodProtein = Math.round(food.protein * ratio);
+            const foodCarbs = Math.round(food.carbs * ratio);
+            const foodFat = Math.round(food.fat * ratio);
             
             detailHTML += `
-                <div class="history-detail-exercise" style="margin-bottom: 10px;">
-                    <div class="history-detail-exercise-name">${food.name}</div>
-                    <div style="font-size: var(--font-size-xs); color: var(--text-secondary); margin-bottom: 10px;">
-                        ${foodItem.quantity}g • ${foodCalories} kcal
+                <div class="food-detail-card" style="padding: 12px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div style="font-weight: 700; color: var(--text-primary);">${food.name}</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--primary); font-weight: 600;">${foodItem.quantity}g</div>
+                    </div>
+                    <div style="display: flex; gap: 16px; font-size: var(--font-size-xs);">
+                        <div style="color: #EF4444;">P: ${foodProtein}g</div>
+                        <div style="color: #10B981;">C: ${foodCarbs}g</div>
+                        <div style="color: #F59E0B;">L: ${foodFat}g</div>
+                        <div style="color: var(--primary); font-weight: 600;">${foodCalories} kcal</div>
                     </div>
                 </div>
             `;
         }
     });
     
+    detailHTML += `</div>`; // Fermeture de foods-list-container
+    
     if (meal.notes) {
         detailHTML += `
-            <div style="margin-top: 20px; padding: 15px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
-                <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">📝 Notes</div>
+            <div style="margin-top: 20px; padding: 15px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border); border-left: 3px solid var(--primary);">
+                <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">
+                    <i class="fas fa-pencil-alt"></i> Notes
+                </div>
                 <div style="color: var(--text-secondary); font-size: var(--font-size-sm); white-space: pre-wrap;">${meal.notes}</div>
             </div>
         `;
@@ -17302,8 +17919,16 @@ function formatDateForPeriod(dateStr, period) {
 }
 
 function showMealDetail(mealId) {
-    const meal = nutritionHistory.find(m => m.id === mealId);
-    if (!meal) return;
+    // Chercher d'abord dans daily, puis dans history
+    let meal = dailyNutrition.meals.find(m => m.id === mealId);
+    if (!meal) {
+        meal = nutritionHistory.find(m => m.id === mealId);
+    }
+    
+    if (!meal) {
+        showNotification('Repas non trouvé', 'error');
+        return;
+    }
     
     const date = new Date(meal.date);
     const formattedDate = date.toLocaleDateString('fr-FR', {
@@ -17316,10 +17941,7 @@ function showMealDetail(mealId) {
     });
     
     // Calculer les totaux du repas
-    let mealCalories = 0;
-    let mealProtein = 0;
-    let mealCarbs = 0;
-    let mealFat = 0;
+    let mealCalories = 0, mealProtein = 0, mealCarbs = 0, mealFat = 0;
     
     meal.foods.forEach(foodItem => {
         const food = getAllFoods().find(f => f.id === foodItem.foodId);
@@ -17367,6 +17989,9 @@ function showMealDetail(mealId) {
                 </div>
                 
                 <h4 style="margin: 0 0 15px 0; color: var(--text-primary);">Aliments (${meal.foods.length})</h4>
+                
+                <!-- ✅ LISTE DES ALIMENTS - STRUCTURE PLATE (SIBLINGS) -->
+                <div class="foods-list-container" style="display: flex; flex-direction: column; gap: 12px;">
     `;
     
     meal.foods.forEach(foodItem => {
@@ -17379,42 +18004,30 @@ function showMealDetail(mealId) {
             const foodFat = Math.round(food.fat * ratio);
             
             contentHTML += `
-                <div class="history-detail-exercise" style="margin-bottom: 10px;">
-                    <div class="history-detail-exercise-name">${food.name}</div>
-                    <div style="font-size: var(--font-size-xs); color: var(--text-secondary); margin-bottom: 10px;">
-                        ${foodItem.quantity}g • ${food.category}
-                        ${food.halal ? ' • 🕌 Halal' : ''}
-                        ${food.custom ? ' • 🎨 Personnalisé' : ''}
+                <div class="food-detail-card" style="padding: 12px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div style="font-weight: 700; color: var(--text-primary);">${food.name}</div>
+                        <div style="font-size: var(--font-size-sm); color: var(--primary); font-weight: 600;">${foodItem.quantity}g</div>
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 5px; font-size: var(--font-size-xs);">
-    <div style="display: flex; justify-content: space-between; gap: 10px; font-size: var(--font-size-xs);">
-    <div style="display: flex; justify-content: space-between; gap: 10px; font-size: var(--font-size-xs);">
-    <div style="display: flex; flex-direction: column; gap: 5px; flex: 1;">
-        <div style="padding: 4px 8px; background: linear-gradient(135deg, #F59E0B, #FBBF24); border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.3); color: white; font-weight: bold;">
-            Calories: ${foodCalories}
-        </div>
-        <div style="padding: 4px 8px; background: linear-gradient(135deg, #EF4444, #FCA5A5); border-radius: 10px; border: 1px solid rgba(239, 68, 68, 0.3); color: white; font-weight: bold;">
-            Protéines: ${foodProtein}g
-        </div>
-    </div>
-    <div style="display: flex; flex-direction: column; gap: 5px; flex: 1;">
-        <div style="padding: 4px 8px; background: linear-gradient(135deg, #10B981, #34D399); border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.3); color: white; font-weight: bold;">
-            Glucides: ${foodCarbs}g
-        </div>
-        <div style="padding: 4px 8px; background: linear-gradient(135deg, #6366F1, #818CF8); border-radius: 10px; border: 1px solid rgba(99, 102, 241, 0.3); color: white; font-weight: bold;">
-            Lipides: ${foodFat}g
-        </div>
-    </div>
-</div>
-</div>
+                    <div style="display: flex; gap: 16px; font-size: var(--font-size-xs);">
+                        <div style="color: #EF4444;">P: ${foodProtein}g</div>
+                        <div style="color: #10B981;">C: ${foodCarbs}g</div>
+                        <div style="color: #F59E0B;">L: ${foodFat}g</div>
+                        <div style="color: var(--primary); font-weight: 600;">${foodCalories} kcal</div>
+                    </div>
+                </div>
             `;
         }
     });
     
+    contentHTML += `</div>`; // Fermeture de foods-list-container
+    
     if (meal.notes) {
         contentHTML += `
-            <div style="margin-top: 20px; padding: 15px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
-                <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">📝 Notes</div>
+            <div style="margin-top: 20px; padding: 15px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border); border-left: 3px solid var(--primary);">
+                <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">
+                    <i class="fas fa-pencil-alt"></i> Notes
+                </div>
                 <div style="color: var(--text-secondary); font-size: var(--font-size-sm); white-space: pre-wrap;">${meal.notes}</div>
             </div>
         `;
@@ -17424,7 +18037,7 @@ function showMealDetail(mealId) {
             </div>
             
             <div class="history-detail-actions">
-                <button class="btn btn-danger" onclick="deleteMealHistory('${mealId}')" style="flex: 1;">
+                <button class="btn btn-danger" onclick="deleteMealHistory('${meal.id}')" style="flex: 1;">
                     <i class="fas fa-trash"></i> Supprimer
                 </button>
             </div>
@@ -18559,39 +19172,70 @@ function toggleDarkModeSetting(checked) {
 // ==================== CORRECTION POUR FILTER-SELECT ====================
 function updateSelectDisplay() {
     setTimeout(() => {
-        const selects = document.querySelectorAll('.filter-select');
+        const selects = document.querySelectorAll('.filter-select, select:not(.no-style)');
         selects.forEach(select => {
-            // Appliquer la couleur selon le mode
+            // Éviter de surcharger les selects déjà stylisés
+            if (select.classList.contains('no-style')) return;
+            
+            // Appliquer les styles selon le mode
             if (settings.darkMode) {
                 select.style.color = '#ffffff';
+                select.style.backgroundColor = '#1e293b';
+                select.style.borderColor = '#334155';
+                select.style.backgroundImage = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`;
             } else {
                 select.style.color = '#000000';
+                select.style.backgroundColor = '#ffffff';
+                select.style.borderColor = '#e2e8f0';
+                select.style.backgroundImage = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`;
             }
-        });
-    }, 100);
-}
-
-// Fonction pour appeler après le changement de thème
-function refreshSelectsAfterThemeChange() {
-    setTimeout(() => {
-        const selects = document.querySelectorAll('.filter-select');
-        selects.forEach(select => {
-            const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim();
-            if (textColor) {
-                select.style.color = textColor;
-            }
+            
+            // Styles communs
+            select.style.backgroundRepeat = 'no-repeat';
+            select.style.backgroundPosition = 'right 12px center';
+            select.style.backgroundSize = '16px';
+            select.style.paddingRight = '40px';
+            select.style.appearance = 'none';
+            select.style.WebkitAppearance = 'none';
+            select.style.MozAppearance = 'none';
+            select.style.borderWidth = '1px';
+            select.style.borderStyle = 'solid';
+            select.style.borderRadius = '12px';
+            select.style.padding = '12px 40px 12px 16px';
+            select.style.fontSize = '15px';
+            select.style.fontWeight = '500';
+            select.style.cursor = 'pointer';
+            select.style.transition = 'all 0.2s ease';
+            select.style.boxShadow = settings.darkMode ? '0 2px 4px rgba(0,0,0,0.2)' : '0 2px 4px rgba(0,0,0,0.05)';
         });
     }, 50);
 }
 
-// Appeler cette fonction UNE FOIS après le chargement COMPLET de la page
+// ==================== RAFRAÎCHIR LES SELECTS APRÈS CHANGEMENT DE THÈME ====================
+function refreshSelectsAfterThemeChange() {
+    // Utiliser la même fonction pour éviter la duplication
+    updateSelectDisplay();
+}
+
+// ==================== INITIALISATION AU CHARGEMENT ====================
+// Remplacer l'ancien event listener par celui-ci
 document.addEventListener('DOMContentLoaded', function() {
-    // Attendre un peu plus longtemps pour s'assurer que tout est chargé
-    setTimeout(updateSelectDisplay, 500);
+    // Attendre que settings soit chargé
+    setTimeout(() => {
+        if (typeof updateSelectDisplay === 'function') {
+            updateSelectDisplay();
+        }
+    }, 500);
 });
 
-} // ← CECI EST LA DERNIÈRE ACCOLADE FERMANTE DU FICHIER
-
+// ==================== FONCTION POUR FORCER LA MISE À JOUR ====================
+function forceUpdateSelects() {
+    // Utile après des changements dynamiques du DOM
+    if (typeof updateSelectDisplay === 'function') {
+        updateSelectDisplay();
+    }
+}
+}
 </script>
 </body>
 </html>
