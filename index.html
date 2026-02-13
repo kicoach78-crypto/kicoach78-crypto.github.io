@@ -11995,6 +11995,7 @@ function showCustomExerciseModalForCreate() {
     document.getElementById('custom-exercise-modal').dataset.workoutContext = 'create';
 }
 
+// ==================== CHARGER LA LISTE DES EXERCICES ====================
 function loadExerciseSelection(filter = 'all') {
     const container = document.getElementById('exercise-selection-list');
     if (!container) {
@@ -12044,56 +12045,101 @@ function loadExerciseSelection(filter = 'all') {
             return;
         }
         
-        // 6. GROUPER PAR CATÉGORIE OU MUSCLE POUR MEILLEURE LECTURE
-        const exercisesByMuscle = {};
-        
-        filteredExercises.forEach(exercise => {
-            const muscleId = exercise.muscleGroup;
-            if (!exercisesByMuscle[muscleId]) {
-                exercisesByMuscle[muscleId] = [];
-            }
-            exercisesByMuscle[muscleId].push(exercise);
-        });
-        
-        // 7. AFFICHER PAR GROUPE MUSCULAIRE
-        Object.keys(exercisesByMuscle).sort().forEach(muscleId => {
-            const muscle = muscleGroups.find(m => m.id === muscleId);
-            const muscleName = muscle ? muscle.name : muscleId;
-            const muscleColor = muscle ? muscle.color : '#6366F1';
-            const exercises = exercisesByMuscle[muscleId];
+        // 🔴 CORRECTION: AFFICHAGE SELON LE FILTRE
+        if (filter === 'all') {
+            // MODE "TOUS LES GROUPES" - AFFICHAGE SANS CATÉGORISATION
+            container.innerHTML = '<div style="margin-bottom: 12px; font-size: var(--font-size-sm); color: var(--text-secondary); padding: 8px 12px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">📋 Tous les exercices • ' + filteredExercises.length + ' exercices</div>';
             
-            // En-tête du groupe musculaire
-            if (filter === 'all') {
-                const header = document.createElement('div');
-                header.style.cssText = `
-                    font-weight: 700;
-                    font-size: var(--font-size-sm);
-                    color: ${muscleColor};
-                    margin: 20px 0 10px 0;
-                    padding-bottom: 5px;
-                    border-bottom: 2px solid ${muscleColor}40;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                `;
-                header.innerHTML = `
-                    <span style="color: ${muscleColor};">●</span>
-                    ${muscleName}
-                    <span style="font-size: var(--font-size-xs); color: var(--text-secondary); font-weight: normal;">
-                        (${exercises.length} exercice${exercises.length > 1 ? 's' : ''})
-                    </span>
-                `;
-                container.appendChild(header);
-            }
-            
-            // Liste des exercices de ce groupe
-            exercises.forEach(exercise => {
+            // Afficher tous les exercices en une seule liste
+            filteredExercises.forEach(exercise => {
+                const muscle = muscleGroups.find(m => m.id === exercise.muscleGroup);
+                const muscleName = muscle ? muscle.name : exercise.muscleGroup;
+                const muscleColor = muscle ? muscle.color : '#6366F1';
+                
                 const exerciseItem = document.createElement('div');
                 exerciseItem.className = 'exercise-selection-item';
                 exerciseItem.style.cssText = `
                     display: flex;
                     align-items: center;
-                    padding: 12px 16px;
+                    padding: 14px 16px;
+                    background: var(--card-bg);
+                    border: 1px solid var(--border);
+                    border-radius: var(--radius);
+                    margin-bottom: 8px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                `;
+                exerciseItem.onmouseover = () => {
+                    exerciseItem.style.transform = 'translateY(-2px)';
+                    exerciseItem.style.boxShadow = 'var(--shadow)';
+                    exerciseItem.style.borderColor = muscleColor;
+                };
+                exerciseItem.onmouseout = () => {
+                    exerciseItem.style.transform = 'translateY(0)';
+                    exerciseItem.style.boxShadow = 'none';
+                    exerciseItem.style.borderColor = 'var(--border)';
+                };
+                exerciseItem.onclick = () => addExerciseToWorkoutSelection(exercise.id);
+                
+                exerciseItem.innerHTML = `
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                            <span style="font-weight: 700; color: var(--text-primary);">${exercise.name}</span>
+                            ${exercise.favorite ? '<span style="color: #F59E0B;"><i class="fas fa-star"></i></span>' : ''}
+                            ${exercise.custom ? '<span style="font-size: 10px; padding: 2px 6px; background: var(--primary); color: white; border-radius: 10px;">Personnalisé</span>' : ''}
+                        </div>
+                        <div style="display: flex; gap: 12px; font-size: var(--font-size-xs); color: var(--text-secondary);">
+                            <span style="display: flex; align-items: center; gap: 4px;">
+                                <span style="color: ${muscleColor};">●</span> ${muscleName}
+                            </span>
+                            <span>• ${exercise.difficulty}</span>
+                            ${exercise.category ? `<span>• ${exercise.category}</span>` : ''}
+                        </div>
+                    </div>
+                    <div style="color: var(--text-secondary);">
+                        <i class="fas fa-plus-circle" style="font-size: 20px; color: var(--primary);"></i>
+                    </div>
+                `;
+                
+                container.appendChild(exerciseItem);
+            });
+            
+        } else {
+            // MODE FILTRE PAR GROUPE - AFFICHAGE GROUPÉ
+            // Grouper par muscle (mais un seul groupe puisque filtré)
+            const muscle = muscleGroups.find(m => m.id === filter);
+            const muscleName = muscle ? muscle.name : filter;
+            const muscleColor = muscle ? muscle.color : '#6366F1';
+            
+            const header = document.createElement('div');
+            header.style.cssText = `
+                font-weight: 700;
+                font-size: var(--font-size-base);
+                color: ${muscleColor};
+                margin: 0 0 15px 0;
+                padding-bottom: 8px;
+                border-bottom: 2px solid ${muscleColor}40;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            `;
+            header.innerHTML = `
+                <span style="color: ${muscleColor};">●</span>
+                ${muscleName}
+                <span style="font-size: var(--font-size-xs); color: var(--text-secondary); font-weight: normal;">
+                    (${filteredExercises.length} exercice${filteredExercises.length > 1 ? 's' : ''})
+                </span>
+            `;
+            container.appendChild(header);
+            
+            // Afficher les exercices de ce groupe
+            filteredExercises.forEach(exercise => {
+                const exerciseItem = document.createElement('div');
+                exerciseItem.className = 'exercise-selection-item';
+                exerciseItem.style.cssText = `
+                    display: flex;
+                    align-items: center;
+                    padding: 14px 16px;
                     background: var(--card-bg);
                     border: 1px solid var(--border);
                     border-radius: var(--radius);
@@ -12132,9 +12178,9 @@ function loadExerciseSelection(filter = 'all') {
                 
                 container.appendChild(exerciseItem);
             });
-        });
+        }
         
-    }, 50); // Fin du setTimeout
+    }, 50);
 }
 
 function filterExerciseSelection(searchTerm) {
@@ -16938,6 +16984,7 @@ function getMuscleColor(muscleGroupId) {
 }
 
 
+// ==================== AFFICHAGE DÉTAILLÉ D'UNE SÉANCE ====================
 function showWorkoutHistoryDetail(index) {
     const entry = workoutHistory[index];
     if (!entry) return;
@@ -16971,32 +17018,31 @@ function showWorkoutHistoryDetail(index) {
             <div style="margin: 20px 0;">
                 <div class="history-stats-grid" style="margin-bottom: 20px;">
                     <div class="history-stat-exercice" style="padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
-    <div class="history-stat-value">${entry.stats.totalExercises} exercices</div>
-    <div class="history-stat-label">EXERCICES</div>
-</div>
-<div class="history-stat-series" style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
-    <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${entry.stats.totalSets}</div>
-    <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">SÉRIES</div>
-</div>
-<div class="history-stat-repetitions" style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
-    <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${calculateTotalReps(entry)}</div>
-    <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">RÉPÉTITIONS</div>
-</div>
-<div class="history-stat-poids" style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
-    <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${entry.stats.totalWeight}</div>
-    <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">KG TOTAL</div>
-</div>
-<div class="history-stat-duree" style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
-    <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${formattedDuration}</div>
-    <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">DURÉE</div>
-</div>
+                        <div class="history-stat-value">${entry.stats.totalExercises} exercices</div>
+                        <div class="history-stat-label">EXERCICES</div>
+                    </div>
+                    <div class="history-stat-series" style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${entry.stats.totalSets}</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">SÉRIES</div>
+                    </div>
+                    <div class="history-stat-repetitions" style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${calculateTotalReps(entry)}</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">RÉPÉTITIONS</div>
+                    </div>
+                    <div class="history-stat-poids" style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${entry.stats.totalWeight}</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">KG TOTAL</div>
+                    </div>
+                    <div class="history-stat-duree" style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${formattedDuration}</div>
+                        <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">DURÉE</div>
+                    </div>
                 </div>
                 
-                <!-- RÉPARATION: Afficher les supersets s'ils existent -->
                 ${entry.supersets && entry.supersets.length > 0 ? `
                     <div style="margin-bottom: 20px; padding: 15px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
                         <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 10px;">
-                            <i class="fas fa-link"></i> Supsets (${entry.supersets.length})
+                            <i class="fas fa-link"></i> Supersets (${entry.supersets.length})
                         </div>
                         <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                             ${entry.supersets.map(superset => `
@@ -17011,24 +17057,8 @@ function showWorkoutHistoryDetail(index) {
                 <h4 style="margin: 0 0 15px 0; color: var(--text-primary);">Exercices détaillés</h4>
     `;
     
-    // Group exercises by superset for better display
-    const exercisesBySuperset = {};
-    const standaloneExercises = [];
-    
-    entry.exercises.forEach((exercise, index) => {
-        if (exercise.supersetId) {
-            if (!exercisesBySuperset[exercise.supersetId]) {
-                exercisesBySuperset[exercise.supersetId] = [];
-            }
-            exercisesBySuperset[exercise.supersetId].push({...exercise, originalIndex: index});
-        } else {
-            standaloneExercises.push({...exercise, originalIndex: index});
-        }
-    });
-    
-    // Display standalone exercises first
-    standaloneExercises.forEach(item => {
-        const exercise = item;
+    // Standalone exercises
+    entry.exercises.forEach((exercise) => {
         const muscle = muscleGroups.find(m => m.id === exercise.muscleGroup);
         const muscleName = muscle ? muscle.name : exercise.muscleGroup;
         
@@ -17044,16 +17074,26 @@ function showWorkoutHistoryDetail(index) {
         exercise.sets.forEach((set, setIndex) => {
             contentHTML += `
                 <div class="history-detail-set" style="background: ${setIndex % 2 === 0 ? 'var(--card-bg)' : '#f0f9ff'}; border: 1px solid ${setIndex % 2 === 0 ? 'var(--border)' : '#bae6fd'};">
-    S${setIndex + 1}: ${set.reps} × ${set.weight}kg
-</div>
+                    S${setIndex + 1}: ${set.reps} × ${set.weight}kg
+                </div>
             `;
         });
         
-        // Calculer les totaux pour cet exercice
         const totalReps = exercise.sets.reduce((sum, set) => sum + (parseInt(set.reps) || 0), 0);
         const totalWeight = exercise.sets.reduce((sum, set) => sum + (set.weight || 0) * (parseInt(set.reps) || 0), 0);
-        const avgWeight = exercise.sets.length > 0 ? Math.round(totalWeight / totalReps) : 0;
-        const maxWeight = Math.max(...exercise.sets.map(set => set.weight || 0));
+        
+        let bestSet = { reps: 0, weight: 0, oneRM: 0, volume: 0 };
+        exercise.sets.forEach(set => {
+            const reps = parseInt(set.reps) || 0;
+            const weight = parseFloat(set.weight) || 0;
+            if (reps > 0 && weight > 0) {
+                const oneRM = calculateOneRM(weight, reps);
+                const volume = calculateVolume(weight, reps);
+                if (oneRM > bestSet.oneRM) {
+                    bestSet = { reps, weight, oneRM, volume };
+                }
+            }
+        });
 
         contentHTML += `
                 </div>
@@ -17065,16 +17105,22 @@ function showWorkoutHistoryDetail(index) {
                         Poids: ${totalWeight}kg
                     </div>
                 </div>
-                <div style="display: flex; gap: 5px; margin-top: 5px; font-size: var(--font-size-xs);">
-                    <div style="padding: 4px 8px; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border);">
-                        Moyenne: ${avgWeight}kg/rep
+                
+                ${bestSet.oneRM > 0 ? `
+                <div style="display: flex; gap: 10px; margin-top: 8px; padding: 8px; background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(16,185,129,0.05)); border-radius: var(--radius-sm);">
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 10px; color: var(--text-secondary);">1RM</div>
+                        <div style="font-weight: 800; color: #6366F1; font-size: var(--font-size-sm);">${bestSet.oneRM} kg</div>
+                        <div style="font-size: 9px; color: var(--text-secondary);">${bestSet.weight}kg × ${bestSet.reps}</div>
                     </div>
-                    <div style="padding: 4px 8px; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border); color: #EF4444;">
-                        Max: ${maxWeight}kg
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 10px; color: var(--text-secondary);">Volume</div>
+                        <div style="font-weight: 800; color: #10B981; font-size: var(--font-size-sm);">${bestSet.volume} kg</div>
+                        <div style="font-size: 9px; color: var(--text-secondary);">${bestSet.weight}kg × ${bestSet.reps}</div>
                     </div>
                 </div>
+                ` : ''}
                 
-                <!-- SECTION NOTES DE L'EXERCICE (NOUVEAU) -->
                 ${exercise.notes ? `
                     <div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.05)); border-radius: var(--radius-sm); border-left: 3px solid #8B5CF6;">
                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
@@ -17093,92 +17139,71 @@ function showWorkoutHistoryDetail(index) {
         `;
     });
     
-    // Display exercises by superset
-    Object.values(exercisesBySuperset).forEach(supersetGroup => {
-        if (supersetGroup.length > 0) {
-            const firstExercise = supersetGroup[0];
-            const supersetName = firstExercise.supersetName || `Superset`;
-            const supersetColor = firstExercise.supersetColor || '#8B5CF6';
-            
-            contentHTML += `
-                <div style="margin: 20px 0 10px 0; padding: 10px; background: ${supersetColor}20; border-radius: var(--radius-sm); border-left: 4px solid ${supersetColor};">
-                    <div style="font-weight: 700; color: ${supersetColor}; margin-bottom: 10px;">
-                        <i class="fas fa-link"></i> ${supersetName}
-                    </div>
-            `;
-            
-            // Sort by superset order
-            supersetGroup.sort((a, b) => (a.supersetOrder || 0) - (b.supersetOrder || 0));
-            
-            supersetGroup.forEach((exercise, idx) => {
-                const muscle = muscleGroups.find(m => m.id === exercise.muscleGroup);
-                const muscleName = muscle ? muscle.name : exercise.muscleGroup;
+// ==================== GRAPHIQUES DE PROGRESSION ====================
+if (entry.exercises.length > 0) {
+    contentHTML += `
+        <div style="margin-top: 40px; margin-bottom: 20px;">
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+                <h4 style="margin: 0; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-chart-line" style="color: var(--primary);"></i>
+                    Évolution des performances
+                </h4>
+                <div style="display: flex; gap: 8px; background: var(--card-bg); padding: 4px; border-radius: 24px; border: 1px solid var(--border); width: fit-content;">
+                    <button id="chart-metric-btn-1rm-${index}" class="chart-metric-btn active" 
+                            style="padding: 8px 16px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: var(--font-size-xs); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;"
+                            onclick="toggleChartMetric('1RM', ${index})">
+                        <i class="fas fa-dumbbell"></i> 1RM
+                    </button>
+                    <button id="chart-metric-btn-volume-${index}" class="chart-metric-btn"
+                            style="padding: 8px 16px; border-radius: 20px; border: none; background: var(--card-bg); color: var(--text-secondary); font-size: var(--font-size-xs); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;"
+                            onclick="toggleChartMetric('volume', ${index})">
+                        <i class="fas fa-weight-hanging"></i> Volume
+                    </button>
+                </div>
+            </div>
+            <div id="charts-container-${index}" style="display: flex; flex-direction: column; gap: 20px;">
+    `;
+    
+    entry.exercises.forEach((exercise, exIndex) => {
+        contentHTML += `
+            <div class="exercise-chart-card" 
+                 style="background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; box-shadow: var(--shadow-sm);">
                 
-                contentHTML += `
-                    <div class="history-detail-exercise" style="margin-bottom: ${idx === supersetGroup.length - 1 ? '0' : '15px'};">
-                        <div class="history-detail-exercise-name">
-                            ${exercise.supersetOrder ? `<span style="color: ${supersetColor}; font-weight: 800; margin-right: 8px;">${exercise.supersetOrder}.</span>` : ''}
+                <!-- NOM DE L'EXERCICE EN ÉVIDENCE -->
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, var(--primary), #818CF8); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 800; color: var(--text-primary); font-size: var(--font-size-base); letter-spacing: 0.3px;">
                             ${exercise.name}
                         </div>
-                        <div style="font-size: var(--font-size-xs); color: var(--text-secondary); margin-bottom: 10px;">
-                            <span style="color: ${muscle ? muscle.color : '#666'}">●</span> ${muscleName}
+                        <div style="display: flex; gap: 16px; margin-top: 4px; font-size: var(--font-size-xs); color: var(--text-secondary);">
+                            <span><i class="far fa-calendar-alt" style="margin-right: 4px;"></i> <span id="chart-stats-${index}-${exIndex}">Chargement...</span></span>
                         </div>
-                        <div class="history-detail-sets">
-                `;
-                
-                exercise.sets.forEach((set, setIndex) => {
-                    contentHTML += `
-                        <div class="history-detail-set" style="background: ${setIndex % 2 === 0 ? 'var(--card-bg)' : '#f0f9ff'}; border: 1px solid ${setIndex % 2 === 0 ? 'var(--border)' : '#bae6fd'};">
-                            S${setIndex + 1}: ${set.reps} × ${set.weight}kg
-                        </div>
-                    `;
-                });
-                
-                const totalReps = exercise.sets.reduce((sum, set) => sum + (parseInt(set.reps) || 0), 0);
-                const totalWeight = exercise.sets.reduce((sum, set) => sum + (set.weight || 0) * (parseInt(set.reps) || 0), 0);
-                
-                contentHTML += `
-                        </div>
-                        <div style="display: flex; gap: 5px; margin-top: 10px; font-size: var(--font-size-xs);">
-                            <div style="padding: 4px 8px; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border);">
-                                Total: ${totalReps} reps
-                            </div>
-                            <div style="padding: 4px 8px; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border);">
-                                Poids: ${totalWeight}kg
-                            </div>
-                        </div>
-                        
-                        <!-- SECTION NOTES POUR EXERCICES EN SUPERSET (NOUVEAU) -->
-                        ${exercise.notes ? `
-                            <div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.05)); border-radius: var(--radius-sm); border-left: 3px solid ${supersetColor};">
-                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                                    <div style="width: 24px; height: 24px; background: linear-gradient(135deg, ${supersetColor}, ${adjustColor(supersetColor, 40)}); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">
-                                        <i class="fas fa-sticky-note"></i>
-                                    </div>
-                                    <div style="font-weight: 700; color: ${supersetColor};">Notes</div>
-                                </div>
-                                <div style="color: var(--text-primary); font-size: var(--font-size-sm); white-space: pre-wrap; line-height: 1.5; padding: 0 4px;">
-                                    ${exercise.notes}
-                                </div>
-                            </div>
-                        ` : ''}
-                        
                     </div>
-                `;
-            });
-            
-            contentHTML += `</div>`;
-        }
+                </div>
+                
+                <!-- CONTENEUR DU GRAPHIQUE -->
+                <div id="chart-${index}-${exIndex}" style="min-height: 140px; width: 100%;"></div>
+            </div>
+        `;
     });
     
     contentHTML += `
             </div>
+        </div>
+    `;
+}
+    
+    contentHTML += `
+            </div>
             
-            <div class="history-detail-actions">
-                <button class="btn btn-success" onclick="redoWorkout(${index})" style="flex: 1;">
+            <div class="history-detail-actions" style="margin-top: 30px; display: flex; gap: 12px;">
+                <button class="btn btn-success" onclick="redoWorkout(${index})" style="flex: 1; padding: 14px; font-weight: 700;">
                     <i class="fas fa-redo"></i> Refaire
                 </button>
-                <button class="btn btn-danger" onclick="deleteWorkoutHistory(${index})" style="flex: 1;">
+                <button class="btn btn-danger" onclick="deleteWorkoutHistory(${index})" style="flex: 1; padding: 14px; font-weight: 700;">
                     <i class="fas fa-trash"></i> Supprimer
                 </button>
             </div>
@@ -17188,6 +17213,22 @@ function showWorkoutHistoryDetail(index) {
     document.getElementById('history-detail-title').textContent = 'Détail de la séance';
     document.getElementById('history-detail-content').innerHTML = contentHTML;
     showModal('history-detail-modal');
+    
+    // Rendre les graphiques après l'affichage
+    setTimeout(() => {
+        entry.exercises.forEach((exercise, exIndex) => {
+            const containerId = `chart-${index}-${exIndex}`;
+            const statsSpan = document.getElementById(`chart-stats-${index}-${exIndex}`);
+            
+            const history = getExerciseHistory(exercise.name);
+            if (history.length >= 2 && statsSpan) {
+                statsSpan.innerHTML = `${history.length} séances`;
+                renderExerciseCharts(exercise.name, containerId, 'oneRM');
+            } else if (statsSpan) {
+                statsSpan.innerHTML = 'Pas assez de données';
+            }
+        });
+    }, 200);
 }
 
 // ==================== NOUVEAU SYSTÈME D'HISTORIQUE NUTRITIONNEL ====================
@@ -17450,6 +17491,251 @@ function calculateTotalReps(workoutEntry) {
         });
     });
     return totalReps;
+}
+
+// ==================== CALCUL DU 1RM (1 REPETITION MAXIMUM) ====================
+function calculateOneRM(weight, reps) {
+    if (!weight || !reps || weight <= 0 || reps <= 0) return 0;
+    
+    // Formule d'Epley: 1RM = poids × (1 + répétitions/30)
+    // Plus précise que Brzycki pour les répétitions < 10
+    const oneRM = weight * (1 + parseInt(reps) / 30);
+    
+    // Arrondir à 1 décimale
+    return Math.round(oneRM * 10) / 10;
+}
+
+// ==================== CALCUL DU VOLUME (POIDS × RÉPÉTITIONS) ====================
+function calculateVolume(weight, reps) {
+    if (!weight || !reps || weight <= 0 || reps <= 0) return 0;
+    
+    const volume = weight * parseInt(reps);
+    return Math.round(volume);
+}
+
+// ==================== RÉCUPÉRER L'HISTORIQUE D'UN EXERCICE ====================
+function getExerciseHistory(exerciseName) {
+    if (!workoutHistory || workoutHistory.length === 0) return [];
+    
+    const history = [];
+    
+    // Parcourir toutes les séances de la plus ancienne à la plus récente
+    const sortedHistory = [...workoutHistory].sort((a, b) => 
+        new Date(a.date) - new Date(b.date)
+    );
+    
+    sortedHistory.forEach((session, sessionIndex) => {
+        // Chercher l'exercice dans cette séance
+        const exercise = session.exercises.find(ex => 
+            ex.name.toLowerCase() === exerciseName.toLowerCase()
+        );
+        
+        if (exercise && exercise.sets && exercise.sets.length > 0) {
+            // Trouver la MEILLEURE performance de cette séance
+            let bestSet = { reps: 0, weight: 0, oneRM: 0, volume: 0 };
+            
+            exercise.sets.forEach(set => {
+                const reps = parseInt(set.reps) || 0;
+                const weight = parseFloat(set.weight) || 0;
+                
+                if (reps > 0 && weight > 0) {
+                    const oneRM = calculateOneRM(weight, reps);
+                    const volume = calculateVolume(weight, reps);
+                    
+                    // Priorité au 1RM pour déterminer la meilleure série
+                    if (oneRM > bestSet.oneRM) {
+                        bestSet = {
+                            reps,
+                            weight,
+                            oneRM,
+                            volume,
+                            setIndex: set.number || 0
+                        };
+                    }
+                }
+            });
+            
+            if (bestSet.oneRM > 0) {
+                history.push({
+                    date: session.date,
+                    sessionName: session.name,
+                    sessionId: session.id,
+                    sessionIndex: sessionIndex,
+                    bestSet: bestSet,
+                    totalSets: exercise.sets.length,
+                    completedSets: exercise.sets.filter(s => s.completed !== false).length,
+                    notes: exercise.notes || ''
+                });
+            }
+        }
+    });
+    
+    return history;
+}
+
+// ==================== CRÉER UN GRAPHIQUE SPARKLINE SVG ====================
+function renderExerciseCharts(exerciseName, containerId, metric = 'oneRM') {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    // Récupérer l'historique
+    const history = getExerciseHistory(exerciseName);
+    
+    if (history.length < 2) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 15px; color: var(--text-secondary);">
+                <i class="fas fa-chart-line" style="font-size: 20px; margin-bottom: 5px; opacity: 0.5;"></i>
+                <p style="font-size: var(--font-size-xs);">Pas assez de données (${history.length} séance)</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Préparer les données - ÉLIMINER LES DOUBLONS DE DATES
+    const uniqueHistory = [];
+    const seenDates = new Set();
+    
+    history.forEach(h => {
+        const dateStr = new Date(h.date).toLocaleDateString('fr-FR');
+        if (!seenDates.has(dateStr)) {
+            seenDates.add(dateStr);
+            uniqueHistory.push(h);
+        }
+    });
+    
+    const labels = uniqueHistory.map(h => {
+        const date = new Date(h.date);
+        return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+    });
+    
+    const values = uniqueHistory.map(h => 
+        metric === 'oneRM' ? h.bestSet.oneRM : h.bestSet.volume
+    );
+    
+    if (values.length < 2) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 15px; color: var(--text-secondary);">
+                <i class="fas fa-chart-line" style="font-size: 20px; margin-bottom: 5px; opacity: 0.5;"></i>
+                <p style="font-size: var(--font-size-xs);">Besoin de 2 séances avec des dates différentes</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const maxValue = Math.max(...values) * 1.1;
+    const minValue = Math.min(...values) * 0.9;
+    const range = maxValue - minValue;
+    
+    // Dimensions RESPONSIVES
+    const containerWidth = container.clientWidth || 280;
+    const width = Math.min(containerWidth - 20, 300);
+    const height = 70;
+    const padding = 15;
+    
+    // Calculer les points
+    const points = values.map((value, index) => {
+        const x = padding + (index * (width - 2 * padding) / (values.length - 1));
+        const y = height - padding - ((value - minValue) / range) * (height - 2 * padding);
+        return { x, y };
+    });
+    
+    // Construire le chemin
+    let pathD = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 1; i < points.length; i++) {
+        pathD += ` L ${points[i].x} ${points[i].y}`;
+    }
+    
+    // Calculer progression
+    const firstValue = values[0];
+    const lastValue = values[values.length - 1];
+    const progression = ((lastValue - firstValue) / firstValue * 100).toFixed(1);
+    const progressionColor = progression >= 0 ? '#10B981' : '#EF4444';
+    const progressionIcon = progression >= 0 ? '▲' : '▼';
+    
+    const metricUnit = metric === 'oneRM' ? 'kg' : 'kg';
+    
+    let svgHTML = '';
+    svgHTML += '<div style="background: var(--card-bg); border-radius: var(--radius); padding: 12px;">';
+    
+    // Mini stats en haut
+    svgHTML += '<div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 10px;">';
+    svgHTML += '<span style="color: var(--text-secondary);">' + (metric === 'oneRM' ? '1RM max' : 'Volume max') + ': <strong>' + Math.max(...values) + metricUnit + '</strong></span>';
+    svgHTML += '<span style="color: ' + progressionColor + ';">' + progressionIcon + ' ' + Math.abs(progression) + '%</span>';
+    svgHTML += '</div>';
+    
+    // Graphique SVG
+    svgHTML += '<svg width="' + width + '" height="' + height + '" style="display: block; margin: 0 auto; max-width: 100%;">';
+    
+    // Ligne de fond
+    svgHTML += '<line x1="' + padding + '" y1="' + (height - padding) + '" x2="' + (width - padding) + '" y2="' + (height - padding) + '" ';
+    svgHTML += 'stroke="var(--border)" stroke-width="1" stroke-dasharray="3 2"/>';
+    
+    // Courbe
+    svgHTML += '<path d="' + pathD + '" fill="none" stroke="' + (metric === 'oneRM' ? '#6366F1' : '#10B981') + '" ';
+    svgHTML += 'stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+    
+    // Points
+    for (let i = 0; i < points.length; i++) {
+        svgHTML += '<circle cx="' + points[i].x.toFixed(1) + '" cy="' + points[i].y.toFixed(1) + '" r="3" ';
+        svgHTML += 'fill="' + (metric === 'oneRM' ? '#6366F1' : '#10B981') + '" ';
+        svgHTML += 'stroke="white" stroke-width="1.5">';
+        svgHTML += '<title>' + labels[i] + ': ' + values[i] + metricUnit + '</title>';
+        svgHTML += '</circle>';
+    }
+    
+    svgHTML += '</svg>';
+    
+    // Légende compacte
+    svgHTML += '<div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 8px; color: var(--text-secondary);">';
+    for (let i = 0; i < Math.min(labels.length, 4); i++) {
+        svgHTML += '<div style="text-align: center;">' + labels[i] + '<br><strong>' + values[i] + '</strong></div>';
+    }
+    if (labels.length > 4) {
+        svgHTML += '<div>...</div>';
+    }
+    svgHTML += '</div>';
+    
+    svgHTML += '</div>';
+    
+    container.innerHTML = svgHTML;
+}
+
+// ==================== BASCULER ENTRE 1RM ET VOLUME ====================
+// ==================== BASCULER ENTRE 1RM ET VOLUME ====================
+function toggleChartMetric(metric, sessionIndex) {
+    // Mettre à jour les boutons
+    const btn1RM = document.getElementById(`chart-metric-btn-1rm-${sessionIndex}`);
+    const btnVolume = document.getElementById(`chart-metric-btn-volume-${sessionIndex}`);
+    
+    if (!btn1RM || !btnVolume) return;
+    
+    if (metric === '1RM') {
+        btn1RM.style.background = 'var(--primary)';
+        btn1RM.style.color = 'white';
+        btnVolume.style.background = 'var(--card-bg)';
+        btnVolume.style.color = 'var(--text-secondary)';
+        btn1RM.classList.add('active');
+        btnVolume.classList.remove('active');
+    } else {
+        btnVolume.style.background = 'var(--primary)';
+        btnVolume.style.color = 'white';
+        btn1RM.style.background = 'var(--card-bg)';
+        btn1RM.style.color = 'var(--text-secondary)';
+        btnVolume.classList.add('active');
+        btn1RM.classList.remove('active');
+    }
+    
+    // Re-rendre tous les graphiques avec la nouvelle métrique
+    const session = workoutHistory[sessionIndex];
+    if (session) {
+        session.exercises.forEach((exercise, exIndex) => {
+            const containerId = `chart-${sessionIndex}-${exIndex}`;
+            const history = getExerciseHistory(exercise.name);
+            if (history.length >= 2) {
+                renderExerciseCharts(exercise.name, containerId, metric === '1RM' ? 'oneRM' : 'volume');
+            }
+        });
+    }
 }
 
 function calculateTotalPause(workoutEntry) {
