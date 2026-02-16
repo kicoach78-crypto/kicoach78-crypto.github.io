@@ -7862,31 +7862,101 @@ textarea:focus {
     font-size: 11px !important;
 }
 
+/* ==================== TIMER DANS LE HEADER ==================== */
+.header-workout-timer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--gradient-primary);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    animation: slideInFromTop 0.3s ease;
+    white-space: nowrap;
+    margin: 0 10px;
+    height: 36px;
+}
+
+.header-workout-timer i {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+#header-timer-display {
+    font-feature-settings: "tnum";
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.5px;
+}
+
+/* Animation pour le timer */
+@keyframes timerPulse {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    }
+    50% {
+        box-shadow: 0 2px 12px rgba(37, 99, 235, 0.5);
+    }
+}
+
+.header-workout-timer {
+    animation: timerPulse 2s infinite;
+}
+
+/* Responsive pour petits écrans */
+@media (max-width: 480px) {
+    .header-workout-timer {
+        padding: 4px 8px;
+        font-size: 12px;
+        height: 32px;
+        margin: 0 5px;
+    }
+    
+    .header-workout-timer i {
+        font-size: 10px;
+    }
+}
+
+/* Quand le timer est caché */
+.header-workout-timer[style*="display: none"] {
+    display: none !important;
+}
+
+
     </style>
 </head>
 <body>
     <div class="app-container">
         <!-- HEADER -->
-        <div class="header">
-            <div class="header-left">
-                <div class="user-avatar" onclick="showScreen('profile-screen')" id="user-avatar">JD</div>
-                <h1 class="app-title">IRON</h1>
-            </div>
-            <div class="header-actions">
-                <button class="icon-btn" onclick="showSettingsModal()" title="Paramètres">
-                    <i class="fas fa-cog"></i>
-                </button>
-                <button class="icon-btn primary" onclick="showCreateWorkoutModal(true)" title="Créer une séance">
-                    <i class="fas fa-dumbbell"></i>
-                </button>
-                <button class="icon-btn success" onclick="showAddMealModal(true)" title="Ajouter un repas">
-    		    <i class="fas fa-utensils"></i>
-		</button>
-                <button class="icon-btn" onclick="toggleTheme()" title="Changer de thème">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
-        </div>
+<div class="header">
+    <div class="header-left">
+        <div class="user-avatar" onclick="showScreen('profile-screen')" id="user-avatar">JD</div>
+        <h1 class="app-title">IRON</h1>
+    </div>
+    
+    <!-- AJOUT: Timer de séance (placé entre left et actions) -->
+    <div id="header-workout-timer" class="header-workout-timer" style="display: none; margin-left: auto; margin-right: 10px;">
+        <i class="fas fa-stopwatch"></i>
+        <span id="header-timer-display">00:00:00</span>
+    </div>
+    
+    <div class="header-actions">
+        <button class="icon-btn" onclick="showSettingsModal()" title="Paramètres">
+            <i class="fas fa-cog"></i>
+        </button>
+        <button class="icon-btn primary" onclick="showCreateWorkoutModal(true)" title="Créer une séance">
+            <i class="fas fa-dumbbell"></i>
+        </button>
+        <button class="icon-btn success" onclick="showAddMealModal(true)" title="Ajouter un repas">
+            <i class="fas fa-utensils"></i>
+        </button>
+        <button class="icon-btn" onclick="toggleTheme()" title="Changer de thème">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+</div>
         
         <!-- CONTENU PRINCIPAL -->
         <div class="main-content">
@@ -9757,7 +9827,6 @@ function initApp() {
     loadCustomWorkouts();
     loadPredefinedWorkouts();
     loadWorkoutHistory();
-    // loadNutritionHistory(); // ← SUPPRIMÉ
     updateFavoriteFoods();
     updateRecommendedPrograms();
     updateNavbar();
@@ -9766,10 +9835,7 @@ function initApp() {
     // Mettre à jour la case à cocher dans les paramètres
     updateCompactModeCheckbox();
     
-    // Supprimer cette ligne complètement
-// setTimeout(updateSelectDisplay, 1000);
-
-    // AJOUTER CETTE LIGNE : Mettre à jour le compteur de repas
+    // Mettre à jour le compteur de repas
     setTimeout(() => {
         const today = new Date().toISOString().split('T')[0];
         const todaysMeals = dailyNutrition.meals.filter(meal => {
@@ -9779,8 +9845,37 @@ function initApp() {
         updateTodaysMealCount(todaysMeals.length);
     }, 500);
     
-    // Initialiser l'historique nutritionnel avec la nouvelle structure
+    // ✅ AJOUT: Initialiser le timer du header (caché par défaut)
+    setTimeout(() => {
+        const headerTimer = document.getElementById('header-workout-timer');
+        if (headerTimer) {
+            headerTimer.style.display = activeWorkout ? 'flex' : 'none';
+        }
+        if (activeWorkout && activeWorkoutStartTime) {
+            updateWorkoutTimer();
+        }
+    }, 500);
+    
+    // Initialiser l'historique nutritionnel
     initializeNutritionHistory();
+    
+    // ✅ Vérifier s'il y a une sauvegarde auto à reprendre
+    setTimeout(() => {
+        const autoSaveEntry = workoutHistory.find(entry => entry.isAutoSave === true);
+        if (autoSaveEntry) {
+            if (confirm('Une séance non terminée a été trouvée. Voulez-vous la reprendre ?')) {
+                const index = workoutHistory.findIndex(entry => entry.isAutoSave === true);
+                resumeWorkoutFromHistory(index);
+            } else {
+                // Supprimer la sauvegarde auto si l'utilisateur ne veut pas reprendre
+                workoutHistory = workoutHistory.filter(entry => !entry.isAutoSave);
+                saveToLocalStorage();
+            }
+        }
+    }, 1000);
+    
+    // Appeler updateSelectDisplay une seule fois à la fin
+    setTimeout(updateSelectDisplay, 1000);
 }
 
 function initializeNutritionHistory() {
@@ -10062,18 +10157,19 @@ function updateCompactModeCheckbox() {
 function showScreen(screenId) {
     // Vérifier si une séance est en cours
     if (activeWorkout && screenId !== 'active-workout-screen' && currentScreen === 'active-workout-screen') {
-        // AJOUTER UNE EXCEPTION POUR L'HISTORIQUE
-        if (screenId === 'history-screen') {
-            // Demander confirmation pour quitter la séance
-            if (confirm('Quitter la séance en cours pour aller à l\'historique ?')) {
-                completeWorkout();
-                // Continuer pour afficher l'historique
-            } else {
-                return; // Annuler le changement
-            }
-        } else {
-            showModal('exit-confirm-modal');
-            return;
+        
+        // ✅ TOUS LES ONGLETS (y compris Historique) utilisent le même modal
+        // Stocker l'écran demandé pour y retourner après confirmation
+        localStorage.setItem('pendingScreen', screenId);
+        showModal('exit-confirm-modal');
+        return; // IMPORTANT: Ne pas continuer
+    }
+    
+    // ✅ AJOUT: Si on revient à l'accueil et que la séance est finie, cacher le timer
+    if (screenId === 'home-screen' && !activeWorkout) {
+        const headerTimer = document.getElementById('header-workout-timer');
+        if (headerTimer) {
+            headerTimer.style.display = 'none';
         }
     }
     
@@ -10107,8 +10203,6 @@ function showScreen(screenId) {
             break;
         case 'history-screen':
             loadWorkoutHistory();
-            // loadNutritionHistory(); // ← SUPPRIMÉ
-            // À la place, s'assurer que l'historique nutritionnel est initialisé
             if (!document.getElementById('nutrition-history-day').innerHTML) {
                 loadNutritionHistoryData('day');
             }
@@ -11949,38 +12043,41 @@ function showCreateWorkoutModal(fromHeader = true) {
 }
 
 function showExerciseSelectionForCreate() {
-    // 1. RÉINITIALISER LE MODAL
     const modal = document.getElementById('select-exercise-modal');
     
-    // 2. VIDER LA LISTE DES RÉSULTATS
     const listContainer = document.getElementById('exercise-selection-list');
     if (listContainer) {
         listContainer.innerHTML = '<div style="text-align: center; padding: 20px;">Chargement...</div>';
     }
     
-    // 3. CONFIGURER LE FILTRE
     const muscleFilter = document.getElementById('exercise-filter');
     if (muscleFilter) {
-        muscleFilter.innerHTML = '<option value="all">📋 Tous les groupes musculaires</option>';
+        // ✅ AJOUT: Options spéciales en premier
+        muscleFilter.innerHTML = `
+            <option value="all">📋 Tous les groupes musculaires</option>
+            <option value="favorites" style="color: #F59E0B; font-weight: 600;">⭐ Favoris</option>
+            <option value="custom" style="color: var(--primary); font-weight: 600;">🎨 Personnalisés</option>
+            <option disabled>──────────</option>
+        `;
+        
+        // Ajouter les groupes musculaires
         muscleGroups.forEach(muscle => {
             const option = document.createElement('option');
             option.value = muscle.id;
             option.textContent = `${muscle.image || '●'} ${muscle.name}`;
             muscleFilter.appendChild(option);
         });
+        
         muscleFilter.value = 'all';
         
-        // Réinitialiser l'écouteur d'événement
         muscleFilter.onchange = function() {
             filterExerciseSelectionByMuscle(this.value);
         };
     }
     
-    // 4. DÉFINIR LE CONTEXTE
     modal.dataset.context = 'create';
     modal.dataset.source = 'workout-creation';
     
-    // 5. CHARGER LES EXERCICES
     setTimeout(() => {
         loadExerciseSelection('all');
     }, 50);
@@ -12017,11 +12114,19 @@ function loadExerciseSelection(filter = 'all') {
             return a.name.localeCompare(b.name);
         });
         
-        // 3. APPLIQUER LE FILTRE
-        let filteredExercises = allExercises;
-        if (filter !== 'all') {
-            filteredExercises = allExercises.filter(ex => ex.muscleGroup === filter);
-        }
+        // 3. APPLIQUER LE FILTRE (avec gestion des options spéciales)
+let filteredExercises = allExercises;
+
+if (filter === 'favorites') {
+    // Filtrer uniquement les favoris
+    filteredExercises = allExercises.filter(ex => ex.favorite === true);
+} else if (filter === 'custom') {
+    // Filtrer uniquement les personnalisés
+    filteredExercises = allExercises.filter(ex => ex.custom === true);
+} else if (filter !== 'all') {
+    // Filtre par groupe musculaire
+    filteredExercises = allExercises.filter(ex => ex.muscleGroup === filter);
+}
         
         // 4. VIDER LE CONTENEUR
         container.innerHTML = '';
@@ -12682,6 +12787,16 @@ function startWorkoutWithExercises(workoutName, exerciseIds) {
     
     activeWorkoutStartTime = new Date();
     activeWorkoutTimer = setInterval(updateWorkoutTimer, 1000);
+    
+    // ✅ NOUVEAU: Démarrer la sauvegarde automatique
+    startAutoSave();
+    
+    // Afficher le timer dans le header
+    const headerTimer = document.getElementById('header-workout-timer');
+    if (headerTimer) {
+        headerTimer.style.display = 'flex';
+    }
+
     updateWorkoutDisplay();
     showScreen('active-workout-screen');
 }
@@ -12692,12 +12807,25 @@ function updateWorkoutTimer() {
     const now = new Date();
     const diff = Math.floor((now - activeWorkoutStartTime) / 1000);
     
+    // ✅ Vérification que la durée est cohérente
+    if (diff < 0) {
+        console.warn('⏰ Timer négatif, correction...');
+        activeWorkoutStartTime = now;
+        return;
+    }
+    
     const hours = Math.floor(diff / 3600);
     const minutes = Math.floor((diff % 3600) / 60);
     const seconds = diff % 60;
     
-    document.getElementById('workout-timer').textContent = 
-        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+    document.getElementById('workout-timer').textContent = timeString;
+    
+    const headerTimerDisplay = document.getElementById('header-timer-display');
+    if (headerTimerDisplay) {
+        headerTimerDisplay.textContent = timeString;
+    }
 }
 
 function updateWorkoutDisplay() {
@@ -14802,6 +14930,12 @@ function saveWorkoutData(saveToHistory = true) {
     const endTime = new Date();
     const duration = Math.floor((endTime - activeWorkoutStartTime) / 1000);
     
+    // ✅ Conserver l'auto-save pour référence (mais on va la supprimer après)
+    const autoSaveEntry = workoutHistory.find(entry => entry.isAutoSave === true);
+    
+    // ✅ Supprimer toutes les sauvegardes automatiques avant la finale
+    workoutHistory = workoutHistory.filter(entry => !entry.isAutoSave);
+    
     if (saveToHistory) {
         // SAUVEGARDE DES SUPERSETS POUR CETTE SÉANCE UNIQUEMENT
         const supersetInfo = {};
@@ -14838,7 +14972,7 @@ function saveWorkoutData(saveToHistory = true) {
             return firstA - firstB;
         });
         
-        // Sauvegarder dans l'historique
+        // Sauvegarder dans l'historique (TOUTES les séries, pas seulement les complétées)
         const historyEntry = {
             id: Date.now().toString(),
             name: activeWorkout.name,
@@ -14847,9 +14981,10 @@ function saveWorkoutData(saveToHistory = true) {
             exercises: activeWorkout.exercises.map(exercise => ({
                 name: exercise.name,
                 muscleGroup: exercise.muscleGroup,
-                sets: exercise.sets.filter(set => set.completed).map(set => ({
+                sets: exercise.sets.map(set => ({
                     reps: set.reps,
-                    weight: set.weight
+                    weight: set.weight,
+                    completed: set.completed || false
                 })),
                 supersetId: exercise.supersetId,
                 supersetName: exercise.supersetName,
@@ -14857,14 +14992,18 @@ function saveWorkoutData(saveToHistory = true) {
                 supersetOrder: exercise.supersetOrder,
                 customRest: exercise.customRest || userProfile.defaultRest,
                 notes: exercise.notes || '',
-                compactModeOverride: exercise.compactModeOverride
+                compactModeOverride: exercise.compactModeOverride,
+                collapsed: exercise.collapsed || false
             })),
             stats: {
                 totalSets: activeWorkout.completedSets,
                 totalWeight: activeWorkout.totalWeight,
                 totalExercises: activeWorkout.exercises.length
             },
-            supersets: sortedSupersetInfo
+            supersets: sortedSupersetInfo,
+            isAutoSave: false,
+            // ✅ AJOUT: Si une auto-save existait, on garde sa date pour référence
+            previousAutoSaveDate: autoSaveEntry ? autoSaveEntry.autoSaveDate : null
         };
         
         workoutHistory.unshift(historyEntry);
@@ -14875,18 +15014,158 @@ function saveWorkoutData(saveToHistory = true) {
     // Fermer le modal
     hideModal('save-data-modal');
     
-    // 🔴 CORRECTION: Rediriger vers l'historique AVANT de réinitialiser
+    // Rediriger vers l'historique AVANT de réinitialiser
     showScreen('history-screen');
     
-    // Réinitialiser la séance active
-    completeWorkout();
+    // ✅ MODIFIÉ: Appeler completeWorkout avec keepAutoSave = false (on veut supprimer)
+    completeWorkout(false);
     
-    // 🔴 CORRECTION: Forcer le chargement de l'historique
+    // Forcer le chargement de l'historique
     setTimeout(() => {
         loadWorkoutHistory();
-        // Activer l'onglet "Séances" dans l'historique
         showHistoryTab('workouts');
     }, 100);
+}
+
+// ==================== SAUVEGARDE AUTOMATIQUE DE LA SÉANCE ====================
+let autoSaveInterval = null;
+
+function startAutoSave() {
+    // Nettoyer l'ancien intervalle s'il existe
+    if (autoSaveInterval) {
+        clearInterval(autoSaveInterval);
+    }
+    
+    // Sauvegarde toutes les 5 minutes (300000 ms)
+    autoSaveInterval = setInterval(() => {
+        if (!activeWorkout) return;
+        
+        console.log('💾 Sauvegarde automatique de la séance...');
+        
+        const duration = Math.floor((new Date() - activeWorkoutStartTime) / 1000);
+        
+        // Créer l'entrée d'historique temporaire
+        const autoSaveEntry = createWorkoutHistoryEntry(duration);
+        
+        // Ajouter un flag "autoSave" pour l'identifier
+        autoSaveEntry.isAutoSave = true;
+        autoSaveEntry.autoSaveDate = new Date().toISOString();
+        
+        // Chercher une sauvegarde automatique existante
+        const existingAutoSaveIndex = workoutHistory.findIndex(entry => entry.isAutoSave === true);
+        
+        if (existingAutoSaveIndex !== -1) {
+            // Remplacer l'ancienne sauvegarde auto
+            workoutHistory[existingAutoSaveIndex] = autoSaveEntry;
+        } else {
+            // Ajouter en tête de l'historique
+            workoutHistory.unshift(autoSaveEntry);
+        }
+        
+        saveToLocalStorage();
+        showNotification('💾 Séance sauvegardée automatiquement', 'info', 2000);
+        
+    }, 300000); // 5 minutes
+}
+
+// ==================== CRÉER UNE ENTRÉE D'HISTORIQUE ====================
+function createWorkoutHistoryEntry(duration) {
+    if (!activeWorkout) return null;
+    
+    // Collecter les supersets
+    const supersetInfo = {};
+    
+    activeWorkout.exercises.forEach((exercise, index) => {
+        if (exercise.supersetId) {
+            if (!supersetInfo[exercise.supersetId]) {
+                supersetInfo[exercise.supersetId] = {
+                    id: exercise.supersetId,
+                    name: exercise.supersetName || `Superset`,
+                    color: exercise.supersetColor || '#8B5CF6',
+                    exercises: [],
+                    originalOrder: []
+                };
+            }
+            
+            supersetInfo[exercise.supersetId].exercises.push({
+                originalIndex: index,
+                name: exercise.name,
+                order: exercise.supersetOrder || 1,
+                notes: exercise.notes || ''
+            });
+            
+            supersetInfo[exercise.supersetId].originalOrder.push(index);
+        }
+    });
+    
+    const sortedSupersetInfo = Object.values(supersetInfo).sort((a, b) => {
+        const firstA = Math.min(...a.originalOrder);
+        const firstB = Math.min(...b.originalOrder);
+        return firstA - firstB;
+    });
+    
+    // État du timer de repos
+    const timerContainer = document.getElementById('timer-container');
+    
+    // ✅ AJOUT: Timestamp pour la pause
+    const now = new Date();
+    
+    // Créer l'entrée
+    return {
+        id: Date.now().toString(),
+        name: activeWorkout.name,
+        date: now.toISOString(),
+        duration: duration,
+        exercises: activeWorkout.exercises.map(exercise => ({
+            name: exercise.name,
+            muscleGroup: exercise.muscleGroup,
+            sets: exercise.sets.map(set => ({
+                reps: set.reps,
+                weight: set.weight,
+                completed: set.completed || false
+            })),
+            supersetId: exercise.supersetId,
+            supersetName: exercise.supersetName,
+            supersetColor: exercise.supersetColor,
+            supersetOrder: exercise.supersetOrder,
+            customRest: exercise.customRest || userProfile.defaultRest,
+            notes: exercise.notes || '',
+            compactModeOverride: exercise.compactModeOverride,
+            collapsed: exercise.collapsed || false
+        })),
+        stats: {
+            totalSets: activeWorkout.completedSets,
+            totalWeight: activeWorkout.totalWeight,
+            totalExercises: activeWorkout.exercises.length
+        },
+        supersets: sortedSupersetInfo,
+        
+        // État du timer de repos
+        timerState: {
+            isRunning: isTimerRunning || false,
+            currentSeconds: currentTimerSeconds || 0,
+            hasActiveTimer: timerContainer ? timerContainer.classList.contains('active') : false
+        },
+        
+        // État du superset actif
+        activeSuperset: currentSupersetExerciseIndex !== null ? {
+            exerciseIndex: currentSupersetExerciseIndex,
+            setIndex: currentSupersetSetIndex,
+            roundInfo: currentSupersetRoundInfo ? { ...currentSupersetRoundInfo } : null
+        } : null,
+        
+        // ✅ NOUVEAU: Informations de pause
+        pausedAt: now.toISOString(),
+        pausedDuration: duration,
+        isPaused: true
+    };
+}
+
+function stopAutoSave() {
+    if (autoSaveInterval) {
+        clearInterval(autoSaveInterval);
+        autoSaveInterval = null;
+    }
 }
 
 function completeWorkoutWithoutSaving() {
@@ -14900,23 +15179,87 @@ function completeWorkoutWithoutSaving() {
     }
 }
 
-function completeWorkout() {
+function completeWorkout(keepAutoSave = false) {
+    // Arrêter la sauvegarde automatique
+    stopAutoSave();
+    
     if (activeWorkoutTimer) {
         clearInterval(activeWorkoutTimer);
         activeWorkoutTimer = null;
     }
     
+    // ✅ Ne supprimer les auto-saves QUE si keepAutoSave = false
+    if (!keepAutoSave) {
+        workoutHistory = workoutHistory.filter(entry => !entry.isAutoSave);
+        saveToLocalStorage();
+    }
+    
     activeWorkout = null;
     activeWorkoutStartTime = null;
     
-    // 🔴 CORRECTION: NE PAS changer d'écran ici
-    // La redirection est gérée par saveWorkoutData()
-    // showScreen('home-screen'); ← À SUPPRIMER
+    // Cacher le timer du header
+    const headerTimer = document.getElementById('header-workout-timer');
+    if (headerTimer) {
+        headerTimer.style.display = 'none';
+    }
+    
+    // NE PAS changer d'écran ici (déjà géré ailleurs)
 }
 
 function forceExitWorkout() {
-    completeWorkout();
+    // Récupérer l'écran demandé
+    const pendingScreen = localStorage.getItem('pendingScreen') || 'home-screen';
+    
+// ✅ Sauvegarder le timestamp de pause
+    const pauseTimestamp = new Date().toISOString();
+
+    // ✅ Sauvegarder UNE DERNIÈRE FOIS avant de quitter
+    if (activeWorkout) {
+        const duration = Math.floor((new Date() - activeWorkoutStartTime) / 1000);
+        const autoSaveEntry = createWorkoutHistoryEntry(duration);
+        autoSaveEntry.isAutoSave = true;
+        autoSaveEntry.autoSaveDate = new Date().toISOString();
+        
+        // Remplacer l'ancienne auto-save
+        const existingAutoSaveIndex = workoutHistory.findIndex(entry => entry.isAutoSave === true);
+        if (existingAutoSaveIndex !== -1) {
+            workoutHistory[existingAutoSaveIndex] = autoSaveEntry;
+        } else {
+            workoutHistory.unshift(autoSaveEntry);
+        }
+        saveToLocalStorage();
+    }
+    
+    // ✅ Arrêter le timer de la séance
+    if (activeWorkoutTimer) {
+        clearInterval(activeWorkoutTimer);
+        activeWorkoutTimer = null;
+    }
+    
+    // ✅ Arrêter l'auto-save programmé
+    stopAutoSave();
+    
+    // ✅ Réinitialiser la séance active (mais GARDER l'auto-save dans l'historique)
+    activeWorkout = null;
+    activeWorkoutStartTime = null;
+    
+    // ✅ Cacher le timer du header
+    const headerTimer = document.getElementById('header-workout-timer');
+    if (headerTimer) {
+        headerTimer.style.display = 'none';
+    }
+    
+    // ✅ Fermer le modal de confirmation
     hideModal('exit-confirm-modal');
+    
+    // ✅ Aller vers l'écran demandé
+    showScreen(pendingScreen);
+    
+    // ✅ Nettoyer le stockage
+    localStorage.removeItem('pendingScreen');
+    
+    // ✅ Notification claire
+    showNotification('⏸️ Séance mise en pause - Retrouvez-la dans l\'historique avec "Reprendre"', 'info', 4000);
 }
 
 // ==================== GESTION DU TIMER ====================
@@ -16766,16 +17109,22 @@ function loadWorkoutHistory() {
                 </div>
             </div>
             <div class="history-item-improved-actions">
-                <button class="action-btn" onclick="showWorkoutHistoryDetail(${index})">
-                    <i class="fas fa-eye"></i> Détails
-                </button>
-                <button class="action-btn" onclick="redoWorkout(${index})">
-                    <i class="fas fa-redo"></i> Refaire
-                </button>
-                <button class="action-btn" onclick="deleteWorkoutHistory(${index})">
-                    <i class="fas fa-trash"></i> Supprimer
-                </button>
-            </div>
+        <button class="action-btn" onclick="showWorkoutHistoryDetail(${index})">
+            <i class="fas fa-eye"></i> Détails
+        </button>
+        ${entry.isAutoSave ? `
+    <button class="action-btn" onclick="resumeWorkoutFromHistory(${index})" style="background: var(--warning); color: white; border: none;">
+        <i class="fas fa-play"></i> Reprendre
+    </button>
+        ` : `
+            <button class="action-btn" onclick="redoWorkout(${index})">
+                <i class="fas fa-redo"></i> Refaire
+            </button>
+        `}
+        <button class="action-btn" onclick="deleteWorkoutHistory(${index})">
+            <i class="fas fa-trash"></i> Supprimer
+        </button>
+    </div>
         `;
         
         container.appendChild(historyItem);
@@ -17839,6 +18188,114 @@ function redoWorkout(index) {
         showNotification('Séance reprise avec supersets et valeurs historiques');
     } else {
         showNotification('Impossible de retrouver les exercices de cette séance', 'error');
+    }
+}
+
+// ==================== REPRENDRE UNE SÉANCE INTERROMPUE ====================
+function resumeWorkoutFromHistory(index) {
+    const entry = workoutHistory[index];
+    if (!entry) return;
+    
+    if (!confirm('Reprendre cette séance ?')) {
+        return;
+    }
+    
+    // Supprimer l'entrée de l'historique
+    workoutHistory.splice(index, 1);
+    saveToLocalStorage();
+    
+    // Créer la séance active
+    activeWorkout = {
+        name: entry.name,
+        exercises: [],
+        startTime: new Date(),
+        completedSets: entry.stats.totalSets,
+        totalWeight: entry.stats.totalWeight
+    };
+    
+    // Restaurer les exercices
+    entry.exercises.forEach(exercise => {
+        const matchingExercise = getAllExercises().find(ex => 
+            ex.name.toLowerCase() === exercise.name.toLowerCase()
+        ) || {
+            name: exercise.name,
+            muscleGroup: exercise.muscleGroup,
+            difficulty: 'Intermédiaire'
+        };
+        
+        activeWorkout.exercises.push({
+            ...matchingExercise,
+            sets: exercise.sets.map((set, i) => ({
+                number: i + 1,
+                reps: set.reps,
+                weight: set.weight,
+                completed: set.completed || false
+            })),
+            customRest: exercise.customRest || userProfile.defaultRest,
+            notes: exercise.notes || '',
+            collapsed: exercise.collapsed || false,
+            compactModeOverride: exercise.compactModeOverride,
+            supersetId: exercise.supersetId,
+            supersetName: exercise.supersetName,
+            supersetColor: exercise.supersetColor,
+            supersetOrder: exercise.supersetOrder
+        });
+    });
+    
+    // ✅ CORRECTION: Restaurer la durée EXACTE au moment de la pause
+    let totalElapsedSeconds = entry.duration;  // Par défaut, utiliser la durée sauvegardée
+    
+    // Si on a un timestamp de pause, on pourrait calculer le temps écoulé depuis
+    // MAIS on veut la durée au moment de la pause, pas plus
+    
+    // Définir le startTime pour que le timer affiche la durée de pause
+    const now = new Date();
+    activeWorkoutStartTime = new Date(now.getTime() - (totalElapsedSeconds * 1000));
+    activeWorkoutTimer = setInterval(updateWorkoutTimer, 1000);
+    
+    // Mettre à jour immédiatement
+    updateWorkoutTimer();
+    
+    // Restaurer l'état du timer de repos si présent
+    if (entry.timerState && entry.timerState.hasActiveTimer) {
+        currentTimerSeconds = entry.timerState.currentSeconds || userProfile.defaultRest;
+        updateTimerDisplay();
+        document.getElementById('timer-container').classList.add('active');
+        
+        if (entry.timerState.isRunning) {
+            startTimer();
+        }
+    }
+    
+    // Restaurer l'état du superset
+    if (entry.activeSuperset) {
+        currentSupersetExerciseIndex = entry.activeSuperset.exerciseIndex;
+        currentSupersetSetIndex = entry.activeSuperset.setIndex;
+        currentSupersetRoundInfo = entry.activeSuperset.roundInfo;
+    }
+    
+    startAutoSave();
+    
+    const headerTimer = document.getElementById('header-workout-timer');
+    if (headerTimer) {
+        headerTimer.style.display = 'flex';
+    }
+    
+    updateWorkoutDisplay();
+    showScreen('active-workout-screen');
+    showNotification(`✅ Séance reprise - Durée: ${formatDuration(totalElapsedSeconds)}`, 'success');
+}
+
+// Fonction utilitaire pour formater la durée
+function formatDuration(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (hours > 0) {
+        return `${hours}h ${minutes.toString().padStart(2, '0')}min`;
+    } else {
+        return `${minutes}min ${secs.toString().padStart(2, '0')}s`;
     }
 }
 
