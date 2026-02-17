@@ -7924,6 +7924,273 @@ textarea:focus {
     display: none !important;
 }
 
+/* ==================== TOGGLES UNIFIÉS ==================== */
+.settings-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.settings-item:last-child {
+    border-bottom: none;
+}
+
+.settings-item-info {
+    flex: 1;
+}
+
+.settings-item-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    font-size: 15px;
+}
+
+.settings-item-description {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* Switch moderne unifié */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    margin-left: 16px;
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e1;
+    transition: .3s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+input:checked + .slider {
+    background: var(--gradient-primary);
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+/* Mode sombre */
+.dark-mode .slider {
+    background-color: #475569;
+}
+
+.dark-mode input:checked + .slider {
+    background: linear-gradient(135deg, #4F46E5, #6366F1);
+}
+
+/* ==================== SÉLECTION MULTIPLE FAVORIS ==================== */
+.favorite-food-item {
+    transition: all 0.2s ease;
+    position: relative;
+    user-select: none;
+}
+
+.favorite-food-item[data-selected="true"] {
+    border-color: var(--primary) !important;
+    background: rgba(99, 102, 241, 0.05) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.selection-checkmark {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    animation: popIn 0.2s ease;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); }
+    80% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+#validate-fav-selection, #clear-fav-selection {
+    padding: 8px 16px;
+    font-size: var(--font-size-sm);
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+
+#validate-fav-selection {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+}
+
+#clear-fav-selection {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+
+#validate-fav-selection:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+#clear-fav-selection:hover {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+/* ==================== SÉLECTION MULTIPLE FAVORIS - MOBILE ==================== */
+.favorite-food-item {
+    transition: all 0.2s ease;
+    position: relative;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.favorite-food-item[data-selected="true"] {
+    border-color: var(--primary) !important;
+    background: rgba(99, 102, 241, 0.05) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(99, 102, 241, 0.15);
+}
+
+.selection-checkmark {
+    animation: popIn 0.2s ease;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); }
+    80% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+#validate-fav-selection, #clear-fav-selection {
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+#validate-fav-selection {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+}
+
+#clear-fav-selection {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+
+#validate-fav-selection:active {
+    transform: scale(0.95);
+}
+
+#clear-fav-selection:active {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+/* Animation du compteur */
+#selected-count {
+    transition: all 0.15s ease;
+    display: inline-block;
+}
+
+/* ==================== SÉLECTION MULTIPLE EXERCICES FAVORIS ==================== */
+.favorite-exercise-item {
+    transition: all 0.2s ease;
+    position: relative;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.favorite-exercise-item[data-selected="true"] {
+    border-color: var(--primary) !important;
+    background: rgba(99, 102, 241, 0.05) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(99, 102, 241, 0.15);
+}
+
+#validate-exercise-selection, #clear-exercise-selection {
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+#validate-exercise-selection {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+}
+
+#clear-exercise-selection {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+
+#validate-exercise-selection:active {
+    transform: scale(0.95);
+}
+
+#clear-exercise-selection:active {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+#exercise-selected-count {
+    transition: all 0.15s ease;
+    display: inline-block;
+    font-weight: 700;
+}
 
     </style>
 </head>
@@ -9421,7 +9688,7 @@ textarea:focus {
         </div>
     </div>
 
-<!-- Modal Paramètres - AMÉLIORÉ -->
+<!-- Modal Paramètres - AMÉLIORÉ AVEC TOGGLES UNIFIÉS -->
 <div class="modal" id="settings-modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -9430,93 +9697,111 @@ textarea:focus {
         </div>
         <div class="modal-body">
             <div class="settings-list">
-                <!-- NOUVEAU : Bouton Thème -->
+                <!-- Thème -->
                 <div class="settings-item" onclick="showThemeSelection()" style="cursor: pointer;">
-                    <div>
-                        <div style="font-weight: 700; color: var(--text-primary);">🎨 Thème</div>
-                        <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Changer le thème de couleur</div>
+                    <div class="settings-item-info">
+                        <div class="settings-item-title">🎨 Thème</div>
+                        <div class="settings-item-description">Changer le thème de couleur</div>
                     </div>
                     <div style="color: var(--primary); font-weight: 700;">
                         <i class="fas fa-palette"></i>
                     </div>
                 </div>
                 
+                <!-- Mode sombre -->
                 <div class="settings-item">
-                    <div>
-                        <div style="font-weight: 700; color: var(--text-primary);">🌙 Mode sombre</div>
-                        <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Activer/désactiver le thème sombre</div>
+                    <div class="settings-item-info">
+                        <div class="settings-item-title">🌙 Mode sombre</div>
+                        <div class="settings-item-description">Activer/désactiver le thème sombre</div>
                     </div>
-                    <label class="toggle-switch">
+                    <label class="switch">
                         <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkModeSetting(this.checked)">
                         <span class="slider"></span>
                     </label>
                 </div>
                 
+                <!-- Sons -->
                 <div class="settings-item">
-                    <div>
-                        <div style="font-weight: 700; color: var(--text-primary);">🔊 Sons</div>
-                        <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Activer/désactiver les sons</div>
+                    <div class="settings-item-info">
+                        <div class="settings-item-title">🔊 Sons</div>
+                        <div class="settings-item-description">Activer/désactiver les sons</div>
                     </div>
-                    <label class="toggle-switch">
+                    <label class="switch">
                         <input type="checkbox" id="sounds-toggle" checked onchange="toggleSounds(this.checked)">
                         <span class="slider"></span>
                     </label>
                 </div>
                 
+                <!-- Vibrations -->
                 <div class="settings-item">
-                    <div>
-                        <div style="font-weight: 700; color: var(--text-primary);">📳 Vibrations</div>
-                        <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Activer/désactiver les vibrations</div>
+                    <div class="settings-item-info">
+                        <div class="settings-item-title">📳 Vibrations</div>
+                        <div class="settings-item-description">Activer/désactiver les vibrations</div>
                     </div>
-                    <label class="toggle-switch">
+                    <label class="switch">
                         <input type="checkbox" id="vibrations-toggle" checked onchange="toggleVibrations(this.checked)">
                         <span class="slider"></span>
                     </label>
                 </div>
-
                 
+                <!-- Sauvegarde automatique -->
                 <div class="settings-item">
-                    <div>
-                        <div style="font-weight: 700; color: var(--text-primary);">🔒 Écran toujours actif</div>
-                        <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Garder l'écran allumé pendant les séances</div>
+                    <div class="settings-item-info">
+                        <div class="settings-item-title">💾 Sauvegarde automatique</div>
+                        <div class="settings-item-description">En cas de crash, conserve votre séance (consomme plus de batterie)</div>
                     </div>
-                    <label class="toggle-switch">
+                    <label class="switch">
+                        <input type="checkbox" id="auto-save-toggle" onchange="toggleAutoSave(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <!-- Écran toujours actif -->
+                <div class="settings-item">
+                    <div class="settings-item-info">
+                        <div class="settings-item-title">🔒 Écran toujours actif</div>
+                        <div class="settings-item-description">Garder l'écran allumé pendant les séances</div>
+                    </div>
+                    <label class="switch">
                         <input type="checkbox" id="keep-screen-on-toggle" onchange="toggleKeepScreenOn(this.checked)">
                         <span class="slider"></span>
                     </label>
                 </div>
                 
+                <!-- Timer auto -->
                 <div class="settings-item">
-                    <div>
-                        <div style="font-weight: 700; color: var(--text-primary);">⏱️ Timer auto</div>
-                        <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Démarrer le timer automatiquement</div>
+                    <div class="settings-item-info">
+                        <div class="settings-item-title">⏱️ Timer auto</div>
+                        <div class="settings-item-description">Démarrer le timer automatiquement</div>
                     </div>
-                    <label class="toggle-switch">
+                    <label class="switch">
                         <input type="checkbox" id="auto-timer-toggle" checked onchange="toggleAutoTimer(this.checked)">
                         <span class="slider"></span>
                     </label>
                 </div>
-<div class="settings-item">
-    <div>
-        <div style="font-weight: 700; color: var(--text-primary);">📐 Mode compact</div>
-        <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Séries toujours compactes</div>
-    </div>
-    <label class="toggle-switch">
-        <input type="checkbox" id="compact-mode-toggle" onchange="toggleCompactMode(this.checked)">
-        <span class="slider"></span>
-    </label>
-</div>
+                
+                <!-- Mode compact -->
+                <div class="settings-item">
+                    <div class="settings-item-info">
+                        <div class="settings-item-title">📐 Mode compact</div>
+                        <div class="settings-item-description">Séries toujours compactes</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="compact-mode-toggle" onchange="toggleCompactMode(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
 
-
-<div class="settings-item">
-    <div>
-        <div style="font-weight: 700; color: var(--text-primary);">🎵 Test audio/vibration</div>
-        <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">Tester les alertes sonores et vibrations</div>
-    </div>
-    <button class="btn btn-secondary" onclick="testAudioVibration()" style="padding: 8px 16px; font-size: var(--font-size-sm);">
-        Tester
-    </button>
-</div>
+                <!-- Test audio/vibration -->
+                <div class="settings-item">
+                    <div class="settings-item-info">
+                        <div class="settings-item-title">🎵 Test audio/vibration</div>
+                        <div class="settings-item-description">Tester les alertes sonores et vibrations</div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="testAudioVibration()" style="padding: 8px 16px; font-size: var(--font-size-sm); min-width: 70px;">
+                        Tester
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -9706,7 +9991,9 @@ let settings = {
     keepScreenOn: false,
     autoTimer: true,
     darkMode: false,
-    compactMode: false  // AJOUTER CETTE LIGNE
+    compactMode: false,
+    autoSaveEnabled: false,      // DÉSACTIVÉ PAR DÉFAUT
+    autoSaveInterval: 300000      // 5 minutes (gardé pour référence)
 };
 let currentTheme = 'default'; // 'default', 'blue', 'green', 'purple', 'red', 'sunset'
 
@@ -9819,6 +10106,11 @@ function initApp() {
         settings.compactMode = true;
     }
     
+    // ✅ Valeur par défaut pour autoSaveEnabled
+    if (settings.autoSaveEnabled === undefined) {
+        settings.autoSaveEnabled = false; // Désactivé par défaut
+    }
+    
     calculateNutritionNeeds();
     updateDailyNutritionDisplay();
     loadMuscleGroups();
@@ -9834,6 +10126,14 @@ function initApp() {
     
     // Mettre à jour la case à cocher dans les paramètres
     updateCompactModeCheckbox();
+    
+    // ✅ Mettre à jour la case à cocher auto-save
+    setTimeout(() => {
+        const autoSaveToggle = document.getElementById('auto-save-toggle');
+        if (autoSaveToggle) {
+            autoSaveToggle.checked = settings.autoSaveEnabled;
+        }
+    }, 500);
     
     // Mettre à jour le compteur de repas
     setTimeout(() => {
@@ -15031,10 +15331,18 @@ function saveWorkoutData(saveToHistory = true) {
 let autoSaveInterval = null;
 
 function startAutoSave() {
+    // ✅ Ne démarrer que si activé dans les paramètres
+    if (!settings.autoSaveEnabled) {
+        console.log('💤 Auto-save désactivé (économie batterie)');
+        return;
+    }
+    
     // Nettoyer l'ancien intervalle s'il existe
     if (autoSaveInterval) {
         clearInterval(autoSaveInterval);
     }
+    
+    console.log('💾 Auto-save activé (toutes les 5 min)');
     
     // Sauvegarde toutes les 5 minutes (300000 ms)
     autoSaveInterval = setInterval(() => {
@@ -16013,7 +16321,7 @@ function showFoodSearchModalForMeal() {
             }
             
             // Initialiser les options si nécessaire
-            if (categorySelect.options.length <= 3) {
+            if (categorySelect.options.length <= 4) { // Augmenté pour inclure "favoris"
                 const baseOptions = Array.from(categorySelect.options);
                 categorySelect.innerHTML = '';
                 
@@ -16021,8 +16329,24 @@ function showFoodSearchModalForMeal() {
                     categorySelect.appendChild(option);
                 });
                 
+                // ✅ AJOUT: Option "Favoris" en premier
+                const favOption = document.createElement('option');
+                favOption.value = 'favorites';
+                favOption.textContent = '⭐ Favoris';
+                favOption.style.color = '#F59E0B';
+                favOption.style.fontWeight = '600';
+                categorySelect.appendChild(favOption);
+                
+                // Option "Personnalisé"
+                const customOption = document.createElement('option');
+                customOption.value = 'personnalisé';
+                customOption.textContent = '🎨 Personnalisé';
+                customOption.style.color = 'var(--primary)';
+                customOption.style.fontWeight = '600';
+                categorySelect.appendChild(customOption);
+                
                 const categories = [...new Set(getAllFoods().map(f => f.category))];
-                categories.forEach(category => {
+                categories.sort().forEach(category => {
                     const option = document.createElement('option');
                     option.value = category;
                     option.textContent = category.charAt(0).toUpperCase() + category.slice(1);
@@ -16054,15 +16378,17 @@ function searchFoodsSimple(searchTerm) {
     }
     
     // Filtrer par catégorie
-    if (categoryFilter !== 'all') {
-        if (categoryFilter === 'halal') {
-            filteredFoods = filteredFoods.filter(food => food.halal);
-        } else if (categoryFilter === 'personnalisé') {
-            filteredFoods = filteredFoods.filter(food => food.custom);
-        } else {
-            filteredFoods = filteredFoods.filter(food => food.category === categoryFilter);
-        }
+if (categoryFilter !== 'all') {
+    if (categoryFilter === 'favorites') {           // ✅ NOUVEAU
+        filteredFoods = filteredFoods.filter(food => food.favorite);
+    } else if (categoryFilter === 'personnalisé') {
+        filteredFoods = filteredFoods.filter(food => food.custom);
+    } else if (categoryFilter === 'halal') {
+        filteredFoods = filteredFoods.filter(food => food.halal);
+    } else {
+        filteredFoods = filteredFoods.filter(food => food.category === categoryFilter);
     }
+}
     
     container.innerHTML = '';
     
@@ -16959,18 +17285,197 @@ function updateFavoriteFoods() {
         return;
     }
     
+    // ✅ État de sélection global
+    window.selectedFavoriteFoods = [];
+    
+    // ✅ CONTENEUR PRINCIPAL
+    const mainContainer = document.createElement('div');
+    mainContainer.style.width = '100%';
+    
+    // ✅ BANDEAU BOUTONS FIXE EN HAUT
+    const buttonBar = document.createElement('div');
+    buttonBar.style.cssText = `
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding: 8px 0;
+        position: sticky;
+        top: 0;
+        background: var(--bg-primary);
+        z-index: 5;
+        border-bottom: 1px solid var(--border);
+    `;
+    
+    buttonBar.innerHTML = `
+        <div style="font-weight: 600; color: var(--text-primary);">
+            <span id="selected-count">0</span> sélectionné(s)
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary" id="clear-fav-selection" style="display: none; padding: 8px 12px; font-size: 13px;">
+                <i class="fas fa-times"></i> Annuler
+            </button>
+            <button class="btn btn-success" id="validate-fav-selection" style="display: none; padding: 8px 12px; font-size: 13px;">
+                <i class="fas fa-check"></i> Ajouter
+            </button>
+        </div>
+    `;
+    
+    mainContainer.appendChild(buttonBar);
+    
+    // ✅ GRILLE DES FAVORIS (2 colonnes)
+    const gridContainer = document.createElement('div');
+    gridContainer.style.cssText = `
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        width: 100%;
+    `;
+    
     favoriteFoods.forEach(food => {
         const foodItem = document.createElement('div');
         foodItem.className = 'favorite-food-item';
-        foodItem.onclick = () => addFoodToMeal(food.id);
+        foodItem.dataset.foodId = food.id;
+        foodItem.dataset.selected = 'false';
         
-        foodItem.innerHTML = `
-            <div class="favorite-food-name">${food.name}</div>
-            <div class="favorite-food-calories">${food.calories} kcal</div>
+        foodItem.style.cssText = `
+            padding: 14px 10px;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            min-height: 70px;
         `;
         
-        container.appendChild(foodItem);
+        foodItem.onclick = function(e) {
+            e.stopPropagation();
+            toggleFavoriteSelectionMobile(this, food.id);
+        };
+        
+        foodItem.innerHTML = `
+            <div style="font-weight: 700; color: var(--text-primary); font-size: 14px; margin-bottom: 4px; padding-right: 24px;">${food.name}</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">${food.calories} kcal</div>
+            <div class="selection-checkmark" style="
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background: var(--primary);
+                color: white;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                font-weight: bold;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            ">✓</div>
+        `;
+        
+        gridContainer.appendChild(foodItem);
     });
+    
+    mainContainer.appendChild(gridContainer);
+    container.appendChild(mainContainer);
+    
+    // ✅ Récupérer les boutons
+    const validateBtn = document.getElementById('validate-fav-selection');
+    const clearBtn = document.getElementById('clear-fav-selection');
+    const countSpan = document.getElementById('selected-count');
+    
+    // ✅ Fonction de mise à jour UI
+    window.updateFavoriteSelectionUI = function() {
+        if (window.selectedFavoriteFoods.length > 0) {
+            validateBtn.style.display = 'flex';
+            clearBtn.style.display = 'flex';
+            countSpan.textContent = window.selectedFavoriteFoods.length;
+            
+            // Animation légère du compteur
+            countSpan.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                countSpan.style.transform = 'scale(1)';
+            }, 150);
+        } else {
+            validateBtn.style.display = 'none';
+            clearBtn.style.display = 'none';
+            countSpan.textContent = '0';
+        }
+    };
+    
+    // ✅ Attacher les événements aux boutons
+    validateBtn.onclick = addSelectedFavoritesToMeal;
+    clearBtn.onclick = clearFavoriteSelectionMobile;
+}
+
+// ✅ Version mobile de toggleFavoriteSelection
+function toggleFavoriteSelectionMobile(element, foodId) {
+    const isSelected = element.dataset.selected === 'true';
+    const checkmark = element.querySelector('.selection-checkmark');
+    
+    if (isSelected) {
+        // Désélectionner
+        element.dataset.selected = 'false';
+        element.style.borderColor = 'var(--border)';
+        element.style.background = 'var(--card-bg)';
+        element.style.transform = 'translateY(0)';
+        checkmark.style.display = 'none';
+        
+        // Retirer de la liste
+        window.selectedFavoriteFoods = window.selectedFavoriteFoods.filter(id => id !== foodId);
+    } else {
+        // Sélectionner
+        element.dataset.selected = 'true';
+        element.style.borderColor = 'var(--primary)';
+        element.style.background = 'rgba(99, 102, 241, 0.05)';
+        element.style.transform = 'translateY(-2px)';
+        checkmark.style.display = 'flex';
+        
+        // Ajouter à la liste
+        window.selectedFavoriteFoods.push(foodId);
+    }
+    
+    window.updateFavoriteSelectionUI();
+}
+
+// ✅ Version mobile de clearFavoriteSelection
+function clearFavoriteSelectionMobile() {
+    // Désélectionner tous les éléments
+    document.querySelectorAll('.favorite-food-item').forEach(item => {
+        item.dataset.selected = 'false';
+        item.style.borderColor = 'var(--border)';
+        item.style.background = 'var(--card-bg)';
+        item.style.transform = 'translateY(0)';
+        const checkmark = item.querySelector('.selection-checkmark');
+        if (checkmark) checkmark.style.display = 'none';
+    });
+    
+    window.selectedFavoriteFoods = [];
+    window.updateFavoriteSelectionUI();
+}
+
+// ✅ addSelectedFavoritesToMeal reste identique
+function addSelectedFavoritesToMeal() {
+    if (window.selectedFavoriteFoods.length === 0) {
+        showNotification('Aucun aliment sélectionné', 'warning');
+        return;
+    }
+    
+    showAddMealModal(false);
+    
+    setTimeout(() => {
+        window.selectedFavoriteFoods.forEach(foodId => {
+            addFoodToMealFromSearch(foodId);
+        });
+        
+        clearFavoriteSelectionMobile();
+        showNotification(`${window.selectedFavoriteFoods.length} aliment(s) ajouté(s) au repas`, 'success');
+    }, 500);
 }
 
 function refreshFavoriteFoods() {
@@ -16992,24 +17497,284 @@ function loadFavoriteExercises() {
                 <div style="font-size: 24px; margin-bottom: 10px;">⭐</div>
                 <p>Aucun exercice favori</p>
                 <p style="font-size: var(--font-size-sm); margin-top: 6px;">Marquez des exercices comme favoris pour les voir ici</p>
+                <button class="btn btn-success mt-4" onclick="showScreen('exercises-screen')">
+                    <i class="fas fa-search"></i> Explorer les exercices
+                </button>
             </div>
         `;
         return;
     }
     
+    // ✅ État de sélection global
+    window.selectedFavoriteExercises = [];
+    
+    // ✅ CONTENEUR PRINCIPAL
+    const mainContainer = document.createElement('div');
+    mainContainer.style.width = '100%';
+    
+    // ✅ BANDEAU BOUTONS FIXE EN HAUT
+    const buttonBar = document.createElement('div');
+    buttonBar.style.cssText = `
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding: 8px 0;
+        position: sticky;
+        top: 0;
+        background: var(--bg-primary);
+        z-index: 5;
+        border-bottom: 1px solid var(--border);
+    `;
+    
+    buttonBar.innerHTML = `
+        <div style="font-weight: 600; color: var(--text-primary);">
+            <span id="exercise-selected-count">0</span> sélectionné(s)
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary" id="clear-exercise-selection" style="display: none; padding: 8px 12px; font-size: 13px;">
+                <i class="fas fa-times"></i> Annuler
+            </button>
+            <button class="btn btn-success" id="validate-exercise-selection" style="display: none; padding: 8px 12px; font-size: 13px;">
+                <i class="fas fa-check"></i> Créer séance
+            </button>
+        </div>
+    `;
+    
+    mainContainer.appendChild(buttonBar);
+    
+    // ✅ GRILLE DES EXERCICES FAVORIS (2 colonnes)
+    const gridContainer = document.createElement('div');
+    gridContainer.style.cssText = `
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        width: 100%;
+    `;
+    
     favoriteExercises.forEach(exercise => {
         const muscle = muscleGroups.find(m => m.id === exercise.muscleGroup);
-        const exerciseItem = document.createElement('div');
-        exerciseItem.className = 'favorite-item-premium';
-        exerciseItem.onclick = () => addToWorkout(exercise.id);
+        const muscleName = muscle ? muscle.name : exercise.muscleGroup;
+        const muscleColor = muscle ? muscle.color : '#6366F1';
         
-        exerciseItem.innerHTML = `
-            <div class="favorite-item-name">${exercise.name}</div>
-            <div class="favorite-item-muscle">${muscle ? muscle.name : exercise.muscleGroup}</div>
+        // Déterminer le badge de difficulté
+        let difficultyBadge = '';
+        switch(exercise.difficulty) {
+            case 'Débutant': difficultyBadge = '🟢'; break;
+            case 'Intermédiaire': difficultyBadge = '🟡'; break;
+            case 'Avancé': difficultyBadge = '🔴'; break;
+            default: difficultyBadge = '⚪';
+        }
+        
+        const exerciseItem = document.createElement('div');
+        exerciseItem.className = 'favorite-exercise-item';
+        exerciseItem.dataset.exerciseId = exercise.id;
+        exerciseItem.dataset.selected = 'false';
+        
+        exerciseItem.style.cssText = `
+            padding: 14px 10px;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            min-height: 85px;
         `;
         
-        container.appendChild(exerciseItem);
+        exerciseItem.onclick = function(e) {
+            e.stopPropagation();
+            toggleFavoriteExerciseSelection(this, exercise.id);
+        };
+        
+        exerciseItem.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                <div style="font-weight: 700; color: var(--text-primary); font-size: 14px; padding-right: 24px;">${exercise.name}</div>
+                <span style="font-size: 12px;" title="${exercise.difficulty}">${difficultyBadge}</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; margin-bottom: 4px;">
+                <span style="color: ${muscleColor};">●</span> ${muscleName}
+            </div>
+            <div style="font-size: 10px; color: var(--text-secondary);">
+                ${exercise.category || ''}
+            </div>
+            <div class="selection-checkmark" style="
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background: var(--primary);
+                color: white;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                font-weight: bold;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            ">✓</div>
+        `;
+        
+        gridContainer.appendChild(exerciseItem);
     });
+    
+    mainContainer.appendChild(gridContainer);
+    container.appendChild(mainContainer);
+    
+    // ✅ Récupérer les boutons
+    const validateBtn = document.getElementById('validate-exercise-selection');
+    const clearBtn = document.getElementById('clear-exercise-selection');
+    const countSpan = document.getElementById('exercise-selected-count');
+    
+    // ✅ Fonction de mise à jour UI
+    window.updateExerciseSelectionUI = function() {
+        if (window.selectedFavoriteExercises.length > 0) {
+            validateBtn.style.display = 'flex';
+            clearBtn.style.display = 'flex';
+            countSpan.textContent = window.selectedFavoriteExercises.length;
+            
+            // Animation légère du compteur
+            countSpan.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                countSpan.style.transform = 'scale(1)';
+            }, 150);
+        } else {
+            validateBtn.style.display = 'none';
+            clearBtn.style.display = 'none';
+            countSpan.textContent = '0';
+        }
+    };
+    
+    // ✅ Attacher les événements aux boutons
+    validateBtn.onclick = createWorkoutFromSelectedExercises;
+    clearBtn.onclick = clearFavoriteExerciseSelection;
+}
+
+// ✅ TOGGLE SÉLECTION EXERCICE
+function toggleFavoriteExerciseSelection(element, exerciseId) {
+    const isSelected = element.dataset.selected === 'true';
+    const checkmark = element.querySelector('.selection-checkmark');
+    
+    if (isSelected) {
+        // Désélectionner
+        element.dataset.selected = 'false';
+        element.style.borderColor = 'var(--border)';
+        element.style.background = 'var(--card-bg)';
+        element.style.transform = 'translateY(0)';
+        checkmark.style.display = 'none';
+        
+        // Retirer de la liste
+        window.selectedFavoriteExercises = window.selectedFavoriteExercises.filter(id => id !== exerciseId);
+    } else {
+        // Sélectionner
+        element.dataset.selected = 'true';
+        element.style.borderColor = 'var(--primary)';
+        element.style.background = 'rgba(99, 102, 241, 0.05)';
+        element.style.transform = 'translateY(-2px)';
+        checkmark.style.display = 'flex';
+        
+        // Ajouter à la liste
+        window.selectedFavoriteExercises.push(exerciseId);
+    }
+    
+    window.updateExerciseSelectionUI();
+}
+
+// ✅ ANNULER SÉLECTION
+function clearFavoriteExerciseSelection() {
+    document.querySelectorAll('.favorite-exercise-item').forEach(item => {
+        item.dataset.selected = 'false';
+        item.style.borderColor = 'var(--border)';
+        item.style.background = 'var(--card-bg)';
+        item.style.transform = 'translateY(0)';
+        const checkmark = item.querySelector('.selection-checkmark');
+        if (checkmark) checkmark.style.display = 'none';
+    });
+    
+    window.selectedFavoriteExercises = [];
+    window.updateExerciseSelectionUI();
+}
+
+// ✅ CRÉER SÉANCE À PARTIR DES EXERCICES SÉLECTIONNÉS
+function createWorkoutFromSelectedExercises() {
+    if (window.selectedFavoriteExercises.length === 0) {
+        showNotification('Aucun exercice sélectionné', 'warning');
+        return;
+    }
+    
+    // CAS 1: Un seul exercice sélectionné → Séance rapide directe
+    if (window.selectedFavoriteExercises.length === 1) {
+        const exerciseId = window.selectedFavoriteExercises[0];
+        addToWorkout(exerciseId);
+        clearFavoriteExerciseSelection();
+        showNotification('Séance rapide créée avec 1 exercice', 'success');
+        return;
+    }
+    
+    // CAS 2: Plusieurs exercices → Ouvrir le modal de création
+    showCreateWorkoutModal(false);
+    
+    // Attendre que le modal soit ouvert
+    setTimeout(() => {
+        // Ajouter tous les exercices sélectionnés
+        window.selectedFavoriteExercises.forEach(exerciseId => {
+            // Vérifier si la fonction existe
+            if (typeof addExerciseToWorkoutSelection === 'function') {
+                addExerciseToWorkoutSelection(exerciseId);
+            } else {
+                // Fallback: ajouter directement au conteneur
+                const exercise = getAllExercises().find(ex => ex.id === exerciseId);
+                if (exercise) {
+                    const container = document.getElementById('workout-exercises-selection');
+                    if (container) {
+                        const exerciseElement = document.createElement('div');
+                        exerciseElement.className = 'meal-food-item';
+                        exerciseElement.dataset.exerciseId = exerciseId;
+                        
+                        const muscle = muscleGroups.find(m => m.id === exercise.muscleGroup);
+                        const muscleName = muscle ? muscle.name : exercise.muscleGroup;
+                        
+                        exerciseElement.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 700; margin-bottom: 3px;">${exercise.name}</div>
+                                    <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">
+                                        ${muscleName} • ${exercise.difficulty}
+                                    </div>
+                                </div>
+                                <div class="reorder-buttons">
+                                    <button class="reorder-btn" onclick="moveExerciseUp(this)" title="Monter">↑</button>
+                                    <button class="reorder-btn" onclick="moveExerciseDown(this)" title="Descendre">↓</button>
+                                    <button class="reorder-btn" onclick="removeExerciseFromSelection(this)" title="Supprimer">×</button>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(exerciseElement);
+                    }
+                }
+            }
+        });
+        
+        // Ajouter un nom par défaut
+        const nameInput = document.getElementById('workout-name');
+        if (nameInput && !nameInput.value) {
+            if (window.selectedFavoriteExercises.length === 1) {
+                const exercise = getAllExercises().find(ex => ex.id === window.selectedFavoriteExercises[0]);
+                nameInput.value = `Séance: ${exercise ? exercise.name : 'Favoris'}`;
+            } else {
+                nameInput.value = `Séance (${window.selectedFavoriteExercises.length} exercices)`;
+            }
+        }
+        
+        // Réinitialiser la sélection
+        clearFavoriteExerciseSelection();
+        
+        showNotification(`${window.selectedFavoriteExercises.length} exercice(s) ajouté(s) à la séance`, 'success');
+    }, 500);
 }
 
 function refreshFavoriteExercises() {
@@ -19598,6 +20363,25 @@ function toggleAutoTimer(checked) {
     settings.autoTimer = checked;
     saveToLocalStorage();
     showNotification(checked ? 'Timer automatique activé' : 'Timer automatique désactivé');
+}
+
+function toggleAutoSave(checked) {
+    settings.autoSaveEnabled = checked;
+    saveToLocalStorage();
+    
+    if (checked) {
+        showNotification('✅ Auto-save activé (sauvegarde toutes les 5 min)');
+        if (activeWorkout) {
+            // Redémarrer l'auto-save si une séance est en cours
+            startAutoSave();
+        }
+    } else {
+        showNotification('💤 Auto-save désactivé (économie batterie)');
+        if (autoSaveInterval) {
+            clearInterval(autoSaveInterval);
+            autoSaveInterval = null;
+        }
+    }
 }
 
 function toggleCompactMode(checked) {
