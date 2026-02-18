@@ -8192,6 +8192,148 @@ input:checked + .slider:before {
     font-weight: 700;
 }
 
+.btn-primary {
+    background: linear-gradient(135deg, #8B5CF6, #6366F1);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: var(--radius);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.modal-footer {
+    display: flex;
+    gap: 10px;
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-primary);
+}
+
+/* ==================== FORCER L'AFFICHAGE DES BOUTONS DU MODAL ==================== */
+#create-workout-modal .modal-footer {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+
+#create-workout-modal .modal-footer button {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 12px 16px !important;
+    margin: 0 !important;
+    pointer-events: auto !important;
+    z-index: 9999 !important;
+}
+
+/* Style spécifique pour le bouton Programmer */
+#create-workout-modal .btn-primary {
+    background: linear-gradient(135deg, #8B5CF6, #6366F1) !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* Style spécifique pour le bouton Sauvegarder */
+#create-workout-modal .btn-secondary {
+    background: #6c757d !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* Animation de hover */
+#create-workout-modal .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+#create-workout-modal .btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);
+}
+
+/* ==================== CONTENEURS UNIFORMES POUR LES GRAPHIQUES ==================== */
+.chart-uniform-container {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* S'assurer que les cartes de graphiques ont la même largeur */
+.exercise-progress-card {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Le conteneur de la liste détaillée */
+#exercises-detailed-list .card {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 20px !important;
+}
+
+/* Grille des graphiques */
+#exercises-chart {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+#exercises-chart > div {
+    width: 100%;
+}
+
+/* ==================== ALIGNEMENT DES GRAPHIQUES ==================== */
+#exercises-chart,
+#exercises-detailed-list {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#exercises-chart {
+    margin-bottom: 0;
+}
+
+#exercises-detailed-list {
+    margin-top: 0;
+}
+
+/* S'assurer que les cartes ont la même largeur */
+.exercise-detail-card,
+#selected-exercise-chart,
+#exercises-detailed-list .card {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Style pour les items de fréquence au survol */
+.exercise-frequency-item {
+    transition: all 0.2s ease;
+}
+
+.exercise-frequency-item:hover {
+    transform: translateX(5px);
+}
+
     </style>
 </head>
 <body>
@@ -8901,36 +9043,44 @@ input:checked + .slider:before {
     </div>
 
     <!-- MODALS -->
-    <!-- MODAL CRÉATION SÉANCE - AMÉLIORÉ -->
-    <div class="modal" id="create-workout-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Créer une séance</h3>
-                <button class="modal-close" onclick="hideModal('create-workout-modal'); resetCreateWorkoutModal()">×</button>
+<!-- MODAL CRÉATION SÉANCE - AMÉLIORÉ AVEC FOOTER -->
+<div class="modal" id="create-workout-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Créer une séance</h3>
+            <button class="modal-close" onclick="hideModal('create-workout-modal'); resetCreateWorkoutModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <input type="text" id="workout-name" placeholder="Nom de la séance" class="number-input" style="width: 100%; margin-bottom: 14px;">
+            
+            <div class="food-search-btn-container">
+                <button class="btn food-search-btn" onclick="showExerciseSelectionForCreate()">🏃 Choisir exercice</button>
+                <button class="btn food-search-btn btn-success" onclick="showCustomExerciseModalForCreate()">Créer exercice</button>
             </div>
-            <div class="modal-body">
-                <input type="text" id="workout-name" placeholder="Nom de la séance" class="number-input" style="width: 100%; margin-bottom: 14px;">
-                
-                <div class="food-search-btn-container">
-                    <button class="btn food-search-btn" onclick="showExerciseSelectionForCreate()">🏃 Choisir exercice</button>
-                    <button class="btn food-search-btn btn-success" onclick="showCustomExerciseModalForCreate()">Créer exercice</button>
-                </div>
-                
-                <div id="workout-exercises-selection">
-                    <!-- Exercices à ajouter - Afficher l'ordre -->
-                </div>
-                
-                <button class="btn btn-success" onclick="saveCustomWorkoutAndReturnToWorkouts()" 
-        style="width: 100%; margin-top: 14px; margin-bottom: 10px;"
-        id="save-workout-button">
-    <span class="save-workout-text">💾 Sauvegarder la séance</span>
-    <span class="save-workout-loading" style="display: none;">
-        <i class="fas fa-spinner fa-spin"></i> Création en cours...
-    </span>
-</button>
+            
+            <div id="workout-exercises-selection">
+                <!-- Exercices à ajouter - Afficher l'ordre -->
             </div>
+            
+            <!-- Le bouton Sauvegarder a été déplacé dans le footer -->
+        </div>
+        
+        <!-- ✅ NOUVEAU FOOTER AVEC LES 2 BOUTONS -->
+        <div class="modal-footer" style="display: flex; gap: 10px; padding: 16px; border-top: 1px solid var(--border);">
+            <button class="btn btn-secondary" onclick="saveCustomWorkout(false)" style="flex: 1;" id="save-workout-button">
+                <span class="save-workout-text">
+                    <i class="fas fa-save"></i> Sauvegarder
+                </span>
+                <span class="save-workout-loading" style="display: none;">
+                    <i class="fas fa-spinner fa-spin"></i> Création...
+                </span>
+            </button>
+            <button class="btn btn-primary" onclick="saveCustomWorkout(true)" style="flex: 1; background: linear-gradient(135deg, #8B5CF6, #6366F1); color: white; border: none;">
+                <i class="fas fa-calendar-alt"></i> Programmer
+            </button>
         </div>
     </div>
+</div>
 
     <!-- MODAL MODIFICATION SÉANCE - AMÉLIORÉ -->
     <div class="modal" id="edit-workout-modal">
@@ -9949,6 +10099,46 @@ input:checked + .slider:before {
 <!-- Inclure data.js avant le script principal -->
 <script src="data.js"></script>
 <script>
+// ==================== FONCTIONS GLOBALES PRIORITAIRES ====================
+// Ces fonctions sont définies AVANT tout pour éviter les erreurs
+
+function updateSelectDisplay() {
+    setTimeout(() => {
+        const selects = document.querySelectorAll('.filter-select, select:not(.no-style)');
+        selects.forEach(select => {
+            if (select.classList.contains('no-style')) return;
+            
+            if (typeof settings !== 'undefined' && settings.darkMode) {
+                select.style.color = '#ffffff';
+                select.style.backgroundColor = '#1e293b';
+                select.style.borderColor = '#334155';
+            } else {
+                select.style.color = '#000000';
+                select.style.backgroundColor = '#ffffff';
+                select.style.borderColor = '#e2e8f0';
+            }
+            
+            select.style.borderRadius = '12px';
+            select.style.padding = '12px 40px 12px 16px';
+            select.style.fontSize = '15px';
+            select.style.borderWidth = '1px';
+            select.style.borderStyle = 'solid';
+            select.style.appearance = 'none';
+            select.style.WebkitAppearance = 'none';
+        });
+    }, 50);
+}
+
+function refreshSelectsAfterThemeChange() {
+    updateSelectDisplay();
+}
+
+function forceUpdateSelects() {
+    if (typeof updateSelectDisplay === 'function') {
+        updateSelectDisplay();
+    }
+}
+
 // ==================== VARIABLES GLOBALES ====================
 let userProfile = {
     firstName: 'John',
@@ -10175,7 +10365,7 @@ function initApp() {
     }, 1000);
     
     // Appeler updateSelectDisplay une seule fois à la fin
-    setTimeout(updateSelectDisplay, 1000);
+       setTimeout(updateSelectDisplay, 1000);
 }
 
 function initializeNutritionHistory() {
@@ -12240,21 +12430,60 @@ function loadCustomWorkouts() {
         workoutCard.className = 'workout-card';
         workoutCard.onclick = () => startCustomWorkout(workout);
         
+        // ✅ Résumé des paramètres programmés
+        let programSummary = '';
+        let totalSets = 0;
+        if (workout.isProgrammed && workout.programmedData) {
+            totalSets = workout.programmedData.exercises.reduce((sum, ex) => sum + (ex.programmedSets?.length || 0), 0);
+            if (totalSets > 0) {
+                programSummary = `
+                    <div style="font-size: 11px; color: #8B5CF6; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                        <i class="fas fa-check-circle"></i> ${totalSets} série(s) programmée(s)
+                    </div>
+                `;
+            }
+        }
+        
         workoutCard.innerHTML = `
             <div class="workout-name">${workout.name}</div>
             <div class="workout-description">${workout.description || 'Séance personnalisée'}</div>
+            ${programSummary}
             <div class="workout-duration">
                 <i class="far fa-clock"></i>
                 ${exerciseCount} exercices
             </div>
-            <div style="position: absolute; top: 15px; right: 15px; display: flex; gap: 6px;">
-                <button class="action-btn" onclick="event.stopPropagation(); editCustomWorkout(${index})">
+            <div style="display: flex; gap: 6px; margin-top: 12px; justify-content: flex-end;">
+                ${workout.isProgrammed ? `
+                    <button class="action-btn" onclick="event.stopPropagation(); openProgramMode(${index})" title="Programmer" style="background: #8B5CF6; color: white;">
+                        <i class="fas fa-calendar-alt"></i>
+                    </button>
+                ` : ''}
+                <button class="action-btn" onclick="event.stopPropagation(); editCustomWorkout(${index})" title="Modifier">
                     <i class="fas fa-edit"></i>
                 </button>
-                <button class="action-btn" onclick="event.stopPropagation(); deleteCustomWorkout(${index})">
+                <button class="action-btn" onclick="event.stopPropagation(); deleteCustomWorkout(${index})" title="Supprimer">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
+            
+            <!-- ✅ Badge "Programmée" SOUS les boutons d'action -->
+            ${workout.isProgrammed ? `
+                <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <span style="background: #8B5CF6; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                        <i class="fas fa-calendar-check"></i> Programmée
+                    </span>
+                    ${workout.programmedData?.lastProgrammed ? `
+                        <span style="font-size: 10px; color: var(--text-secondary);">
+                            Dernière modif: ${new Date(workout.programmedData.lastProgrammed).toLocaleDateString('fr-FR')}
+                        </span>
+                    ` : ''}
+                    ${totalSets > 0 ? `
+                        <span style="font-size: 10px; color: #8B5CF6; font-weight: 600;">
+                            ${totalSets} série${totalSets > 1 ? 's' : ''}
+                        </span>
+                    ` : ''}
+                </div>
+            ` : ''}
         `;
         
         container.appendChild(workoutCard);
@@ -12336,6 +12565,18 @@ function showCreateWorkoutModal(fromHeader = true) {
     localStorage.setItem('previousScreenBeforeWorkout', currentScreen || 'workouts-screen');
     
     console.log('Ouverture modal séance - Source:', fromHeader ? 'header' : 'workouts', 'Écran actuel:', currentScreen);
+    
+    // ✅ Réinitialiser les états de chargement
+    const saveBtn = document.getElementById('save-workout-button');
+    if (saveBtn) {
+        const saveText = saveBtn.querySelector('.save-workout-text');
+        const loadingText = saveBtn.querySelector('.save-workout-loading');
+        if (saveText && loadingText) {
+            saveText.style.display = 'flex';
+            loadingText.style.display = 'none';
+        }
+        saveBtn.disabled = false;
+    }
     
     // Ouvrir le modal
     showModal('create-workout-modal');
@@ -12615,10 +12856,13 @@ function addExerciseToWorkoutSelection(exerciseId) {
     
     // 2. DÉTERMINER LE BON CONTENEUR
     let containerId = '';
+    let isEditMode = false;
+    
     if (context === 'create') {
         containerId = 'workout-exercises-selection';
     } else if (context === 'edit') {
         containerId = 'edit-workout-exercises-selection';
+        isEditMode = true;
     } else if (context === 'active-workout') {
         // AJOUT DIRECT À LA SÉANCE ACTIVE
         addExerciseToActiveWorkout(exerciseId);
@@ -12638,7 +12882,6 @@ function addExerciseToWorkoutSelection(exerciseId) {
     // Si non trouvé par ID exact, chercher par nom (pour les exercices prédéfinis)
     if (!exercise) {
         console.warn('Exercice non trouvé par ID, recherche par correspondance...', exerciseId);
-        // Essayer de trouver dans exercises (prédéfinis)
         exercise = exercises.find(ex => ex.id === exerciseId);
     }
     
@@ -12691,7 +12934,34 @@ function addExerciseToWorkoutSelection(exerciseId) {
     
     container.appendChild(exerciseElement);
     
-    // 6. ANIMATION DE CONFIRMATION
+    // ✅ 6. Si on est en mode édition d'une séance programmée, mettre à jour programmedData
+    if (isEditMode) {
+        const workoutIndex = parseInt(document.getElementById('edit-workout-modal').dataset.workoutIndex);
+        if (!isNaN(workoutIndex) && customWorkouts[workoutIndex] && customWorkouts[workoutIndex].isProgrammed) {
+            const workout = customWorkouts[workoutIndex];
+            
+            if (!workout.programmedData) {
+                workout.programmedData = {
+                    exercises: [],
+                    lastProgrammed: new Date().toISOString(),
+                    scheduledFor: null
+                };
+            }
+            
+            // Ajouter le nouvel exercice aux données programmées
+            workout.programmedData.exercises.push({
+                exerciseId: exerciseId,
+                programmedSets: []
+            });
+            
+            workout.programmedData.lastProgrammed = new Date().toISOString();
+            saveToLocalStorage();
+            
+            console.log('✅ programmedData mis à jour pour le nouvel exercice');
+        }
+    }
+    
+    // 7. ANIMATION DE CONFIRMATION
     exerciseElement.style.animation = 'fadeInUp 0.3s ease';
     setTimeout(() => {
         exerciseElement.style.animation = '';
@@ -12775,16 +13045,48 @@ function moveExerciseDown(button) {
 
 function removeExerciseFromSelection(button) {
     const item = button.closest('.meal-food-item');
+    if (!item) return;
+    
+    const exerciseId = item.dataset.exerciseId;
+    
+    // ✅ Déterminer le contexte (création ou édition)
+    const modal = document.getElementById('select-exercise-modal');
+    const context = modal ? modal.dataset.context : null;
+    
+    // ✅ Si on est en mode édition d'une séance programmée, mettre à jour programmedData
+    if (context === 'edit') {
+        const workoutIndex = parseInt(document.getElementById('edit-workout-modal').dataset.workoutIndex);
+        if (!isNaN(workoutIndex) && customWorkouts[workoutIndex] && customWorkouts[workoutIndex].isProgrammed) {
+            const workout = customWorkouts[workoutIndex];
+            
+            if (workout.programmedData) {
+                // Supprimer l'exercice des données programmées
+                workout.programmedData.exercises = workout.programmedData.exercises.filter(
+                    progEx => progEx.exerciseId !== exerciseId
+                );
+                workout.programmedData.lastProgrammed = new Date().toISOString();
+                saveToLocalStorage();
+                
+                console.log('✅ Exercice retiré des données programmées');
+            }
+        }
+    }
+    
+    // ✅ Supprimer l'élément du DOM
     item.remove();
+    
+    // ✅ Notification
+    showNotification('Exercice retiré de la séance', 'info');
 }
 
-function saveCustomWorkout() {
-    // Utiliser la nouvelle fonction pour plus de cohérence
-    saveCustomWorkoutAndReturnToWorkouts();
+// ==================== SAUVEGARDE SÉANCE ====================
+function saveCustomWorkout(isProgrammed = false) {
+    // Rediriger vers la fonction principale avec le paramètre
+    saveCustomWorkoutAndReturnToWorkouts(isProgrammed);
 }
 
-async function saveCustomWorkoutAndReturnToWorkouts() {
-    console.log('Début sauvegarde séance avec retour...');
+async function saveCustomWorkoutAndReturnToWorkouts(isProgrammed = false) {
+    console.log('Début sauvegarde séance avec retour...', isProgrammed ? '(Programmée)' : '(Normale)');
     
     // 1. Récupérer les données
     const workoutData = getWorkoutFormData();
@@ -12807,8 +13109,8 @@ async function saveCustomWorkoutAndReturnToWorkouts() {
     if (saveBtn) saveBtn.disabled = true;
     
     try {
-        // 4. Sauvegarder
-        const saved = await saveCustomWorkoutToStorage(workoutData);
+        // 4. Sauvegarder avec le paramètre isProgrammed
+        const saved = await saveCustomWorkoutToStorage(workoutData, isProgrammed);
         
         if (saved) {
             // 5. Animation de sortie
@@ -12834,7 +13136,22 @@ async function saveCustomWorkoutAndReturnToWorkouts() {
                 loadCustomWorkouts();
                 
                 // Notification
-                showNotification('Séance créée avec succès !', 'success');
+                if (isProgrammed) {
+                    showNotification('Séance créée. Programmez les détails maintenant !', 'info');
+                    
+                    // ✅ Ouvrir le mode programmation après création
+                    setTimeout(() => {
+                        const newWorkoutIndex = customWorkouts.findIndex(w => 
+                            w.name === workoutData.name && 
+                            w.isProgrammed === true
+                        );
+                        if (newWorkoutIndex !== -1) {
+                            openProgramMode(newWorkoutIndex);
+                        }
+                    }, 1000);
+                } else {
+                    showNotification('Séance créée avec succès !', 'success');
+                }
                 
                 // Nettoyer le storage
                 localStorage.removeItem('workoutModalSource');
@@ -12857,6 +13174,7 @@ async function saveCustomWorkoutAndReturnToWorkouts() {
     }
 }
 
+// ==================== RÉCUPÉRER DONNÉES FORMULAIRE ====================
 function getWorkoutFormData() {
     const name = document.getElementById('workout-name').value.trim();
     const exercises = [];
@@ -12873,15 +13191,28 @@ function getWorkoutFormData() {
     };
 }
 
-async function saveCustomWorkoutToStorage(workoutData) {
+// ==================== SAUVEGARDE DANS STORAGE ====================
+async function saveCustomWorkoutToStorage(workoutData, isProgrammed = false) {
     return new Promise((resolve, reject) => {
         try {
+            // ✅ Structure avec support de la programmation
             const newWorkout = {
                 id: Date.now().toString(),
                 name: workoutData.name,
                 exercises: workoutData.exercises,
                 description: workoutData.description || 'Séance personnalisée',
-                custom: true
+                custom: true,
+                
+                // ✅ Support programmation
+                isProgrammed: isProgrammed,
+                programmedData: isProgrammed ? {
+                    exercises: workoutData.exercises.map(exId => ({
+                        exerciseId: exId,
+                        programmedSets: [] // Sera rempli plus tard
+                    })),
+                    lastProgrammed: new Date().toISOString(),
+                    scheduledFor: null
+                } : null
             };
             
             customWorkouts.push(newWorkout);
@@ -12897,6 +13228,351 @@ async function saveCustomWorkoutToStorage(workoutData) {
     });
 }
 
+// ==================== METTRE À JOUR LES DONNÉES PROGRAMMÉES ====================
+function updateProgrammedData(workoutIndex) {
+    const workout = customWorkouts[workoutIndex];
+    if (!workout || !workout.isProgrammed || !workout.programmedData) return;
+    
+    // ✅ Synchroniser programmedData avec la liste actuelle des exercices
+    const existingExerciseIds = workout.programmedData.exercises.map(e => e.exerciseId);
+    const newExercises = workout.exercises.filter(exId => !existingExerciseIds.includes(exId));
+    
+    if (newExercises.length > 0) {
+        console.log('🔄 Mise à jour programmedData: ajout de', newExercises.length, 'exercices');
+        newExercises.forEach(exId => {
+            workout.programmedData.exercises.push({
+                exerciseId: exId,
+                programmedSets: []
+            });
+        });
+    }
+    
+    // ✅ Supprimer les exercices qui ne sont plus dans la séance
+    workout.programmedData.exercises = workout.programmedData.exercises.filter(
+        progEx => workout.exercises.includes(progEx.exerciseId)
+    );
+    
+    workout.programmedData.lastProgrammed = new Date().toISOString();
+    saveToLocalStorage();
+}
+
+// ==================== AJOUTER UN EXERCICE À UNE SÉANCE PROGRAMMÉE ====================
+function addExerciseToProgrammedWorkout(workoutIndex, exerciseId) {
+    const workout = customWorkouts[workoutIndex];
+    if (!workout) return;
+    
+    // Ajouter l'exercice à la séance
+    workout.exercises.push(exerciseId);
+    
+    // Mettre à jour programmedData si c'est une séance programmée
+    if (workout.isProgrammed && workout.programmedData) {
+        workout.programmedData.exercises.push({
+            exerciseId: exerciseId,
+            programmedSets: []
+        });
+        workout.programmedData.lastProgrammed = new Date().toISOString();
+    }
+    
+    saveToLocalStorage();
+    
+    // Recharger l'affichage
+    loadCustomWorkouts();
+    showNotification('✅ Exercice ajouté à la séance', 'success');
+}
+
+function openProgramMode(workoutIndex) {
+    const workout = customWorkouts[workoutIndex];
+    if (!workout) return;
+    
+    console.log('🔧 Ouverture mode programmation pour:', workout.name);
+    
+    // ✅ Marquer comme programmée si ce n'est pas déjà fait
+    if (!workout.isProgrammed) {
+        workout.isProgrammed = true;
+        workout.programmedData = {
+            exercises: workout.exercises.map(exId => ({
+                exerciseId: exId,
+                programmedSets: []
+            })),
+            lastProgrammed: new Date().toISOString(),
+            scheduledFor: null
+        };
+    } else {
+        // ✅ Vérifier si de nouveaux exercices ont été ajoutés
+        const existingExerciseIds = workout.programmedData.exercises.map(e => e.exerciseId);
+        const newExercises = workout.exercises.filter(exId => !existingExerciseIds.includes(exId));
+        
+        if (newExercises.length > 0) {
+            console.log('➕ Nouveaux exercices détectés:', newExercises.length);
+            
+            // Ajouter les nouveaux exercices à programmedData
+            newExercises.forEach(exId => {
+                workout.programmedData.exercises.push({
+                    exerciseId: exId,
+                    programmedSets: []
+                });
+            });
+            
+            workout.programmedData.lastProgrammed = new Date().toISOString();
+            saveToLocalStorage();
+        }
+    }
+    
+    // ✅ Ouvrir un modal de programmation spécial
+    showProgramWorkoutModal(workoutIndex);
+}
+
+function showProgramWorkoutModal(workoutIndex) {
+    const workout = customWorkouts[workoutIndex];
+    if (!workout) return;
+    
+    console.log('📋 Ouverture programmation pour:', workout.name);
+    console.log('Exercices dans workout:', workout.exercises);
+    console.log('ProgrammedData avant:', workout.programmedData);
+    
+    // ✅ S'assurer que programmedData existe et est à jour
+    if (!workout.programmedData) {
+        workout.programmedData = {
+            exercises: [],
+            lastProgrammed: new Date().toISOString(),
+            scheduledFor: null
+        };
+    }
+    
+    // ✅ Synchroniser programmedData avec la liste des exercices
+    const existingExerciseIds = workout.programmedData.exercises.map(e => e.exerciseId);
+    const newExercises = workout.exercises.filter(exId => !existingExerciseIds.includes(exId));
+    
+    if (newExercises.length > 0) {
+        console.log('➕ Synchronisation: ajout de', newExercises.length, 'nouveaux exercices');
+        newExercises.forEach(exId => {
+            workout.programmedData.exercises.push({
+                exerciseId: exId,
+                programmedSets: []
+            });
+        });
+        saveToLocalStorage();
+    }
+    
+    // ✅ Supprimer les exercices qui ne sont plus dans workout.exercises
+    workout.programmedData.exercises = workout.programmedData.exercises.filter(
+        progEx => workout.exercises.includes(progEx.exerciseId)
+    );
+    
+    let modalContent = `
+        <div class="program-workout-content">
+            <h4 style="margin: 0 0 10px 0;">📋 Programmer : ${workout.name}</h4>
+            <p style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: 20px;">
+                Définissez les séries, répétitions, poids et temps de repos pour chaque exercice.
+            </p>
+            <div style="max-height: 60vh; overflow-y: auto; padding-right: 5px;">
+    `;
+    
+    // ✅ Parcourir les exercices dans l'ordre du workout
+    workout.exercises.forEach((exerciseId, exIndex) => {
+        const exercise = getAllExercises().find(ex => ex.id === exerciseId);
+        if (!exercise) return;
+        
+        // Trouver les données programmées correspondantes
+        const progExercise = workout.programmedData.exercises.find(e => e.exerciseId === exerciseId);
+        const programmedSets = progExercise ? progExercise.programmedSets : [];
+        
+        modalContent += `
+            <div class="program-exercise-card" style="background: var(--card-bg); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; border: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div style="font-weight: 700; color: var(--text-primary);">${exercise.name}</div>
+                    <button class="btn btn-sm btn-secondary" onclick="addProgrammedSet(${workoutIndex}, ${exIndex})">
+                        <i class="fas fa-plus"></i> Ajouter série
+                    </button>
+                </div>
+                <div id="programmed-sets-${workoutIndex}-${exIndex}" style="display: flex; flex-direction: column; gap: 8px;">
+        `;
+        
+        if (programmedSets.length === 0) {
+            // Ajouter une série par défaut
+            const defaultSets = [{ reps: 10, weight: 20, rest: 60 }];
+            if (progExercise) {
+                progExercise.programmedSets = defaultSets;
+            }
+            
+            defaultSets.forEach((set, setIndex) => {
+                modalContent += generateSetRow(workoutIndex, exIndex, setIndex, set);
+            });
+        } else {
+            programmedSets.forEach((set, setIndex) => {
+                modalContent += generateSetRow(workoutIndex, exIndex, setIndex, set);
+            });
+        }
+        
+        modalContent += `
+                </div>
+            </div>
+        `;
+    });
+    
+    modalContent += `
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px; position: sticky; bottom: 0; background: var(--bg-primary); padding: 10px 0;">
+                <button class="btn btn-success" onclick="saveProgrammedWorkout(${workoutIndex})" style="flex: 2;">
+                    <i class="fas fa-check"></i> Valider le programme
+                </button>
+                <button class="btn btn-secondary" onclick="hideModal('program-workout-modal')" style="flex: 1;">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Créer ou réutiliser un modal
+    let modal = document.getElementById('program-workout-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.id = 'program-workout-modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h3 class="modal-title">📅 Programmer la séance</h3>
+                    <button class="modal-close" onclick="hideModal('program-workout-modal')">×</button>
+                </div>
+                <div class="modal-body" id="program-workout-content" style="max-height: 70vh; overflow-y: auto;">
+                    ${modalContent}
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    } else {
+        document.getElementById('program-workout-content').innerHTML = modalContent;
+    }
+    
+    saveToLocalStorage();
+    showModal('program-workout-modal');
+    
+    // ✅ FORCER LA SÉLECTION AUTOMATIQUE APRÈS AFFICHAGE
+    setTimeout(() => {
+        const inputs = document.querySelectorAll('#program-workout-modal .program-input');
+        inputs.forEach(input => {
+            // Solution 1: onclick
+            input.onclick = function() { this.select(); };
+            
+            // Solution 2: onfocus (plus fiable)
+            input.onfocus = function() { this.select(); };
+            
+            // Solution 3: addEventListener (pour être sûr)
+            input.addEventListener('click', function() {
+                this.select();
+            });
+            input.addEventListener('focus', function() {
+                this.select();
+            });
+        });
+        console.log('✅ Sélection automatique activée sur', inputs.length, 'champs');
+    }, 300);
+}
+
+// ✅ FONCTION UTILITAIRE - Avec sélection automatique intégrée
+function generateSetRow(workoutIndex, exIndex, setIndex, set) {
+    return `
+        <div class="programmed-set-row" style="display: flex; gap: 8px; align-items: center; background: var(--bg-primary); padding: 8px; border-radius: var(--radius-sm); flex-wrap: wrap;">
+            <span style="font-weight: 700; min-width: 30px;">S${setIndex + 1}</span>
+            <input type="number" class="program-input" value="${set.reps}" placeholder="Reps" 
+                   style="width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
+                   onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'reps', this.value)"
+                   onfocus="this.select()"
+                   onclick="this.select()">
+            <span>×</span>
+            <input type="number" class="program-input" value="${set.weight}" placeholder="Kg" 
+                   style="width: 70px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
+                   onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'weight', this.value)"
+                   onfocus="this.select()"
+                   onclick="this.select()">
+            <span style="margin: 0 4px;">repos</span>
+            <input type="number" class="program-input" value="${set.rest || 60}" placeholder="s" 
+                   style="width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
+                   onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'rest', this.value)"
+                   onfocus="this.select()"
+                   onclick="this.select()">
+            <span>s</span>
+            <button class="btn btn-sm btn-danger" onclick="removeProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex})" style="padding: 4px 8px;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+}
+
+// ✅ Fonction utilitaire pour générer une ligne de série
+function generateSetRow(workoutIndex, exIndex, setIndex, set) {
+    return `
+        <div class="programmed-set-row" style="display: flex; gap: 8px; align-items: center; background: var(--bg-primary); padding: 8px; border-radius: var(--radius-sm); flex-wrap: wrap;">
+            <span style="font-weight: 700; min-width: 30px;">S${setIndex + 1}</span>
+            <input type="number" class="program-input" value="${set.reps}" placeholder="Reps" style="width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
+                   onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'reps', this.value)">
+            <span>×</span>
+            <input type="number" class="program-input" value="${set.weight}" placeholder="Kg" style="width: 70px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
+                   onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'weight', this.value)">
+            <span style="margin: 0 4px;">repos</span>
+            <input type="number" class="program-input" value="${set.rest || 60}" placeholder="s" style="width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
+                   onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'rest', this.value)">
+            <span>s</span>
+            <button class="btn btn-sm btn-danger" onclick="removeProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex})" style="padding: 4px 8px;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+}
+
+function addProgrammedSet(workoutIndex, exerciseIndex) {
+    const workout = customWorkouts[workoutIndex];
+    if (!workout || !workout.programmedData) return;
+    
+    const exerciseData = workout.programmedData.exercises[exerciseIndex];
+    if (!exerciseData) return;
+    
+    exerciseData.programmedSets.push({ reps: 10, weight: 20, rest: 60 });
+    
+    // Rafraîchir le modal
+    showProgramWorkoutModal(workoutIndex);
+}
+
+function removeProgrammedSet(workoutIndex, exerciseIndex, setIndex) {
+    const workout = customWorkouts[workoutIndex];
+    if (!workout || !workout.programmedData) return;
+    
+    const exerciseData = workout.programmedData.exercises[exerciseIndex];
+    if (!exerciseData) return;
+    
+    exerciseData.programmedSets.splice(setIndex, 1);
+    
+    // S'il ne reste plus de séries, en ajouter une par défaut
+    if (exerciseData.programmedSets.length === 0) {
+        exerciseData.programmedSets.push({ reps: 10, weight: 20, rest: 60 });
+    }
+    
+    showProgramWorkoutModal(workoutIndex);
+}
+
+function updateProgrammedSet(workoutIndex, exerciseIndex, setIndex, field, value) {
+    const workout = customWorkouts[workoutIndex];
+    if (!workout || !workout.programmedData) return;
+    
+    const exerciseData = workout.programmedData.exercises[exerciseIndex];
+    if (!exerciseData) return;
+    
+    exerciseData.programmedSets[setIndex][field] = parseFloat(value) || 0;
+}
+
+function saveProgrammedWorkout(workoutIndex) {
+    const workout = customWorkouts[workoutIndex];
+    if (!workout) return;
+    
+    workout.programmedData.lastProgrammed = new Date().toISOString();
+    saveToLocalStorage();
+    
+    hideModal('program-workout-modal');
+    loadCustomWorkouts();
+    showNotification('✅ Programme enregistré !', 'success');
+}
+
 function resetCreateWorkoutModal() {
     document.getElementById('workout-name').value = '';
     document.getElementById('workout-exercises-selection').innerHTML = '';
@@ -12906,8 +13582,13 @@ function editCustomWorkout(index) {
     const workout = customWorkouts[index];
     if (!workout) return;
     
+    console.log('✏️ Édition séance:', workout.name, 'Programmée:', workout.isProgrammed);
+    
     document.getElementById('edit-workout-name').value = workout.name;
     document.getElementById('edit-workout-modal').dataset.workoutIndex = index;
+    
+    // ✅ Stocker l'état programmé pour la sauvegarde
+    document.getElementById('edit-workout-modal').dataset.isProgrammed = workout.isProgrammed ? 'true' : 'false';
     
     const container = document.getElementById('edit-workout-exercises-selection');
     container.innerHTML = '';
@@ -12938,6 +13619,18 @@ function editCustomWorkout(index) {
             container.appendChild(exerciseElement);
         }
     });
+    
+    // ✅ Ajouter un indicateur visuel si c'est une séance programmée
+    if (workout.isProgrammed) {
+        const header = document.querySelector('#edit-workout-modal .modal-header');
+        if (header) {
+            const badge = document.createElement('span');
+            badge.className = 'programmed-badge';
+            badge.style.cssText = 'background: #8B5CF6; color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; margin-left: 10px;';
+            badge.textContent = '📅 Programmée';
+            header.querySelector('.modal-title').appendChild(badge);
+        }
+    }
     
     showModal('edit-workout-modal');
 }
@@ -12973,16 +13666,64 @@ function saveEditedWorkout() {
         return;
     }
     
+    // ✅ Récupérer l'état programmé
+    const wasProgrammed = customWorkouts[index].isProgrammed === true;
+    const isProgrammed = document.getElementById('edit-workout-modal').dataset.isProgrammed === 'true';
+    
+    console.log('💾 Sauvegarde édition - Programmé:', { wasProgrammed, isProgrammed });
+    
+    // ✅ Conserver les données programmées si la séance l'était
+    let programmedData = customWorkouts[index].programmedData;
+    
+    if (wasProgrammed) {
+        if (!programmedData) {
+            programmedData = {
+                exercises: [],
+                lastProgrammed: new Date().toISOString(),
+                scheduledFor: null
+            };
+        }
+        
+        // ✅ Mettre à jour programmedData avec les nouveaux exercices
+        const existingExerciseIds = programmedData.exercises.map(e => e.exerciseId);
+        const newExercises = exercises.filter(exId => !existingExerciseIds.includes(exId));
+        
+        if (newExercises.length > 0) {
+            console.log('➕ Nouveaux exercices détectés:', newExercises.length);
+            newExercises.forEach(exId => {
+                programmedData.exercises.push({
+                    exerciseId: exId,
+                    programmedSets: []
+                });
+            });
+        }
+        
+        // ✅ Supprimer les exercices qui ne sont plus dans la séance
+        programmedData.exercises = programmedData.exercises.filter(
+            progEx => exercises.includes(progEx.exerciseId)
+        );
+        
+        programmedData.lastProgrammed = new Date().toISOString();
+    }
+    
+    // ✅ Mettre à jour la séance
     customWorkouts[index] = {
         ...customWorkouts[index],
         name: name,
-        exercises: exercises
+        exercises: exercises,
+        isProgrammed: wasProgrammed || isProgrammed,
+        programmedData: wasProgrammed ? programmedData : null
     };
     
     saveToLocalStorage();
     loadCustomWorkouts();
     hideModal('edit-workout-modal');
-    showNotification('Séance modifiée avec succès !');
+    
+    if (wasProgrammed) {
+        showNotification('✅ Séance programmée mise à jour', 'success');
+    } else {
+        showNotification('Séance modifiée avec succès !', 'success');
+    }
 }
 
 function duplicateWorkout() {
@@ -13032,10 +13773,81 @@ function startPredefinedWorkout(workout) {
     startWorkoutWithExercises(workout.name, exerciseIds);
 }
 
+// ==================== DÉMARRER SÉANCE PERSONNALISÉE ====================
 function startCustomWorkout(workout) {
-    startWorkoutWithExercises(workout.name, workout.exercises);
+    // ✅ Vérifier si c'est une séance programmée
+    if (workout.isProgrammed && workout.programmedData) {
+        startProgrammedWorkout(workout);
+    } else {
+        startWorkoutWithExercises(workout.name, workout.exercises);
+    }
 }
 
+// ==================== DÉMARRER SÉANCE PROGRAMMÉE ====================
+function startProgrammedWorkout(workout) {
+    activeWorkout = {
+        name: workout.name,
+        exercises: [],
+        startTime: new Date(),
+        completedSets: 0,
+        totalWeight: 0,
+        isProgrammed: true
+    };
+    
+    // ✅ Appliquer les paramètres programmés
+    workout.programmedData.exercises.forEach((progExercise) => {
+        const exercise = getAllExercises().find(ex => ex.id === progExercise.exerciseId);
+        if (exercise && progExercise.programmedSets && progExercise.programmedSets.length > 0) {
+            const sets = progExercise.programmedSets.map((set, i) => ({
+                number: i + 1,
+                reps: set.reps,
+                weight: set.weight,
+                completed: false
+            }));
+            
+            activeWorkout.exercises.push({
+                ...exercise,
+                sets: sets,
+                customRest: progExercise.programmedSets[0]?.rest || userProfile.defaultRest,
+                notes: '',
+                programmed: true
+            });
+        } else {
+            // Fallback si pas de données programmées
+            activeWorkout.exercises.push({
+                ...exercise,
+                sets: Array(userProfile.defaultSets).fill().map((_, i) => ({
+                    number: i + 1,
+                    reps: userProfile.defaultReps,
+                    weight: userProfile.defaultWeight,
+                    completed: false
+                })),
+                customRest: userProfile.defaultRest,
+                notes: ''
+            });
+        }
+    });
+    
+    activeWorkoutStartTime = new Date();
+    activeWorkoutTimer = setInterval(updateWorkoutTimer, 1000);
+    
+    // Démarrer auto-save si activé
+    if (settings.autoSaveEnabled) {
+        startAutoSave();
+    }
+    
+    // Afficher le timer dans le header
+    const headerTimer = document.getElementById('header-workout-timer');
+    if (headerTimer) {
+        headerTimer.style.display = 'flex';
+    }
+    
+    updateWorkoutDisplay();
+    showScreen('active-workout-screen');
+    showNotification('✅ Séance programmée démarrée', 'success');
+}
+
+// ==================== DÉMARRER SÉANCE AVEC EXERCICES ====================
 function startWorkoutWithExercises(workoutName, exerciseIds) {
     activeWorkout = {
         name: workoutName,
@@ -13049,11 +13861,13 @@ function startWorkoutWithExercises(workoutName, exerciseIds) {
     let workoutDetails = null;
     
     // Chercher dans les séances prédéfinies
-    Object.values(Workouts).forEach(workout => {
-        if (workout.name === workoutName) {
-            workoutDetails = workout;
-        }
-    });
+    if (typeof Workouts !== 'undefined') {
+        Object.values(Workouts).forEach(workout => {
+            if (workout.name === workoutName) {
+                workoutDetails = workout;
+            }
+        });
+    }
     
     exerciseIds.forEach(exerciseId => {
         const exercise = getAllExercises().find(ex => ex.id === exerciseId);
@@ -13075,12 +13889,12 @@ function startWorkoutWithExercises(workoutName, exerciseIds) {
                 ...exercise,
                 sets: Array(defaultSets).fill().map((_, i) => ({
                     number: i + 1,
-                    reps: defaultReps,  // Utilise les reps de data.js
-                    weight: defaultWeight,  // Utilise le poids de data.js
+                    reps: defaultReps,
+                    weight: defaultWeight,
                     completed: false
                 })),
-                customRest: defaultRest,  // Utilise le temps de repos de data.js
-                notes: notes  // Utilise les notes de data.js
+                customRest: defaultRest,
+                notes: notes
             });
         }
     });
@@ -13088,8 +13902,10 @@ function startWorkoutWithExercises(workoutName, exerciseIds) {
     activeWorkoutStartTime = new Date();
     activeWorkoutTimer = setInterval(updateWorkoutTimer, 1000);
     
-    // ✅ NOUVEAU: Démarrer la sauvegarde automatique
-    startAutoSave();
+    // Démarrer auto-save si activé
+    if (settings.autoSaveEnabled) {
+        startAutoSave();
+    }
     
     // Afficher le timer dans le header
     const headerTimer = document.getElementById('header-workout-timer');
@@ -17988,6 +18804,10 @@ function loadExercisesChart() {
     const listContainer = document.getElementById('exercises-detailed-list');
     if (!container || !listContainer) return;
     
+    // ✅ VIDER COMPLÈTEMENT LES CONTENEURS
+    container.innerHTML = '';
+    listContainer.innerHTML = '';
+    
     if (workoutHistory.length === 0) {
         container.innerHTML = `
             <div class="chart-placeholder">
@@ -17997,15 +18817,24 @@ function loadExercisesChart() {
                 </div>
             </div>
         `;
-        listContainer.innerHTML = '';
         return;
     }
     
-    // Analyser les exercices les plus fréquents
+    // Analyser les exercices
     const exerciseStats = {};
+    const sortedHistory = [...workoutHistory].sort((a, b) => new Date(a.date) - new Date(b.date));
     
-    workoutHistory.forEach(session => {
+    sortedHistory.forEach(session => {
+        const sessionDate = new Date(session.date).toLocaleDateString('fr-FR', { 
+            day: '2-digit', 
+            month: 'short'
+        });
+        
+        if (!session.exercises) return;
+        
         session.exercises.forEach(exercise => {
+            if (!exercise || !exercise.name) return;
+            
             if (!exerciseStats[exercise.name]) {
                 exerciseStats[exercise.name] = {
                     count: 0,
@@ -18013,84 +18842,362 @@ function loadExercisesChart() {
                     totalReps: 0,
                     maxWeight: 0,
                     avgWeight: 0,
-                    muscleGroup: exercise.muscleGroup
+                    muscleGroup: exercise.muscleGroup || 'Autre',
+                    history: []
                 };
             }
-            exerciseStats[exercise.name].count++;
             
-            exercise.sets.forEach(set => {
-                const weight = set.weight || 0;
-                const reps = parseInt(set.reps) || 0;
-                exerciseStats[exercise.name].totalWeight += weight * reps;
-                exerciseStats[exercise.name].totalReps += reps;
-                if (weight > exerciseStats[exercise.name].maxWeight) {
-                    exerciseStats[exercise.name].maxWeight = weight;
+            const completedSets = exercise.sets ? exercise.sets.filter(set => set && set.completed === true) : [];
+            
+            if (completedSets.length > 0) {
+                exerciseStats[exercise.name].count++;
+                
+                let bestOneRM = 0;
+                let bestSet = null;
+                
+                completedSets.forEach(set => {
+                    if (!set) return;
+                    const weight = set.weight || 0;
+                    const reps = parseInt(set.reps) || 0;
+                    
+                    if (weight > 0 && reps > 0) {
+                        const oneRM = calculateOneRM(weight, reps);
+                        if (oneRM > bestOneRM) {
+                            bestOneRM = oneRM;
+                            bestSet = { weight, reps, oneRM };
+                        }
+                        
+                        exerciseStats[exercise.name].totalWeight += weight * reps;
+                        exerciseStats[exercise.name].totalReps += reps;
+                        
+                        if (weight > exerciseStats[exercise.name].maxWeight) {
+                            exerciseStats[exercise.name].maxWeight = weight;
+                        }
+                    }
+                });
+                
+                if (bestSet) {
+                    exerciseStats[exercise.name].history.push({
+                        date: sessionDate,
+                        oneRM: bestSet.oneRM,
+                        weight: bestSet.weight,
+                        reps: bestSet.reps,
+                        sessionId: session.id
+                    });
                 }
-            });
-            
-            // Calculer la moyenne après chaque session
-            if (exerciseStats[exercise.name].totalReps > 0) {
-                exerciseStats[exercise.name].avgWeight = Math.round(exerciseStats[exercise.name].totalWeight / exerciseStats[exercise.name].totalReps);
             }
         });
     });
     
+    // ✅ SUPPRIMER LES EXERCICES SANS AUCUNE SÉANCE COMPLÉTÉE
+    Object.keys(exerciseStats).forEach(name => {
+        if (exerciseStats[name].count === 0) {
+            delete exerciseStats[name];
+        }
+    });
+    
+    // Calculer les moyennes
+    Object.keys(exerciseStats).forEach(name => {
+        const stats = exerciseStats[name];
+        if (stats.totalReps > 0) {
+            stats.avgWeight = Math.round(stats.totalWeight / stats.totalReps);
+        }
+    });
+    
+    // Trier par fréquence (uniquement ceux avec count > 0)
     const sortedExercises = Object.entries(exerciseStats)
-        .sort(([, a], [, b]) => b.count - a.count)
-        .slice(0, 8);
+        .filter(([, stats]) => stats.count > 0)
+        .sort(([, a], [, b]) => b.count - a.count);
     
-    const maxCount = Math.max(...sortedExercises.map(([, stats]) => stats.count), 1);
+    // Si plus aucun exercice après filtrage
+    if (sortedExercises.length === 0) {
+        container.innerHTML = `
+            <div class="chart-placeholder">
+                <div style="text-align: center; padding: 30px;">
+                    <div style="font-size: 48px; margin-bottom: 10px;">📊</div>
+                    <p>Aucun exercice avec séances complétées</p>
+                </div>
+            </div>
+        `;
+        listContainer.innerHTML = '';
+        return;
+    }
     
-            container.innerHTML = `
-        <div style="height: 200px; display: flex; align-items: flex-end; gap: 12px; padding: 20px 15px; border-bottom: 1px solid var(--border); background: var(--card-bg); border-radius: var(--radius-sm); margin-bottom: 10px;">
-            ${sortedExercises.map(([name, stats], index) => `
-                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%;">
-                    <div style="width: 40px; height: ${(stats.count / maxCount) * 100}%; 
-                          background: linear-gradient(to top, ${getMuscleColor(stats.muscleGroup)}, ${adjustColor(getMuscleColor(stats.muscleGroup), 40)}); 
-                          border-radius: 8px 8px 0 0; position: relative; cursor: pointer;
-                          box-shadow: 0 6px 16px rgba(0,0,0,0.2); transition: all 0.3s ease;
-                          border: 3px solid rgba(255,255,255,0.4);" 
-                         onmouseover="this.style.transform='translateY(-8px) scale(1.05)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.3)'" 
-                         onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.2)'"
-                         title="${name}: ${stats.count} séances">
-                        <div style="position: absolute; top: -40px; left: 50%; transform: translateX(-50%); 
-                              font-size: var(--font-size-sm); font-weight: 800; white-space: nowrap;
-                              background: var(--card-bg); color: var(--text-primary); padding: 5px 12px; border-radius: 14px; 
-                              border: 2px solid ${getMuscleColor(stats.muscleGroup)}; box-shadow: var(--shadow);">
-                            ${stats.count}
+    // ✅ Sélectionner le premier exercice par défaut
+    const defaultExercise = sortedExercises.length > 0 ? sortedExercises[0][0] : null;
+    
+    // ✅ CONTENEUR PRINCIPAL UNIQUE
+    const mainContainer = document.createElement('div');
+    mainContainer.style.cssText = 'display: flex; flex-direction: column; gap: 20px; width: 100%;';
+    
+    // ✅ GRAPHIQUE DÉTAILLÉ (EN HAUT)
+    const chartContainer = document.createElement('div');
+    chartContainer.id = 'selected-exercise-chart';
+    chartContainer.style.cssText = 'background: var(--card-bg); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; min-height: 300px;';
+    mainContainer.appendChild(chartContainer);
+    
+    // ✅ LISTE FRÉQUENCE (EN BAS)
+    const freqContainer = document.createElement('div');
+    freqContainer.style.cssText = 'background: var(--card-bg); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border); width: 100%; box-sizing: border-box; margin-top: 0;';
+    
+    let freqHTML = '<h4 style="margin: 0 0 15px 0;">📊 Fréquence des exercices (cliquez pour voir le graphique)</h4>';
+    
+    sortedExercises.slice(0, 15).forEach(([name, stats]) => {
+        const percentage = workoutHistory.length > 0 ? ((stats.count / workoutHistory.length) * 100).toFixed(0) : 0;
+        const muscleColor = getMuscleColor(stats.muscleGroup);
+        
+        freqHTML += `
+            <div class="exercise-frequency-item" 
+                 onclick="selectExerciseFromList('${name.replace(/'/g, "\\'")}')"
+                 style="margin-bottom: 15px; cursor: pointer; padding: 10px; border-radius: var(--radius-sm); transition: all 0.2s ease; border: 1px solid transparent;"
+                 onmouseover="this.style.background='var(--hover-bg)'; this.style.borderColor='${muscleColor}';"
+                 onmouseout="this.style.background='transparent'; this.style.borderColor='transparent';">
+                <div style="display: flex; justify-content: space-between; font-size: var(--font-size-sm); margin-bottom: 6px;">
+                    <span style="font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 12px; height: 12px; background: ${muscleColor}; border-radius: 4px;"></span>
+                        ${name}
+                    </span>
+                    <span style="color: var(--primary); font-weight: 600;">${stats.count} séance${stats.count > 1 ? 's' : ''}</span>
+                </div>
+                <div style="height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 6px;">
+                    <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, ${muscleColor}, #818CF8);"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary);">
+                    <span>🏋️ 1RM max: ${stats.maxWeight}kg</span>
+                    <span>📊 ${stats.count} séance${stats.count > 1 ? 's' : ''}</span>
+                </div>
+            </div>
+        `;
+    });
+    
+    freqContainer.innerHTML = freqHTML;
+    mainContainer.appendChild(freqContainer);
+    
+    // ✅ AJOUTER AU DOM
+    container.appendChild(mainContainer);
+    
+    // ✅ Afficher le graphique du premier exercice
+    if (defaultExercise) {
+        // S'assurer que la fonction displayExerciseDetail existe
+        if (typeof displayExerciseDetail === 'function') {
+            displayExerciseDetail(defaultExercise, exerciseStats);
+        } else {
+            console.error('displayExerciseDetail non définie');
+            chartContainer.innerHTML = '<p style="text-align: center;">Fonction de graphique non disponible</p>';
+        }
+    }
+}
+
+// ✅ S'assurer que la fonction selectExerciseFromList est définie
+window.selectExerciseFromList = function(exerciseName) {
+    // Cette fonction sera appelée depuis les clics sur la liste
+    // Elle doit être définie ailleurs dans votre code
+    if (typeof displayExerciseDetail === 'function') {
+        // Reconstruire les stats ou les passer
+        displayExerciseDetail(exerciseName);
+    }
+};
+
+// ✅ NOUVELLE FONCTION POUR SÉLECTIONNER UN EXERCICE DEPUIS LA LISTE
+function selectExerciseFromList(exerciseName) {
+    // Reconstruire les stats (on pourrait les passer en paramètre, mais pour simplifier on les recalcule)
+    const exerciseStats = {};
+    const sortedHistory = [...workoutHistory].sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    sortedHistory.forEach(session => {
+        const sessionDate = new Date(session.date).toLocaleDateString('fr-FR', { 
+            day: '2-digit', 
+            month: 'short'
+        });
+        
+        session.exercises.forEach(exercise => {
+            if (exercise.name !== exerciseName) return;
+            
+            if (!exerciseStats[exercise.name]) {
+                exerciseStats[exercise.name] = {
+                    count: 0,
+                    totalWeight: 0,
+                    totalReps: 0,
+                    maxWeight: 0,
+                    avgWeight: 0,
+                    muscleGroup: exercise.muscleGroup,
+                    history: []
+                };
+            }
+            
+            const completedSets = exercise.sets ? exercise.sets.filter(set => set.completed) : [];
+            
+            if (completedSets.length > 0) {
+                exerciseStats[exercise.name].count++;
+                
+                let bestOneRM = 0;
+                let bestSet = null;
+                
+                completedSets.forEach(set => {
+                    const weight = set.weight || 0;
+                    const reps = parseInt(set.reps) || 0;
+                    
+                    if (weight > 0 && reps > 0) {
+                        const oneRM = calculateOneRM(weight, reps);
+                        if (oneRM > bestOneRM) {
+                            bestOneRM = oneRM;
+                            bestSet = { weight, reps, oneRM };
+                        }
+                        
+                        if (weight > exerciseStats[exercise.name].maxWeight) {
+                            exerciseStats[exercise.name].maxWeight = weight;
+                        }
+                    }
+                });
+                
+                if (bestSet) {
+                    exerciseStats[exercise.name].history.push({
+                        date: sessionDate,
+                        oneRM: bestSet.oneRM,
+                        weight: bestSet.weight,
+                        reps: bestSet.reps,
+                        sessionId: session.id
+                    });
+                }
+            }
+        });
+    });
+    
+    // Afficher le graphique
+    displayExerciseDetail(exerciseName, exerciseStats);
+    
+    // Animation de confirmation
+    const chartContainer = document.getElementById('selected-exercise-chart');
+    if (chartContainer) {
+        chartContainer.style.transition = 'all 0.3s ease';
+        chartContainer.style.transform = 'scale(1.02)';
+        setTimeout(() => {
+            chartContainer.style.transform = 'scale(1)';
+        }, 200);
+    }
+}
+
+// ✅ NOUVELLE FONCTION POUR AFFICHER UN EXERCICE SPÉCIFIQUE
+function displayExerciseDetail(exerciseName, allStats) {
+    const container = document.getElementById('selected-exercise-chart');
+    if (!container) return;
+    
+    // Récupérer les stats de l'exercice
+    let stats = null;
+    let name = exerciseName;
+    
+    if (allStats && allStats[exerciseName]) {
+        stats = allStats[exerciseName];
+    } else {
+        // Chercher dans workoutHistory directement
+        const history = getExerciseHistory(exerciseName);
+        if (history.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Aucune donnée pour cet exercice</p>';
+            return;
+        }
+        
+        stats = {
+            count: history.length,
+            history: history,
+            muscleGroup: history[0]?.bestSet?.muscleGroup || 'Pectoraux'
+        };
+    }
+    
+    if (!stats || stats.history.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Aucune donnée pour cet exercice</p>';
+        return;
+    }
+    
+    const muscleColor = getMuscleColor(stats.muscleGroup);
+    const points = stats.history.map((h, i) => ({
+        x: i,
+        y: h.oneRM || h.bestSet?.oneRM || 0,
+        label: h.date,
+        value: h.oneRM || h.bestSet?.oneRM || 0,
+        reps: h.reps || h.bestSet?.reps || 0,
+        weight: h.weight || h.bestSet?.weight || 0
+    })).filter(p => p.y > 0);
+    
+    if (points.length < 2) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+                <h4 style="margin: 0 0 10px 0; color: var(--text-primary);">${exerciseName}</h4>
+                <p style="color: var(--text-secondary);">Pas assez de données (${points.length} séance)</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const maxY = Math.max(...points.map(p => p.y)) * 1.1;
+    const minY = Math.min(...points.map(p => p.y)) * 0.9;
+    const chartWidth = Math.min(points.length * 50, 500);
+    
+    let html = `
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="margin: 0; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                    <span style="width: 16px; height: 16px; background: ${muscleColor}; border-radius: 4px;"></span>
+                    ${exerciseName}
+                </h4>
+                <div style="font-size: var(--font-size-sm); color: var(--text-secondary);">
+                    ${stats.count} séances
+                </div>
+            </div>
+            
+            <!-- GRAPHIQUE PRINCIPAL -->
+            <div style="background: var(--bg-primary); border-radius: var(--radius); padding: 20px; border: 1px solid var(--border);">
+                <div style="height: 150px; position: relative; width: 100%; overflow-x: auto; overflow-y: hidden;">
+                    <svg width="${Math.max(chartWidth, 300)}" height="150" viewBox="0 0 ${Math.max(chartWidth, 300)} 150" style="display: block;">
+                        <!-- Ligne de progression -->
+                        <polyline points="${points.map(p => `${p.x * 50 + 30},${120 - (p.y - minY) / (maxY - minY) * 80}`).join(' ')}" 
+                                  fill="none" stroke="${muscleColor}" stroke-width="3" stroke-linecap="round"/>
+                        
+                        <!-- Points avec tooltip -->
+                        ${points.map(p => `
+                            <circle cx="${p.x * 50 + 30}" cy="${120 - (p.y - minY) / (maxY - minY) * 80}" r="5" 
+                                    fill="${muscleColor}" stroke="white" stroke-width="2"
+                                    onmouseover="this.setAttribute('r', '7')"
+                                    onmouseout="this.setAttribute('r', '5')">
+                                <title>${p.label}: ${p.value}kg (${p.reps} reps × ${p.weight}kg)</title>
+                            </circle>
+                        `).join('')}
+                    </svg>
+                </div>
+                
+                <!-- Légende des dates -->
+                <div style="display: flex; justify-content: space-between; margin-top: 10px; padding: 0 20px;">
+                    ${points.map(p => `
+                        <div style="text-align: center; font-size: 10px; color: var(--text-secondary);">
+                            <div>${p.label}</div>
+                            <div style="font-weight: 700; color: ${muscleColor};">${p.value}kg</div>
                         </div>
+                    `).join('')}
+                </div>
+            </div>
+            
+            <!-- STATISTIQUES DÉTAILLÉES -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
+                <div style="text-align: center; padding: 10px; background: var(--bg-primary); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                    <div style="font-size: 10px; color: var(--text-secondary);">Meilleur 1RM</div>
+                    <div style="font-weight: 800; color: ${muscleColor}; font-size: var(--font-size-lg);">${Math.round(Math.max(...points.map(p => p.y)))}kg</div>
+                </div>
+                <div style="text-align: center; padding: 10px; background: var(--bg-primary); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                    <div style="font-size: 10px; color: var(--text-secondary);">Progression</div>
+                    <div style="font-weight: 800; color: ${points[0].y < points[points.length-1].y ? '#10B981' : '#EF4444'}; font-size: var(--font-size-lg);">
+                        ${((points[points.length-1].y - points[0].y) / points[0].y * 100).toFixed(1)}%
                     </div>
                 </div>
-            `).join('')}
-        </div>
-        <div style="display: flex; justify-content: space-between; padding: 10px 15px; font-size: var(--font-size-sm); color: var(--text-primary); font-weight: 600; background: var(--card-bg); border-radius: var(--radius-sm);">
-            ${sortedExercises.map(([name], index) => `<div style="text-align: center; width: 40px; overflow: hidden; text-overflow: ellipsis;" title="${name}">${index + 1}</div>`).join('')}
+                <div style="text-align: center; padding: 10px; background: var(--bg-primary); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                    <div style="font-size: 10px; color: var(--text-secondary);">Poids max</div>
+                    <div style="font-weight: 800; color: var(--primary); font-size: var(--font-size-lg);">${Math.max(...points.map(p => p.weight))}kg</div>
+                </div>
+            </div>
         </div>
     `;
     
-    // Liste détaillée
-    listContainer.innerHTML = `
-        <div class="card" style="margin-top: 15px;">
-            <h4 style="margin: 0 0 15px 0;">Exercices les plus réalisés</h4>
-            ${sortedExercises.map(([name, stats]) => `
-                <div style="padding: 10px; border-bottom: 1px solid var(--border);">
-                    <div style="font-weight: 700; color: var(--text-primary);">${name}</div>
-                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: var(--font-size-sm); color: var(--text-secondary); margin-top: 5px;">
-    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-        <span>${stats.count} séances</span>
-        <span>${stats.totalReps} répétitions</span>
-        <span>${stats.totalWeight}kg total</span>
-    </div>
-    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-        <span style="color: #EF4444;">Max: ${stats.maxWeight}kg</span>
-        <span>Moy: ${stats.avgWeight}kg/rep</span>
-    </div>
-</div>
-                </div>
-            `).join('')}
-        </div>
-    `;
+    container.innerHTML = html;
 }
+
 
 function getMuscleColor(muscleGroupId) {
     const muscle = muscleGroups.find(m => m.id === muscleGroupId);
@@ -18120,6 +19227,40 @@ function showWorkoutHistoryDetail(index) {
         `${durationHours}h ${durationMinutes.toString().padStart(2, '0')}min ${durationSeconds.toString().padStart(2, '0')}s` : 
         `${durationMinutes}min ${durationSeconds.toString().padStart(2, '0')}s`;
     
+    // ✅ Calcul du temps réel basé sur les pauses réelles
+    let totalRestTime = 0;
+    let completedSetsCount = 0;
+    
+    if (entry.exercises) {
+        entry.exercises.forEach(exercise => {
+            if (exercise.sets) {
+                exercise.sets.forEach(set => {
+                    if (set.completed) {
+                        completedSetsCount++;
+                        if (set.rest) {
+                            totalRestTime += set.rest;
+                        } else if (exercise.customRest) {
+                            totalRestTime += exercise.customRest;
+                        }
+                    }
+                });
+            }
+        });
+    }
+    
+    const effectiveTime = totalRestTime > 0 
+        ? Math.max(0, entry.duration - totalRestTime)
+        : Math.max(0, entry.duration - (completedSetsCount * 90));
+    
+    const effectiveHours = Math.floor(effectiveTime / 3600);
+    const effectiveMinutes = Math.floor((effectiveTime % 3600) / 60);
+    const effectiveSeconds = effectiveTime % 60;
+    const formattedEffectiveTime = effectiveHours > 0 ? 
+        `${effectiveHours}h ${effectiveMinutes.toString().padStart(2, '0')}min` : 
+        `${effectiveMinutes}min ${effectiveSeconds.toString().padStart(2, '0')}s`;
+    
+    const avgRestPerSet = completedSetsCount > 0 ? Math.round(totalRestTime / completedSetsCount) : 0;
+    
     let contentHTML = `
         <div class="history-detail-content">
             <div class="history-detail-header">
@@ -18130,28 +19271,50 @@ function showWorkoutHistoryDetail(index) {
             </div>
             
             <div style="margin: 20px 0;">
-                <div class="history-stats-grid" style="margin-bottom: 20px;">
-                    <div class="history-stat-exercice" style="padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
-                        <div class="history-stat-value">${entry.stats.totalExercises} exercices</div>
-                        <div class="history-stat-label">EXERCICES</div>
+                <!-- Première ligne : Exercices, Séries complétées, Répétitions -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px;">
+                    <div style="text-align: center; padding: 8px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${entry.stats.totalExercises}</div>
+                        <div style="font-size: 10px; color: var(--text-secondary);">EXERCICES</div>
                     </div>
-                    <div class="history-stat-series" style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
-                        <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${entry.stats.totalSets}</div>
-                        <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">SÉRIES</div>
+                    <div style="text-align: center; padding: 8px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${completedSetsCount}</div>
+                        <div style="font-size: 10px; color: var(--text-secondary);">SÉRIES</div>
                     </div>
-                    <div class="history-stat-repetitions" style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                    <div style="text-align: center; padding: 8px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
                         <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${calculateTotalReps(entry)}</div>
-                        <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">RÉPÉTITIONS</div>
-                    </div>
-                    <div class="history-stat-poids" style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
-                        <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${entry.stats.totalWeight}</div>
-                        <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">KG TOTAL</div>
-                    </div>
-                    <div class="history-stat-duree" style="text-align: center; padding: 10px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
-                        <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${formattedDuration}</div>
-                        <div style="font-size: var(--font-size-xs); color: var(--text-secondary);">DURÉE</div>
+                        <div style="font-size: 10px; color: var(--text-secondary);">RÉPÉTITIONS</div>
                     </div>
                 </div>
+                
+                <!-- Deuxième ligne : Poids total, Durée, Temps réel -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px;">
+                    <div style="text-align: center; padding: 8px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <div style="font-size: var(--font-size-lg); font-weight: 900; color: var(--primary);">${entry.stats.totalWeight}</div>
+                        <div style="font-size: 10px; color: var(--text-secondary);">KG TOTAL</div>
+                    </div>
+                    <div style="text-align: center; padding: 8px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <div style="font-size: var(--font-size-sm); font-weight: 900; color: var(--primary);">${formattedDuration}</div>
+                        <div style="font-size: 9px; color: var(--text-secondary);">DURÉE</div>
+                    </div>
+                    <div style="text-align: center; padding: 8px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <div style="font-size: var(--font-size-sm); font-weight: 900; color: #10B981;">${formattedEffectiveTime}</div>
+                        <div style="font-size: 9px; color: var(--text-secondary);">RÉEL</div>
+                    </div>
+                </div>
+                
+                ${totalRestTime > 0 ? `
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px;">
+                    <div style="text-align: center; padding: 8px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <div style="font-size: var(--font-size-sm); font-weight: 900; color: #8B5CF6;">${Math.floor(totalRestTime / 60)}min ${totalRestTime % 60}s</div>
+                        <div style="font-size: 9px; color: var(--text-secondary);">PAUSES TOTALES</div>
+                    </div>
+                    <div style="text-align: center; padding: 8px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                        <div style="font-size: var(--font-size-sm); font-weight: 900; color: #8B5CF6;">${avgRestPerSet}s</div>
+                        <div style="font-size: 9px; color: var(--text-secondary);">MOYENNE/SÉRIE</div>
+                    </div>
+                </div>
+                ` : ''}
                 
                 ${entry.supersets && entry.supersets.length > 0 ? `
                     <div style="margin-bottom: 20px; padding: 15px; background: var(--card-bg); border-radius: var(--radius-sm); border: 1px solid var(--border);">
@@ -18172,143 +19335,93 @@ function showWorkoutHistoryDetail(index) {
     `;
     
     // Standalone exercises
-    entry.exercises.forEach((exercise) => {
-        const muscle = muscleGroups.find(m => m.id === exercise.muscleGroup);
-        const muscleName = muscle ? muscle.name : exercise.muscleGroup;
-        
-        contentHTML += `
-            <div class="history-detail-exercise">
-                <div class="history-detail-exercise-name">${exercise.name}</div>
-                <div style="font-size: var(--font-size-xs); color: var(--text-secondary); margin-bottom: 10px;">
-                    <span style="color: ${muscle ? muscle.color : '#666'}">●</span> ${muscleName}
-                </div>
-                <div class="history-detail-sets">
-        `;
-        
-        exercise.sets.forEach((set, setIndex) => {
+    if (entry.exercises) {
+        entry.exercises.forEach((exercise) => {
+            const muscle = muscleGroups.find(m => m.id === exercise.muscleGroup);
+            const muscleName = muscle ? muscle.name : exercise.muscleGroup;
+            
+            const completedSets = exercise.sets ? exercise.sets.filter(set => set.completed === true) : [];
+            
+            if (completedSets.length === 0) return;
+            
             contentHTML += `
-                <div class="history-detail-set" style="background: ${setIndex % 2 === 0 ? 'var(--card-bg)' : '#f0f9ff'}; border: 1px solid ${setIndex % 2 === 0 ? 'var(--border)' : '#bae6fd'};">
-                    S${setIndex + 1}: ${set.reps} × ${set.weight}kg
+                <div class="history-detail-exercise">
+                    <div class="history-detail-exercise-name">${exercise.name}</div>
+                    <div style="font-size: var(--font-size-xs); color: var(--text-secondary); margin-bottom: 10px;">
+                        <span style="color: ${muscle ? muscle.color : '#666'}">●</span> ${muscleName}
+                        <span style="margin-left: 10px; color: #10B981;">✅ ${completedSets.length}/${exercise.sets.length} séries</span>
+                    </div>
+                    <div class="history-detail-sets">
+            `;
+            
+            completedSets.forEach((set, setIndex) => {
+                contentHTML += `
+                    <div class="history-detail-set" style="background: #e6f7ff; border: 2px solid #1890ff; border-radius: var(--radius-sm); padding: 6px 10px; margin-bottom: 5px; display: inline-block; margin-right: 8px;">
+                        <span style="font-weight: 700; color: #0050b3;">S${set.number || setIndex + 1}:</span> ${set.reps} × ${set.weight}kg
+                    </div>
+                `;
+            });
+            
+            const totalReps = completedSets.reduce((sum, set) => sum + (parseInt(set.reps) || 0), 0);
+            const totalWeight = completedSets.reduce((sum, set) => sum + (set.weight || 0) * (parseInt(set.reps) || 0), 0);
+            
+            let bestSet = { reps: 0, weight: 0, oneRM: 0, volume: 0 };
+            completedSets.forEach(set => {
+                const reps = parseInt(set.reps) || 0;
+                const weight = parseFloat(set.weight) || 0;
+                if (reps > 0 && weight > 0) {
+                    const oneRM = calculateOneRM(weight, reps);
+                    const volume = calculateVolume(weight, reps);
+                    if (oneRM > bestSet.oneRM) {
+                        bestSet = { reps, weight, oneRM, volume };
+                    }
+                }
+            });
+
+            contentHTML += `
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; font-size: var(--font-size-xs);">
+                        <div style="padding: 4px 8px; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border);">
+                            Total: ${totalReps} reps
+                        </div>
+                        <div style="padding: 4px 8px; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border);">
+                            Poids: ${totalWeight}kg
+                        </div>
+                    </div>
+                    
+                    ${bestSet.oneRM > 0 ? `
+                    <div style="display: flex; gap: 10px; margin-top: 8px; padding: 8px; background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(16,185,129,0.05)); border-radius: var(--radius-sm);">
+                        <div style="flex: 1; text-align: center;">
+                            <div style="font-size: 10px; color: var(--text-secondary);">1RM</div>
+                            <div style="font-weight: 800; color: #6366F1; font-size: var(--font-size-sm);">${bestSet.oneRM} kg</div>
+                            <div style="font-size: 9px; color: var(--text-secondary);">${bestSet.weight}kg × ${bestSet.reps}</div>
+                        </div>
+                        <div style="flex: 1; text-align: center;">
+                            <div style="font-size: 10px; color: var(--text-secondary);">Volume</div>
+                            <div style="font-weight: 800; color: #10B981; font-size: var(--font-size-sm);">${bestSet.volume} kg</div>
+                            <div style="font-size: 9px; color: var(--text-secondary);">${bestSet.weight}kg × ${bestSet.reps}</div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${exercise.notes ? `
+                        <div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.05)); border-radius: var(--radius-sm); border-left: 3px solid #8B5CF6;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #8B5CF6, #EC4899); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">
+                                    <i class="fas fa-sticky-note"></i>
+                                </div>
+                                <div style="font-weight: 700; color: #8B5CF6;">Notes</div>
+                            </div>
+                            <div style="color: var(--text-primary); font-size: var(--font-size-sm); white-space: pre-wrap; line-height: 1.5; padding: 0 4px;">
+                                ${exercise.notes}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
                 </div>
             `;
         });
-        
-        const totalReps = exercise.sets.reduce((sum, set) => sum + (parseInt(set.reps) || 0), 0);
-        const totalWeight = exercise.sets.reduce((sum, set) => sum + (set.weight || 0) * (parseInt(set.reps) || 0), 0);
-        
-        let bestSet = { reps: 0, weight: 0, oneRM: 0, volume: 0 };
-        exercise.sets.forEach(set => {
-            const reps = parseInt(set.reps) || 0;
-            const weight = parseFloat(set.weight) || 0;
-            if (reps > 0 && weight > 0) {
-                const oneRM = calculateOneRM(weight, reps);
-                const volume = calculateVolume(weight, reps);
-                if (oneRM > bestSet.oneRM) {
-                    bestSet = { reps, weight, oneRM, volume };
-                }
-            }
-        });
-
-        contentHTML += `
-                </div>
-                <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; font-size: var(--font-size-xs);">
-                    <div style="padding: 4px 8px; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border);">
-                        Total: ${totalReps} reps
-                    </div>
-                    <div style="padding: 4px 8px; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border);">
-                        Poids: ${totalWeight}kg
-                    </div>
-                </div>
-                
-                ${bestSet.oneRM > 0 ? `
-                <div style="display: flex; gap: 10px; margin-top: 8px; padding: 8px; background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(16,185,129,0.05)); border-radius: var(--radius-sm);">
-                    <div style="flex: 1; text-align: center;">
-                        <div style="font-size: 10px; color: var(--text-secondary);">1RM</div>
-                        <div style="font-weight: 800; color: #6366F1; font-size: var(--font-size-sm);">${bestSet.oneRM} kg</div>
-                        <div style="font-size: 9px; color: var(--text-secondary);">${bestSet.weight}kg × ${bestSet.reps}</div>
-                    </div>
-                    <div style="flex: 1; text-align: center;">
-                        <div style="font-size: 10px; color: var(--text-secondary);">Volume</div>
-                        <div style="font-weight: 800; color: #10B981; font-size: var(--font-size-sm);">${bestSet.volume} kg</div>
-                        <div style="font-size: 9px; color: var(--text-secondary);">${bestSet.weight}kg × ${bestSet.reps}</div>
-                    </div>
-                </div>
-                ` : ''}
-                
-                ${exercise.notes ? `
-                    <div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.05)); border-radius: var(--radius-sm); border-left: 3px solid #8B5CF6;">
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                            <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #8B5CF6, #EC4899); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">
-                                <i class="fas fa-sticky-note"></i>
-                            </div>
-                            <div style="font-weight: 700; color: #8B5CF6;">Notes</div>
-                        </div>
-                        <div style="color: var(--text-primary); font-size: var(--font-size-sm); white-space: pre-wrap; line-height: 1.5; padding: 0 4px;">
-                            ${exercise.notes}
-                        </div>
-                    </div>
-                ` : ''}
-                
-            </div>
-        `;
-    });
-    
-// ==================== GRAPHIQUES DE PROGRESSION ====================
-if (entry.exercises.length > 0) {
-    contentHTML += `
-        <div style="margin-top: 40px; margin-bottom: 20px;">
-            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
-                <h4 style="margin: 0; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
-                    <i class="fas fa-chart-line" style="color: var(--primary);"></i>
-                    Évolution des performances
-                </h4>
-                <div style="display: flex; gap: 8px; background: var(--card-bg); padding: 4px; border-radius: 24px; border: 1px solid var(--border); width: fit-content;">
-                    <button id="chart-metric-btn-1rm-${index}" class="chart-metric-btn active" 
-                            style="padding: 8px 16px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: var(--font-size-xs); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;"
-                            onclick="toggleChartMetric('1RM', ${index})">
-                        <i class="fas fa-dumbbell"></i> 1RM
-                    </button>
-                    <button id="chart-metric-btn-volume-${index}" class="chart-metric-btn"
-                            style="padding: 8px 16px; border-radius: 20px; border: none; background: var(--card-bg); color: var(--text-secondary); font-size: var(--font-size-xs); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;"
-                            onclick="toggleChartMetric('volume', ${index})">
-                        <i class="fas fa-weight-hanging"></i> Volume
-                    </button>
-                </div>
-            </div>
-            <div id="charts-container-${index}" style="display: flex; flex-direction: column; gap: 20px;">
-    `;
-    
-    entry.exercises.forEach((exercise, exIndex) => {
-        contentHTML += `
-            <div class="exercise-chart-card" 
-                 style="background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; box-shadow: var(--shadow-sm);">
-                
-                <!-- NOM DE L'EXERCICE EN ÉVIDENCE -->
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
-                    <div style="width: 44px; height: 44px; background: linear-gradient(135deg, var(--primary), #818CF8); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">
-                        <i class="fas fa-dumbbell"></i>
-                    </div>
-                    <div style="flex: 1;">
-                        <div style="font-weight: 800; color: var(--text-primary); font-size: var(--font-size-base); letter-spacing: 0.3px;">
-                            ${exercise.name}
-                        </div>
-                        <div style="display: flex; gap: 16px; margin-top: 4px; font-size: var(--font-size-xs); color: var(--text-secondary);">
-                            <span><i class="far fa-calendar-alt" style="margin-right: 4px;"></i> <span id="chart-stats-${index}-${exIndex}">Chargement...</span></span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- CONTENEUR DU GRAPHIQUE -->
-                <div id="chart-${index}-${exIndex}" style="min-height: 140px; width: 100%;"></div>
-            </div>
-        `;
-    });
-    
-    contentHTML += `
-            </div>
-        </div>
-    `;
-}
+    }
     
     contentHTML += `
             </div>
@@ -18327,22 +19440,6 @@ if (entry.exercises.length > 0) {
     document.getElementById('history-detail-title').textContent = 'Détail de la séance';
     document.getElementById('history-detail-content').innerHTML = contentHTML;
     showModal('history-detail-modal');
-    
-    // Rendre les graphiques après l'affichage
-    setTimeout(() => {
-        entry.exercises.forEach((exercise, exIndex) => {
-            const containerId = `chart-${index}-${exIndex}`;
-            const statsSpan = document.getElementById(`chart-stats-${index}-${exIndex}`);
-            
-            const history = getExerciseHistory(exercise.name);
-            if (history.length >= 2 && statsSpan) {
-                statsSpan.innerHTML = `${history.length} séances`;
-                renderExerciseCharts(exercise.name, containerId, 'oneRM');
-            } else if (statsSpan) {
-                statsSpan.innerHTML = 'Pas assez de données';
-            }
-        });
-    }, 200);
 }
 
 // ==================== NOUVEAU SYSTÈME D'HISTORIQUE NUTRITIONNEL ====================
@@ -18600,8 +19697,11 @@ function initializeNutritionHistory() {
 function calculateTotalReps(workoutEntry) {
     let totalReps = 0;
     workoutEntry.exercises.forEach(exercise => {
+        // ✅ Ne compter que les séries complétées
         exercise.sets.forEach(set => {
-            totalReps += parseInt(set.reps) || 0;
+            if (set.completed) {
+                totalReps += parseInt(set.reps) || 0;
+            }
         });
     });
     return totalReps;
@@ -19218,10 +20318,28 @@ function reorganizeSupersetsInRedo() {
 
 function deleteWorkoutHistory(index) {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette entrée de l\'historique ?')) {
+        
+        // ✅ Récupérer la séance avant suppression pour log (optionnel)
+        const deletedSession = workoutHistory[index];
+        
+        // Supprimer la séance
         workoutHistory.splice(index, 1);
         saveToLocalStorage();
+        
+        // Recharger l'historique des séances
         loadWorkoutHistory();
+        
+        // ✅ FORCER LE RECALCUL ET L'AFFICHAGE DES FRÉQUENCES
+        // Vérifier si on est sur l'onglet "Exercices" de l'historique
+        const exercisesTab = document.getElementById('workout-history-exercises');
+        if (exercisesTab && !exercisesTab.classList.contains('hidden')) {
+            // Recharger le graphique des exercices
+            loadExercisesChart();
+        }
+        
+        // ✅ Rafraîchir aussi l'affichage détaillé si le modal était ouvert
         hideModal('history-detail-modal');
+        
         showNotification('Entrée supprimée de l\'historique');
     }
 }
@@ -20755,14 +21873,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500);
 });
 
-// ==================== FONCTION POUR FORCER LA MISE À JOUR ====================
-function forceUpdateSelects() {
-    // Utile après des changements dynamiques du DOM
-    if (typeof updateSelectDisplay === 'function') {
-        updateSelectDisplay();
-    }
 }
-}
+
 </script>
 </body>
 </html>
