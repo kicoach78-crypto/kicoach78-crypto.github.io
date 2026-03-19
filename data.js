@@ -1,11 +1,13 @@
-// data.js - Toutes les données de l'application
+// data.js - Toutes les données de l'application IronPlate
+// Couleur primaire harmonisée avec index.html : #4F6EF7
+// Structure : muscleGroups | exercises | foods | Workouts
 
 // ==================== GROUPES MUSCULAIRES ====================
 const muscleGroups = [
     {
         id: 'pectoraux',
         name: 'Pectoraux',
-        color: '#1761FD',
+        color: '#4F6EF7',
         image: '',
         description: 'Muscles de la poitrine',
         subGroups: ['Grand pectoral', 'Petit pectoral', 'Sterno-costal']
@@ -13,7 +15,7 @@ const muscleGroups = [
     {
         id: 'dos',
         name: 'Dos',
-        color: '#1761FD',
+        color: '#4F6EF7',
         image: '',
         description: 'Muscles du dos',
         subGroups: ['Grand dorsal', 'Trapèzes', 'Rhomboides', 'Lombaires', 'Érecteurs du rachis']
@@ -21,7 +23,7 @@ const muscleGroups = [
     {
         id: 'epaules',
         name: 'Épaules',
-        color: '#1761FD',
+        color: '#4F6EF7',
         image: '',
         description: 'Muscles des épaules',
         subGroups: ['Deltoïde antérieur', 'Deltoïde moyen', 'Deltoïde postérieur']
@@ -29,7 +31,7 @@ const muscleGroups = [
     {
         id: 'jambes',
         name: 'Jambes',
-        color: '#1761FD',
+        color: '#4F6EF7',
         image: '',
         description: 'Muscles des jambes',
         subGroups: ['Quadriceps', 'Ischio-jambiers', 'Fessiers', 'Mollets', 'Adducteurs']
@@ -37,7 +39,7 @@ const muscleGroups = [
     {
         id: 'biceps',
         name: 'Biceps',
-        color: '#1761FD',
+        color: '#4F6EF7',
         image: '',
         description: 'Muscles des bras (face avant)',
         subGroups: ['Biceps brachial', 'Brachial antérieur', 'Long supinateur']
@@ -45,7 +47,7 @@ const muscleGroups = [
     {
         id: 'triceps',
         name: 'Triceps',
-        color: '#1761FD',
+        color: '#4F6EF7',
         image: '',
         description: 'Muscles des bras (face arrière)',
         subGroups: ['Triceps brachial', 'Tête longue', 'Tête latérale', 'Tête médiale']
@@ -53,7 +55,7 @@ const muscleGroups = [
     {
         id: 'abdos',
         name: 'Abdominaux',
-        color: '#1761FD',
+        color: '#4F6EF7',
         image: '',
         description: 'Muscles abdominaux',
         subGroups: ['Grand droit', 'Obliques', 'Transverse']
@@ -61,7 +63,7 @@ const muscleGroups = [
     {
         id: 'avant-bras',
         name: 'Avant-bras',
-        color: '#1761FD',
+        color: '#4F6EF7',
         image: '',
         description: 'Muscles de l\'avant-bras',
         subGroups: ['Fléchisseurs', 'Extenseurs', 'Supinateurs']
@@ -69,7 +71,7 @@ const muscleGroups = [
     {
         id: 'fessiers',
         name: 'Fessiers',
-        color: '#1761FD',
+        color: '#4F6EF7',
         image: '',
         description: 'Muscles fessiers',
         subGroups: ['Grand fessier', 'Moyen fessier', 'Petit fessier']
@@ -77,7 +79,7 @@ const muscleGroups = [
     {
         id: 'mollets',
         name: 'Mollets',
-        color: '#1761FD',
+        color: '#4F6EF7',
         image: '',
         description: 'Muscles du mollet',
         subGroups: ['Gastrocnémien', 'Soléaire']
@@ -85,7 +87,7 @@ const muscleGroups = [
     {
         id: 'lombaires',
         name: 'Lombaires',
-        color: '#1761FD',
+        color: '#4F6EF7',
         image: '',
         description: 'Muscles lombaires',
         subGroups: ['Érecteurs du rachis', 'Carré des lombes']
@@ -93,7 +95,7 @@ const muscleGroups = [
     {
         id: 'trapezes',
         name: 'Trapèzes',
-        color: '#1761FD',
+        color: '#4F6EF7',
         image: '',
         description: 'Muscles trapèzes',
         subGroups: ['Trapèze supérieur', 'Trapèze moyen', 'Trapèze inférieur']
@@ -101,7 +103,7 @@ const muscleGroups = [
     {
         id: 'ischio',
         name: 'Ischio-jambiers',
-        color: '#1761FD',
+        color: '#4F6EF7',
         image: '',
         description: 'Muscles ischio-jambiers',
         subGroups: ['Biceps fémoral', 'Semi-tendineux', 'Semi-membraneux']
@@ -109,7 +111,7 @@ const muscleGroups = [
     {
         id: 'cardio',
         name: 'Cardio',
-        color: '#1761FD',
+        color: '#4F6EF7',
         image: '',
         description: 'Exercices cardiovasculaires',
         subGroups: ['HIIT', 'LISS', 'Endurance']
@@ -117,7 +119,7 @@ const muscleGroups = [
     {
         id: 'core',
         name: 'Core',
-        color: '#1761FD',
+        color: '#4F6EF7',
         image: '',
         description: 'Muscles stabilisateurs du tronc',
         subGroups: ['Abdominaux', 'Lombaires', 'Obliques']
