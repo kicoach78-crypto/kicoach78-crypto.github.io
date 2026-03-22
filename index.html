@@ -709,6 +709,12 @@ body, html {
     display: block;
 }
 
+/* La séance active : header principal caché, padding-top:0 */
+#active-workout-screen {
+    margin-top: 0;
+    padding-top: 8px;
+}
+
 /* ==================== SECTION TITRES AMÉLIORÉS ==================== */
 .section-title {
     font-size: var(--font-size-xl);
@@ -11973,6 +11979,7 @@ input:checked + .slider:before {
 .ai-report-grid {
     display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; margin-bottom: 4px;
 }
+.ai-report-cell-sub { font-size: 9px !important; }
 .ai-report-cell {
     background: var(--card-bg-alt); border-radius: 12px;
     padding: 11px 10px; border: 1px solid var(--border);
@@ -12206,35 +12213,53 @@ input:checked + .slider:before {
 .ai-tag-base { background: rgba(15,168,106,.12); color: var(--success); }
 .ai-tag-ai   { background: rgba(124,58,237,.12); color: #7C3AED; }
 
+
+/* ══ Onboarding ══ */
+.ob-goal-card {
+    border: 1.5px solid var(--border); border-radius: 12px;
+    padding: 12px 8px; text-align: center; cursor: pointer;
+    transition: all .15s ease; background: var(--card-bg);
+}
+.ob-goal-card.active { border-color: var(--primary); background: var(--primary-glow); }
+.ob-goal-card:hover  { border-color: var(--primary); }
+
     </style>
 </head>
 <body>
     <div class="app-container">
         <!-- HEADER -->
-<div class="header">
-    <div class="header-left">
-        <div class="user-avatar" onclick="showScreen('profile-screen')" id="user-avatar">JD</div>
-        <h1 class="app-title">IRON</h1>
+<div class="header" style="padding:10px 14px;display:flex;align-items:center;gap:10px;">
+    <div class="header-left" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+        <div class="user-avatar" onclick="showScreen('profile-screen')" id="user-avatar"
+            style="cursor:pointer;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;letter-spacing:-.01em;flex-shrink:0;">JD</div>
+        <h1 class="app-title" style="font-size:18px;font-weight:900;letter-spacing:-.04em;color:var(--text-primary);">Iron</h1>
     </div>
     
-    <!-- AJOUT: Timer de séance (placé entre left et actions) -->
-    <div id="header-workout-timer" class="header-workout-timer" style="display: none; margin-left: auto; margin-right: 10px;">
+    <div id="header-workout-timer" class="header-workout-timer" style="display:none;">
         <i class="fas fa-stopwatch"></i>
         <span id="header-timer-display">00:00:00</span>
     </div>
     
-    <div class="header-actions">
-        <button class="icon-btn" onclick="showSettingsModal()" title="Paramètres">
-            <i class="fas fa-cog"></i>
+    <div class="header-actions" style="display:flex;align-items:center;gap:6px;">
+        <!-- Thème -->
+        <button onclick="toggleTheme()" title="Thème"
+            style="width:34px;height:34px;border-radius:10px;background:var(--card-bg);border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;">
+            <i class="fas fa-moon"></i>
         </button>
-        <button class="icon-btn primary" onclick="showCreateWorkoutModal(true)" title="Créer une séance">
-            <i class="fas fa-dumbbell"></i>
-        </button>
-        <button class="icon-btn success" onclick="showAddMealModal(true)" title="Ajouter un repas">
+        <!-- Ajouter repas -->
+        <button onclick="showAddMealModal(true)" title="Ajouter un repas"
+            style="width:34px;height:34px;border-radius:10px;background:rgba(15,168,106,.12);border:1px solid rgba(15,168,106,.25);color:#0FA86A;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;">
             <i class="fas fa-utensils"></i>
         </button>
-        <button class="icon-btn" onclick="toggleTheme()" title="Changer de thème">
-            <i class="fas fa-moon"></i>
+        <!-- Nouvelle séance — icône seule -->
+        <button onclick="showCreateWorkoutModal(true)" title="Nouvelle séance"
+            style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 3px 10px rgba(79,110,247,.3);transition:all .15s;">
+            <i class="fas fa-dumbbell"></i>
+        </button>
+        <!-- Paramètres -->
+        <button onclick="showSettingsModal()" title="Paramètres"
+            style="width:34px;height:34px;border-radius:10px;background:var(--card-bg);border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;">
+            <i class="fas fa-cog"></i>
         </button>
     </div>
 </div>
@@ -12546,7 +12571,7 @@ input:checked + .slider:before {
         
         <div class="input-group" class="u-mt-14">
             <div class="input-label">Âge</div>
-            <input type="number" id="profile-age-input" class="number-input" min="15" max="80" value="" 
+            <input type="number" inputmode="decimal" id="profile-age-input" class="number-input" min="15" max="80" value="" 
                    oninput="calculateNutritionNeeds()"
                    onclick="this.select()"
                    onfocus="this.select()">
@@ -12554,14 +12579,14 @@ input:checked + .slider:before {
         
         <div class="input-group" class="u-mt-14">
             <div class="input-label">Taille (cm)</div>
-            <input type="number" class="number-input" id="profile-height-input" value="" 
+            <input type="number" inputmode="decimal" class="number-input" id="profile-height-input" value="" 
                    oninput="calculateNutritionNeeds()"
                    onclick="this.select()"
                    onfocus="this.select()">
         </div>
         <div class="input-group" class="u-mt-14">
             <div class="input-label">Poids (kg)</div>
-            <input type="number" class="number-input" id="profile-weight-input" value="" 
+            <input type="number" inputmode="decimal" class="number-input" id="profile-weight-input" value="" 
                    oninput="calculateNutritionNeeds()"
                    onclick="this.select()"
                    onfocus="this.select()">
@@ -12569,7 +12594,7 @@ input:checked + .slider:before {
         
         <div class="input-group" class="u-mt-14">
             <div class="input-label">Bodyfat (%)</div>
-            <input type="number" id="profile-bodyfat-input" class="number-input" min="5" max="50" step="0.5" value="" 
+            <input type="number" inputmode="decimal" id="profile-bodyfat-input" class="number-input" min="5" max="50" step="0.5" value="" 
                    placeholder="Auto"
 		   oninput="calculateNutritionNeeds()"
                    onclick="this.select()"
@@ -12579,7 +12604,7 @@ input:checked + .slider:before {
         
         <div class="input-group" class="u-mt-14">
             <div class="input-label">Objectif poids/semaine (kg)</div>
-            <input type="number" id="profile-weekly-change-input" class="number-input" min="-1" max="1" step="0.1" value="0" 
+            <input type="number" inputmode="decimal" id="profile-weekly-change-input" class="number-input" min="-1" max="1" step="0.1" value="0" 
                    oninput="calculateNutritionNeeds()"
                    onclick="this.select()"
                    onfocus="this.select()">
@@ -12605,19 +12630,19 @@ input:checked + .slider:before {
         </div>
         <div class="input-group" class="u-mt-14">
             <div class="input-label">Poids par défaut (kg)</div>
-            <input type="number" class="number-input" id="profile-default-weight" value="10"
+            <input type="number" inputmode="decimal" class="number-input" id="profile-default-weight" value="10"
                    onclick="this.select()"
                    onfocus="this.select()">
         </div>
         <div class="input-group" class="u-mt-14">
             <div class="input-label">Temps de repos par défaut (secondes)</div>
-            <input type="number" class="number-input" id="profile-default-rest" value="60"
+            <input type="number" inputmode="decimal" class="number-input" id="profile-default-rest" value="60"
                    onclick="this.select()"
                    onfocus="this.select()">
         </div>
         <div class="input-group" class="u-mt-14">
             <div class="input-label">Séries par défaut</div>
-            <input type="number" class="number-input" id="profile-default-sets" value="3"
+            <input type="number" inputmode="decimal" class="number-input" id="profile-default-sets" value="3"
                    onclick="this.select()"
                    onfocus="this.select()">
         </div>
@@ -12664,9 +12689,17 @@ input:checked + .slider:before {
             </div>
         </div>
         
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button class="btn btn-success" onclick="saveProfile()" class="u-flex-1"><i class="fas fa-save"></i> Sauvegarder</button>
-            <button class="btn btn-danger" onclick="resetProfile()" class="u-flex-1"><i class="fas fa-redo"></i> Réinitialiser</button>
+        <!-- Boutons profil redesign -->
+        <div style="display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:22px;">
+            <button onclick="saveProfile()"
+                style="padding:14px 18px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:14px;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(79,110,247,.3);letter-spacing:-.01em;">
+                <i class="fas fa-check-circle" style="font-size:16px;"></i>
+                Sauvegarder le profil
+            </button>
+            <button onclick="resetProfile()" title="Réinitialiser le profil"
+                style="width:48px;height:48px;background:var(--card-bg);border:1.5px solid var(--border);border-radius:14px;color:var(--text-tertiary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;">
+                <i class="fas fa-undo"></i>
+            </button>
         </div>
         
         <!-- Import/Export -->
@@ -12845,13 +12878,18 @@ input:checked + .slider:before {
 
     <!-- REPAS DU JOUR -->
     <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
             <h3 style="margin:0;font-size:15px;font-weight:700;color:var(--text-primary);letter-spacing:-0.01em;">
                 <i class="fas fa-utensils" style="color:var(--primary);margin-right:6px;font-size:13px;"></i>Repas du jour
             </h3>
-            <button onclick="showAddMealModal(false)" class="btn-add-meal-compact">
-                <i class="fas fa-plus"></i> Ajouter
-            </button>
+            <div style="display:flex;gap:6px;">
+                <button onclick="repeatYesterdayMeals()" style="padding:6px 10px;background:var(--card-bg-alt);border:1px solid var(--border);border-radius:9px;font-size:11px;font-weight:700;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;gap:4px;" title="Répéter les repas d'hier">
+                    <i class="fas fa-history"></i> Hier
+                </button>
+                <button onclick="showAddMealModal(false)" class="btn-add-meal-compact">
+                    <i class="fas fa-plus"></i> Ajouter
+                </button>
+            </div>
         </div>
         <div class="meals-list-container" id="meals-list"></div>
     </div>
@@ -13003,6 +13041,9 @@ input:checked + .slider:before {
                     <i class="fas fa-magic"></i>
                     Générer le rapport IA
                 </button>
+                <button onclick="exportReportPDF()" class="btn btn-secondary" style="width:100%;margin-top:8px;font-size:12px;font-weight:700;">
+                    <i class="fas fa-file-pdf" style="color:#E03E3E;"></i> Exporter en PDF
+                </button>
             </div>
         </div>
     </div>
@@ -13071,51 +13112,79 @@ input:checked + .slider:before {
 
             <!-- ÉCRAN D'ENTRAÎNEMENT ACTIF -->
             <div id="active-workout-screen" class="screen">
-                <div class="workout-header">
-                    <h2 id="active-workout-name">Full Body</h2>
+
+                <!-- ── HEADER SÉANCE COMPACT ─────────────────────────── -->
+                <div style="display:flex;align-items:center;gap:8px;padding:12px 14px 6px;position:relative;">
+                    <!-- Titre séance + barre de progression -->
+                    <div style="flex:1;min-width:0;">
+                        <div id="workout-progress-title" style="font-size:15px;font-weight:900;color:var(--text-primary);letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Séance en cours</div>
+                        <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+                            <div style="flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+                                <div id="workout-progress-fill" style="height:100%;background:linear-gradient(90deg,#4F6EF7,#7C3AED);border-radius:2px;width:0%;transition:width .4s ease;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Badge 0/x exercices + micro -->
+                    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                        <div id="workout-progress-badge" style="font-size:11px;font-weight:800;color:var(--primary);background:var(--primary-glow);padding:4px 10px;border-radius:20px;white-space:nowrap;">0 / 0</div>
+                        <button id="_voice_btn" onclick="toggleVoice()" title="Commande vocale"
+                            style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 3px 10px rgba(79,110,247,.35);">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- BARRE DE PROGRESSION SÉANCE -->
-                <div class="workout-progress-bar-wrap">
-                    <div class="workout-progress-header">
-                        <div class="workout-progress-title" id="workout-progress-title">Séance en cours</div>
-                        <div class="workout-progress-badge" id="workout-progress-badge">0 / 0 exercices</div>
-                    </div>
-                    <div class="workout-progress-track">
-                        <div class="workout-progress-fill" id="workout-progress-fill" style="width:0%"></div>
+                <!-- ── CHRONO COLLAPSIBLE ─────────────────────────────── -->
+                <div id="workout-chrono-wrap" style="margin:0 14px 8px;">
+                    <div onclick="_toggleChronoCollapse()" style="display:flex;align-items:center;justify-content:space-between;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:8px 14px;cursor:pointer;">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <div class="chrono-stat" style="display:flex;flex-direction:column;align-items:center;">
+                                <div id="completed-sets" style="font-size:16px;font-weight:900;color:var(--primary);">0</div>
+                                <div style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Séries</div>
+                            </div>
+                            <div id="workout-timer" style="font-size:22px;font-weight:900;letter-spacing:-.03em;color:var(--text-primary);font-variant-numeric:tabular-nums;">00:00:00</div>
+                            <div class="chrono-stat" style="display:flex;flex-direction:column;align-items:center;">
+                                <div id="total-weight" style="font-size:16px;font-weight:900;color:var(--success);">0kg</div>
+                                <div style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Volume</div>
+                            </div>
+                        </div>
+                        <i id="chrono-chevron" class="fas fa-chevron-up" style="font-size:11px;color:var(--text-tertiary);transition:transform .2s;"></i>
                     </div>
                 </div>
 
-                <div class="workout-timer-container">
-                    <div class="workout-stat-side">
-                        <div class="workout-stat-side-value" id="completed-sets">0</div>
-                        <div class="workout-stat-side-label">Séries</div>
-                    </div>
-                    <div class="workout-timer" id="workout-timer">00:00:00</div>
-                    <div class="workout-stat-side">
-                        <div class="workout-stat-side-value" id="total-weight">0kg</div>
-                        <div class="workout-stat-side-label">Poids Total</div>
-                    </div>
-                </div>
-                
                 <div class="workout-container" id="workout-exercises-container">
                     <!-- Exercices générés dynamiquement -->
                 </div>
                 
-                <div class="workout-controls-container">
-    <!-- 1. BOUTON AJOUTER UN EXERCICE (EN HAUT) -->
-    <button class="workout-action-btn add-exercise-action-btn" onclick="addExerciseToWorkout()" id="add-exercise-workout-btn">
-        <i class="fas fa-plus"></i>
-        <span class="add-exercise-text">Ajouter un exercice</span>
-    </button>
-    
-    <!-- 2. BOUTON TERMINER L'ENTRAÎNEMENT (EN BAS - AVEC FONCTION EXISTANTE) -->
-    <button class="workout-action-btn finish-workout-action-btn" onclick="showSaveDataModal()" id="finish-workout-btn">
-        <i class="fas fa-flag-checkered"></i>
-        <span class="finish-workout-text">Terminer l'entraînement</span>
-    </button>
-</div>
+                <!-- ── BOUTONS ACTION — UNE SEULE LIGNE ───────────────── -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 14px 90px;">
+                    <button id="add-exercise-workout-btn" onclick="addExerciseToWorkout()"
+                        style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 10px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:14px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(79,110,247,.3);letter-spacing:-.01em;">
+                        <i class="fas fa-plus-circle" style="font-size:16px;"></i>
+                        <span>Ajouter exercice</span>
+                    </button>
+                    <button id="finish-workout-btn" onclick="showSaveDataModal()"
+                        style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 10px;background:linear-gradient(135deg,#0FA86A,#059669);color:white;border:none;border-radius:14px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(15,168,106,.3);letter-spacing:-.01em;">
+                        <i class="fas fa-flag-checkered" style="font-size:16px;"></i>
+                        <span>Terminer</span>
+                    </button>
+                    <button onclick="showAutoGym()"
+                        style="grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 10px;background:linear-gradient(135deg,rgba(15,168,106,.12),rgba(79,110,247,.12));border:1.5px solid rgba(15,168,106,.3);border-radius:14px;font-size:12px;font-weight:800;cursor:pointer;color:var(--success);">
+                        <i class="fas fa-dumbbell" style="font-size:14px;"></i>
+                        <span>AutoGym — Détection auto</span>
+                        <span style="font-size:9px;background:rgba(15,168,106,.15);padding:2px 6px;border-radius:10px;color:var(--success);">IA</span>
+                    </button>
+                </div>
+
             </div>
+        </div>
+
+        <!-- BANNIÈRE REPOS FLOTTANTE — z-index > navbar (1000) -->
+        <div id="rest-banner" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border-radius:14px;padding:10px 16px;z-index:9999;box-shadow:0 6px 20px rgba(79,110,247,.4);align-items:center;gap:10px;font-weight:700;font-size:14px;min-width:180px;justify-content:center;white-space:nowrap;">
+            <i class="fas fa-stopwatch"></i>
+            <span id="rest-banner-time">60s</span>
+            <span style="font-size:11px;opacity:.75;">repos</span>
+            <button onclick="_closeRestBanner()" style="background:rgba(255,255,255,.2);border:none;color:white;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">×</button>
         </div>
 
         <!-- TIMER -->
@@ -13172,6 +13241,68 @@ input:checked + .slider:before {
     </div>
 
     <!-- MODALS -->
+<!-- ═══════════════════════════════════════════════════
+     MODAL ONBOARDING — Premier lancement
+     ═══════════════════════════════════════════════════ -->
+<div class="modal" id="onboarding-modal">
+    <div class="modal-content" style="max-height:88vh;">
+        <div class="modal-header" style="background:var(--gradient-hero);border-radius:18px 18px 0 0;">
+            <div style="flex:1;text-align:center;">
+                <div class="modal-title" style="color:white;font-size:18px;font-weight:900;letter-spacing:-.02em;">Bienvenue sur IronPlate 💪</div>
+                <div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:3px;">Configurez votre profil en 30 secondes</div>
+            </div>
+        </div>
+        <div class="modal-body" style="padding:20px;">
+            <div id="ob-step-1">
+                <div class="input-label" style="margin-bottom:6px;">Votre prénom</div>
+                <input type="text" id="ob-name" class="number-input" placeholder="Prénom" style="margin-bottom:14px;">
+                <div class="input-label" style="margin-bottom:6px;">Votre objectif principal</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+                    <div class="ob-goal-card active" data-val="Prise de masse" onclick="selectObGoal(this)">
+                        <div style="font-size:20px;margin-bottom:4px;">💪</div>
+                        <div style="font-size:12px;font-weight:700;">Prise de masse</div>
+                    </div>
+                    <div class="ob-goal-card" data-val="Perte de poids" onclick="selectObGoal(this)">
+                        <div style="font-size:20px;margin-bottom:4px;">🔥</div>
+                        <div style="font-size:12px;font-weight:700;">Perte de poids</div>
+                    </div>
+                    <div class="ob-goal-card" data-val="Maintien" onclick="selectObGoal(this)">
+                        <div style="font-size:20px;margin-bottom:4px;">⚖️</div>
+                        <div style="font-size:12px;font-weight:700;">Maintien</div>
+                    </div>
+                    <div class="ob-goal-card" data-val="Performance" onclick="selectObGoal(this)">
+                        <div style="font-size:20px;margin-bottom:4px;">🏆</div>
+                        <div style="font-size:12px;font-weight:700;">Performance</div>
+                    </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px;">
+                    <div>
+                        <div class="input-label" style="margin-bottom:4px;">Poids (kg)</div>
+                        <input type="number" id="ob-weight" class="number-input" placeholder="75" inputmode="decimal">
+                    </div>
+                    <div>
+                        <div class="input-label" style="margin-bottom:4px;">Taille (cm)</div>
+                        <input type="number" id="ob-height" class="number-input" placeholder="175" inputmode="decimal">
+                    </div>
+                    <div>
+                        <div class="input-label" style="margin-bottom:4px;">Âge</div>
+                        <input type="number" id="ob-age" class="number-input" placeholder="30" inputmode="decimal">
+                    </div>
+                </div>
+                <div class="input-label" style="margin-bottom:6px;">Niveau</div>
+                <div style="display:flex;gap:6px;margin-bottom:20px;">
+                    <div class="ob-level-card active" data-val="Débutant" onclick="selectObLevel(this)" style="flex:1;text-align:center;padding:8px 6px;border-radius:10px;border:1.5px solid var(--primary);background:var(--primary-glow);font-size:11px;font-weight:700;cursor:pointer;">Débutant</div>
+                    <div class="ob-level-card" data-val="Intermédiaire" onclick="selectObLevel(this)" style="flex:1;text-align:center;padding:8px 6px;border-radius:10px;border:1.5px solid var(--border);font-size:11px;font-weight:700;cursor:pointer;">Intermédiaire</div>
+                    <div class="ob-level-card" data-val="Avancé" onclick="selectObLevel(this)" style="flex:1;text-align:center;padding:8px 6px;border-radius:10px;border:1.5px solid var(--border);font-size:11px;font-weight:700;cursor:pointer;">Avancé</div>
+                </div>
+                <button class="ai-cta-btn" onclick="finishOnboarding()">
+                    <i class="fas fa-rocket"></i> Démarrer IronPlate
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL CRÉATION SÉANCE - AMÉLIORÉ AVEC FOOTER -->
 <div class="modal" id="create-workout-modal">
     <div class="modal-content">
@@ -13246,14 +13377,21 @@ input:checked + .slider:before {
                 <h3 class="modal-title"><i class="fas fa-running"></i> Choisir un exercice</h3>
                 <button class="modal-close" onclick="hideModal('select-exercise-modal')">×</button>
             </div>
-            <div class="modal-body">
-                <input type="text" class="number-input" placeholder="Rechercher un exercice..." onkeyup="filterExerciseSelection(this.value)" class="u-w-full-mb-14">
-                <select class="filter-select" onchange="filterExerciseSelectionByMuscle(this.value)" id="exercise-filter">
-                    <option value="all">Tous les groupes musculaires</option>
-                    <!-- Options générées dynamiquement -->
-                </select>
-                <div id="exercise-selection-list" style="max-height: 300px; overflow-y: auto;">
-                    <!-- Liste des exercices pour sélection -->
+            <div class="modal-body" style="padding:10px 14px 14px;">
+                <!-- Champ de recherche avec le bon ID attendu par le JS -->
+                <input type="text" id="exercise-search-input" class="number-input"
+                    placeholder="Rechercher un exercice..."
+                    style="margin-bottom:8px;"
+                    autocomplete="off">
+                <!-- Pills groupes musculaires (peuplées dynamiquement) -->
+                <div id="muscle-pills-filter" style="display:flex;gap:5px;overflow-x:auto;padding-bottom:6px;margin-bottom:6px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;cursor:grab;" onwheel="this.scrollLeft+=event.deltaY;event.preventDefault();" onmousedown="_pillsDragStart(event,this)" onmousemove="_pillsDragMove(event,this)" onmouseup="_pillsDragEnd(event,this)" onmouseleave="_pillsDragEnd(event,this)">
+                    <div class="filter-pill active" style="white-space:nowrap;font-size:11px;padding:4px 11px;flex-shrink:0;" onclick="_muscleFilterPill('all',this)">Tous</div>
+                    <div class="filter-pill" style="white-space:nowrap;font-size:11px;padding:4px 11px;flex-shrink:0;color:#F59E0B;border-color:#F59E0B;" onclick="_muscleFilterPill('favorites',this)">★ Favoris</div>
+                    <div class="filter-pill" style="white-space:nowrap;font-size:11px;padding:4px 11px;flex-shrink:0;" onclick="_muscleFilterPill('custom',this)">Personnalisés</div>
+                </div>
+                <!-- Select caché (requis par filterExerciseSelection + showExerciseSelectionModal) -->
+                <select id="exercise-filter" style="display:none;"></select>
+                <div id="exercise-selection-list" style="max-height:330px;overflow-y:auto;">
                 </div>
             </div>
         </div>
@@ -13543,25 +13681,25 @@ input:checked + .slider:before {
                 
                 <div class="input-group" class="u-mb-14">
                     <div class="input-label">Quantité de référence (g)</div>
-                    <input type="number" class="number-input" id="food-quantity" value="100">
+                    <input type="number" inputmode="decimal" class="number-input" id="food-quantity" value="100">
                 </div>
                 
                 <div class="set-inputs-grid">
                     <div class="input-group">
                         <div class="input-label">Calories</div>
-                        <input type="number" class="number-input" id="food-calories" placeholder="kcal">
+                        <input type="number" inputmode="decimal" class="number-input" id="food-calories" placeholder="kcal">
                     </div>
                     <div class="input-group">
                         <div class="input-label">Protéines (g)</div>
-                        <input type="number" class="number-input" id="food-protein" placeholder="0">
+                        <input type="number" inputmode="decimal" class="number-input" id="food-protein" placeholder="0">
                     </div>
                     <div class="input-group">
                         <div class="input-label">Glucides (g)</div>
-                        <input type="number" class="number-input" id="food-carbs" placeholder="0">
+                        <input type="number" inputmode="decimal" class="number-input" id="food-carbs" placeholder="0">
                     </div>
                     <div class="input-group">
                         <div class="input-label">Lipides (g)</div>
-                        <input type="number" class="number-input" id="food-fat" placeholder="0">
+                        <input type="number" inputmode="decimal" class="number-input" id="food-fat" placeholder="0">
                     </div>
                 </div>
                 
@@ -13733,25 +13871,25 @@ input:checked + .slider:before {
                 
                 <div class="input-group" class="u-mb-14">
                     <div class="input-label">Quantité de référence (g)</div>
-                    <input type="number" class="number-input" id="edit-food-quantity" value="100">
+                    <input type="number" inputmode="decimal" class="number-input" id="edit-food-quantity" value="100">
                 </div>
                 
                 <div class="set-inputs-grid">
                     <div class="input-group">
                         <div class="input-label">Calories</div>
-                        <input type="number" class="number-input" id="edit-food-calories" placeholder="kcal">
+                        <input type="number" inputmode="decimal" class="number-input" id="edit-food-calories" placeholder="kcal">
                     </div>
                     <div class="input-group">
                         <div class="input-label">Protéines (g)</div>
-                        <input type="number" class="number-input" id="edit-food-protein" placeholder="0">
+                        <input type="number" inputmode="decimal" class="number-input" id="edit-food-protein" placeholder="0">
                     </div>
                     <div class="input-group">
                         <div class="input-label">Glucides (g)</div>
-                        <input type="number" class="number-input" id="edit-food-carbs" placeholder="0">
+                        <input type="number" inputmode="decimal" class="number-input" id="edit-food-carbs" placeholder="0">
                     </div>
                     <div class="input-group">
                         <div class="input-label">Lipides (g)</div>
-                        <input type="number" class="number-input" id="edit-food-fat" placeholder="0">
+                        <input type="number" inputmode="decimal" class="number-input" id="edit-food-fat" placeholder="0">
                     </div>
                 </div>
                 
@@ -13938,12 +14076,12 @@ input:checked + .slider:before {
 
                 <div class="input-group" class="u-mt-16">
                     <div class="input-label">Calories (max)</div>
-                    <input type="number" class="number-input" id="advanced-calories-filter" placeholder="Ex: 200">
+                    <input type="number" inputmode="decimal" class="number-input" id="advanced-calories-filter" placeholder="Ex: 200">
                 </div>
 
                 <div class="input-group" class="u-mt-16">
                     <div class="input-label">Protéines (min)</div>
-                    <input type="number" class="number-input" id="advanced-protein-filter" placeholder="Ex: 10">
+                    <input type="number" inputmode="decimal" class="number-input" id="advanced-protein-filter" placeholder="Ex: 10">
                 </div>
 
                 <div class="input-group" class="u-mt-16">
@@ -14108,6 +14246,35 @@ input:checked + .slider:before {
                     <button class="btn btn-secondary" onclick="testAudioVibration()" style="padding: 8px 16px; font-size: var(--font-size-sm); min-width: 70px;">
                         Tester
                     </button>
+                </div>
+
+                <div class="modal-section-head">Notifications & IA vocale</div>
+                <div class="settings-item" onclick="showModal('agentic-modal')" style="cursor:pointer;">
+                    <div class="settings-row-icon" style="background:linear-gradient(135deg,rgba(79,110,247,.15),rgba(124,58,237,.15));color:#7C3AED;"><i class="fas fa-robot"></i></div>
+                    <div class="settings-item-info">
+                        <div class="settings-item-title">Navigation agentique IA</div>
+                        <div class="settings-item-description">Dictez vos actions à l'IA — navigation, séances, nutrition…</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color:var(--text-tertiary);font-size:12px;"></i>
+                </div>
+                <div class="settings-item" onclick="_setupReminder()" style="cursor:pointer;">
+                    <div class="settings-row-icon" style="background:rgba(224,123,26,.10);color:var(--warning);"><i class="fas fa-bell"></i></div>
+                    <div class="settings-item-info">
+                        <div class="settings-item-title">Rappel d'entraînement</div>
+                        <div class="settings-item-description" id="reminder-status">Configurer un rappel quotidien</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color:var(--text-tertiary);font-size:12px;"></i>
+                </div>
+                <div class="settings-item" onclick="document.getElementById('voice-global-toggle').click()" style="cursor:pointer;">
+                    <div class="settings-row-icon" style="background:rgba(79,110,247,.10);color:var(--primary);"><i class="fas fa-microphone"></i></div>
+                    <div class="settings-item-info">
+                        <div class="settings-item-title">Commandes vocales séance</div>
+                        <div class="settings-item-description" id="voice-toggle-desc">Actif — micro visible pendant la séance</div>
+                    </div>
+                    <label class="toggle-switch" style="flex-shrink:0;" onclick="event.stopPropagation();">
+                        <input type="checkbox" id="voice-global-toggle" checked onchange="toggleGlobalVoice(this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
                 </div>
 
                 <div class="modal-section-head">Avancé</div>
@@ -14316,10 +14483,13 @@ input:checked + .slider:before {
         </div>
         <div class="modal-body">
 
-            <!-- Clés déjà configurées -->
+            <!-- Clés déjà configurées + priorité drag & drop -->
             <div id="ai-configured-keys" style="margin-bottom:14px;display:none;">
-                <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:7px;">Clés configurées</div>
-                <div id="ai-keys-status-list" style="display:flex;flex-direction:column;gap:5px;"></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);">Ordre de priorité</div>
+                    <div style="font-size:9px;color:var(--text-tertiary);">Glissez pour réordonner</div>
+                </div>
+                <div id="ai-priority-list" style="display:flex;flex-direction:column;gap:5px;" ondragover="event.preventDefault()"></div>
             </div>
 
             <!-- Info multi-clés -->
@@ -14331,7 +14501,7 @@ input:checked + .slider:before {
             <!-- Choix du modèle -->
             <div class="input-group" style="margin-bottom:16px;">
                 <div class="input-label">Modèle IA</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px;">
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px;">
 
                     <!-- Groq -->
                     <div class="ai-provider-card" id="ai-card-grok" onclick="selectAIProvider('grok')">
@@ -14358,6 +14528,15 @@ input:checked + .slider:before {
                         </div>
                         <div class="ai-provider-name">Claude</div>
                         <div class="ai-provider-tag ai-tag-pro">Pro</div>
+                    </div>
+
+                    <!-- OpenRouter -->
+                    <div class="ai-provider-card" id="ai-card-openrouter" onclick="selectAIProvider('openrouter')">
+                        <div class="ai-provider-logo" style="background:linear-gradient(135deg,#6366F1,#8B5CF6);">
+                            <i class="fas fa-route" style="color:white;font-size:13px;"></i>
+                        </div>
+                        <div class="ai-provider-name">OpenRouter</div>
+                        <div class="ai-provider-tag ai-tag-free">Gratuit</div>
                     </div>
                 </div>
             </div>
@@ -15036,8 +15215,8 @@ function updateWorkoutProgressBar() {
     const badge = document.getElementById('workout-progress-badge');
     const title = document.getElementById('workout-progress-title');
     if (fill)  fill.style.width   = pct + '%';
-    if (badge) badge.textContent  = `${completed} / ${total} exercices`;
-    if (title && activeWorkout.name) title.textContent = activeWorkout.name;
+    if (badge) badge.textContent  = `${completed} / ${total}`;
+    if (title) title.textContent = activeWorkout?.name || 'Séance en cours';
 }
 
 // ==================== FONCTIONS GLOBALES PRIORITAIRES ====================
@@ -15256,6 +15435,25 @@ function playSetCompleteAlert() {
 
 // ==================== FONCTIONS D'INITIALISATION ====================
 function initApp() {
+    // Vérifier onboarding premier lancement
+    setTimeout(_checkOnboarding, 1200);
+    // Détection automatique du mode sombre système
+    const savedTheme = localStorage.getItem('fitfuel_darkMode');
+    if (savedTheme === null) {
+        // Aucune préférence sauvegardée → suivre le système
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDark) {
+            document.body.classList.add('dark-mode');
+            const toggle = document.getElementById('dark-mode-toggle');
+            if (toggle) toggle.checked = true;
+        }
+        // Écouter les changements de thème système
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (localStorage.getItem('fitfuel_darkMode') === null) {
+                document.body.classList.toggle('dark-mode', e.matches);
+            }
+        });
+    }
     // 1. Charger les données persistées
     loadFromLocalStorage();
 
@@ -15621,9 +15819,19 @@ function showScreen(screenId) {
     });
     
     // Afficher l'écran demandé
-    document.getElementById(screenId).classList.add('active');
+    const targetScreen = document.getElementById(screenId);
+    if (targetScreen) targetScreen.classList.add('active');
     currentScreen = screenId;
     
+    // Scroll to top à chaque changement d'écran
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) mainContent.scrollTop = 0;
+    window.scrollTo(0, 0);
+
+    // Cacher le header principal pendant la séance active (il a son propre header)
+    const mainHeader = document.querySelector('.header:not(.modal-header)');
+    if (mainHeader) mainHeader.style.display = (screenId === 'active-workout-screen') ? 'none' : '';
+
     // Mettre à jour la navbar
     updateNavbar();
     
@@ -18705,20 +18913,20 @@ function generateProgrammedSetRow(workoutIndex, exIndex, setIndex, set, isCardio
         return `
             <div class="programmed-set-row" style="display: flex; gap: 8px; align-items: center; background: var(--bg-primary); padding: 8px; border-radius: var(--radius-sm); flex-wrap: wrap;">
                 <span style="font-weight: 700; min-width: 30px;">S${setIndex + 1}</span>
-                <input type="number" class="program-input" value="${set.distance || 5}" placeholder="Km/h" 
+                <input type="number" inputmode="decimal" class="program-input" value="${set.distance || 5}" placeholder="Km/h" 
                        style="width: 70px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
                        onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'distance', this.value)"
                        onfocus="this.select()"
                        onclick="this.select()">
                 <span>km/h</span>
-                <input type="number" class="program-input" value="${set.time || 30}" placeholder="min" 
+                <input type="number" inputmode="decimal" class="program-input" value="${set.time || 30}" placeholder="min" 
                        style="width: 70px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
                        onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'time', this.value)"
                        onfocus="this.select()"
                        onclick="this.select()">
                 <span>min</span>
                 <span style="margin: 0 4px;">repos</span>
-                <input type="number" class="program-input" value="${set.rest || 60}" placeholder="s" 
+                <input type="number" inputmode="decimal" class="program-input" value="${set.rest || 60}" placeholder="s" 
                        style="width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
                        onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'rest', this.value)"
                        onfocus="this.select()"
@@ -18733,19 +18941,19 @@ function generateProgrammedSetRow(workoutIndex, exIndex, setIndex, set, isCardio
         return `
             <div class="programmed-set-row" style="display: flex; gap: 8px; align-items: center; background: var(--bg-primary); padding: 8px; border-radius: var(--radius-sm); flex-wrap: wrap;">
                 <span style="font-weight: 700; min-width: 30px;">S${setIndex + 1}</span>
-                <input type="number" class="program-input" value="${set.reps || 10}" placeholder="Reps" 
+                <input type="number" inputmode="decimal" class="program-input" value="${set.reps || 10}" placeholder="Reps" 
                        style="width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
                        onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'reps', this.value)"
                        onfocus="this.select()"
                        onclick="this.select()">
                 <span>×</span>
-                <input type="number" class="program-input" value="${set.weight || 20}" placeholder="Kg" 
+                <input type="number" inputmode="decimal" class="program-input" value="${set.weight || 20}" placeholder="Kg" 
                        style="width: 70px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
                        onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'weight', this.value)"
                        onfocus="this.select()"
                        onclick="this.select()">
                 <span style="margin: 0 4px;">repos</span>
-                <input type="number" class="program-input" value="${set.rest || 60}" placeholder="s" 
+                <input type="number" inputmode="decimal" class="program-input" value="${set.rest || 60}" placeholder="s" 
                        style="width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
                        onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'rest', this.value)"
                        onfocus="this.select()"
@@ -18763,19 +18971,19 @@ function generateSetRow(workoutIndex, exIndex, setIndex, set) {
     return `
         <div class="programmed-set-row" style="display: flex; gap: 8px; align-items: center; background: var(--bg-primary); padding: 8px; border-radius: var(--radius-sm); flex-wrap: wrap;">
             <span style="font-weight: 700; min-width: 30px;">S${setIndex + 1}</span>
-            <input type="number" class="program-input" value="${set.reps}" placeholder="Reps" 
+            <input type="number" inputmode="decimal" class="program-input" value="${set.reps}" placeholder="Reps" 
                    style="width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
                    onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'reps', this.value)"
                    onfocus="this.select()"
                    onclick="this.select()">
             <span>×</span>
-            <input type="number" class="program-input" value="${set.weight}" placeholder="Kg" 
+            <input type="number" inputmode="decimal" class="program-input" value="${set.weight}" placeholder="Kg" 
                    style="width: 70px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
                    onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'weight', this.value)"
                    onfocus="this.select()"
                    onclick="this.select()">
             <span style="margin: 0 4px;">repos</span>
-            <input type="number" class="program-input" value="${set.rest || 60}" placeholder="s" 
+            <input type="number" inputmode="decimal" class="program-input" value="${set.rest || 60}" placeholder="s" 
                    style="width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
                    onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'rest', this.value)"
                    onfocus="this.select()"
@@ -18792,13 +19000,13 @@ function generateSetRow(workoutIndex, exIndex, setIndex, set) {
     return `
         <div class="programmed-set-row" style="display: flex; gap: 8px; align-items: center; background: var(--bg-primary); padding: 8px; border-radius: var(--radius-sm); flex-wrap: wrap;">
             <span style="font-weight: 700; min-width: 30px;">S${setIndex + 1}</span>
-            <input type="number" class="program-input" value="${set.reps}" placeholder="Reps" style="width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
+            <input type="number" inputmode="decimal" class="program-input" value="${set.reps}" placeholder="Reps" style="width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
                    onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'reps', this.value)">
             <span>×</span>
-            <input type="number" class="program-input" value="${set.weight}" placeholder="Kg" style="width: 70px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
+            <input type="number" inputmode="decimal" class="program-input" value="${set.weight}" placeholder="Kg" style="width: 70px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
                    onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'weight', this.value)">
             <span style="margin: 0 4px;">repos</span>
-            <input type="number" class="program-input" value="${set.rest || 60}" placeholder="s" style="width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
+            <input type="number" inputmode="decimal" class="program-input" value="${set.rest || 60}" placeholder="s" style="width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
                    onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'rest', this.value)">
             <span>s</span>
             <button class="btn btn-sm btn-danger" onclick="removeProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex})" style="padding: 4px 8px;">
@@ -19167,7 +19375,9 @@ function startProgrammedWorkout(workout) {
     
     updateWorkoutDisplay();
     showScreen('active-workout-screen');
+    setTimeout(_addVoiceBtnToWorkout, 200);
     showNotification('✅ Séance programmée démarrée', 'success');
+    const _agFab = document.getElementById('autogym-fab'); if (_agFab) _agFab.style.display = 'flex';
 }
 
 // ==================== DÉMARRER SÉANCE AVEC EXERCICES ====================
@@ -19316,9 +19526,11 @@ function updateWorkoutDisplay() {
     activeWorkout.totalTime = totalTime;
     activeWorkout.avgSpeed = avgSpeed;
     
-    document.getElementById('active-workout-name').textContent = activeWorkout.name;
-    document.getElementById('completed-sets').textContent = activeWorkout.completedSets;
-    document.getElementById('total-weight').textContent = `${totalWeight}kg`;
+    // active-workout-name supprimé → utiliser workout-progress-title
+    const _nameEl = document.getElementById('workout-progress-title') || document.getElementById('active-workout-name');
+    if (_nameEl) _nameEl.textContent = activeWorkout.name;
+    const _setsEl = document.getElementById('completed-sets'); if (_setsEl) _setsEl.textContent = activeWorkout.completedSets;
+    const _wtEl = document.getElementById('total-weight'); if (_wtEl) _wtEl.textContent = totalWeight + 'kg';
     
     const cardioStatsContainer = document.getElementById('cardio-stats-container');
     if (cardioStatsContainer) {
@@ -19335,6 +19547,9 @@ function updateWorkoutDisplay() {
         }
     }
     
+    // Mettre à jour la barre de progression (exercices complétés)
+    if (typeof updateWorkoutProgressBar === 'function') updateWorkoutProgressBar();
+
     const container = document.getElementById('workout-exercises-container');
     container.innerHTML = '';
     
@@ -19606,7 +19821,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
                               text-align: center; 
                               width: 100%; 
                               font-weight: 700; 
-                              height: 36px;" 
+                              height: 36px;" inputmode="decimal" 
                        value="${value1}" 
                        oninput="updateSet(${exerciseIndex}, ${setIndex}, '${isCardio ? 'distance' : 'reps'}', this.value)" 
                        onclick="this.select()"
@@ -19627,7 +19842,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
                               text-align: center; 
                               width: 100%; 
                               font-weight: 700; 
-                              height: 36px;" 
+                              height: 36px;" inputmode="decimal" 
                        value="${value2}" 
                        oninput="updateSet(${exerciseIndex}, ${setIndex}, '${isCardio ? 'time' : 'weight'}', this.value)"
                        onclick="this.select()" 
@@ -19793,7 +20008,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
                 <div class="input-label">
                     <i class="fas fa-${isCardio ? 'clock' : 'weight-hanging'}"></i> ${unit2}
                 </div>
-                <input type="number" class="number-input" value="${value2}" 
+                <input type="number" inputmode="decimal" class="number-input" value="${value2}" 
                        oninput="updateSet(${exerciseIndex}, ${setIndex}, '${isCardio ? 'time' : 'weight'}', this.value)" 
                        onclick="this.select()"
                        ${set.completed ? 'disabled' : ''}>
@@ -19924,6 +20139,8 @@ function completeSet(exerciseIndex, setIndex) {
         
         // ALERTE SONORE ET VIBRATION POUR SÉRIE TERMINÉE
         playSetCompleteAlert();
+    _completeSetExtensions(exerciseIndex);
+        if (navigator.vibrate) navigator.vibrate(30); // feedback haptique
         
         // Démarrer le timer pour le superset
         if (settings.autoTimer) {
@@ -19968,6 +20185,7 @@ function completeSet(exerciseIndex, setIndex) {
         
         // ALERTE SONORE ET VIBRATION POUR SÉRIE TERMINÉE
         playSetCompleteAlert();
+    _completeSetExtensions(exerciseIndex);
         
         // Gérer le timer automatique pour les séances normales
         if (settings.autoTimer) {
@@ -20108,7 +20326,7 @@ function updateSetDisplay(exerciseIndex, setIndex) {
     }
     
     // Mettre à jour les statistiques globales
-    document.getElementById('completed-sets').textContent = activeWorkout.completedSets;
+    const _csEl2 = document.getElementById('completed-sets'); if (_csEl2) _csEl2.textContent = activeWorkout.completedSets;
 }
 
 function recalculateTotalWeight() {
@@ -20137,17 +20355,18 @@ function recalculateTotalWeight() {
 
 function addSet(exerciseIndex) {
     if (!activeWorkout) return;
-    
     const exercise = activeWorkout.exercises[exerciseIndex];
     const newSetNumber = exercise.sets.length + 1;
-    
+    const lastSet = exercise.sets[exercise.sets.length - 1];
+    // Copier les valeurs de la dernière série si disponible
     exercise.sets.push({
         number: newSetNumber,
-        reps: userProfile.defaultReps,
-        weight: userProfile.defaultWeight,
+        reps:   lastSet ? lastSet.reps   : userProfile.defaultReps,
+        weight: lastSet ? lastSet.weight : userProfile.defaultWeight,
+        distance: lastSet ? lastSet.distance : 5,
+        time:     lastSet ? lastSet.time     : 30,
         completed: false
     });
-    
     updateWorkoutDisplay();
 }
 
@@ -21400,50 +21619,12 @@ function removeSuperset(exerciseIndex) {
 }
 
 function addExerciseToWorkout() {
+    if (typeof _addExerciseToWorkoutExtensions === 'function') _addExerciseToWorkoutExtensions();
+    // Marquer le contexte active-workout AVANT d'ouvrir le modal
+    const modal = document.getElementById('select-exercise-modal');
+    if (modal) modal.dataset.context = 'active-workout';
+    // Utiliser showExerciseSelectionForCreate qui gère tout (search, pills, liste)
     showExerciseSelectionForCreate();
-    document.getElementById('select-exercise-modal').dataset.context = 'active-workout';
-    
-    // Charger tous les exercices
-    setTimeout(() => {
-        const container = document.getElementById('exercise-selection-list');
-        if (!container) return;
-        
-        container.innerHTML = '';
-        
-        let filteredExercises = getAllExercises();
-        
-        filteredExercises.forEach(exercise => {
-            const muscle = muscleGroups.find(m => m.id === exercise.muscleGroup);
-            const exerciseItem = document.createElement('div');
-            exerciseItem.className = 'food-search-simple-item';
-            exerciseItem.onclick = () => {
-                if (activeWorkout) {
-                    activeWorkout.exercises.push({
-                        ...exercise,
-                        sets: Array(userProfile.defaultSets).fill().map((_, i) => ({
-                            number: i + 1,
-                            reps: userProfile.defaultReps,
-                            weight: userProfile.defaultWeight,
-                            completed: false
-                        }))
-                    });
-                    updateWorkoutDisplay();
-                    hideModal('select-exercise-modal');
-                    showNotification('Exercice ajouté à la séance !');
-                }
-            };
-            
-            exerciseItem.innerHTML = `
-                <div class="food-search-simple-name">${exercise.name}</div>
-                <div class="food-search-simple-details">
-                    ${muscle ? muscle.name : exercise.muscleGroup} • ${exercise.difficulty}
-                    ${exercise.custom ? ' (Personnalisé)' : ''}
-                </div>
-            `;
-            
-            container.appendChild(exerciseItem);
-        });
-    }, 100);
 }
 
 function addToWorkout(exerciseId) {
@@ -22527,7 +22708,7 @@ function editMeal(mealId) {
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <input type="number" class="quantity-input" value="${foodItem.quantity}" style="width: 70px;" 
+                            <input type="number" inputmode="decimal" class="quantity-input" value="${foodItem.quantity}" style="width: 70px;" 
                                    oninput="updateFoodQuantityAndCalories(this, '${food.id}')">
                             <button class="action-btn" onclick="removeFoodFromMeal(this)" title="Supprimer">
                                 <i class="fas fa-trash"></i>
@@ -22881,7 +23062,7 @@ function addFoodToMealFromSearch(foodId) {
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 10px;">
-                <input type="number" class="quantity-input" value="${food.quantity}" 
+                <input type="number" inputmode="decimal" class="quantity-input" value="${food.quantity}" 
                        style="width: 70px;" 
                        oninput="updateFoodQuantity(this, '${foodId}')"
                        onclick="this.select()"
@@ -23289,7 +23470,7 @@ function editFoodQuantity(foodId, currentQuantity) {
         </div>
         <div class="input-group">
             <div class="input-label">Quantité actuelle (g)</div>
-            <input type="number" class="number-input" id="edit-quantity-value" value="${currentQuantity}" min="1" max="1000">
+            <input type="number" inputmode="decimal" class="number-input" id="edit-quantity-value" value="${currentQuantity}" min="1" max="1000">
         </div>
         <div class="input-group">
             <div class="input-label">Calcul des valeurs</div>
@@ -28355,12 +28536,68 @@ const AI_PROVIDERS = {
             return { model, messages: msgs, max_tokens: 1024, system: sysMsg };
         },
         parseResponse: data => data.content?.[0]?.text || '(pas de réponse)'
+    },
+    openrouter: {
+        name: 'OpenRouter',
+        label: 'OpenRouter (Multi-modèles)',
+        endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+        // Modèles gratuits vérifiés — auto-sélection du meilleur disponible
+        models: [
+            'openrouter/free',
+            'qwen/qwen2.5-vl-72b-instruct:free',
+            'qwen/qwen2.5-vl-32b-instruct:free',
+            'moonshotai/kimi-vl-a3b-thinking:free',
+            'meta-llama/llama-3.2-11b-vision-instruct:free',
+            'mistralai/mistral-small-3.1-24b-instruct:free',
+            'google/gemma-3-27b-it:free',
+            'google/gemma-3-12b-it:free',
+            'meta-llama/llama-3.3-70b-instruct:free',
+            'deepseek/deepseek-chat-v3-0324:free',
+            'deepseek/deepseek-r1:free'
+        ],
+        modelLabels: {
+            'openrouter/free':                                    'Auto-routeur (détection auto)',
+            'qwen/qwen2.5-vl-72b-instruct:free':                 'Qwen 2.5 VL 72B — Vision ✓',
+            'qwen/qwen2.5-vl-32b-instruct:free':                 'Qwen 2.5 VL 32B — Vision ✓',
+            'moonshotai/kimi-vl-a3b-thinking:free':              'Kimi VL — Vision ✓',
+            'meta-llama/llama-3.2-11b-vision-instruct:free':     'Llama 3.2 11B Vision ✓',
+            'mistralai/mistral-small-3.1-24b-instruct:free':     'Mistral Small 3.1 — Vision ✓',
+            'google/gemma-3-27b-it:free':                        'Gemma 3 27B — Vision ✓',
+            'google/gemma-3-12b-it:free':                        'Gemma 3 12B — Vision ✓',
+            'meta-llama/llama-3.3-70b-instruct:free':            'Llama 3.3 70B — Texte rapide',
+            'deepseek/deepseek-chat-v3-0324:free':               'DeepSeek V3 — Texte',
+            'deepseek/deepseek-r1:free':                         'DeepSeek R1 — Raisonnement'
+        },
+        visionModels: [
+            'openrouter/free',
+            'qwen/qwen2.5-vl-72b-instruct:free',
+            'qwen/qwen2.5-vl-32b-instruct:free',
+            'moonshotai/kimi-vl-a3b-thinking:free',
+            'meta-llama/llama-3.2-11b-vision-instruct:free',
+            'mistralai/mistral-small-3.1-24b-instruct:free',
+            'google/gemma-3-27b-it:free',
+            'google/gemma-3-12b-it:free'
+        ],
+        // Meilleur modèle testé et validé (persisté en localStorage)
+        _bestModel: null,
+        defaultModel: 'openrouter/free',
+        keyPrefix: 'sk-or-',
+        info: 'OpenRouter donne accès à des dizaines de modèles gratuits dont plusieurs avec vision (analyse photo). Clé gratuite sans carte bancaire. 200 req/jour gratuit.',
+        keyUrl: 'https://openrouter.ai/keys',
+        keyUrlLabel: 'Créer une clé gratuite sur openrouter.ai →',
+        authHeader: key => ({
+            'Authorization': `Bearer ${key}`,
+            'HTTP-Referer': 'https://ironplate.app',
+            'X-Title': 'IronPlate'
+        }),
+        buildBody: (model, messages) => ({ model, messages, max_tokens: 1024, stream: false }),
+        parseResponse: data => data.choices?.[0]?.message?.content || '(pas de réponse)'
     }
 };
 
 // ── État IA ─────────────────────────────────────────────────────
 // Multi-clés : chaque provider stocke sa propre clé et son modèle
-let _aiKeys = { grok: null, gemini: null, claude: null };
+let _aiKeys = { grok: null, gemini: null, claude: null, openrouter: null };
 // _aiConfig = provider actif (pour le chat/actions générales)
 let _aiConfig = { provider: '', model: '', apiKey: '' };
 let _aiChatHistory = [];
@@ -28377,28 +28614,37 @@ function _selectProvider(capability) {
     // Toujours retourner une COPIE — jamais une référence directe à _aiConfig/_aiKeys
     const _copy = cfg => ({ ...cfg });
 
-    // Pour la vision → Claude > Gemini > Groq (fallback texte)
+    // Ordre de priorité vision : Claude > Gemini > OpenRouter (vision) > Groq (texte fallback)
     if (capability === 'vision') {
-        if (_aiKeys.claude?.apiKey) return _copy({ ..._aiKeys.claude, provider: 'claude' });
-        if (_aiKeys.gemini?.apiKey) return _copy({ ..._aiKeys.gemini, provider: 'gemini' });
-        if (_aiKeys.grok?.apiKey)   return _copy({ ..._aiKeys.grok,   provider: 'grok' });
+        if (_aiKeys.claude?.apiKey)       return _copy({ ..._aiKeys.claude,      provider: 'claude' });
+        if (_aiKeys.gemini?.apiKey)       return _copy({ ..._aiKeys.gemini,      provider: 'gemini' });
+        if (_aiKeys.openrouter?.apiKey) {
+            const bestVision = _orBestVisionModel || AI_PROVIDERS.openrouter.visionModels[0];
+            return _copy({ ..._aiKeys.openrouter, provider: 'openrouter', model: bestVision });
+        }
+        if (_aiKeys.grok?.apiKey)         return _copy({ ..._aiKeys.grok,        provider: 'grok' });
     }
-    // Pour la rapidité → Groq > Gemini > Claude
+    // Ordre de priorité rapidité : Groq > OpenRouter > Gemini > Claude
     if (capability === 'fast') {
-        if (_aiKeys.grok?.apiKey)   return _copy({ ..._aiKeys.grok,   provider: 'grok' });
-        if (_aiKeys.gemini?.apiKey) return _copy({ ..._aiKeys.gemini, provider: 'gemini' });
-        if (_aiKeys.claude?.apiKey) return _copy({ ..._aiKeys.claude, provider: 'claude' });
+        if (_aiKeys.grok?.apiKey)         return _copy({ ..._aiKeys.grok,        provider: 'grok' });
+        if (_aiKeys.openrouter?.apiKey) {
+            const bestTxt = _orBestModel || AI_PROVIDERS.openrouter.defaultModel;
+            return _copy({ ..._aiKeys.openrouter, provider: 'openrouter', model: bestTxt });
+        }
+        if (_aiKeys.gemini?.apiKey)       return _copy({ ..._aiKeys.gemini,      provider: 'gemini' });
+        if (_aiKeys.claude?.apiKey)       return _copy({ ..._aiKeys.claude,      provider: 'claude' });
     }
-    // Général → provider actif ou premier disponible
+    // Général : provider actif, sinon selon ordre de priorité défini par l'utilisateur
     if (_aiConfig.provider && _aiConfig.apiKey) return _copy(_aiConfig);
-    for (const p of ['grok','gemini','claude']) {
+    const order = typeof _aiPriorityOrder !== 'undefined' ? _aiPriorityOrder : ['claude','openrouter','gemini','grok'];
+    for (const p of order) {
         if (_aiKeys[p]?.apiKey) return _copy({ ..._aiKeys[p], provider: p });
     }
     return _copy(_aiConfig);
 }
 
 function _hasAnyKey() {
-    return !!(_aiKeys.grok?.apiKey || _aiKeys.gemini?.apiKey || _aiKeys.claude?.apiKey || _aiConfig.apiKey);
+    return !!(_aiKeys.grok?.apiKey || _aiKeys.gemini?.apiKey || _aiKeys.claude?.apiKey || _aiKeys.openrouter?.apiKey || _aiConfig.apiKey);
 }
 
 // ── Chargement / sauvegarde config ──────────────────────────
@@ -28413,13 +28659,14 @@ function loadAIConfig() {
         // Charger les clés multi-providers
         const savedAll = localStorage.getItem(_AI_KEYS_ALL);
         if (savedAll) {
-            _aiKeys = { ...{ grok: null, gemini: null, claude: null }, ...JSON.parse(savedAll) };
+            _aiKeys = { ...{ grok: null, gemini: null, claude: null, openrouter: null }, ...JSON.parse(savedAll) };
         } else if (_aiConfig.provider && _aiConfig.apiKey) {
             // Migration : copier la clé existante dans _aiKeys
             _aiKeys[_aiConfig.provider] = { apiKey: _aiConfig.apiKey, model: _aiConfig.model };
         }
         _updateAISettingsStatus();
         _showAIFab();
+        setTimeout(_triggerORAutoDetect, 2000); // lance la détection en arrière-plan
     } catch(e) {}
 }
 
@@ -28435,15 +28682,8 @@ function saveAIConfig() {
     // Sauvegarder cette clé dans _aiKeys (multi-clés)
     _aiKeys[provider] = { apiKey: key, model };
 
-    // Si aucun provider principal n'est défini, définir celui-ci
-    if (!_aiConfig.apiKey) {
-        _aiConfig = { provider, model, apiKey: key };
-    } else {
-        // Mettre à jour le provider actif si c'est le même
-        if (_aiConfig.provider === provider) {
-            _aiConfig = { provider, model, apiKey: key };
-        }
-    }
+    // Le provider qu'on vient de configurer devient TOUJOURS le provider actif
+    _aiConfig = { provider, model, apiKey: key };
     _aiCurrentProvider = AI_PROVIDERS[provider];
 
     localStorage.setItem(_AI_KEY, JSON.stringify(_aiConfig));
@@ -28452,6 +28692,7 @@ function saveAIConfig() {
     _updateAISettingsStatus();
     _showAIFab();
     showNotification(`Coach IA · ${AI_PROVIDERS[provider]?.name} configuré !`, 'success');
+    if (provider === 'openrouter') setTimeout(_triggerORAutoDetect, 500);
     hideModal('ai-config-modal');
 }
 
@@ -28460,7 +28701,7 @@ function clearAIConfig() {
     localStorage.removeItem(_AI_KEY);
     localStorage.removeItem(_AI_KEYS_ALL);
     _aiConfig = { provider:'', model:'', apiKey:'' };
-    _aiKeys   = { grok: null, gemini: null, claude: null };
+    _aiKeys   = { grok: null, gemini: null, claude: null, openrouter: null };
     _aiCurrentProvider = null;
     _hideAIFab();
     _updateAISettingsStatus();
@@ -28474,48 +28715,53 @@ function clearAIConfig() {
 function selectAIProvider(id) {
     _aiConfig.provider = id;
     const p = AI_PROVIDERS[id];
-    // Pre-fill key if already stored for this provider
-    const existingKey = _aiKeys[id]?.apiKey || '';
-    const keyInp = document.getElementById('ai-api-key-input');
-    if (keyInp && existingKey) keyInp.value = existingKey;
-    const modelSel = document.getElementById('ai-model-select');
-    const existingModel = _aiKeys[id]?.model;
-    // Will be set after models dropdown is built below
 
-    // Cards
+    // ── 1. Champ clé : TOUJOURS effacer puis remplir avec la clé DE CE PROVIDER ──
+    const keyInp = document.getElementById('ai-api-key-input');
+    if (keyInp) {
+        // Priorité : clé spécifique du provider → jamais mélanger avec un autre
+        keyInp.value = _aiKeys[id]?.apiKey || '';
+        keyInp.placeholder = `Clé ${p?.name || id} (${p?.keyPrefix || ''}...)`;
+    }
+
+    // ── 2. Cards ──────────────────────────────────────────────────────────────
     document.querySelectorAll('.ai-provider-card').forEach(c => c.classList.remove('active'));
     document.getElementById('ai-card-' + id)?.classList.add('active');
 
-    // Info block
+    // ── 3. Info block ──────────────────────────────────────────────────────────
     const info = document.getElementById('ai-provider-info');
     if (info) {
         info.style.display = 'block';
-        document.getElementById('ai-info-title').textContent = p.label;
-        document.getElementById('ai-info-desc').textContent  = p.info;
-        const link = document.getElementById('ai-info-link');
-        link.href = p.keyUrl;
-        document.getElementById('ai-info-link-text').textContent = p.keyUrlLabel;
+        const titleEl = document.getElementById('ai-info-title');
+        const descEl  = document.getElementById('ai-info-desc');
+        const link    = document.getElementById('ai-info-link');
+        const linkTxt = document.getElementById('ai-info-link-text');
+        if (titleEl) titleEl.textContent = p?.label || id;
+        if (descEl)  descEl.textContent  = p?.info  || '';
+        if (link)    link.href = p?.keyUrl || '#';
+        if (linkTxt) linkTxt.textContent = p?.keyUrlLabel || '';
     }
 
-    // Provider label
-    document.getElementById('ai-provider-label').textContent = '— ' + p.name;
+    // ── 4. Label provider ──────────────────────────────────────────────────────
+    const labelEl = document.getElementById('ai-provider-label');
+    if (labelEl) labelEl.textContent = '— ' + (p?.name || id);
 
-    // Models dropdown
+    // ── 5. Models dropdown ────────────────────────────────────────────────────
     const sel = document.getElementById('ai-model-select');
-    sel.innerHTML = p.models.map(m => {
-        const lbl = (p.modelLabels && p.modelLabels[m]) ? p.modelLabels[m] : m;
-        return `<option value="${m}">${lbl}</option>`;
-    }).join('');
-    sel.value = p.defaultModel;
-
-    // Pre-fill key if saved
-    if (_aiConfig.apiKey && _aiConfig.provider === id) {
-        document.getElementById('ai-api-key-input').value = _aiConfig.apiKey;
+    if (sel && p?.models) {
+        sel.innerHTML = p.models.map(m => {
+            const lbl = (p.modelLabels && p.modelLabels[m]) ? p.modelLabels[m] : m;
+            return `<option value="${m}">${lbl}</option>`;
+        }).join('');
+        // Utiliser le modèle déjà sauvegardé si disponible, sinon le défaut
+        sel.value = _aiKeys[id]?.model || p.defaultModel;
     }
 
-    // Test button
-    document.getElementById('ai-test-btn').style.display = 'block';
-    document.getElementById('ai-test-result').style.display = 'none';
+    // ── 6. Reset test result ──────────────────────────────────────────────────
+    const testBtn = document.getElementById('ai-test-btn');
+    const testRes = document.getElementById('ai-test-result');
+    if (testBtn) testBtn.style.display = 'block';
+    if (testRes) { testRes.style.display = 'none'; testRes.textContent = ''; }
     validateAIKey();
 }
 
@@ -28572,39 +28818,84 @@ function _openAIConfig() {
     showModal('ai-config-modal');
 }
 
+// Ordre de priorité des providers (peut être réordonné par drag)
+let _aiPriorityOrder = JSON.parse(localStorage.getItem('_ai_priority') || '["claude","gemini","openrouter","grok"]');
+
 function _refreshConfiguredKeysList() {
     const wrap = document.getElementById('ai-configured-keys');
-    const list = document.getElementById('ai-keys-status-list');
+    const list = document.getElementById('ai-priority-list');
     if (!wrap || !list) return;
-    const entries = Object.entries(_aiKeys).filter(([,v]) => v?.apiKey);
-    if (!entries.length && !(_aiConfig.provider && _aiConfig.apiKey)) {
-        wrap.style.display = 'none'; return;
-    }
-    wrap.style.display = 'block';
-    // Merge _aiKeys + _aiConfig
+
+    // Build merged key map
     const allKeys = { ..._aiKeys };
     if (_aiConfig.provider && _aiConfig.apiKey && !allKeys[_aiConfig.provider]?.apiKey) {
         allKeys[_aiConfig.provider] = { apiKey: _aiConfig.apiKey, model: _aiConfig.model };
     }
-    list.innerHTML = Object.entries(allKeys)
-        .filter(([,v]) => v?.apiKey)
-        .map(([k, v]) => {
-            const p = AI_PROVIDERS[k];
-            const masked = v.apiKey.slice(0,8) + '…' + v.apiKey.slice(-4);
-            const isActive = (_aiConfig.provider === k);
-            return `<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:${isActive?'rgba(79,110,247,.07)':'var(--card-bg-alt)'};border-radius:9px;border:1px solid ${isActive?'var(--primary)':'var(--border)'};">
-                <div style="width:22px;height:22px;border-radius:7px;background:${isActive?'var(--primary)':'var(--border)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <i class="fas fa-check" style="font-size:10px;color:${isActive?'white':'var(--text-tertiary)'};"></i>
+    const configured = Object.entries(allKeys).filter(([,v]) => v?.apiKey);
+    if (!configured.length) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+
+    // Sort by priority order
+    const sorted = [...configured].sort(([a],[b]) => {
+        const ai = _aiPriorityOrder.indexOf(a), bi = _aiPriorityOrder.indexOf(b);
+        return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+    });
+
+    list.innerHTML = '';
+    sorted.forEach(([k, v], idx) => {
+        const p = AI_PROVIDERS[k];
+        const masked = v.apiKey.slice(0,8) + '…' + v.apiKey.slice(-4);
+        const isActive = (_aiConfig.provider === k);
+        const row = document.createElement('div');
+        row.dataset.provider = k;
+        row.draggable = true;
+        row.style.cssText = `display:flex;align-items:center;gap:8px;padding:9px 10px;background:${isActive?'rgba(79,110,247,.07)':'var(--card-bg-alt)'};border-radius:11px;border:1px solid ${isActive?'var(--primary)':'var(--border)'};cursor:grab;transition:opacity .15s;`;
+        row.innerHTML = `
+            <div style="width:20px;text-align:center;flex-shrink:0;color:var(--text-tertiary);cursor:grab;">
+                <i class="fas fa-grip-vertical" style="font-size:12px;"></i>
+            </div>
+            <div style="width:24px;height:24px;border-radius:7px;background:${isActive?'var(--primary)':'var(--border)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:800;color:${isActive?'white':'var(--text-tertiary)'};">${idx+1}</div>
+            <div style="flex:1;min-width:0;">
+                <div style="font-size:12px;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:5px;">
+                    ${p?.name || k}
+                    ${isActive?'<span style="font-size:9px;color:var(--primary);font-weight:800;background:var(--primary-glow);padding:1px 6px;border-radius:5px;">ACTIF</span>':''}
                 </div>
-                <div style="flex:1;">
-                    <div style="font-size:12px;font-weight:700;color:var(--text-primary);">${p?.name || k} ${isActive?'<span style="font-size:9px;color:var(--primary);font-weight:800;">ACTIF</span>':''}</div>
-                    <div style="font-size:10px;color:var(--text-tertiary);">${masked} · ${v.model||''}</div>
-                </div>
-                <button onclick="event.stopPropagation();_removeProviderKey('${k}')" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:12px;padding:2px 6px;">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>`;
-        }).join('');
+                <div style="font-size:10px;color:var(--text-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${masked} · ${v.model||''}</div>
+            </div>
+            <button onclick="event.stopPropagation();_removeProviderKey('${k}')" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:13px;padding:3px 6px;flex-shrink:0;">
+                <i class="fas fa-times"></i>
+            </button>`;
+
+        // Drag events — _aiDragSrc est globale pour être partagée entre les rows
+        row.addEventListener('dragstart', e => {
+            window._aiDragSrc = k;
+            row.style.opacity = '0.45';
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', k);
+        });
+        row.addEventListener('dragend', () => { row.style.opacity = '1'; window._aiDragSrc = null; });
+        row.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; row.style.background = 'var(--primary-glow)'; });
+        row.addEventListener('dragleave', () => { row.style.background = ''; });
+        row.addEventListener('drop', e => {
+            e.preventDefault();
+            row.style.background = '';
+            const src = window._aiDragSrc || e.dataTransfer.getData('text/plain');
+            if (!src || src === k) return;
+            // Réordonner _aiPriorityOrder
+            let order = [..._aiPriorityOrder];
+            const from = order.indexOf(src);
+            if (from !== -1) order.splice(from, 1);
+            const to = order.indexOf(k);
+            order.splice(to >= 0 ? to : order.length, 0, src);
+            _aiPriorityOrder = order;
+            localStorage.setItem('_ai_priority', JSON.stringify(_aiPriorityOrder));
+            _refreshConfiguredKeysList();
+        });
+
+        list.appendChild(row);
+    });
+    // Init touch drag for mobile
+    setTimeout(() => _initTouchDrag(list), 100);
 }
 
 function _removeProviderKey(provider) {
@@ -28678,6 +28969,64 @@ async function testAIConnection() {
             }
         }
         res.innerHTML = '✗ ' + errMsg.slice(0, 200) + hint;
+    }
+}
+
+// ════════════════════════════════════════════════════════
+// OPENROUTER AUTO-DÉTECTION DU MEILLEUR MODÈLE
+// ════════════════════════════════════════════════════════
+let _orBestModel = localStorage.getItem('_or_best_model') || null;
+let _orBestVisionModel = localStorage.getItem('_or_best_vision_model') || null;
+let _orDetecting = false;
+
+async function _detectBestORModel(needsVision) {
+    if (_orDetecting) return;
+    _orDetecting = true;
+    const key = _aiKeys.openrouter?.apiKey;
+    if (!key) { _orDetecting = false; return; }
+
+    const visionList = AI_PROVIDERS.openrouter.visionModels || [];
+    const textList   = AI_PROVIDERS.openrouter.models.filter(m => !visionList.includes(m));
+    const toTest     = needsVision ? visionList : ['openrouter/free', ...textList];
+
+    console.log(`[OR] Auto-détection du meilleur modèle (vision=${needsVision})...`);
+
+    for (const model of toTest) {
+        try {
+            const body = needsVision
+                ? {
+                    model, max_tokens: 10,
+                    messages: [{ role:'user', content:[
+                        { type:'image_url', image_url:{ url:'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAEALAAAAAABAAEAAAICTAEAOw==' } },
+                        { type:'text', text:'Say OK' }
+                    ]}]
+                  }
+                : { model, max_tokens: 5, messages:[{ role:'user', content:'Say OK' }] };
+
+            const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method: 'POST',
+                headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${key}`, 'HTTP-Referer':'https://ironplate.app', 'X-Title':'IronPlate' },
+                body: JSON.stringify(body)
+            });
+            if (resp.ok) {
+                const txt = (await resp.json()).choices?.[0]?.message?.content || '';
+                if (txt) {
+                    if (needsVision) { _orBestVisionModel = model; localStorage.setItem('_or_best_vision_model', model); }
+                    else             { _orBestModel        = model; localStorage.setItem('_or_best_model', model); }
+                    console.log(`[OR] Meilleur modèle ${needsVision?'vision':'texte'}: ${model}`);
+                    _orDetecting = false; return;
+                }
+            }
+        } catch(e) { /* essai suivant */ }
+    }
+    _orDetecting = false;
+}
+
+// Lancer la détection en arrière-plan dès qu'une clé OR est configurée
+function _triggerORAutoDetect() {
+    if (_aiKeys.openrouter?.apiKey) {
+        if (!_orBestModel)       _detectBestORModel(false);
+        if (!_orBestVisionModel) _detectBestORModel(true);
     }
 }
 
@@ -29130,8 +29479,9 @@ function _renderProgressions() {
     sorted.forEach(session => {
         (session.exercises || []).forEach(ex => {
             if (!ex.name) return;
-            const maxW = Math.max(...(ex.sets||[]).map(s => parseFloat(s.weight)||0).filter(Boolean));
-            if (!maxW) return;
+            const weights = (ex.sets||[]).map(s => parseFloat(s.weight)||0).filter(w => w > 0);
+            const maxW = weights.length > 0 ? Math.max(...weights) : 0;
+            if (!maxW || !isFinite(maxW)) return;
             if (!exerciseData[ex.name]) exerciseData[ex.name] = [];
             if (exerciseData[ex.name].length < 2) exerciseData[ex.name].push({ date: session.date, w: maxW });
         });
@@ -29246,27 +29596,118 @@ async function generateWeeklyReport() {
     const stats = document.getElementById('ai-report-stats');
     const resp  = document.getElementById('ai-report-response');
     if (!btn || !stats) return;
-    if (!_aiConfig.provider) { showNotification('Configurez l\'IA d\'abord', 'error'); return; }
+    if (!_hasAnyKey()) { showNotification('Configurez l\'IA d\'abord', 'error'); return; }
 
-    // Compute last 7 days stats
-    const now    = new Date(); now.setHours(0,0,0,0);
-    const cutoff = new Date(now); cutoff.setDate(now.getDate() - 7);
-    const week   = (typeof workoutHistory !== 'undefined') ? workoutHistory.filter(w => new Date(w.date) >= cutoff) : [];
+    // ── Période : 7 derniers jours ────────────────────────────
+    const now    = new Date(); now.setHours(23,59,59,999);
+    const cutoff = new Date(now); cutoff.setDate(now.getDate() - 7); cutoff.setHours(0,0,0,0);
+    const week   = (typeof workoutHistory !== 'undefined')
+        ? workoutHistory.filter(w => new Date(w.date) >= cutoff && new Date(w.date) <= now)
+        : [];
 
+    // ── Calculs séances ───────────────────────────────────────
     const totalSessions = week.length;
-    const totalKg       = week.reduce((s,w) => s + (w.stats?.totalWeight||0), 0);
-    const totalSets     = week.reduce((s,w) => s + (w.stats?.totalSets||0), 0);
-    const totalMin      = week.reduce((s,w) => s + (w.duration||0), 0);
-    const avgCal        = 0; // nutrition history would be needed
-    const score         = _calcFitnessScore();
 
-    // Render stats grid
-    stats.innerHTML = [
-        { label: 'SÉANCES', val: totalSessions, sub: 'cette semaine', color: 'var(--primary)' },
-        { label: 'POIDS SOULEVÉ', val: totalKg > 1000 ? (totalKg/1000).toFixed(1)+'t' : totalKg+'kg', sub: 'total semaine', color: 'var(--danger)' },
-        { label: 'SÉRIES', val: totalSets, sub: 'total semaine', color: 'var(--success)' },
-        { label: 'DURÉE', val: totalMin > 60 ? Math.round(totalMin/60)+'h' : totalMin+'min', sub: 'temps total', color: 'var(--warning)' },
-    ].map(c => `
+    // duration est en SECONDES (Math.floor((end - start) / 1000))
+    const totalSecs = week.reduce((s, w) => s + (w.duration || 0), 0);
+    const totalMins = Math.round(totalSecs / 60);             // → minutes réelles
+    const totalHrs  = (totalMins / 60).toFixed(1);            // ex: "3.5"
+    const avgMinPerSession = totalSessions > 0 ? Math.round(totalMins / totalSessions) : 0;
+
+    // Durée affichée : "2h 15min" si ≥60min, sinon "45min"
+    const durDisplay = totalMins >= 60
+        ? `${Math.floor(totalMins/60)}h${totalMins%60>0 ? ' '+totalMins%60+'min' : ''}`
+        : `${totalMins}min`;
+
+    const totalKg   = Math.round(week.reduce((s,w) => s + (w.stats?.totalWeight || 0), 0));
+    const totalSets = week.reduce((s,w) => s + (w.stats?.totalSets || 0), 0);
+    const totalReps = week.reduce((s,w) => s + (w.stats?.totalReps || 0), 0);
+    const totalExs  = week.reduce((s,w) => s + (w.stats?.totalExercises || (w.exercises?.length || 0)), 0);
+
+    // ── Calculs nutritionnels (7 derniers jours) ──────────────
+    const today    = new Date().toISOString().split('T')[0];
+    const weekDays = Array.from({length:7}, (_,i) => {
+        const d = new Date(now); d.setDate(now.getDate() - i);
+        return d.toISOString().split('T')[0];
+    });
+
+    let weekCalTotal = 0, weekProtTotal = 0, weekDaysWithData = 0;
+    if (typeof nutritionHistory !== 'undefined') {
+        const dayMap = {};
+        nutritionHistory.forEach(meal => {
+            const d = new Date(meal.date).toISOString().split('T')[0];
+            if (weekDays.includes(d)) {
+                if (!dayMap[d]) dayMap[d] = { cal:0, prot:0 };
+                // Calories depuis foods référencées
+                (meal.foods || []).forEach(fi => {
+                    const food = typeof getAllFoods === 'function'
+                        ? getAllFoods().find(f => f.id === fi.foodId)
+                        : null;
+                    if (food) {
+                        const ratio = (fi.quantity || 100) / (food.quantity || 100);
+                        dayMap[d].cal  += (food.calories || 0) * ratio;
+                        dayMap[d].prot += (food.protein  || 0) * ratio;
+                    }
+                });
+            }
+        });
+        Object.values(dayMap).forEach(v => {
+            if (v.cal > 0) {
+                weekCalTotal  += v.cal;
+                weekProtTotal += v.prot;
+                weekDaysWithData++;
+            }
+        });
+    }
+    const avgCalPerDay  = weekDaysWithData > 0 ? Math.round(weekCalTotal  / weekDaysWithData) : 0;
+    const avgProtPerDay = weekDaysWithData > 0 ? Math.round(weekProtTotal / weekDaysWithData) : 0;
+    const calTarget     = (typeof userProfile !== 'undefined' && userProfile.calorieNeeds)  || 2500;
+    const protTarget    = (typeof userProfile !== 'undefined' && userProfile.proteinNeeds)  || 150;
+    const calAdherence  = calTarget > 0 ? Math.round(avgCalPerDay / calTarget * 100) : 0;
+
+    // ── Score et progressions ─────────────────────────────────
+    const score = _calcFitnessScore();
+
+    // Trouver la meilleure progression de la semaine
+    const progressions = {};
+    if (typeof workoutHistory !== 'undefined') {
+        const recent = [...workoutHistory].sort((a,b) => new Date(b.date)-new Date(a.date)).slice(0,20);
+        recent.forEach(entry => {
+            (entry.exercises || []).forEach(ex => {
+                if (!ex.name) return;
+                const weights = (ex.sets||[]).map(s => parseFloat(s.weight)||0).filter(w => w > 0);
+                const maxW = weights.length > 0 ? Math.max(...weights) : 0;
+                if (!maxW || !isFinite(maxW)) return;
+                if (!progressions[ex.name]) progressions[ex.name] = [];
+                progressions[ex.name].push({ date: entry.date, w: maxW });
+            });
+        });
+    }
+    const bestProg = Object.entries(progressions)
+        .filter(([,v]) => v.length >= 2)
+        .map(([name, data]) => {
+            const sorted = data.sort((a,b) => new Date(b.date)-new Date(a.date));
+            const diff   = sorted[0].w - sorted[1].w;
+            return { name, diff, latest: sorted[0].w };
+        })
+        .filter(p => p.diff > 0)
+        .sort((a,b) => b.diff - a.diff)[0];
+
+    // ── Affichage grille stats ────────────────────────────────
+    const cells = [
+        { label: 'SÉANCES',         val: totalSessions,                  sub: 'cette semaine',           color: 'var(--primary)' },
+        { label: 'DURÉE TOTALE',    val: durDisplay,                     sub: `moy. ${avgMinPerSession}min/séance`, color: 'var(--warning)' },
+        { label: 'POIDS SOULEVÉ',   val: totalKg > 1000 ? (totalKg/1000).toFixed(1)+'t' : totalKg+'kg', sub: `${totalSets} séries · ${totalReps} reps`, color: 'var(--danger)' },
+        { label: 'NUTRITION MOY.',  val: avgCalPerDay > 0 ? avgCalPerDay+' kcal' : '—',
+          sub: avgProtPerDay > 0 ? `${avgProtPerDay}g prot (${calAdherence}%)` : 'Aucune donnée',
+          color: calAdherence >= 90 ? 'var(--success)' : 'var(--warning)' },
+        { label: 'SCORE FORME',     val: score+'/100',                   sub: 'streak + régularité',     color: score >= 70 ? 'var(--success)' : score >= 40 ? 'var(--warning)' : 'var(--danger)' },
+        { label: 'MEILLEURE PROG.', val: bestProg && isFinite(bestProg.diff) ? '+'+bestProg.diff.toFixed(1)+'kg' : '—',
+          sub: bestProg ? bestProg.name.slice(0,20) : 'Pas encore de données',
+          color: 'var(--success)' },
+    ];
+
+    stats.innerHTML = cells.map(c => `
         <div class="ai-report-cell">
             <div class="ai-report-cell-label" style="color:${c.color};">${c.label}</div>
             <div class="ai-report-cell-val">${c.val}</div>
@@ -29276,29 +29717,50 @@ async function generateWeeklyReport() {
     btn.classList.add('ai-loading');
     btn.innerHTML = '<span class="ai-spinner"></span> Génération…';
 
+    // ── Prompt enrichi pour l'IA ──────────────────────────────
     const sessNames = week.map(w => w.name).join(', ') || 'aucune';
-    const prompt = `Bilan de ma semaine fitness :
-- ${totalSessions} séances réalisées : ${sessNames}
-- ${totalKg} kg soulevés au total
-- ${totalSets} séries effectuées
-- ${Math.round(totalMin/60*10)/10}h d'entraînement
-- Score de forme actuel : ${score}/100
-- Poids : ${(typeof userProfile !== 'undefined' && userProfile.weight) || '?'}kg, objectif ${(typeof userProfile !== 'undefined' && userProfile.trainingType) || 'Maintien'}
+    const prompt = `Bilan complet de ma semaine fitness :
 
-Génère un rapport de semaine synthétique : un verdict global (2 phrases), les 2 points forts, les 2 axes d'amélioration, et 3 objectifs pour la semaine prochaine. Format structuré, direct, motivant.`;
+ENTRAÎNEMENT :
+- ${totalSessions} séances : ${sessNames}
+- Durée totale : ${durDisplay} (moy. ${avgMinPerSession}min/séance)
+- Poids total soulevé : ${totalKg}kg
+- Total séries : ${totalSets} | Total répétitions : ${totalReps}
+- Exercices différents : ${totalExs}
+${bestProg ? `- Meilleure progression : ${bestProg.name} +${bestProg.diff}kg (nouveau max : ${bestProg.latest}kg)` : ''}
 
-    const reply = await _callAI([{ role:'user', content: prompt }], null, _buildSystemPrompt());
+NUTRITION (${weekDaysWithData} jours de données) :
+- Calories moyennes : ${avgCalPerDay} kcal/jour (objectif ${calTarget} kcal = ${calAdherence}% adherence)
+- Protéines moyennes : ${avgProtPerDay}g/jour (objectif ${protTarget}g)
+
+PROFIL :
+- Poids : ${(typeof userProfile!=='undefined'&&userProfile.weight)||'?'}kg
+- Objectif : ${(typeof userProfile!=='undefined'&&userProfile.trainingType)||'Maintien'}
+- Niveau : ${(typeof userProfile!=='undefined'&&userProfile.level)||'Intermédiaire'}
+- Score de forme : ${score}/100
+
+Génère un rapport hebdomadaire structuré avec :
+1. Un verdict global (2 phrases percutantes)
+2. 2 points forts de la semaine (concrets, chiffrés)
+3. 2 axes d'amélioration prioritaires
+4. 3 objectifs SMART pour la semaine prochaine
+Sois direct, motivant, basé sur les chiffres réels. Max 250 mots.`;
+
+    const reportCfg = _selectProvider('fast');
+    const reply = await _callAI([{ role:'user', content: prompt }], reportCfg, _buildSystemPrompt());
 
     btn.classList.remove('ai-loading');
     btn.innerHTML = '<i class="fas fa-magic"></i> Générer le rapport IA';
 
     if (reply && !reply.startsWith('__ERROR__')) {
-        if (resp) resp.innerHTML = reply.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        if (resp) resp.innerHTML = reply
+            .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
             .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
             .replace(/\*(.+?)\*/g,'<em>$1</em>')
+            .replace(/^#{1,3}\s+(.+)$/gm,'<strong>$1</strong>')
             .replace(/\n/g,'<br>');
     } else {
-        showNotification('Erreur IA', 'error');
+        showNotification('Erreur IA : ' + (reply||'').replace('__ERROR__',''), 'error');
     }
 }
 
@@ -29975,6 +30437,39 @@ async function captureAndAnalyze() {
         }];
         reply = await _callAI(messages, scanCfg, 'Tu es nutritionniste. Réponds UNIQUEMENT avec du JSON valide.');
 
+    } else if (scanProvider === 'openrouter' && _scanImageBase64) {
+        // OpenRouter vision — format OpenAI image_url
+        try {
+            const orProvider = AI_PROVIDERS.openrouter;
+            const visionModels = orProvider.visionModels || orProvider.models;
+            const startModel = scanCfg.model || visionModels[0];
+            const modelsToTry = [startModel, ...visionModels.filter(m => m !== startModel)];
+            for (const model of modelsToTry) {
+                const body = {
+                    model,
+                    max_tokens: 1024,
+                    messages: [{
+                        role: 'user',
+                        content: [
+                            { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${_scanImageBase64}` } },
+                            { type: 'text', text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}' }
+                        ]
+                    }]
+                };
+                const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${scanCfg.apiKey}`, 'HTTP-Referer': 'https://ironplate.app', 'X-Title': 'IronPlate' },
+                    body: JSON.stringify(body)
+                });
+                const data = await resp.json();
+                if (resp.ok) { reply = data.choices?.[0]?.message?.content || '__ERROR__Réponse vide'; break; }
+                const errMsg = data.error?.message || '';
+                if (resp.status === 429 || errMsg.includes('quota')) { console.warn(`[OR] ${model} quota, trying next`); continue; }
+                reply = '__ERROR__OpenRouter ' + resp.status + ': ' + errMsg.slice(0,100); break;
+            }
+            if (!reply) reply = '__ERROR__Aucun modèle vision disponible sur OpenRouter. Réessayez.';
+        } catch(e) { reply = '__ERROR__' + e.message; }
+
     } else if (scanProvider === 'gemini' && _scanImageBase64) {
         // Gemini vision — appel direct (format non-standard)
         try {
@@ -30136,15 +30631,19 @@ function saveScanMeal() {
 // 3. PODOMÈTRE & MARCHE IA — Compteur temps réel
 // ════════════════════════════════════════════════════════════════
 
-let _walkActive    = false;
-let _walkSteps     = 0;
-let _walkStartTime = null;
-let _walkTimer     = null;
-let _walkGoalSteps = 8000;
-let _walkGoalKcal  = 320;
-let _walkLastAccel = null;
-let _walkAccelBuf  = [];
-const _WALK_STEP_THRESHOLD = 1.2;  // m/s² delta pour détecter un pas
+let _walkActive      = false;
+let _walkSteps       = 0;
+let _walkStartTime   = null;   // timestamp du démarrage
+let _walkPauseOffset = 0;      // ms cumulés en pause (pour le temps total correct)
+let _walkPausedAt    = null;   // timestamp de la dernière mise en pause
+let _walkTimer       = null;
+let _walkGoalSteps   = 8000;
+let _walkGoalKcal    = 320;
+let _walkLastAccel   = null;
+let _walkAccelBuf    = [];
+let _walkWakeLock    = null;   // WakeLock API pour empêcher la veille
+let _walkVisHideTime = null;   // heure où l'écran s'est éteint
+const _WALK_STEP_THRESHOLD = 1.2;
 
 function initWalkModal() {
     const goalEl = document.getElementById('walk-goal-advice');
@@ -30154,6 +30653,8 @@ function initWalkModal() {
 
 function closeWalkModal() {
     if (_walkActive) stopWalk();
+    document.removeEventListener('visibilitychange', _walkVisibilityChange);
+    _releaseWakeLock();
     hideModal('ai-walk-modal');
 }
 
@@ -30211,26 +30712,45 @@ function toggleWalk() {
 }
 
 function startWalk() {
-    _walkActive    = true;
-    _walkStartTime = _walkStartTime || Date.now() - (_walkSteps > 0 ? (_walkSteps / 1.4 * 1000) : 0);
+    _walkActive = true;
+
+    // Démarrer ou reprendre le chrono
+    if (!_walkStartTime) {
+        _walkStartTime = Date.now();
+        _walkPauseOffset = 0;
+    } else if (_walkPausedAt) {
+        // Reprendre : ajouter le temps passé en pause à l'offset
+        _walkPauseOffset += Date.now() - _walkPausedAt;
+        _walkPausedAt = null;
+    }
+
     const btn = document.getElementById('walk-start-btn');
     if (btn) btn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+
     _walkTimer = setInterval(_walkTick, 1000);
     _startPedometer();
+    _acquireWakeLock();
+    _attachVisibilityHandler();
 }
 
 function stopWalk() {
     _walkActive = false;
+    _walkPausedAt = Date.now(); // mémoriser le moment de la pause
+
     const btn = document.getElementById('walk-start-btn');
     if (btn) btn.innerHTML = '<i class="fas fa-play"></i> Reprendre';
+
     if (_walkTimer) { clearInterval(_walkTimer); _walkTimer = null; }
     _stopPedometer();
+    _releaseWakeLock();
 }
 
 function resetWalk() {
     stopWalk();
-    _walkSteps     = 0;
-    _walkStartTime = null;
+    _walkSteps       = 0;
+    _walkStartTime   = null;
+    _walkPauseOffset = 0;
+    _walkPausedAt    = null;
     _updateWalkDisplay();
     const btn = document.getElementById('walk-start-btn');
     if (btn) btn.innerHTML = '<i class="fas fa-play"></i> Démarrer';
@@ -30239,6 +30759,78 @@ function resetWalk() {
 function _walkTick() {
     if (!_walkActive) return;
     _updateWalkDisplay();
+}
+
+// ── WakeLock API — empêche la mise en veille ──────────────
+async function _acquireWakeLock() {
+    if ('wakeLock' in navigator) {
+        try {
+            _walkWakeLock = await navigator.wakeLock.request('screen');
+            _walkWakeLock.addEventListener('release', () => {
+                // Re-acquire if walk still active (veille forcée par système)
+                if (_walkActive) setTimeout(_acquireWakeLock, 500);
+            });
+            const statusEl = document.getElementById('walk-sensor-status');
+            if (statusEl) statusEl.textContent = '🔒 Écran maintenu actif · Capteur en écoute';
+        } catch(e) {
+            // WakeLock refusé (batterie faible, etc.) — on continue sans
+            console.warn('[Walk] WakeLock indisponible:', e.message);
+        }
+    }
+}
+
+function _releaseWakeLock() {
+    if (_walkWakeLock) { _walkWakeLock.release().catch(() => {}); _walkWakeLock = null; }
+}
+
+// ── Gestion de la visibilité — veille téléphone ───────────
+function _attachVisibilityHandler() {
+    // Supprimer l'ancien handler s'il existe
+    document.removeEventListener('visibilitychange', _walkVisibilityChange);
+    document.addEventListener('visibilitychange', _walkVisibilityChange);
+}
+
+function _walkVisibilityChange() {
+    if (document.hidden) {
+        // Écran éteint : noter l'heure + sauvegarder le step count
+        _walkVisHideTime = Date.now();
+        localStorage.setItem('_walk_bg', JSON.stringify({
+            steps: _walkSteps,
+            startTime: _walkStartTime,
+            pauseOffset: _walkPauseOffset,
+            active: _walkActive,
+            hideTime: _walkVisHideTime
+        }));
+    } else {
+        // Écran rallumé : récupérer les données
+        if (!_walkVisHideTime) return;
+        const elapsed = Date.now() - _walkVisHideTime;
+        _walkVisHideTime = null;
+
+        // Récupérer le state sauvegardé
+        try {
+            const saved = JSON.parse(localStorage.getItem('_walk_bg') || '{}');
+            if (saved.active && saved.steps !== undefined) {
+                // Estimer les pas pendant la veille si DeviceMotion pas dispo
+                // (step rate moyen = steps / temps_actif_avant_veille)
+                const activeMs = saved.startTime
+                    ? ((_walkVisHideTime || Date.now()) - saved.startTime - (saved.pauseOffset || 0))
+                    : 0;
+                const stepRate = activeMs > 0 ? saved.steps / (activeMs / 1000) : 0; // steps/sec
+                if (stepRate > 0 && elapsed > 2000) {
+                    // Ajouter les pas estimés pendant la veille (max 2 steps/sec)
+                    const estimatedSteps = Math.round(Math.min(stepRate, 2) * (elapsed / 1000));
+                    _walkSteps = saved.steps + estimatedSteps;
+                    const statusEl = document.getElementById('walk-sensor-status');
+                    if (statusEl) statusEl.textContent = `📱 Reprise — +${estimatedSteps} pas estimés pendant la veille`;
+                }
+            }
+        } catch(e) {}
+
+        // Re-acquérir le WakeLock (libéré automatiquement en veille)
+        if (_walkActive) _acquireWakeLock();
+        _updateWalkDisplay();
+    }
 }
 
 function _updateWalkDisplay() {
@@ -30256,9 +30848,13 @@ function _updateWalkDisplay() {
     const sd = document.getElementById('walk-steps-display');
     if (sd) sd.textContent = steps.toLocaleString('fr-FR');
 
-    // Time
+    // Time — soustraire les pauses et le temps depuis la dernière pause
     let secs = 0;
-    if (_walkStartTime) secs = Math.floor((Date.now() - _walkStartTime) / 1000);
+    if (_walkStartTime) {
+        const now = Date.now();
+        const pausedMs = _walkPauseOffset + (_walkPausedAt && !_walkActive ? (now - _walkPausedAt) : 0);
+        secs = Math.max(0, Math.floor((now - _walkStartTime - pausedMs) / 1000));
+    }
     const mm = String(Math.floor(secs / 60)).padStart(2,'0');
     const ss = String(secs % 60).padStart(2,'0');
     const td = document.getElementById('walk-time-display');
@@ -30337,7 +30933,1740 @@ function _stopPedometer() {
     if (_walkSimInterval)   { clearInterval(_walkSimInterval); _walkSimInterval = null; }
 }
 
+
+// ════════════════════════════════════════════════════════
+// SWIPE ENTRE ONGLETS
+// ════════════════════════════════════════════════════════
+(function() {
+    const NAV_SCREENS = ['home-screen','workouts-screen','exercises-screen','nutrition-screen','history-screen','ai-screen'];
+    let _swX = 0, _swY = 0;
+    document.addEventListener('touchstart', e => {
+        _swX = e.touches[0].clientX;
+        _swY = e.touches[0].clientY;
+    }, {passive:true});
+    document.addEventListener('touchend', e => {
+        if (typeof activeWorkout !== 'undefined' && activeWorkout) return;
+        const t = e.changedTouches[0].target;
+        if (t.closest('.modal.active,input,textarea,select,.modal-body,.ai-chat-messages,.sets-container')) return;
+        const dx = e.changedTouches[0].clientX - _swX;
+        const dy = e.changedTouches[0].clientY - _swY;
+        if (Math.abs(dx) < 60) return;
+        if (Math.abs(dy) / Math.abs(dx) > 0.65) return;
+        const idx = NAV_SCREENS.indexOf(typeof currentScreen !== 'undefined' ? currentScreen : '');
+        if (idx === -1) return;
+        if (dx < 0 && idx < NAV_SCREENS.length - 1) showScreen(NAV_SCREENS[idx + 1]);
+        if (dx > 0 && idx > 0) showScreen(NAV_SCREENS[idx - 1]);
+    }, {passive:true});
+})();
+
+// ════════════════════════════════════════════════════════
+// PILLS FILTRE MUSCULAIRE — SÉLECTION EXERCICE EN SÉANCE
+// ════════════════════════════════════════════════════════
+function _buildMusclePills() {
+    const container = document.getElementById('muscle-pills-filter');
+    if (!container || typeof muscleGroups === 'undefined') return;
+    if (container.dataset.built) return;
+    container.dataset.built = '1';
+    // Ajouter les pills de chaque groupe musculaire (après les pills statiques)
+    muscleGroups.forEach(mg => {
+        const pill = document.createElement('div');
+        pill.className = 'filter-pill';
+        pill.style.cssText = 'white-space:nowrap;font-size:11px;padding:4px 11px;flex-shrink:0;';
+        pill.textContent = mg.name;
+        pill.setAttribute('data-muscle', mg.id);
+        pill.onclick = function() { _muscleFilterPill(mg.id, this); };
+        container.appendChild(pill);
+    });
+}
+function _muscleFilterPill(muscleId, el) {
+    document.querySelectorAll('#muscle-pills-filter .filter-pill').forEach(p => p.classList.remove('active'));
+    if (el) el.classList.add('active');
+    // Sync le select caché pour que filterExerciseSelection() lise la bonne valeur
+    const sel = document.getElementById('exercise-filter');
+    if (sel) sel.value = muscleId;
+    // Recharger la liste filtrée
+    if (typeof loadExerciseSelection === 'function') {
+        loadExerciseSelection(muscleId);
+    } else if (typeof filterExerciseSelectionByMuscle === 'function') {
+        filterExerciseSelectionByMuscle(muscleId);
+    }
+}
+// addExerciseToWorkout étendu sans récursion
+// Les extensions sont appelées par _addExerciseToWorkoutExtensions()
+function _addExerciseToWorkoutExtensions() {
+    setTimeout(() => {
+        _buildMusclePills();
+        _addVoiceBtnToWorkout();
+        // Reset la pill active sur "Tous" à chaque ouverture
+        const pills = document.querySelectorAll('#muscle-pills-filter .filter-pill');
+        pills.forEach(p => p.classList.remove('active'));
+        if (pills[0]) pills[0].classList.add('active');
+        const sel = document.getElementById('exercise-filter');
+        if (sel) sel.value = 'all';
+    }, 120);
+}
+
+// ════════════════════════════════════════════════════════
+// BANNIÈRE REPOS FLOTTANTE
+// ════════════════════════════════════════════════════════
+let _restBannerTimer = null, _restBannerSecs = 0;
+function _showRestBanner(seconds) {
+    const b = document.getElementById('rest-banner');
+    if (!b) return;
+    _restBannerSecs = seconds;
+    b.style.display = 'flex';
+    _updateRestBanner();
+    if (_restBannerTimer) clearInterval(_restBannerTimer);
+    _restBannerTimer = setInterval(() => {
+        _restBannerSecs--;
+        if (_restBannerSecs <= 0) { _closeRestBanner(); return; }
+        _updateRestBanner();
+    }, 1000);
+}
+function _updateRestBanner() {
+    const el = document.getElementById('rest-banner-time');
+    if (el) el.textContent = _restBannerSecs + 's';
+    const b = document.getElementById('rest-banner');
+    if (!b) return;
+    if (_restBannerSecs <= 5)       b.style.background = 'linear-gradient(135deg,#E03E3E,#C62828)';
+    else if (_restBannerSecs <= 15) b.style.background = 'linear-gradient(135deg,#E07B1A,#D97706)';
+    else                            b.style.background = 'linear-gradient(135deg,#4F6EF7,#7C3AED)';
+}
+function _closeRestBanner() {
+    const b = document.getElementById('rest-banner');
+    if (b) b.style.display = 'none';
+    if (_restBannerTimer) { clearInterval(_restBannerTimer); _restBannerTimer = null; }
+}
+
+// ════════════════════════════════════════════════════════
+// BADGE PR PENDANT LA SÉANCE
+// ════════════════════════════════════════════════════════
+function _checkPR(exerciseIndex) {
+    if (typeof activeWorkout === 'undefined' || !activeWorkout) return false;
+    if (typeof workoutHistory === 'undefined') return false;
+    const exercise = activeWorkout.exercises[exerciseIndex];
+    if (!exercise) return false;
+    const completedSets = exercise.sets.filter(s => s.completed);
+    if (!completedSets.length) return false;
+    const lastCompleted = completedSets[completedSets.length - 1];
+    const w = parseFloat(lastCompleted.weight) || 0;
+    const r = parseInt(lastCompleted.reps) || 0;
+    if (!w || !r) return false;
+    const currentORM = typeof calculateOneRM === 'function' ? calculateOneRM(w, r) : w * (1 + r/30);
+    let bestHistorical = 0;
+    workoutHistory.forEach(entry => {
+        (entry.exercises || []).forEach(ex => {
+            if ((ex.name||'').toLowerCase() === (exercise.name||'').toLowerCase()) {
+                (ex.sets||[]).forEach(s => {
+                    if (s.completed) {
+                        const orm = typeof calculateOneRM === 'function' ? calculateOneRM(parseFloat(s.weight)||0, parseInt(s.reps)||0) : 0;
+                        if (orm > bestHistorical) bestHistorical = orm;
+                    }
+                });
+            }
+        });
+    });
+    return bestHistorical > 0 && currentORM > bestHistorical * 1.005;
+}
+
+// ════════════════════════════════════════════════════════
+// MODAL CONFIRM GÉNÉRIQUE — remplace les confirm() natifs
+// ════════════════════════════════════════════════════════
+let _confirmCb = null;
+function _showConfirm(msg, onConfirm, label, cls) {
+    label = label || 'Confirmer'; cls = cls || 'btn-danger';
+    let modal = document.getElementById('_gcm');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = '_gcm'; modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:340px;">
+                <div class="modal-header">
+                    <h3 class="modal-title">Confirmer</h3>
+                    <button class="modal-close" onclick="hideModal('_gcm')">×</button>
+                </div>
+                <div class="modal-body">
+                    <p id="_gcm_msg" style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:18px;"></p>
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn btn-secondary" style="flex:1;" onclick="hideModal('_gcm')">Annuler</button>
+                        <button id="_gcm_ok" class="btn btn-danger" style="flex:1;"
+                            onclick="hideModal('_gcm');if(typeof _confirmCb==='function')_confirmCb();">
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
+    }
+    document.getElementById('_gcm_msg').textContent = msg;
+    const ok = document.getElementById('_gcm_ok');
+    ok.textContent = label; ok.className = 'btn ' + cls;
+    _confirmCb = onConfirm;
+    showModal('_gcm');
+}
+
+// ════════════════════════════════════════════════════════
+// RÉPÉTER HIER — Nutrition
+// ════════════════════════════════════════════════════════
+function repeatYesterdayMeals() {
+    if (typeof nutritionHistory === 'undefined' || typeof dailyNutrition === 'undefined') return;
+    const y = new Date(); y.setDate(y.getDate() - 1);
+    const yDate = y.toISOString().split('T')[0];
+    const yMeals = nutritionHistory.filter(m => new Date(m.date).toISOString().split('T')[0] === yDate);
+    if (!yMeals.length) { showNotification('Aucun repas enregistré hier', 'warning'); return; }
+    const now = new Date().toISOString();
+    yMeals.forEach(meal => {
+        const nm = { ...meal, id: 'rep_'+Date.now()+'_'+Math.random().toString(36).slice(2,5), date: now };
+        if (!dailyNutrition.meals) dailyNutrition.meals = [];
+        dailyNutrition.meals.push(nm);
+        nutritionHistory.push({...nm});
+    });
+    if (typeof calculateDailyNutritionFromMeals === 'function') calculateDailyNutritionFromMeals();
+    saveToLocalStorage();
+    if (typeof updateDailyNutritionDisplay === 'function') updateDailyNutritionDisplay();
+    if (typeof updateMealsList === 'function') updateMealsList();
+    showNotification(yMeals.length + ' repas d\'hier copiés !', 'success');
+}
+
+// ════════════════════════════════════════════════════════
+// RECONNAISSANCE VOCALE
+// ════════════════════════════════════════════════════════
+let _voiceRecog = null, _voiceActive = false;
+function initVoiceRecognition() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return null;
+    const r = new SR();
+    r.lang = 'fr-FR'; r.continuous = false; r.interimResults = false;
+    r.onresult = e => { _parseVoiceCommand(e.results[0][0].transcript.toLowerCase()); };
+    r.onerror  = e => { showNotification('Erreur vocale: '+e.error,'error'); _voiceActive=false; _updateVoiceBtn(); };
+    r.onend    = () => { _voiceActive=false; _updateVoiceBtn(); };
+    return r;
+}
+function toggleVoice() {
+    if (!_voiceRecog) _voiceRecog = initVoiceRecognition();
+    if (!_voiceRecog) { showNotification('Reconnaissance vocale non supportée','error'); return; }
+    if (_voiceActive) { _voiceRecog.stop(); return; }
+    _voiceActive = true; _updateVoiceBtn();
+    _voiceRecog.start();
+    showNotification('🎤 Parlez naturellement… Ex: "3 séries squat 80kg", "timer 90 secondes", "terminer"','info',4000);
+}
+function _updateVoiceBtn() {
+    const btn = document.getElementById('_voice_btn');
+    if (!btn) return;
+    btn.style.background = _voiceActive ? 'linear-gradient(135deg,#E03E3E,#C62828)' : 'linear-gradient(135deg,#4F6EF7,#7C3AED)';
+    btn.innerHTML = _voiceActive ? '<i class="fas fa-microphone-slash"></i>' : '<i class="fas fa-microphone"></i>';
+}
+function _parseVoiceCommand(text) {
+    // Normaliser le texte
+    let t = text.toLowerCase().trim()
+        .replace(/[éèê]/g,'e').replace(/[àâ]/g,'a').replace(/[ùû]/g,'u')
+        .replace(/[îï]/g,'i').replace(/[ôö]/g,'o').replace(/[ç]/g,'c');
+
+    // ── Commandes spéciales ──────────────────────────────────
+    if (/(terminer|finir|arreter|stop)\s*(seance|entrainement)?/.test(t)) {
+        if (typeof showSaveDataModal === 'function') showSaveDataModal();
+        showNotification('🏁 Fin de séance demandée', 'info'); return;
+    }
+    if (/(pause|pauser|reposer)/.test(t)) {
+        showNotification('⏸ Pause — reprenez quand vous êtes prêt', 'info'); return;
+    }
+    if (/(timer|chrono|repos)\s*(\d+)?/.test(t)) {
+        const secM = t.match(/(\d+)\s*(seconde|sec|s\b)/);
+        const minM = t.match(/(\d+)\s*(minute|min)/);
+        const secs = secM ? parseInt(secM[1]) : minM ? parseInt(minM[1])*60 : 90;
+        if (typeof _showRestBanner === 'function') _showRestBanner(secs);
+        showNotification(`⏱ Timer ${secs}s démarré`, 'info'); return;
+    }
+
+    // ── Extraction quantités ─────────────────────────────────
+    const setsM   = t.match(/(\d+)\s*(serie|series)/);
+    const weightM = t.match(/(\d+(?:[.,]\d+)?)\s*k(ilo|g)/);
+    const repsM   = t.match(/(\d+)\s*(rep|reps|repetition)/);
+    const sets    = setsM   ? Math.max(1, parseInt(setsM[1])) : 1;
+    const weight  = weightM ? parseFloat(weightM[1].replace(',','.')) : null;
+    const reps    = repsM   ? parseInt(repsM[1]) : null;
+
+    // ── Nettoyer le nom d'exercice ───────────────────────────
+    const stopWords = ['de','a','au','avec','faire','ajoute','ajouter','mettre','mets',
+        'serie','series','rep','reps','repetition','kilo','kg','et','une','un','des',
+        'pour','sur','exercice','seance'];
+    const exName = t
+        .replace(/(\d+(?:[.,]\d+)?)\s*k(ilo|g)/gi,'')
+        .replace(/(\d+)\s*(serie|series|rep|reps|repetition)/gi,'')
+        .split(/\s+/)
+        .filter(w => w.length > 1 && !stopWords.includes(w) && !/^\d+$/.test(w))
+        .join(' ').trim();
+
+    if (!activeWorkout) { showNotification('Démarrez une séance d\'abord','warning'); return; }
+
+    // ── Trouver l'exercice le plus proche ───────────────────
+    const normalize = s => (s||'').toLowerCase()
+        .replace(/[éèê]/g,'e').replace(/[àâ]/g,'a').replace(/[ùû]/g,'u')
+        .replace(/[îï]/g,'i').replace(/[ôö]/g,'o').replace(/[ç]/g,'c');
+
+    let bestIdx = -1, bestScore = 0;
+    const exWords = exName.split(/\s+/).filter(w => w.length > 2);
+
+    activeWorkout.exercises.forEach((ex, idx) => {
+        const exN = normalize(ex.name);
+        // Score: nombre de mots de la commande présents dans le nom
+        let score = exWords.filter(w => exN.includes(w)).length;
+        // Bonus si le premier mot correspond
+        if (exWords[0] && exN.startsWith(exWords[0])) score += 2;
+        if (score > bestScore) { bestScore = score; bestIdx = idx; }
+    });
+
+    if (bestIdx >= 0 && bestScore > 0) {
+        const ex      = activeWorkout.exercises[bestIdx];
+        const lastSet = ex.sets[ex.sets.length - 1];
+        const finalW  = weight !== null ? weight : (lastSet ? parseFloat(lastSet.weight)||0 : 0);
+        const finalR  = reps   !== null ? reps   : (lastSet ? String(lastSet.reps)||'10' : '10');
+        for (let i = 0; i < sets; i++) {
+            ex.sets.push({number: ex.sets.length+1, reps: String(finalR), weight: finalW, completed: false});
+        }
+        if (typeof updateWorkoutDisplay === 'function') updateWorkoutDisplay();
+        showNotification(
+            `✓ ${sets} série${sets>1?'s':''} → ${ex.name} · ${finalW}kg × ${finalR}`,
+            'success', 3500
+        );
+    } else if (exName.length > 1) {
+        // Afficher la liste des exercices dispo pour aider
+        const names = activeWorkout.exercises.map(e => e.name).join(', ');
+        showNotification(`"${exName}" non trouvé. Exercices : ${names}`, 'warning', 5000);
+    } else {
+        showNotification('Commande non comprise. Ex: "3 séries squat 80kg"', 'warning');
+    }
+}
+function _addVoiceBtnToWorkout() {
+    // Voice button is now inline in the HTML — just sync state
+    const btn = document.getElementById('_voice_btn');
+    if (btn) {
+        btn.style.display = _voiceGlobalEnabled ? 'flex' : 'none';
+        btn.onclick = toggleVoice;
+    }
+}
+
+// ════════════════════════════════════════════════════════
+// 1RM ESTIMÉ + COURBE PAR EXERCICE
+// ════════════════════════════════════════════════════════
+function getExerciseHistory1RM(exerciseName) {
+    if (typeof workoutHistory === 'undefined') return [];
+    const pts = [];
+    const sorted = [...workoutHistory].sort((a,b) => new Date(a.date)-new Date(b.date));
+    sorted.forEach(entry => {
+        (entry.exercises||[]).forEach(ex => {
+            if ((ex.name||'').toLowerCase() !== (exerciseName||'').toLowerCase()) return;
+            let best1RM = 0;
+            (ex.sets||[]).forEach(s => {
+                if (!s.completed) return;
+                const orm = typeof calculateOneRM === 'function'
+                    ? calculateOneRM(parseFloat(s.weight)||0, parseInt(s.reps)||0) : 0;
+                if (orm > best1RM) best1RM = orm;
+            });
+            if (best1RM > 0) pts.push({ date: entry.date, orm: best1RM });
+        });
+    });
+    return pts;
+}
+
+// ════════════════════════════════════════════════════════
+// FATIGUE MUSCULAIRE — score récupération
+// ════════════════════════════════════════════════════════
+function getMuscleRecoveryScores() {
+    if (typeof workoutHistory === 'undefined') return {};
+    const scores = {};
+    const now = Date.now();
+    workoutHistory.slice(0,20).forEach(entry => {
+        const hoursAgo = (now - new Date(entry.date).getTime()) / 3600000;
+        if (hoursAgo > 168) return; // ignore > 7 jours
+        (entry.exercises||[]).forEach(ex => {
+            const mg = ex.muscleGroup || ex.muscle || '';
+            if (!mg) return;
+            const vol = (ex.sets||[]).reduce((s, set) => {
+                return s + (set.completed ? (parseFloat(set.weight)||0) * (parseInt(set.reps)||0) : 0);
+            }, 0);
+            if (!scores[mg]) scores[mg] = { load: 0, lastHours: hoursAgo };
+            scores[mg].load += vol * Math.exp(-hoursAgo / 48); // decay exponentiel sur 48h
+            scores[mg].lastHours = Math.min(scores[mg].lastHours, hoursAgo);
+        });
+    });
+    // Normaliser en score de récupération 0-100 (100 = totalement reposé)
+    const result = {};
+    Object.entries(scores).forEach(([mg, data]) => {
+        const fatigue = Math.min(100, data.load / 500);
+        const recovery = Math.max(0, Math.min(100, 100 - fatigue * (1 - data.lastHours / 72)));
+        result[mg] = Math.round(recovery);
+    });
+    return result;
+}
+
+// ════════════════════════════════════════════════════════
+// EXPORT PDF DU RAPPORT HEBDOMADAIRE
+// ════════════════════════════════════════════════════════
+function exportReportPDF() {
+    const resp = document.getElementById('ai-report-response');
+    const stats = document.getElementById('ai-report-stats');
+    if (!resp || !resp.innerHTML) { showNotification('Générez d\'abord le rapport IA','warning'); return; }
+    const w = window.open('','_blank');
+    if (!w) { showNotification('Autorisez les popups pour l\'export PDF','error'); return; }
+    const now = new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+        <title>Rapport IronPlate — ${now}</title>
+        <style>
+            * { box-sizing:border-box; margin:0; padding:0; }
+            body { font-family: -apple-system, sans-serif; max-width:600px; margin:0 auto; padding:32px 24px; color:#111; }
+            h1  { font-size:22px; font-weight:900; color:#4F6EF7; margin-bottom:4px; }
+            .sub { font-size:13px; color:#888; margin-bottom:24px; }
+            .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:24px; }
+            .cell { background:#f8f9ff; border-radius:10px; padding:12px; border:1px solid #e8e8f0; }
+            .cell-lbl { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#888; margin-bottom:4px; }
+            .cell-val { font-size:18px; font-weight:900; color:#4F6EF7; }
+            .cell-sub { font-size:10px; color:#aaa; margin-top:3px; }
+            .report  { font-size:13px; line-height:1.7; color:#333; }
+            .report strong { font-weight:700; color:#111; }
+            .footer { margin-top:32px; font-size:11px; color:#ccc; text-align:center; border-top:1px solid #eee; padding-top:14px; }
+            @media print { body { padding:16px; } }
+        </style>
+    </head><body>
+        <h1>Rapport hebdomadaire IronPlate</h1>
+        <div class="sub">Généré le ${now}</div>
+        <div class="grid">${stats.innerHTML}</div>
+        <div class="report">${resp.innerHTML}</div>
+        <div class="footer">IronPlate — Fitness Tracker</div>
+    </body></html>`);
+    w.document.close();
+    setTimeout(() => w.print(), 500);
+}
+
+// ════════════════════════════════════════════════════════
+// NOTIFICATIONS PWA — rappel d'entraînement configurable
+// ════════════════════════════════════════════════════════
+async function requestNotificationPermission() {
+    if (!('Notification' in window)) { showNotification('Notifications non supportées','error'); return false; }
+    if (Notification.permission === 'granted') return true;
+    const perm = await Notification.requestPermission();
+    return perm === 'granted';
+}
+
+function scheduleWorkoutReminder(hour, minute, days) {
+    // days: array of 0-6 (0=dim, 1=lun...)
+    localStorage.setItem('_workout_reminder', JSON.stringify({ hour, minute, days }));
+    showNotification(`Rappel configuré à ${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')}`, 'success');
+}
+
+function _checkWorkoutReminder() {
+    const saved = localStorage.getItem('_workout_reminder');
+    if (!saved) return;
+    try {
+        const { hour, minute, days } = JSON.parse(saved);
+        const now = new Date();
+        const dayMatch = days.includes(now.getDay());
+        if (!dayMatch) return;
+        const lastShown = parseInt(localStorage.getItem('_reminder_shown') || '0');
+        const todayKey = now.toDateString();
+        if (localStorage.getItem('_reminder_shown') === todayKey) return;
+        if (now.getHours() === hour && now.getMinutes() === minute) {
+            localStorage.setItem('_reminder_shown', todayKey);
+            if (Notification.permission === 'granted') {
+                new Notification('💪 IronPlate', {
+                    body: 'C\'est l\'heure de votre séance !',
+                    icon: '/icon-192.png',
+                    badge: '/icon-192.png',
+                    vibrate: [200, 100, 200]
+                });
+            }
+        }
+    } catch(e) {}
+}
+// Vérifier toutes les minutes
+setInterval(_checkWorkoutReminder, 60000);
+
+// ════════════════════════════════════════════════════════
+// HISTORIQUE GRAPHIQUE PAR EXERCICE (sparkline dans historique)
+// ════════════════════════════════════════════════════════
+function renderExerciseSparkline(exerciseName, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const pts = getExerciseHistory1RM(exerciseName).slice(-12);
+    if (pts.length < 2) { container.innerHTML = '<span style="color:var(--text-tertiary);font-size:11px;">Pas assez de données</span>'; return; }
+    const vals = pts.map(p => p.orm);
+    const minV = Math.min(...vals) - 1, maxV = Math.max(...vals) + 1, range = maxV - minV || 1;
+    const W = 200, H = 50, pad = 4;
+    const toX = i => pad + i/(pts.length-1)*(W-pad*2);
+    const toY = v => H-pad - (v-minV)/range*(H-pad*2);
+    let path = `M ${toX(0).toFixed(1)} ${toY(vals[0]).toFixed(1)}`;
+    for (let i = 1; i < pts.length; i++) {
+        const cx = ((toX(i-1)+toX(i))/2).toFixed(1);
+        path += ` C ${cx} ${toY(vals[i-1]).toFixed(1)} ${cx} ${toY(vals[i]).toFixed(1)} ${toX(i).toFixed(1)} ${toY(vals[i]).toFixed(1)}`;
+    }
+    const last = pts[pts.length-1];
+    container.innerHTML = `
+        <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="overflow:visible;">
+            <path d="${path}" fill="none" stroke="#4F6EF7" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="${toX(pts.length-1).toFixed(1)}" cy="${toY(vals[vals.length-1]).toFixed(1)}" r="3.5"
+                fill="#4F6EF7" stroke="var(--card-bg)" stroke-width="2"/>
+        </svg>
+        <div style="font-size:10px;font-weight:700;color:#4F6EF7;margin-top:3px;">
+            1RM max estimé : ${last.orm}kg
+        </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// HOOK: afficher bannière repos + PR après completeSet
+// ════════════════════════════════════════════════════════
+// Hook completeSet via patch direct (évite la récursion infinie)
+// Les extensions (PR, bannière repos) sont appelées depuis _completeSetExtensions()
+function _completeSetExtensions(exerciseIndex) {
+    // Mettre à jour le badge 0/x exercices immédiatement
+    if (typeof updateWorkoutProgressBar === 'function') updateWorkoutProgressBar();
+
+    // PR check
+    setTimeout(() => {
+        if (typeof _checkPR === 'function' && _checkPR(exerciseIndex)) {
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+            showNotification('🏆 Nouveau record personnel !', 'success', 4000);
+        }
+    }, 200);
+    // Bannière repos flottante si autoTimer actif
+    if (typeof settings !== 'undefined' && settings.autoTimer) {
+        const exercise = typeof activeWorkout !== 'undefined' && activeWorkout
+            ? activeWorkout.exercises[exerciseIndex] : null;
+        const rest = exercise
+            ? (exercise.customRest || (typeof userProfile !== 'undefined' ? userProfile.defaultRest : 60))
+            : 60;
+        setTimeout(() => { if (typeof _showRestBanner === 'function') _showRestBanner(rest); }, 300);
+    }
+}
+
+
+
+// ════════════════════════════════════════════════════════
+// ONBOARDING PREMIER LANCEMENT
+// ════════════════════════════════════════════════════════
+function _checkOnboarding() {
+    if (localStorage.getItem('_iplat_onboarded')) return;
+    // First launch — show onboarding after a short delay
+    setTimeout(() => showModal('onboarding-modal'), 800);
+}
+
+function selectObGoal(el) {
+    document.querySelectorAll('.ob-goal-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+}
+function selectObLevel(el) {
+    document.querySelectorAll('.ob-level-card').forEach(c => {
+        c.style.borderColor = 'var(--border)';
+        c.style.background  = '';
+        c.style.color       = '';
+    });
+    el.style.borderColor = 'var(--primary)';
+    el.style.background  = 'var(--primary-glow)';
+    el.style.color       = 'var(--primary)';
+}
+
+function finishOnboarding() {
+    const name   = document.getElementById('ob-name')?.value?.trim();
+    const weight = parseFloat(document.getElementById('ob-weight')?.value) || 0;
+    const height = parseFloat(document.getElementById('ob-height')?.value) || 0;
+    const age    = parseInt(document.getElementById('ob-age')?.value) || 0;
+    const goal   = document.querySelector('.ob-goal-card.active')?.dataset?.val || 'Maintien';
+    const level  = document.querySelector('.ob-level-card[style*="var(--primary)"]')?.dataset?.val || 'Débutant';
+
+    if (typeof userProfile !== 'undefined') {
+        if (name)   { userProfile.firstName = name; const parts = name.split(' '); userProfile.lastName = parts.length>1 ? parts[1] : ''; }
+        if (weight) userProfile.weight = weight;
+        if (height) userProfile.height = height;
+        if (age)    userProfile.age    = age;
+        userProfile.trainingType = goal;
+        userProfile.level        = level;
+        if (typeof calculateNutritionNeeds === 'function') calculateNutritionNeeds();
+        if (typeof saveToLocalStorage      === 'function') saveToLocalStorage();
+        if (typeof updateHomeScreenDisplay === 'function') updateHomeScreenDisplay();
+        if (typeof updateAvatarInitials    === 'function') updateAvatarInitials();
+    }
+    localStorage.setItem('_iplat_onboarded', '1');
+    hideModal('onboarding-modal');
+    showNotification('Bienvenue ' + (name||'') + ' ! Votre profil est configuré 🎉', 'success', 4000);
+}
+
+// ════════════════════════════════════════════════════════
+// RAPPEL D'ENTRAÎNEMENT — Setup UI
+// ════════════════════════════════════════════════════════
+function _setupReminder() {
+    requestNotificationPermission().then(granted => {
+        if (!granted) { showNotification('Autorisez les notifications dans votre navigateur','warning'); return; }
+        const saved = JSON.parse(localStorage.getItem('_workout_reminder') || 'null');
+        const h = saved?.hour ?? 18, m = saved?.minute ?? 0;
+        let modal = document.getElementById('_reminder_modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = '_reminder_modal'; modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width:340px;">
+                    <div class="modal-header">
+                        <h3 class="modal-title"><i class="fas fa-bell" style="color:var(--warning);margin-right:6px;"></i> Rappel d'entraînement</h3>
+                        <button class="modal-close" onclick="hideModal('_reminder_modal')">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-label" style="margin-bottom:6px;">Heure du rappel</div>
+                        <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;">
+                            <input type="number" id="_rem_h" min="0" max="23" value="${h}" inputmode="decimal" class="number-input" style="flex:1;text-align:center;">
+                            <span style="font-size:18px;font-weight:700;">:</span>
+                            <input type="number" id="_rem_m" min="0" max="59" value="${String(m).padStart(2,'0')}" inputmode="decimal" class="number-input" style="flex:1;text-align:center;">
+                        </div>
+                        <div class="input-label" style="margin-bottom:8px;">Jours</div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;" id="_rem_days">
+                            ${['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'].map((d,i)=>`
+                                <div class="filter-pill ${saved?.days?.includes(i)?'active':''}" data-day="${i}" onclick="this.classList.toggle('active')"
+                                    style="padding:6px 10px;font-size:11px;">${d}</div>`).join('')}
+                        </div>
+                        <div style="display:flex;gap:8px;">
+                            <button class="btn btn-secondary" style="flex:1;" onclick="_clearReminder()">
+                                <i class="fas fa-times"></i> Désactiver
+                            </button>
+                            <button class="ai-cta-btn" style="flex:1;" onclick="_saveReminder()">
+                                <i class="fas fa-bell"></i> Activer
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+            document.body.appendChild(modal);
+        }
+        showModal('_reminder_modal');
+    });
+}
+
+function _saveReminder() {
+    const h    = parseInt(document.getElementById('_rem_h')?.value) || 18;
+    const m    = parseInt(document.getElementById('_rem_m')?.value) || 0;
+    const days = [...document.querySelectorAll('#_rem_days .filter-pill.active')].map(el => parseInt(el.dataset.day));
+    if (!days.length) { showNotification('Sélectionnez au moins un jour','warning'); return; }
+    scheduleWorkoutReminder(h, m, days);
+    const dayNames = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+    const dLabel = document.getElementById('reminder-status');
+    if (dLabel) dLabel.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')} · ${days.map(d=>dayNames[d]).join(', ')}`;
+    hideModal('_reminder_modal');
+}
+function _clearReminder() {
+    localStorage.removeItem('_workout_reminder');
+    localStorage.removeItem('_reminder_shown');
+    const dLabel = document.getElementById('reminder-status');
+    if (dLabel) dLabel.textContent = 'Configurer un rappel quotidien';
+    hideModal('_reminder_modal');
+    showNotification('Rappel désactivé');
+}
+
+// ════════════════════════════════════════════════════════
+// REMPLACER CONFIRM() CRITIQUES PAR MODALS PROPRES
+// ════════════════════════════════════════════════════════
+// On surcharge removeSet et removeExerciseFromWorkout qui sont les plus fréquents
+// removeSet et removeExerciseFromWorkout : les originaux gèrent déjà les confirmations
+// Les confirm() natifs restent pour ces fonctions moins critiques
+
+
+
+// ════════════════════════════════════════════════════════
+// VOICE GLOBAL TOGGLE
+// ════════════════════════════════════════════════════════
+let _voiceGlobalEnabled = true;
+function toggleGlobalVoice(enabled) {
+    _voiceGlobalEnabled = enabled;
+    localStorage.setItem('_voice_enabled', enabled ? '1' : '0');
+    if (!enabled && _voiceActive) {
+        if (_voiceRecog) _voiceRecog.stop();
+        _voiceActive = false;
+    }
+    // Show/hide voice button in workout
+    const btn = document.getElementById('_voice_btn');
+    if (btn) btn.style.display = enabled ? 'flex' : 'none';
+    // Update description
+    const desc = document.getElementById('voice-toggle-desc');
+    if (desc) desc.textContent = enabled ? 'Actif — micro visible pendant la séance' : 'Désactivé — micro masqué pendant la séance';
+}
+
+
+// ════════════════════════════════════════════════════════
+// CHRONO COLLAPSIBLE
+// ════════════════════════════════════════════════════════
+let _chronoCollapsed = false;
+function _toggleChronoCollapse() {
+    _chronoCollapsed = !_chronoCollapsed;
+    const wrap    = document.getElementById('workout-chrono-wrap');
+    const chevron = document.getElementById('chrono-chevron');
+    const timer   = document.getElementById('workout-timer');
+    if (!wrap) return;
+    // Use stable .chrono-stat class (not fragile style selector)
+    const stats = wrap.querySelectorAll('.chrono-stat');
+    if (_chronoCollapsed) {
+        stats.forEach(s => s.style.display = 'none');
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
+        if (timer)   timer.style.fontSize = '16px';
+    } else {
+        stats.forEach(s => s.style.display = 'flex');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+        if (timer)   timer.style.fontSize = '22px';
+    }
+}
+
+
+// ════════════════════════════════════════════════════════
+// NAVIGATION AGENTIQUE — Assistant IA vocal permanent
+// Architecture : SpeechRecognition continue → LLM → action
+// Micro reste actif jusqu'à désactivation manuelle
+// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
+// ASSISTANT IA VOCAL — Architecture correcte
+//
+// RÈGLE CLÉ : créer l'objet SpeechRecognition UNE SEULE FOIS
+// et le réutiliser. Ne jamais recréer → évite les demandes
+// de permission répétées sur mobile.
+//
+// Sur mobile (iOS/Android) : continuous:true + interimResults:false
+// Sur desktop Chrome : continuous:true fonctionne parfaitement
+// ════════════════════════════════════════════════════════════════
+
+let _agenticRecog    = null;   // instance unique, créée une seule fois
+let _agenticActive   = false;  // vrai si l'écoute est demandée par l'user
+let _agenticPending  = false;  // vrai si un traitement LLM est en cours
+
+function _sendAgenticText() {
+    const inp = document.getElementById('agentic-text-input');
+    const cmd = inp?.value?.trim();
+    if (!cmd) return;
+    const tr = document.getElementById('agentic-transcript');
+    if (tr) tr.textContent = '📝 ' + cmd;
+    if (inp) inp.value = '';
+    _processAgenticCommand(cmd);
+}
+
+function _setAgenticBtnState(active) {
+    const btn   = document.getElementById('agentic-mic-btn');
+    const label = document.getElementById('agentic-mic-label');
+    const fab   = document.getElementById('agentic-fab');
+    if (!btn) return;
+    if (active) {
+        btn.style.background = 'linear-gradient(135deg,#0FA86A,#059669)';
+        btn.style.boxShadow  = '0 4px 14px rgba(15,168,106,.4)';
+        if (label) label.textContent = '🟢 Écoute active — tap pour arrêter';
+        if (fab)   { fab.style.background = 'linear-gradient(135deg,#0FA86A,#059669)'; fab.innerHTML = '<i class="fas fa-microphone"></i>'; }
+    } else {
+        btn.style.background = 'linear-gradient(135deg,#4F6EF7,#7C3AED)';
+        btn.style.boxShadow  = '0 4px 14px rgba(79,110,247,.35)';
+        if (label) label.textContent = "Activer l'écoute";
+        if (fab)   { fab.style.background = 'linear-gradient(135deg,#4F6EF7,#7C3AED)'; fab.innerHTML = '<i class="fas fa-robot"></i>'; }
+    }
+}
+
+// Initialise l'objet SR une seule fois (appelé au premier toggle)
+function _initAgenticRecog() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return false;
+    if (_agenticRecog) return true; // déjà initialisé
+
+    _agenticRecog = new SR();
+    _agenticRecog.lang            = 'fr-FR';
+    _agenticRecog.continuous      = true;   // écoute continue
+    _agenticRecog.interimResults  = false;  // résultats finaux uniquement
+    _agenticRecog.maxAlternatives = 1;
+
+    const tr = () => document.getElementById('agentic-transcript');
+
+    _agenticRecog.onstart = () => {
+        _setAgenticBtnState(true);
+        const t = tr();
+        if (t) { t.style.color = 'var(--text-primary)'; t.style.fontStyle = 'normal'; t.textContent = '🎤 Je vous écoute…'; }
+    };
+
+    _agenticRecog.onresult = e => {
+        // Avec continuous:true, les résultats s'accumulent dans e.results
+        // On traite uniquement les nouveaux résultats finaux
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+            if (e.results[i].isFinal) {
+                const text = e.results[i][0].transcript.trim();
+                if (!text || text.length < 2) continue;
+                const t = tr();
+                if (t) t.textContent = '💬 ' + text;
+                // Traiter la commande (fire & forget — on reste en écoute)
+                _processAgenticCommand(text);
+            }
+        }
+    };
+
+    _agenticRecog.onend = () => {
+        // onend peut se déclencher si le navigateur coupe la connexion
+        // (timeout réseau, perte de focus, etc.)
+        // Si l'utilisateur veut encore écouter → relancer
+        if (_agenticActive) {
+            const t = tr();
+            if (t) t.textContent = '🔄 Reconnexion…';
+            setTimeout(() => {
+                if (_agenticActive) {
+                    try { _agenticRecog.start(); }
+                    catch(e) {
+                        // Si start échoue (déjà démarré), ignorer
+                        if (e.name !== 'InvalidStateError') {
+                            _agenticActive = false;
+                            _setAgenticBtnState(false);
+                        }
+                    }
+                }
+            }, 500);
+        } else {
+            _setAgenticBtnState(false);
+        }
+    };
+
+    _agenticRecog.onerror = e => {
+        const t = tr();
+        if (e.error === 'not-allowed') {
+            _agenticActive = false;
+            _agenticRecog  = null; // reset pour permettre une nouvelle tentative
+            _setAgenticBtnState(false);
+            if (t) t.textContent = '⚠ Permission micro refusée.\nDans Chrome : barre d\'adresse → 🔒 → Microphone → Autoriser';
+            return;
+        }
+        if (e.error === 'no-speech' || e.error === 'audio-capture') {
+            // Silences normaux → ignorer, onend va redémarrer
+            return;
+        }
+        if (e.error === 'network' || e.error === 'aborted') {
+            // Erreur récupérable → onend va relancer
+            return;
+        }
+        // Erreur inconnue → log mais rester actif
+        console.warn('[Agentic] Speech error:', e.error);
+    };
+
+    return true;
+}
+
+function toggleAgenticVoice() {
+    if (_agenticActive) {
+        // Désactiver
+        _agenticActive = false;
+        if (_agenticRecog) { try { _agenticRecog.stop(); } catch(e) {} }
+        _setAgenticBtnState(false);
+        const tr = document.getElementById('agentic-transcript');
+        if (tr) tr.textContent = 'Assistant arrêté. Tap pour réactiver.';
+        return;
+    }
+
+    // Initialiser si besoin
+    if (!_initAgenticRecog()) {
+        showNotification('Reconnaissance vocale non supportée. Utilisez Chrome ou Edge.', 'error');
+        return;
+    }
+
+    _agenticActive = true;
+    try {
+        _agenticRecog.start();
+    } catch(e) {
+        if (e.name === 'InvalidStateError') {
+            // Déjà démarré → OK, ignorer
+            _setAgenticBtnState(true);
+        } else {
+            _agenticActive = false;
+            _agenticRecog  = null; // reset complet
+            showNotification('Erreur micro: ' + e.message + '. Réessayez.', 'error');
+        }
+    }
+}
+function _agenticExampleTap(el) {
+    const txt = el.textContent.replace(/^"|"$/g, '');
+    const transcript = document.getElementById('agentic-transcript');
+    if (transcript) transcript.textContent = txt;
+    _processAgenticCommand(txt);
+}
+
+async function _processAgenticCommand(command) {
+    const respEl = document.getElementById('agentic-response');
+    if (respEl) { respEl.style.display = 'block'; respEl.textContent = '⏳ …'; }
+
+    if (!window._agenticHistory) window._agenticHistory = [];
+
+    // ── Contexte app complet ──────────────────────────────────────
+    const up    = typeof userProfile    !== 'undefined' ? userProfile    : {};
+    const wh    = typeof workoutHistory !== 'undefined' ? workoutHistory : [];
+    const dn    = typeof dailyNutrition !== 'undefined' ? dailyNutrition : {};
+    const cEx   = typeof customWorkouts !== 'undefined' ? customWorkouts : [];
+    const score = typeof _calcFitnessScore === 'function' ? _calcFitnessScore() : '?';
+    const inWk  = typeof activeWorkout !== 'undefined' && activeWorkout;
+
+    const recentWk = wh.slice(0,5).map(w => w.name).join(', ') || 'aucune';
+    const myWorkouts = cEx.slice(0,8).map(w => w.name).join(', ') || 'aucune';
+    const workoutCtx = inWk
+        ? 'SÉANCE ACTIVE: ' + activeWorkout.name + ' | Exercices: ' + (activeWorkout.exercises||[]).map((e,i)=>i+':'+e.name).join(', ')
+        : '';
+
+    // ── Catalogue des ACTIONS disponibles (function calling) ─────
+    // L'IA répond UNIQUEMENT avec du JSON {"action":"...","params":{...},"message":"..."}
+    const actions = `
+ACTION DISPONIBLES (réponds TOUJOURS avec JSON):
+{"action":"navigate","params":{"screen":"workouts-screen|nutrition-screen|home-screen|exercises-screen|history-screen|ai-screen"},"message":"texte affiché à l'user"}
+{"action":"start_workout","params":{"name":"nom séance"},"message":"..."}   ← démarre la 1ère séance dont le nom contient 'name'
+{"action":"open_add_meal","params":{},"message":"..."}                        ← ouvre le formulaire ajout repas
+{"action":"open_scan","params":{},"message":"..."}                            ← ouvre le scanner d'assiette
+{"action":"open_walk","params":{},"message":"..."}                            ← ouvre le podomètre
+{"action":"generate_plan","params":{},"message":"..."}                        ← génère le plan semaine IA
+{"action":"generate_report","params":{},"message":"..."}                      ← génère le rapport hebdo
+{"action":"repeat_yesterday","params":{},"message":"..."}                     ← répète les repas d'hier
+{"action":"open_ai_chat","params":{},"message":"..."}                         ← ouvre le chat IA
+{"action":"open_settings","params":{},"message":"..."}                        ← ouvre les paramètres
+{"action":"open_new_workout","params":{},"message":"..."}                     ← ouvre la création séance
+{"action":"add_set","params":{"exercise_index":0},"message":"..."}            ← ajoute une série (séance active)
+{"action":"answer","params":{},"message":"réponse textuelle à la question"}  ← pour les questions/conseils
+`;
+
+    const systemPrompt = `Tu es l'assistant IA vocal de l'app fitness IronPlate.
+Tu contrôles TOUTE l'app par la voix — navigation, lancement de séances, ajout de repas, génération de plans, conseils.
+
+DONNÉES UTILISATEUR:
+- ${up.firstName||'Utilisateur'}, ${up.weight||'?'}kg/${up.height||'?'}cm/${up.age||'?'}ans, ${up.gender==='female'?'femme':'homme'}
+- Objectif: ${up.trainingType||'Maintien'}, Niveau: ${up.level||'Intermédiaire'}
+- Calories: ${dn.calories||0}/${up.calorieNeeds||2500}kcal, Protéines: ${dn.protein||0}/${up.proteinNeeds||150}g
+- Score de forme: ${score}/100
+- Séances récentes: ${recentWk}
+- Mes séances: ${myWorkouts}
+${workoutCtx}
+
+${actions}
+
+RÈGLES ABSOLUES:
+1. Réponds TOUJOURS avec du JSON valide, rien d'autre
+2. Si l'utilisateur veut FAIRE quelque chose → utilise l'action correspondante
+3. Si l'utilisateur pose une question → action "answer" avec la réponse dans "message"
+4. Le "message" est ce qui sera lu/affiché à l'utilisateur (2 phrases max, en français)
+5. Pour start_workout, cherche dans "Mes séances": ${myWorkouts}
+6. Exemple: "démarre ma séance push" → {"action":"start_workout","params":{"name":"push"},"message":"Je démarre ta séance Push Day !"}`;
+
+    const messages = [
+        ...window._agenticHistory.slice(-4),
+        { role: 'user', content: command }
+    ];
+
+    if (!_hasAnyKey()) {
+        _agenticRespond('⚠ Configurez une clé IA dans Paramètres → IA.');
+        return;
+    }
+
+    const cfg = _selectProvider('fast');
+    const raw = await _callAI(messages, cfg, systemPrompt);
+
+    if (!raw || raw.startsWith('__ERROR__')) {
+        _agenticRespond('Erreur IA. Vérifiez votre clé dans Paramètres.');
+        return;
+    }
+
+    // Parser la réponse JSON
+    let parsed = null;
+    try {
+        const clean = raw.replace(/```json|```/g,'').trim();
+        parsed = JSON.parse(clean);
+    } catch(e) {
+        // L'IA n'a pas respecté le format JSON → afficher tel quel
+        _agenticRespond(raw.replace(/^[{"].*$/, '').trim() || raw.slice(0,200));
+        return;
+    }
+
+    const action  = parsed.action  || 'answer';
+    const params  = parsed.params  || {};
+    const message = parsed.message || '';
+
+    // Afficher le message
+    _agenticRespond(message);
+
+    // Sauvegarder l'historique
+    window._agenticHistory.push({ role:'user', content: command });
+    window._agenticHistory.push({ role:'assistant', content: message });
+    if (window._agenticHistory.length > 8) window._agenticHistory = window._agenticHistory.slice(-8);
+
+    // ── EXÉCUTER L'ACTION ──────────────────────────────────────────
+    const SCREEN_MAP = {
+        'workouts-screen':'workouts-screen','workout':'workouts-screen','seance':'workouts-screen',
+        'nutrition-screen':'nutrition-screen','nutrition':'nutrition-screen',
+        'home-screen':'home-screen','accueil':'home-screen',
+        'exercises-screen':'exercises-screen','exercices':'exercises-screen',
+        'history-screen':'history-screen','historique':'history-screen',
+        'ai-screen':'ai-screen','coach':'ai-screen'
+    };
+
+    switch(action) {
+
+        case 'navigate': {
+            const target = SCREEN_MAP[params.screen] || params.screen;
+            if (target) setTimeout(() => showScreen(target), 400);
+            break;
+        }
+
+        case 'start_workout': {
+            const nameQuery = (params.name||'').toLowerCase();
+            const all = typeof customWorkouts !== 'undefined' ? customWorkouts : [];
+            // Chercher la séance par nom
+            let found = all.find(w => w.name.toLowerCase().includes(nameQuery));
+            if (!found && nameQuery) found = all.find(w =>
+                nameQuery.split(' ').some(word => word.length > 2 && w.name.toLowerCase().includes(word))
+            );
+            if (found) {
+                setTimeout(() => {
+                    showScreen('workouts-screen');
+                    setTimeout(() => startCustomWorkout(found), 300);
+                }, 400);
+            } else {
+                showScreen('workouts-screen');
+                _agenticRespond('Je n\'ai pas trouvé "' + nameQuery + '". Voici tes séances disponibles : ' + myWorkouts);
+            }
+            break;
+        }
+
+        case 'open_add_meal': {
+            showScreen('nutrition-screen');
+            setTimeout(() => showAddMealModal(false), 400);
+            break;
+        }
+
+        case 'open_scan': {
+            showScreen('nutrition-screen');
+            setTimeout(() => { showModal('ai-scan-modal'); if(typeof initScanModal==='function')initScanModal(); }, 400);
+            break;
+        }
+
+        case 'open_walk': {
+            showScreen('nutrition-screen');
+            setTimeout(() => { showModal('ai-walk-modal'); if(typeof initWalkModal==='function')initWalkModal(); }, 400);
+            break;
+        }
+
+        case 'generate_plan': {
+            showScreen('ai-screen');
+            setTimeout(() => {
+                const tab = document.querySelector('[onclick*="switchAITab"][onclick*="plan"]') ||
+                            document.querySelector('[data-ai-tab="plan"]');
+                if (tab) tab.click();
+                setTimeout(() => { if(typeof generateWeekPlan==='function') generateWeekPlan(); }, 500);
+            }, 500);
+            break;
+        }
+
+        case 'generate_report': {
+            showScreen('ai-screen');
+            setTimeout(() => {
+                const tab = document.querySelector('[onclick*="switchAITab"][onclick*="report"]') ||
+                            document.querySelector('[data-ai-tab="report"]');
+                if (tab) tab.click();
+                setTimeout(() => { if(typeof generateWeeklyReport==='function') generateWeeklyReport(); }, 500);
+            }, 500);
+            break;
+        }
+
+        case 'repeat_yesterday': {
+            if (typeof repeatYesterdayMeals === 'function') repeatYesterdayMeals();
+            break;
+        }
+
+        case 'open_ai_chat': {
+            showScreen('ai-screen');
+            setTimeout(() => {
+                const tab = document.querySelector('[onclick*="switchAITab"][onclick*="chat"]') ||
+                            document.querySelector('[data-ai-tab="chat"]');
+                if (tab) tab.click();
+            }, 400);
+            break;
+        }
+
+        case 'open_settings': {
+            setTimeout(() => showSettingsModal(), 300);
+            break;
+        }
+
+        case 'open_new_workout': {
+            setTimeout(() => showCreateWorkoutModal(true), 300);
+            break;
+        }
+
+        case 'add_set': {
+            if (inWk && typeof addSet === 'function') {
+                const idx = parseInt(params.exercise_index) || 0;
+                addSet(idx);
+            }
+            break;
+        }
+
+        case 'answer':
+        default:
+            // Message déjà affiché, rien à faire
+            break;
+    }
+}
+
+function _agenticRespond(msg) {
+    const el = document.getElementById('agentic-response');
+    if (el) { el.style.display = 'block'; el.textContent = msg; }
+}
+
+
+
+// ════════════════════════════════════════════════════════
+// DRAG & DROP MOBILE — touch fallback pour liste priorité IA
+// ════════════════════════════════════════════════════════
+function _initTouchDrag(list) {
+    if (!list) return;
+    let touchDragItem = null, touchClone = null, touchStartY = 0;
+
+    list.querySelectorAll('[draggable]').forEach(item => {
+        item.addEventListener('touchstart', e => {
+            touchDragItem = item;
+            touchStartY = e.touches[0].clientY;
+            item.style.opacity = '0.5';
+        }, { passive: true });
+
+        item.addEventListener('touchmove', e => {
+            if (!touchDragItem) return;
+            e.preventDefault();
+            const y = e.touches[0].clientY;
+            const items = [...list.querySelectorAll('[draggable]')];
+            const target = items.find(el => {
+                const r = el.getBoundingClientRect();
+                return y > r.top && y < r.bottom && el !== touchDragItem;
+            });
+            if (target) {
+                const r = target.getBoundingClientRect();
+                if (y < r.top + r.height / 2) list.insertBefore(touchDragItem, target);
+                else list.insertBefore(touchDragItem, target.nextSibling);
+            }
+        }, { passive: false });
+
+        item.addEventListener('touchend', () => {
+            if (!touchDragItem) return;
+            touchDragItem.style.opacity = '1';
+            // Rebuild priority from DOM order
+            const newOrder = [...list.querySelectorAll('[draggable][data-provider]')]
+                .map(el => el.dataset.provider);
+            _aiPriorityOrder = newOrder;
+            localStorage.setItem('_ai_priority', JSON.stringify(_aiPriorityOrder));
+            touchDragItem = null;
+            _refreshConfiguredKeysList();
+        });
+    });
+}
+
+
+// ════════════════════════════════════════════════════════
+// PILLS DRAG SCROLL (Desktop mouse drag)
+// ════════════════════════════════════════════════════════
+let _pillsDragging = false, _pillsStartX = 0, _pillsScrollLeft = 0;
+function _pillsDragStart(e, el) {
+    if (e.target.classList.contains('filter-pill')) return; // let click through
+    _pillsDragging = true;
+    _pillsStartX = e.pageX - el.offsetLeft;
+    _pillsScrollLeft = el.scrollLeft;
+    el.style.cursor = 'grabbing';
+}
+function _pillsDragMove(e, el) {
+    if (!_pillsDragging) return;
+    e.preventDefault();
+    const x = e.pageX - el.offsetLeft;
+    el.scrollLeft = _pillsScrollLeft - (x - _pillsStartX);
+}
+function _pillsDragEnd(e, el) {
+    _pillsDragging = false;
+    el.style.cursor = 'grab';
+}
+
+
+// ════════════════════════════════════════════════════════════════════
+// MODULE AUTOGYM — Détection automatique d'exercices par accéléromètre
+//
+// Architecture :
+//  1. Collecte signal accéléromètre à 60Hz
+//  2. Analyse FFT légère pour détecter fréquence dominante
+//  3. Classification de l'exercice selon signature du mouvement
+//  4. Comptage des répétitions par détection de pics
+//  5. IA recommande poids + séries basé sur historique
+//  6. Synthèse vocale pour coaching en direct
+// ════════════════════════════════════════════════════════════════════
+
+// ── État ────────────────────────────────────────────────────────────
+const AG = {
+    active:          false,
+    motionHandler:   null,
+    signalBuf:       [],      // buffer circulaire 256 échantillons
+    BUF_SIZE:        256,
+    repCount:        0,
+    setCount:        0,
+    totalSets:       0,
+    currentExercise: null,    // exercice détecté
+    lastRepTime:     0,
+    lastPeakVal:     0,
+    inMotion:        false,
+    restTimer:       null,
+    coachTimer:      null,
+    canvasCtx:       null,
+    simInterval:     null,
+    speechEnabled:   true,
+    targetSets:      3,       // calculé par IA
+    targetReps:      '8-12',  // calculé par IA
+    recommendedWeight: null,  // calculé par IA
+    sessionLog:      [],      // {exercise, sets, reps, weight}
+    wakeLock:        null,
+};
+
+// ── Signatures d'exercices par fréquence + amplitude ───────────────
+// Fréquence en Hz (reps/sec), amplitude relative (0-1)
+const AG_EXERCISES = [
+    { name:'Curl biceps',        icon:'💪', freq:[0.4, 0.9], amp:[0.4, 0.9], axis:'y',  muscle:'biceps'    },
+    { name:'Développé couché',   icon:'🏋️', freq:[0.3, 0.7], amp:[0.6, 1.0], axis:'z',  muscle:'pectoraux' },
+    { name:'Squat',              icon:'🦵', freq:[0.3, 0.6], amp:[0.7, 1.0], axis:'y',  muscle:'jambes'    },
+    { name:'Rowing haltère',     icon:'🚣', freq:[0.4, 0.8], amp:[0.5, 0.9], axis:'x',  muscle:'dos'       },
+    { name:'Élévation latérale', icon:'✈️', freq:[0.4, 0.8], amp:[0.3, 0.7], axis:'x',  muscle:'epaules'   },
+    { name:'Extension triceps',  icon:'💪', freq:[0.4, 0.9], amp:[0.3, 0.8], axis:'y',  muscle:'triceps'   },
+    { name:'Hip thrust',         icon:'🍑', freq:[0.3, 0.6], amp:[0.5, 0.9], axis:'y',  muscle:'fessiers'  },
+    { name:'Pompes',             icon:'🙌', freq:[0.4, 0.7], amp:[0.5, 1.0], axis:'z',  muscle:'pectoraux' },
+    { name:'Tractions',         icon:'⬆️', freq:[0.3, 0.6], amp:[0.6, 1.0], axis:'y',  muscle:'dos'       },
+    { name:'Fentes',             icon:'🦵', freq:[0.3, 0.5], amp:[0.6, 1.0], axis:'y',  muscle:'jambes'    },
+];
+
+// ── Initialisation ──────────────────────────────────────────────────
+function showAutoGym() {
+    // Afficher le FAB sur l'écran de séance
+    const fab = document.getElementById('autogym-fab');
+    if (fab) fab.style.display = 'flex';
+    showModal('autogym-modal');
+    _agInitCanvas();
+    // Si séance active, pré-charger le premier exercice
+    if (typeof activeWorkout !== 'undefined' && activeWorkout?.exercises?.length) {
+        const ex = activeWorkout.exercises[0];
+        _agSetExercise(ex.name, 0.0, true);
+    }
+}
+
+function closeAutoGym() {
+    if (AG.active) stopAutoGym();
+    hideModal('autogym-modal');
+}
+
+function _agInitCanvas() {
+    const canvas = document.getElementById('ag-signal-canvas');
+    if (!canvas) return;
+    AG.canvasCtx = canvas.getContext('2d');
+    canvas.width  = canvas.offsetWidth * devicePixelRatio || 400;
+    canvas.height = canvas.offsetHeight * devicePixelRatio || 50;
+    canvas.style.width  = '100%';
+    canvas.style.height = '50px';
+    _agDrawSignal();
+}
+
+// ── Démarrage / Arrêt ───────────────────────────────────────────────
+function toggleAutoGym() {
+    AG.active ? stopAutoGym() : startAutoGym();
+}
+
+async function startAutoGym() {
+    AG.active      = true;
+    AG.signalBuf   = [];
+    AG.repCount    = 0;
+    AG.setCount    = 1;
+    AG.inMotion    = false;
+    AG.lastRepTime = 0;
+
+    _agUpdateUI();
+    _agSpeak('AutoGym activé. Je détecte vos répétitions automatiquement.');
+
+    // WakeLock
+    if ('wakeLock' in navigator) {
+        try { AG.wakeLock = await navigator.wakeLock.request('screen'); } catch(e) {}
+    }
+
+    // Demande permission iOS
+    if (typeof DeviceMotionEvent?.requestPermission === 'function') {
+        const perm = await DeviceMotionEvent.requestPermission().catch(() => 'denied');
+        if (perm !== 'granted') {
+            _agStatus('Permission capteur refusée. Activez le capteur dans Réglages → Safari.');
+            _agSimulate();
+            return;
+        }
+    }
+
+    if (window.DeviceMotionEvent) {
+        AG.motionHandler = _agOnMotion;
+        window.addEventListener('devicemotion', AG.motionHandler, { passive: true });
+        _agStatus('📱 Capteur actif — effectuez votre exercice');
+    } else {
+        _agStatus('Capteur non disponible — mode simulation');
+        _agSimulate();
+    }
+
+    // Boutons
+    const btn = document.getElementById('ag-start-btn');
+    if (btn) { btn.style.background = 'linear-gradient(135deg,#E03E3E,#C62828)'; btn.innerHTML = '<i class="fas fa-stop"></i> Arrêter'; }
+    document.getElementById('ag-validate-btn').style.display = 'block';
+
+    // Coach IA initial
+    if (_hasAnyKey()) setTimeout(_agCoachRecommend, 2000);
+
+    // Démarrer le rendu canvas
+    _agRenderLoop();
+}
+
+function stopAutoGym() {
+    AG.active = false;
+    if (AG.motionHandler) { window.removeEventListener('devicemotion', AG.motionHandler); AG.motionHandler = null; }
+    if (AG.simInterval)   { clearInterval(AG.simInterval); AG.simInterval = null; }
+    if (AG.restTimer)     { clearTimeout(AG.restTimer);    AG.restTimer = null; }
+    if (AG.wakeLock)      { AG.wakeLock.release().catch(()=>{}); AG.wakeLock = null; }
+
+    const btn = document.getElementById('ag-start-btn');
+    if (btn) { btn.style.background = 'linear-gradient(135deg,#0FA86A,#059669)'; btn.innerHTML = '<i class="fas fa-play"></i> Démarrer'; }
+    document.getElementById('ag-validate-btn').style.display = 'none';
+    _agStatus('Session terminée.');
+
+    // Sauvegarder dans la séance active si ouverte
+    _agSaveToWorkout();
+}
+
+// ── Traitement du signal ─────────────────────────────────────────────
+function _agOnMotion(event) {
+    if (!AG.active) return;
+    const acc = event.accelerationIncludingGravity || event.acceleration;
+    if (!acc) return;
+
+    const x = acc.x || 0, y = acc.y || 0, z = acc.z || 0;
+    const mag = Math.sqrt(x*x + y*y + z*z);
+
+    // Buffer circulaire
+    AG.signalBuf.push({ mag, x, y, z, t: Date.now() });
+    if (AG.signalBuf.length > AG.BUF_SIZE) AG.signalBuf.shift();
+    if (AG.signalBuf.length < 10) return;
+
+    // Détecter l'exercice toutes les 3 secondes
+    if (AG.signalBuf.length % 60 === 0 && !AG.currentExercise) {
+        _agClassifyExercise();
+    }
+
+    // Détecter les répétitions (pic dans le signal)
+    _agDetectRep(mag);
+}
+
+function _agClassifyExercise() {
+    if (AG.signalBuf.length < 60) return;
+    const recent = AG.signalBuf.slice(-60);
+
+    // Calculer amplitude et fréquence dominante
+    const mags = recent.map(s => s.mag);
+    const mean  = mags.reduce((a,b) => a+b, 0) / mags.length;
+    const amp   = Math.max(...mags) - Math.min(...mags);
+    const ampN  = Math.min(1, amp / 15); // normaliser
+
+    // Détecter fréquence par comptage de passages par la moyenne
+    let crossings = 0;
+    for (let i = 1; i < mags.length; i++) {
+        if ((mags[i-1] < mean && mags[i] >= mean) || (mags[i-1] >= mean && mags[i] < mean)) crossings++;
+    }
+    const freqHz = (crossings / 2) / (recent.length / 60); // fréquence en Hz
+
+    // Axe dominant
+    const axisAmp = {
+        x: Math.max(...recent.map(s => Math.abs(s.x))) - Math.min(...recent.map(s => Math.abs(s.x))),
+        y: Math.max(...recent.map(s => Math.abs(s.y))) - Math.min(...recent.map(s => Math.abs(s.y))),
+        z: Math.max(...recent.map(s => Math.abs(s.z))) - Math.min(...recent.map(s => Math.abs(s.z))),
+    };
+    const dominantAxis = Object.keys(axisAmp).reduce((a,b) => axisAmp[a] > axisAmp[b] ? a : b);
+
+    if (ampN < 0.05) return; // trop peu de mouvement
+
+    // Chercher l'exercice le plus probable
+    let bestMatch = null, bestScore = 0;
+    AG_EXERCISES.forEach(ex => {
+        let score = 0;
+        if (freqHz >= ex.freq[0] && freqHz <= ex.freq[1]) score += 3;
+        if (ampN   >= ex.amp[0]  && ampN   <= ex.amp[1])  score += 2;
+        if (dominantAxis === ex.axis)                      score += 1;
+        if (score > bestScore) { bestScore = score; bestMatch = ex; }
+    });
+
+    // Si séance active, vérifier si l'exercice correspond
+    if (typeof activeWorkout !== 'undefined' && activeWorkout?.exercises?.length) {
+        const activeEx = activeWorkout.exercises.find(e => !e.sets?.every(s => s.completed));
+        if (activeEx) {
+            const known = AG_EXERCISES.find(ex =>
+                activeEx.name.toLowerCase().includes(ex.name.toLowerCase().split(' ')[0])
+            );
+            if (known) { bestMatch = known; bestScore = Math.max(bestScore, 4); }
+        }
+    }
+
+    if (bestMatch && bestScore >= 2) {
+        const confidence = Math.min(100, Math.round(bestScore / 6 * 100));
+        _agSetExercise(bestMatch.name, confidence / 100, false);
+        if (!AG.recommendedWeight) _agCoachRecommend();
+    }
+}
+
+function _agDetectRep(mag) {
+    const now = Date.now();
+    if (AG.signalBuf.length < 5) return;
+
+    // Calculer la moyenne mobile (fenêtre de 10 samples)
+    const win = AG.signalBuf.slice(-10);
+    const avg = win.reduce((s,v) => s + v.mag, 0) / win.length;
+    const threshold = avg * 1.15; // pic = 15% au-dessus de la moyenne
+
+    // Détection de pic avec temps minimum entre 2 reps (400ms)
+    const minRepInterval = 400;
+    if (mag > threshold && mag > AG.lastPeakVal * 0.85) {
+        if (!AG.inMotion) {
+            AG.inMotion = true;
+        }
+    } else if (AG.inMotion && mag < avg * 0.98) {
+        // Retour en bas → répétition complète
+        if (now - AG.lastRepTime > minRepInterval) {
+            AG.lastRepTime = now;
+            AG.repCount++;
+            AG.inMotion = false;
+            _agOnRep();
+        }
+    }
+    AG.lastPeakVal = Math.max(mag, AG.lastPeakVal * 0.95);
+}
+
+// ── Événements ──────────────────────────────────────────────────────
+function _agOnRep() {
+    // Vibration
+    if (navigator.vibrate) navigator.vibrate(15);
+
+    // Mise à jour UI
+    _agUpdateRepDisplay();
+
+    // Vocal sur certaines reps
+    const n = AG.repCount;
+    const targetN = parseInt(AG.targetReps) || 10;
+    if (n % 5 === 0 || n === targetN) {
+        _agSpeak(String(n));
+    }
+    if (n === targetN) {
+        setTimeout(() => _agSpeak('Objectif atteint ! Repos 60 secondes.'), 500);
+        _agStartRest(60);
+    }
+
+    // Détecter la pause (plus de mouvement pendant 3s = fin de série probable)
+    if (AG.restTimer) clearTimeout(AG.restTimer);
+    AG.restTimer = setTimeout(() => {
+        if (AG.repCount >= 3) _agSuggestEndSet();
+    }, 3000);
+}
+
+function _agSuggestEndSet() {
+    if (!AG.active) return;
+    _agCoachMsg(`Vous avez fait ${AG.repCount} reps. Validez la série ou continuez.`);
+}
+
+function _agValidateSet() {
+    if (AG.repCount < 1) { showNotification('Effectuez au moins 1 répétition','warning'); return; }
+
+    // Log
+    AG.sessionLog.push({
+        exercise: AG.currentExercise?.name || 'Exercice',
+        setNumber: AG.setCount,
+        reps: AG.repCount,
+        weight: AG.recommendedWeight || 0,
+        timestamp: new Date().toISOString()
+    });
+
+    AG.totalSets++;
+    const doneReps = AG.repCount;
+    AG.repCount = 0;
+    AG.setCount++;
+    AG.inMotion = false;
+    AG.lastPeakVal = 0;
+
+    if (navigator.vibrate) navigator.vibrate([100,50,100]);
+    _agSpeak(`Série ${AG.totalSets} validée, ${doneReps} répétitions. Repos.`);
+    _agStartRest(parseInt(userProfile?.defaultRest || 60));
+    _agUpdateUI();
+
+    // Coach IA après chaque série
+    setTimeout(_agCoachAfterSet, 2000);
+
+    // Mettre à jour la séance active si ouverte
+    if (typeof activeWorkout !== 'undefined' && activeWorkout && AG.currentExercise) {
+        const exIdx = activeWorkout.exercises.findIndex(e =>
+            e.name.toLowerCase().includes(AG.currentExercise.name.toLowerCase().split(' ')[0])
+        );
+        if (exIdx >= 0) {
+            const setIdx = activeWorkout.exercises[exIdx].sets.findIndex(s => !s.completed);
+            if (setIdx >= 0) {
+                const set = activeWorkout.exercises[exIdx].sets[setIdx];
+                set.reps   = String(doneReps);
+                set.weight = AG.recommendedWeight || set.weight;
+                completeSet(exIdx, setIdx);
+            }
+        }
+    }
+}
+
+function _agStartRest(seconds) {
+    let remaining = seconds;
+    const tick = () => {
+        if (!AG.active) return;
+        _agStatus(`Repos : ${remaining}s restantes`);
+        if (remaining === 10) _agSpeak('10 secondes');
+        if (remaining === 3)  _agSpeak('3, 2, 1');
+        if (remaining === 0)  { _agStatus('C\'est parti !'); _agSpeak('Série suivante !'); return; }
+        remaining--;
+        setTimeout(tick, 1000);
+    };
+    tick();
+}
+
+function _agResetSession() {
+    stopAutoGym();
+    AG.repCount        = 0;
+    AG.setCount        = 1;
+    AG.totalSets       = 0;
+    AG.currentExercise = null;
+    AG.sessionLog      = [];
+    AG.recommendedWeight = null;
+    _agUpdateUI();
+    _agStatus('');
+    _agCoachMsg('Appuyez sur Démarrer et commencez votre exercice. Je détecte automatiquement vos répétitions.');
+    document.getElementById('ag-exercise-name').textContent = 'En attente…';
+    document.getElementById('ag-exercise-confidence').textContent = 'Placez le téléphone sur vous et commencez';
+    document.getElementById('ag-exercise-badge').style.display = 'none';
+    document.getElementById('ag-recommended-weight').textContent = '—';
+    document.getElementById('ag-target-reps').textContent = '—';
+    const arc = document.getElementById('ag-rep-arc');
+    if (arc) arc.setAttribute('stroke-dasharray', '0 365');
+}
+
+// ── IA Coach ────────────────────────────────────────────────────────
+async function _agCoachRecommend() {
+    if (!_hasAnyKey() || !AG.currentExercise) return;
+
+    const exName = AG.currentExercise.name;
+    const up     = typeof userProfile !== 'undefined' ? userProfile : {};
+
+    // Chercher historique
+    const hist = getExerciseHistory1RM(exName);
+    const lastORM = hist.length ? hist[hist.length-1].orm : 0;
+
+    const prompt = `Exercice: ${exName}
+Profil: ${up.weight||'?'}kg, niveau ${up.level||'Intermédiaire'}, objectif ${up.trainingType||'Maintien'}
+1RM estimé historique: ${lastORM ? lastORM+'kg' : 'inconnu'}
+Séries déjà faites cette session: ${AG.totalSets}
+
+Réponds UNIQUEMENT en JSON:
+{"weight_kg": 50, "sets": 3, "reps": "8-12", "coaching": "phrase de motivation courte"}
+
+Si 1RM inconnu, estime selon le profil. Poids réaliste pour le niveau.`;
+
+    const cfg   = _selectProvider('fast');
+    const reply = await _callAI([{role:'user', content: prompt}], cfg,
+        'Tu es un coach fitness. Réponds UNIQUEMENT avec du JSON valide.');
+
+    if (!reply || reply.startsWith('__ERROR__')) return;
+    try {
+        const clean = reply.replace(/```json|```/g,'').trim();
+        const rec   = JSON.parse(clean);
+        AG.recommendedWeight = rec.weight_kg;
+        AG.targetSets        = rec.sets || 3;
+        AG.targetReps        = rec.reps || '8-12';
+
+        document.getElementById('ag-recommended-weight').textContent = rec.weight_kg + 'kg';
+        document.getElementById('ag-target-reps').textContent        = rec.reps;
+        document.getElementById('ag-total-sets').textContent         = '0/' + rec.sets;
+
+        if (rec.coaching) {
+            _agCoachMsg(rec.coaching);
+            _agSpeak(rec.coaching);
+        }
+    } catch(e) {}
+}
+
+async function _agCoachAfterSet() {
+    if (!_hasAnyKey() || !AG.active) return;
+
+    const lastSet = AG.sessionLog[AG.sessionLog.length - 1];
+    if (!lastSet) return;
+
+    const prompt = `Série ${lastSet.setNumber} terminée: ${lastSet.reps} reps à ${lastSet.weight||'?'}kg.
+Objectif: ${AG.targetReps} reps × ${AG.targetSets} séries.
+Séries restantes: ${Math.max(0, AG.targetSets - AG.totalSets)}.
+Donne un feedback court (1 phrase) et dis le poids pour la prochaine série.
+JSON: {"feedback":"...", "next_weight": 50, "coaching":"..."}`;
+
+    const cfg   = _selectProvider('fast');
+    const reply = await _callAI([{role:'user', content: prompt}], cfg,
+        'Tu es un coach fitness. Réponds UNIQUEMENT JSON.');
+    if (!reply || reply.startsWith('__ERROR__')) return;
+    try {
+        const rec = JSON.parse(reply.replace(/```json|```/g,'').trim());
+        if (rec.coaching) { _agCoachMsg(rec.feedback + ' ' + rec.coaching); _agSpeak(rec.coaching); }
+        if (rec.next_weight) {
+            AG.recommendedWeight = rec.next_weight;
+            document.getElementById('ag-recommended-weight').textContent = rec.next_weight + 'kg';
+        }
+        document.getElementById('ag-total-sets').textContent = `${AG.totalSets}/${AG.targetSets}`;
+    } catch(e) {}
+}
+
+// ── UI Helpers ───────────────────────────────────────────────────────
+function _agSetExercise(name, confidence, silent) {
+    const ex = AG_EXERCISES.find(e => name.toLowerCase().includes(e.name.toLowerCase().split(' ')[0]))
+            || { name, icon:'💪', muscle:'' };
+    AG.currentExercise = ex;
+
+    document.getElementById('ag-exercise-name').textContent = ex.name || name;
+    document.getElementById('ag-exercise-confidence').textContent =
+        confidence > 0.5 ? `Confiance: ${Math.round(confidence*100)}%` : 'Identification en cours…';
+    document.getElementById('ag-exercise-icon').textContent = ex.icon || '💪';
+
+    const badge = document.getElementById('ag-exercise-badge');
+    if (confidence > 0.5) { badge.style.display = 'block'; }
+
+    if (!silent && confidence > 0.7) _agSpeak(ex.name + ' détecté.');
+}
+
+function _agUpdateRepDisplay() {
+    const el = document.getElementById('ag-rep-count');
+    if (el) el.textContent = AG.repCount;
+
+    const target = parseInt(AG.targetReps) || 12;
+    const pct    = Math.min(1, AG.repCount / target);
+    const circ   = 2 * Math.PI * 58;
+    const arc    = document.getElementById('ag-rep-arc');
+    if (arc) arc.setAttribute('stroke-dasharray', `${(pct*circ).toFixed(1)} ${circ.toFixed(1)}`);
+
+    const setLbl = document.getElementById('ag-set-label');
+    if (setLbl) setLbl.textContent = `Série ${AG.setCount}`;
+}
+
+function _agUpdateUI() {
+    _agUpdateRepDisplay();
+    const ts = document.getElementById('ag-total-sets');
+    if (ts) ts.textContent = `${AG.totalSets}/${AG.targetSets}`;
+}
+
+function _agCoachMsg(msg) {
+    const el = document.getElementById('ag-coach-text');
+    if (el) el.textContent = msg;
+}
+
+function _agStatus(msg) {
+    const el = document.getElementById('ag-sensor-status');
+    if (el) el.textContent = msg;
+}
+
+// ── Synthèse vocale ──────────────────────────────────────────────────
+function _agSpeak(text) {
+    if (!AG.speechEnabled) return;
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utt    = new SpeechSynthesisUtterance(text);
+    utt.lang     = 'fr-FR';
+    utt.rate     = 1.05;
+    utt.pitch    = 1.0;
+    utt.volume   = 0.9;
+    window.speechSynthesis.speak(utt);
+}
+
+// ── Simulation (desktop / pas de capteur) ───────────────────────────
+function _agSimulate() {
+    let phase = 0;
+    AG.simInterval = setInterval(() => {
+        if (!AG.active) return;
+        phase += 0.15;
+        const simMag = 9.8 + Math.sin(phase) * 3.5 + (Math.random()-0.5) * 0.5;
+        AG.signalBuf.push({ mag: simMag, x: simMag*0.3, y: simMag*0.9, z: simMag*0.2, t: Date.now() });
+        if (AG.signalBuf.length > AG.BUF_SIZE) AG.signalBuf.shift();
+        _agDetectRep(simMag);
+        if (!AG.currentExercise && AG.signalBuf.length > 30) {
+            _agSetExercise('Curl biceps', 0.85, false);
+        }
+    }, 16); // ~60fps
+}
+
+// ── Rendu canvas signal ──────────────────────────────────────────────
+function _agRenderLoop() {
+    if (!AG.active) return;
+    _agDrawSignal();
+    requestAnimationFrame(_agRenderLoop);
+}
+
+function _agDrawSignal() {
+    const ctx = AG.canvasCtx;
+    if (!ctx) return;
+    const w = ctx.canvas.width, h = ctx.canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const isDark = document.body.classList.contains('dark-mode');
+    ctx.fillStyle = isDark ? '#1a1f2e' : '#f8f9ff';
+    ctx.fillRect(0, 0, w, h);
+
+    if (AG.signalBuf.length < 2) return;
+
+    const display = AG.signalBuf.slice(-100);
+    const vals    = display.map(s => s.mag);
+    const minV    = Math.min(...vals), maxV = Math.max(...vals);
+    const range   = maxV - minV || 1;
+
+    ctx.beginPath();
+    ctx.strokeStyle = AG.active ? '#0FA86A' : '#4F6EF7';
+    ctx.lineWidth   = 1.5 * devicePixelRatio;
+    ctx.lineJoin    = 'round';
+
+    display.forEach((s, i) => {
+        const x = (i / (display.length - 1)) * w;
+        const y = h - ((s.mag - minV) / range) * h * 0.8 - h * 0.1;
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // Ligne de seuil
+    const avg   = vals.reduce((a,b) => a+b, 0) / vals.length;
+    const thY   = h - ((avg * 1.15 - minV) / range) * h * 0.8 - h * 0.1;
+    ctx.beginPath();
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = 'rgba(224,62,62,0.5)';
+    ctx.lineWidth   = 1 * devicePixelRatio;
+    ctx.moveTo(0, thY); ctx.lineTo(w, thY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+}
+
+// ── Sauvegarde dans la séance ────────────────────────────────────────
+function _agSaveToWorkout() {
+    if (!AG.sessionLog.length) return;
+    if (typeof activeWorkout === 'undefined' || !activeWorkout) return;
+
+    showNotification(`AutoGym : ${AG.totalSets} séries enregistrées dans la séance`, 'success');
+}
+
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Vérifier si data.js est chargé (requis pour le fonctionnement)
+    if (typeof exercises === 'undefined' || typeof foods === 'undefined') {
+        console.warn('[IronPlate] data.js non chargé. Vérifiez que vous utilisez un serveur HTTP (pas file://)');
+        // Afficher un message d'erreur si on est en file://
+        if (location.protocol === 'file:') {
+            document.body.innerHTML = `
+                <div style="font-family:sans-serif;max-width:480px;margin:60px auto;padding:24px;text-align:center;">
+                    <div style="font-size:48px;margin-bottom:20px;">⚠️</div>
+                    <h2 style="color:#E03E3E;margin-bottom:12px;">Serveur local requis</h2>
+                    <p style="color:#555;line-height:1.6;margin-bottom:20px;">
+                        IronPlate ne peut pas fonctionner directement depuis un fichier local (file://)
+                        car data.js ne peut pas être chargé.
+                    </p>
+                    <div style="background:#F5F5F5;border-radius:12px;padding:16px;text-align:left;margin-bottom:20px;">
+                        <div style="font-weight:700;margin-bottom:8px;font-size:13px;">Solutions :</div>
+                        <div style="font-size:12px;color:#333;line-height:2;">
+                            <b>Option 1 — VSCode :</b> Installez l'extension <b>Live Server</b> → clic droit sur index.html → "Open with Live Server"<br>
+                            <b>Option 2 — Python :</b> Dans le dossier du fichier : <code style="background:#ddd;padding:2px 6px;border-radius:4px;">python -m http.server 8080</code> → ouvrir <b>http://localhost:8080</b><br>
+                            <b>Option 3 — Node :</b> <code style="background:#ddd;padding:2px 6px;border-radius:4px;">npx serve .</code>
+                        </div>
+                    </div>
+                    <p style="font-size:11px;color:#999;">data.js et index.html doivent être dans le même dossier</p>
+                </div>`;
+            return;
+        }
+    }
     initApp();
     setTimeout(() => { _initNewFeatures(); loadAIConfig(); }, 600);
 });
@@ -30367,5 +32696,183 @@ window.addEventListener('beforeunload', function(e) {
 });
 
 </script>
+
+<!-- ═══════════════════════════════════════════════════════
+     MODAL NAVIGATION AGENTIQUE — IA vocale globale
+     ═══════════════════════════════════════════════════════ -->
+<div class="modal" id="agentic-modal">
+    <div class="modal-content" style="max-height:88vh;">
+        <div class="modal-header" style="background:linear-gradient(135deg,#4F6EF7,#7C3AED);border-radius:18px 18px 0 0;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;">
+                    <i class="fas fa-robot" style="color:white;font-size:15px;"></i>
+                </div>
+                <div>
+                    <div class="modal-title" style="color:white;font-size:15px;">Assistant IA vocal</div>
+                    <div style="font-size:10px;color:rgba(255,255,255,.75);">Dites ce que vous voulez faire</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="hideModal('agentic-modal')" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+        </div>
+        <div class="modal-body" style="padding:16px;">
+
+            <!-- Zone de transcript -->
+            <div id="agentic-transcript" style="min-height:80px;background:var(--card-bg-alt);border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;font-style:italic;">
+                Appuyez sur le micro et parlez…
+            </div>
+
+            <!-- Réponse IA -->
+            <div id="agentic-response" style="display:none;background:var(--primary-glow);border:1px solid var(--primary);border-radius:12px;padding:12px 14px;font-size:12px;color:var(--primary);margin-bottom:12px;line-height:1.6;"></div>
+
+            <!-- Bouton micro ON/OFF persistant -->
+            <div style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:12px;">
+                <button id="agentic-mic-btn" onclick="toggleAgenticVoice()"
+                    style="padding:14px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:14px;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 14px rgba(79,110,247,.35);">
+                    <i class="fas fa-microphone" style="font-size:18px;"></i>
+                    <span id="agentic-mic-label">Activer l'écoute</span>
+                </button>
+                <button onclick="_sendAgenticText()" title="Envoyer le texte tapé"
+                    style="padding:14px 16px;background:var(--card-bg-alt);border:1.5px solid var(--border);border-radius:14px;color:var(--text-secondary);cursor:pointer;font-size:16px;">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <!-- Zone de saisie manuelle (alternative à la voix) -->
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <input type="text" id="agentic-text-input" class="number-input" placeholder="Ou tapez votre commande…"
+                    style="flex:1;font-size:13px;" onkeydown="if(event.key==='Enter')_sendAgenticText()">
+            </div>
+
+            <!-- Exemples de commandes -->
+            <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:8px;">Exemples de commandes</div>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+                <div onclick="_agenticExampleTap(this)" style="padding:8px 12px;background:var(--card-bg-alt);border-radius:9px;border:1px solid var(--border);font-size:11px;color:var(--text-secondary);cursor:pointer;">"Ajoute une séance jambes pour demain"</div>
+                <div onclick="_agenticExampleTap(this)" style="padding:8px 12px;background:var(--card-bg-alt);border-radius:9px;border:1px solid var(--border);font-size:11px;color:var(--text-secondary);cursor:pointer;">"Montre-moi mes progressions de la semaine"</div>
+                <div onclick="_agenticExampleTap(this)" style="padding:8px 12px;background:var(--card-bg-alt);border-radius:9px;border:1px solid var(--border);font-size:11px;color:var(--text-secondary);cursor:pointer;">"Que dois-je manger aujourd'hui pour avoir 150g de protéines ?"</div>
+                <div onclick="_agenticExampleTap(this)" style="padding:8px 12px;background:var(--card-bg-alt);border-radius:9px;border:1px solid var(--border);font-size:11px;color:var(--text-secondary);cursor:pointer;">"Génère mon plan d'entraînement de la semaine"</div>
+                <div onclick="_agenticExampleTap(this)" style="padding:8px 12px;background:var(--card-bg-alt);border-radius:9px;border:1px solid var(--border);font-size:11px;color:var(--text-secondary);cursor:pointer;">"Quel est mon score de forme actuel ?"</div>
+                <div onclick="_agenticExampleTap(this)" style="padding:8px 12px;background:var(--card-bg-alt);border-radius:9px;border:1px solid var(--border);font-size:11px;color:var(--text-secondary);cursor:pointer;">"Navigue vers la nutrition"</div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- FAB Navigation agentique (flottant, toujours visible) -->
+<div id="agentic-fab" onclick="showModal('agentic-modal')"
+    style="position:fixed;bottom:82px;right:14px;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;box-shadow:0 4px 16px rgba(79,110,247,.45);z-index:998;transition:transform .15s;" title="Assistant IA vocal">
+    <i class="fas fa-robot"></i>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODULE AUTOGYM — Détection automatique d'exercices
+     ═══════════════════════════════════════════════════════════ -->
+<div class="modal" id="autogym-modal">
+    <div class="modal-content" style="max-height:96vh;overflow-y:auto;">
+        <div class="modal-header" style="background:linear-gradient(135deg,#0FA86A,#4F6EF7);border-radius:18px 18px 0 0;padding:14px 18px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fas fa-dumbbell" style="color:white;font-size:16px;"></i>
+                </div>
+                <div>
+                    <div style="font-size:15px;font-weight:900;color:white;letter-spacing:-.02em;">AutoGym</div>
+                    <div style="font-size:10px;color:rgba(255,255,255,.8);">Détection automatique · Coaching IA</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeAutoGym()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+        </div>
+        <div class="modal-body" style="padding:14px;display:flex;flex-direction:column;gap:12px;">
+
+            <!-- Exercice détecté -->
+            <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:14px;">
+                <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:8px;">Exercice détecté</div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div id="ag-exercise-icon" style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">💪</div>
+                    <div style="flex:1;">
+                        <div id="ag-exercise-name" style="font-size:16px;font-weight:900;color:var(--text-primary);letter-spacing:-.02em;">En attente…</div>
+                        <div id="ag-exercise-confidence" style="font-size:11px;color:var(--text-tertiary);margin-top:2px;">Placez le téléphone sur vous et commencez</div>
+                    </div>
+                    <div id="ag-exercise-badge" style="display:none;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:800;background:rgba(15,168,106,.12);color:var(--success);">DÉTECTÉ</div>
+                </div>
+            </div>
+
+            <!-- Compteur reps + anneau -->
+            <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;">
+                <svg width="140" height="140" viewBox="0 0 140 140" style="display:block;margin:0 auto 10px;">
+                    <circle cx="70" cy="70" r="58" fill="none" stroke="var(--border)" stroke-width="10"/>
+                    <circle id="ag-rep-arc" cx="70" cy="70" r="58" fill="none"
+                        stroke="url(#agGrad)" stroke-width="10"
+                        stroke-dasharray="0 365" stroke-linecap="round"
+                        transform="rotate(-90 70 70)" style="transition:stroke-dasharray .3s ease;"/>
+                    <defs>
+                        <linearGradient id="agGrad" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="#0FA86A"/>
+                            <stop offset="100%" stop-color="#4F6EF7"/>
+                        </linearGradient>
+                    </defs>
+                    <text id="ag-rep-count" x="70" y="63" text-anchor="middle" font-size="34" font-weight="900" fill="var(--text-primary)" font-family="Inter,sans-serif">0</text>
+                    <text x="70" y="82" text-anchor="middle" font-size="12" fill="var(--text-tertiary)" font-family="Inter,sans-serif">répétitions</text>
+                    <text id="ag-set-label" x="70" y="100" text-anchor="middle" font-size="11" fill="var(--primary)" font-weight="700" font-family="Inter,sans-serif">Série 1</text>
+                </svg>
+
+                <!-- Stats en ligne -->
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                    <div style="background:var(--card-bg-alt);border-radius:10px;padding:8px;border:1px solid var(--border);">
+                        <div id="ag-total-sets" style="font-size:18px;font-weight:900;color:var(--primary);">0</div>
+                        <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);">Séries</div>
+                    </div>
+                    <div style="background:var(--card-bg-alt);border-radius:10px;padding:8px;border:1px solid var(--border);">
+                        <div id="ag-recommended-weight" style="font-size:18px;font-weight:900;color:var(--success);">—</div>
+                        <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);">Poids kg</div>
+                    </div>
+                    <div style="background:var(--card-bg-alt);border-radius:10px;padding:8px;border:1px solid var(--border);">
+                        <div id="ag-target-reps" style="font-size:18px;font-weight:900;color:var(--warning);">—</div>
+                        <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);">Objectif</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coach IA message -->
+            <div id="ag-coach-msg" style="background:linear-gradient(135deg,rgba(79,110,247,.08),rgba(124,58,237,.08));border:1px solid rgba(79,110,247,.2);border-radius:12px;padding:12px 14px;font-size:12px;color:var(--text-primary);line-height:1.6;min-height:48px;display:flex;align-items:center;gap:10px;">
+                <i class="fas fa-robot" style="color:var(--primary);font-size:16px;flex-shrink:0;"></i>
+                <span id="ag-coach-text">Appuyez sur Démarrer et commencez votre exercice. Je détecte automatiquement vos répétitions.</span>
+            </div>
+
+            <!-- Signal visualisation -->
+            <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:10px 14px;">
+                <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:6px;">Signal accéléromètre</div>
+                <canvas id="ag-signal-canvas" width="400" height="50" style="width:100%;height:50px;border-radius:6px;"></canvas>
+            </div>
+
+            <!-- Contrôles -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <button id="ag-start-btn" onclick="toggleAutoGym()"
+                    style="padding:14px;background:linear-gradient(135deg,#0FA86A,#059669);color:white;border:none;border-radius:14px;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(15,168,106,.3);">
+                    <i class="fas fa-play"></i> Démarrer
+                </button>
+                <button onclick="_agResetSession()"
+                    style="padding:14px;background:var(--card-bg-alt);border:1.5px solid var(--border);border-radius:14px;font-size:13px;font-weight:700;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <i class="fas fa-redo"></i> Réinitialiser
+                </button>
+            </div>
+
+            <!-- Bouton valider série manuellement -->
+            <button id="ag-validate-btn" onclick="_agValidateSet()" style="display:none;width:100%;padding:13px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:14px;font-size:13px;font-weight:800;cursor:pointer;">
+                <i class="fas fa-check-circle"></i> Valider cette série
+            </button>
+
+            <!-- Statut capteur -->
+            <div id="ag-sensor-status" style="font-size:10px;text-align:center;color:var(--text-tertiary);padding:4px;"></div>
+
+        </div>
+    </div>
+</div>
+
+<!-- FAB AutoGym (sur l'écran de séance active) -->
+<div id="autogym-fab" onclick="showAutoGym()" title="AutoGym — Détection automatique"
+    style="display:none;position:fixed;bottom:82px;left:14px;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#0FA86A,#4F6EF7);color:white;align-items:center;justify-content:center;font-size:18px;cursor:pointer;box-shadow:0 4px 16px rgba(15,168,106,.45);z-index:998;transition:transform .15s;">
+    <i class="fas fa-dumbbell"></i>
+</div>
+
 </body>
 </html>
