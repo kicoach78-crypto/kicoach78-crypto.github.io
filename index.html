@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 
 <head>
     <meta charset="UTF-8">
@@ -693,7 +693,7 @@ body, html {
 
 /* ==================== CONTENU PRINCIPAL ==================== */
 .main-content {
-    padding: 100px 0 80px;
+    padding: 64px 0 80px;
     min-height: 100vh;
     position: relative;
     z-index: 1;
@@ -709,10 +709,13 @@ body, html {
     display: block;
 }
 
-/* La séance active : header principal caché, padding-top:0 */
+/* La séance active : header caché → pas de padding-top du tout */
 #active-workout-screen {
     margin-top: 0;
-    padding-top: 8px;
+    padding-top: 0;
+}
+#active-workout-screen > div:first-child {
+    padding-top: 4px;
 }
 
 /* ==================== SECTION TITRES AMÉLIORÉS ==================== */
@@ -12271,7 +12274,7 @@ input:checked + .slider:before {
 
                 <!-- HERO CARD -->
                 <div class="hero-card">
-                    <div class="hero-greeting">Bonjour 👋</div>
+                    <div class="hero-greeting" data-i18n-greet="1">Bonjour 👋</div>
                     <div class="hero-name" id="hero-objective">Objectif · Maintien</div>
                     <div class="hero-stats-grid">
                         <div class="hero-stat-box">
@@ -12514,6 +12517,22 @@ input:checked + .slider:before {
                     <div class="filter-pill" onclick="filterWorkoutsView('predefined', this)">Prédéfinies</div>
                 </div>
 
+                <!-- AUTOGYM — SÉANCE LIBRE IA -->
+                <div style="margin:0 16px 12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <button onclick="_agStartFreeSession()"
+                        style="display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 10px;background:linear-gradient(135deg,rgba(79,110,247,.1),rgba(124,58,237,.1));border:1.5px solid rgba(79,110,247,.25);border-radius:13px;font-size:11px;font-weight:800;cursor:pointer;color:var(--primary);">
+                        <i class="fas fa-magic" style="font-size:13px;"></i>
+                        <span>Séance libre IA</span>
+                        <span style="font-size:9px;background:rgba(79,110,247,.15);padding:1px 5px;border-radius:8px;">NOUVEAU</span>
+                    </button>
+                    <button onclick="showAutoGym()"
+                        style="display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 10px;background:linear-gradient(135deg,rgba(15,168,106,.1),rgba(79,110,247,.1));border:1.5px solid rgba(15,168,106,.25);border-radius:13px;font-size:11px;font-weight:800;cursor:pointer;color:var(--success);">
+                        <i class="fas fa-dumbbell" style="font-size:13px;"></i>
+                        <span>AutoGym détection</span>
+                        <span style="font-size:9px;background:rgba(15,168,106,.15);padding:1px 5px;border-radius:8px;">IA</span>
+                    </button>
+                </div>
+
                 <!-- MES SÉANCES -->
                 <div id="workouts-view-custom">
                     <div class="screen-section-label"><i class="fas fa-user"></i> Mes séances</div>
@@ -12689,6 +12708,18 @@ input:checked + .slider:before {
             </div>
         </div>
         
+        <!-- IA Insights (si clé IA configurée) -->
+        <div id="profile-ai-insights-wrap" style="background:linear-gradient(135deg,rgba(79,110,247,.06),rgba(124,58,237,.06));border:1px solid rgba(79,110,247,.18);border-radius:14px;padding:12px 14px;margin-top:16px;display:none;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                <i class="fas fa-robot" style="color:var(--primary);font-size:14px;"></i>
+                <span style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--primary);">Analyse Coach IA</span>
+                <button onclick="_enrichProfileWithAI()" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:11px;color:var(--primary);font-weight:700;">↺ Actualiser</button>
+            </div>
+            <div id="profile-ai-insights" style="font-size:12px;color:var(--text-secondary);line-height:1.7;">
+                Sauvegardez votre profil pour obtenir votre analyse personnalisée.
+            </div>
+        </div>
+
         <!-- Boutons profil redesign -->
         <div style="display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:22px;">
             <button onclick="saveProfile()"
@@ -12971,6 +13002,9 @@ input:checked + .slider:before {
         <div class="ai-subtab" onclick="switchAITab('chat', this)">
             <i class="fas fa-comment-dots"></i> Chat
         </div>
+        <div class="ai-subtab" onclick="switchAITab('nutrition', this)">
+            <i class="fas fa-utensils"></i> Nutrition
+        </div>
     </div>
 
     <!-- ── TAB: DASHBOARD ── -->
@@ -13050,10 +13084,15 @@ input:checked + .slider:before {
 
     <!-- ── TAB: PLAN ── -->
     <div id="ai-tab-plan" class="ai-tab-content">
+
+        <!-- ── APPROCHE 1 : Génération rapide (comme avant) ── -->
         <div class="ai-section-card">
             <div class="ai-section-head">
-                <i class="fas fa-calendar-alt" style="color:#7C3AED;"></i>
-                Plan 7 jours personnalisé
+                <i class="fas fa-bolt" style="color:#7C3AED;"></i>
+                Génération rapide
+            </div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;line-height:1.6;">
+                L'IA génère un plan 7 jours basé sur votre profil automatiquement.
             </div>
             <div id="ai-plan-content">
                 <div class="ai-empty-state">
@@ -13066,6 +13105,108 @@ input:checked + .slider:before {
                 Générer mon plan semaine
             </button>
         </div>
+
+        <!-- ── APPROCHE 2 : Plan personnalisé avec paramètres ── -->
+        <div class="ai-section-card" style="margin-top:12px;">
+            <div class="ai-section-head">
+                <i class="fas fa-sliders-h" style="color:#4F6EF7;"></i>
+                Plan sur-mesure
+            </div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;">
+                Définissez vos contraintes, l'IA construit le programme idéal.
+            </div>
+
+            <!-- Grille de paramètres -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+
+                <!-- Jours d'entraînement -->
+                <div>
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Jours / semaine</div>
+                    <select id="plan-days-per-week" class="filter-select" style="width:100%;font-size:13px;">
+                        <option value="2">2 jours</option>
+                        <option value="3" selected>3 jours</option>
+                        <option value="4">4 jours</option>
+                        <option value="5">5 jours</option>
+                        <option value="6">6 jours</option>
+                    </select>
+                </div>
+
+                <!-- Durée par séance -->
+                <div>
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Durée / séance</div>
+                    <select id="plan-session-duration" class="filter-select" style="width:100%;font-size:13px;">
+                        <option value="30">30 min</option>
+                        <option value="45">45 min</option>
+                        <option value="60" selected>1 heure</option>
+                        <option value="75">1h15</option>
+                        <option value="90">1h30</option>
+                        <option value="120">2 heures</option>
+                    </select>
+                </div>
+
+                <!-- Jours de repos préférés -->
+                <div style="grid-column:1/-1;">
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Jours de repos préférés</div>
+                    <div style="display:flex;gap:5px;flex-wrap:wrap;">
+                        <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;cursor:pointer;padding:5px 8px;border-radius:8px;border:1px solid var(--border);background:var(--card-bg-alt);">
+                            <input type="checkbox" id="rest-lun" value="Lundi"> Lun
+                        </label>
+                        <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;cursor:pointer;padding:5px 8px;border-radius:8px;border:1px solid var(--border);background:var(--card-bg-alt);">
+                            <input type="checkbox" id="rest-mar" value="Mardi"> Mar
+                        </label>
+                        <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;cursor:pointer;padding:5px 8px;border-radius:8px;border:1px solid var(--border);background:var(--card-bg-alt);">
+                            <input type="checkbox" id="rest-mer" value="Mercredi"> Mer
+                        </label>
+                        <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;cursor:pointer;padding:5px 8px;border-radius:8px;border:1px solid var(--border);background:var(--card-bg-alt);">
+                            <input type="checkbox" id="rest-jeu" value="Jeudi"> Jeu
+                        </label>
+                        <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;cursor:pointer;padding:5px 8px;border-radius:8px;border:1px solid var(--border);background:var(--card-bg-alt);">
+                            <input type="checkbox" id="rest-ven" value="Vendredi"> Ven
+                        </label>
+                        <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;cursor:pointer;padding:5px 8px;border-radius:8px;border:1px solid var(--border);background:var(--card-bg-alt);">
+                            <input type="checkbox" id="rest-sam" value="Samedi"> Sam
+                        </label>
+                        <label style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;cursor:pointer;padding:5px 8px;border-radius:8px;border:1px solid var(--border);background:var(--card-bg-alt);">
+                            <input type="checkbox" id="rest-dim" value="Dimanche" checked> Dim
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Équipement -->
+                <div style="grid-column:1/-1;">
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Équipement disponible</div>
+                    <select id="plan-equipment" class="filter-select" style="width:100%;font-size:13px;">
+                        <option value="salle complète">Salle complète (barres, haltères, machines)</option>
+                        <option value="haltères uniquement">Haltères uniquement</option>
+                        <option value="poids du corps">Poids du corps uniquement</option>
+                        <option value="bandes élastiques">Bandes élastiques</option>
+                        <option value="home gym basique">Home gym basique</option>
+                    </select>
+                </div>
+
+                <!-- Focus musculaire -->
+                <div style="grid-column:1/-1;">
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Groupes musculaires prioritaires</div>
+                    <input type="text" id="plan-focus" class="number-input" style="width:100%;font-size:12px;"
+                        placeholder="ex: pectoraux, dos, jambes — ou laisser vide pour auto">
+                </div>
+
+                <!-- Contraintes / blessures -->
+                <div style="grid-column:1/-1;">
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Contraintes / blessures / remarques</div>
+                    <input type="text" id="plan-constraints" class="number-input" style="width:100%;font-size:12px;"
+                        placeholder="ex: douleur épaule droite, pas de squat lourd…">
+                </div>
+
+            </div>
+
+            <div id="ai-custom-plan-content" style="margin-top:10px;"></div>
+            <button class="ai-cta-btn ai-blue-btn" onclick="generateCustomWeekPlan()" style="margin-top:12px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);">
+                <i class="fas fa-sliders-h"></i>
+                Générer mon plan sur-mesure
+            </button>
+        </div>
+
     </div>
 
     <!-- ── TAB: CHAT ── -->
@@ -13096,15 +13237,313 @@ input:checked + .slider:before {
 
     </div>
 
+    <!-- ══════════════════════════════════════════════════════
+         TAB: NUTRITION IA — Plan alimentaire sur-mesure
+         ══════════════════════════════════════════════════════ -->
+    <div id="ai-tab-nutrition" class="ai-tab-content">
+
+        <!-- ── SECTION 1 : Paramètres personnalisés ── -->
+        <div class="ai-section-card" id="nutri-params-card">
+            <div class="ai-section-head">
+                <i class="fas fa-sliders-h" style="color:#0FA86A;"></i>
+                Mes préférences alimentaires
+            </div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;">
+                Pré-rempli depuis votre profil — modifiez selon vos besoins.
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+
+                <!-- Nb repas -->
+                <div>
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Repas / jour</div>
+                    <select id="nutri-meals-per-day" class="filter-select" style="width:100%;font-size:13px;">
+                        <option value="3">3 repas</option>
+                        <option value="4" selected>4 repas</option>
+                        <option value="5">5 repas</option>
+                        <option value="6">6 repas</option>
+                    </select>
+                </div>
+
+                <!-- Type de régime -->
+                <div>
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Régime</div>
+                    <select id="nutri-diet-type" class="filter-select" style="width:100%;font-size:13px;">
+                        <option value="omnivore" selected>Omnivore</option>
+                        <option value="végétarien">Végétarien</option>
+                        <option value="vegan">Vegan</option>
+                        <option value="halal">Halal</option>
+                        <option value="sans gluten">Sans gluten</option>
+                        <option value="cétogène">Keto / Cétogène</option>
+                        <option value="méditerranéen">Méditerranéen</option>
+                        <option value="paleo">Paléo</option>
+                    </select>
+                </div>
+
+                <!-- Temps de cuisine -->
+                <div>
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Temps cuisine</div>
+                    <select id="nutri-cook-time" class="filter-select" style="width:100%;font-size:13px;">
+                        <option value="minimal">Minimal (≤15 min)</option>
+                        <option value="modéré" selected>Modéré (15-30 min)</option>
+                        <option value="confortable">Confortable (30-60 min)</option>
+                        <option value="élaboré">Élaboré (1h+)</option>
+                    </select>
+                </div>
+
+                <!-- Budget -->
+                <div>
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Budget</div>
+                    <select id="nutri-budget" class="filter-select" style="width:100%;font-size:13px;">
+                        <option value="économique">Économique (≤5€/repas)</option>
+                        <option value="moyen" selected>Moyen (5-10€/repas)</option>
+                        <option value="confortable">Confortable (10€+)</option>
+                    </select>
+                </div>
+
+                <!-- Allergies -->
+                <div style="grid-column:1/-1;">
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Allergies / intolérances</div>
+                    <input type="text" id="nutri-allergies" class="number-input"
+                        style="width:100%;font-size:12px;"
+                        placeholder="ex: lactose, arachides, gluten… (ou laisser vide)">
+                </div>
+
+                <!-- Aliments aimés / détestés -->
+                <div style="grid-column:1/-1;">
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Préférences alimentaires</div>
+                    <input type="text" id="nutri-preferences" class="number-input"
+                        style="width:100%;font-size:12px;"
+                        placeholder="ex: j'adore le poulet, pas de brocolis…">
+                </div>
+
+                <!-- Objectif spécifique -->
+                <div style="grid-column:1/-1;">
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Objectif nutritionnel</div>
+                    <select id="nutri-goal-specific" class="filter-select" style="width:100%;font-size:13px;">
+                        <option value="auto">Automatique (basé sur mon profil)</option>
+                        <option value="perte de gras">Perte de gras prioritaire</option>
+                        <option value="prise de masse">Prise de masse musculaire</option>
+                        <option value="performance">Performance sportive</option>
+                        <option value="énergie">Énergie et vitalité</option>
+                        <option value="santé digestive">Santé digestive</option>
+                        <option value="anti-inflammatoire">Anti-inflammatoire</option>
+                    </select>
+                </div>
+
+                <!-- Jeûne intermittent -->
+                <div style="grid-column:1/-1;">
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Jeûne intermittent</div>
+                    <select id="nutri-fasting" class="filter-select" style="width:100%;font-size:13px;" onchange="_onFastingChange(this.value)">
+                        <option value="aucun" selected>Aucun — repas toute la journée</option>
+                        <option value="16:8">16:8 — jeûne 16h, fenêtre 8h</option>
+                        <option value="18:6">18:6 — jeûne 18h, fenêtre 6h</option>
+                        <option value="20:4">20:4 — jeûne 20h, fenêtre 4h</option>
+                        <option value="5:2">5:2 — 2 jours à 500kcal/semaine</option>
+                        <option value="OMAD">OMAD — 1 repas par jour</option>
+                        <option value="personnalisé">Personnalisé</option>
+                    </select>
+                </div>
+
+                <!-- Fenêtre alimentaire : 2 champs auto-calculés -->
+                <div id="nutri-fasting-win-row" style="grid-column:1/-1;display:none;">
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:8px;">Fenêtre alimentaire</div>
+                    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;">
+                        <!-- Champ 1 : heure début (modifiable) -->
+                        <div>
+                            <div style="font-size:9px;color:var(--text-tertiary);font-weight:700;margin-bottom:4px;">Début (modifiable)</div>
+                            <div style="position:relative;">
+                                <input type="time" id="nutri-fast-start"
+                                    style="width:100%;padding:9px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card-bg);color:var(--text-primary);font-size:14px;font-weight:700;text-align:center;cursor:pointer;"
+                                    oninput="_updateFastEnd()">
+                            </div>
+                        </div>
+                        <!-- Flèche -->
+                        <div style="text-align:center;font-size:18px;color:var(--primary);padding-top:18px;">→</div>
+                        <!-- Champ 2 : heure fin (auto) -->
+                        <div>
+                            <div style="font-size:9px;color:var(--text-tertiary);font-weight:700;margin-bottom:4px;">Fin (auto-calculée)</div>
+                            <div style="padding:9px 10px;border-radius:10px;border:1.5px solid var(--primary);background:var(--primary-glow);color:var(--primary);font-size:14px;font-weight:900;text-align:center;" id="nutri-fast-end">—</div>
+                        </div>
+                    </div>
+                    <!-- Info durée -->
+                    <div id="nutri-fast-info" style="margin-top:6px;font-size:11px;color:var(--text-tertiary);text-align:center;"></div>
+                    <!-- Input caché pour compatibilité avec le reste du code -->
+                    <input type="hidden" id="nutri-fasting-window">
+                </div>
+
+                <!-- Heure de séance — auto depuis historique, modifiable -->
+                <div style="grid-column:1/-1;">
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:8px;">Heure habituelle de séance</div>
+                    <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;">
+                        <input type="time" id="nutri-workout-time"
+                            style="width:100%;padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card-bg);color:var(--text-primary);font-size:15px;font-weight:800;cursor:pointer;"
+                            oninput="_onWorkoutTimeChange()">
+                        <button onclick="_resetWorkoutTimeFromHistory()" title="Réinitialiser depuis l'historique"
+                            style="padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card-bg-alt);color:var(--text-tertiary);cursor:pointer;font-size:12px;white-space:nowrap;">
+                            <i class="fas fa-history"></i> Auto
+                        </button>
+                    </div>
+                    <div id="nutri-workout-time-label" style="margin-top:5px;font-size:10px;color:var(--text-tertiary);"></div>
+                </div>
+
+                <!-- Compléments alimentaires -->
+                <div style="grid-column:1/-1;">
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:8px;">Compléments alimentaires</div>
+                    <div style="background:var(--card-bg-alt);border:1px solid var(--border);border-radius:12px;padding:12px;">
+
+                        <!-- Toggle compléments ON/OFF -->
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                            <span style="font-size:12px;font-weight:700;color:var(--text-primary);">Inclure les conseils compléments</span>
+                            <label class="toggle-switch" style="flex-shrink:0;">
+                                <input type="checkbox" id="nutri-supps-toggle" checked onchange="_onSuppsToggle(this.checked)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div id="nutri-supps-panel">
+                            <!-- Whey Protéine -->
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <div style="width:30px;height:30px;border-radius:8px;background:rgba(79,110,247,.12);display:flex;align-items:center;justify-content:center;font-size:14px;">🥛</div>
+                                    <div>
+                                        <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Whey Protéine</div>
+                                        <div style="font-size:10px;color:var(--text-tertiary);">Récupération musculaire post-entraînement</div>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch" style="flex-shrink:0;">
+                                    <input type="checkbox" id="supp-whey" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <!-- Créatine -->
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <div style="width:30px;height:30px;border-radius:8px;background:rgba(15,168,106,.12);display:flex;align-items:center;justify-content:center;font-size:14px;">⚡</div>
+                                    <div>
+                                        <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Créatine Monohydrate</div>
+                                        <div style="font-size:10px;color:var(--text-tertiary);">Force et volume musculaire</div>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch" style="flex-shrink:0;">
+                                    <input type="checkbox" id="supp-creatine">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <!-- Collagène -->
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <div style="width:30px;height:30px;border-radius:8px;background:rgba(239,159,39,.12);display:flex;align-items:center;justify-content:center;font-size:14px;">🦴</div>
+                                    <div>
+                                        <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Collagène</div>
+                                        <div style="font-size:10px;color:var(--text-tertiary);">Articulations, peau, récupération</div>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch" style="flex-shrink:0;">
+                                    <input type="checkbox" id="supp-collagen">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <!-- Magnésium -->
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <div style="width:30px;height:30px;border-radius:8px;background:rgba(124,58,237,.12);display:flex;align-items:center;justify-content:center;font-size:14px;">💊</div>
+                                    <div>
+                                        <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Magnésium</div>
+                                        <div style="font-size:10px;color:var(--text-tertiary);">Récupération, sommeil, crampes</div>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch" style="flex-shrink:0;">
+                                    <input type="checkbox" id="supp-magnesium">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <!-- Oméga-3 -->
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <div style="width:30px;height:30px;border-radius:8px;background:rgba(59,139,212,.12);display:flex;align-items:center;justify-content:center;font-size:14px;">🐟</div>
+                                    <div>
+                                        <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Oméga-3</div>
+                                        <div style="font-size:10px;color:var(--text-tertiary);">Anti-inflammatoire, santé cardio</div>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch" style="flex-shrink:0;">
+                                    <input type="checkbox" id="supp-omega3">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Résumé des données profil utilisées -->
+            <div id="nutri-profile-summary" style="background:var(--card-bg-alt);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--text-tertiary);line-height:1.8;margin-top:4px;">
+                <!-- Rempli par JS -->
+            </div>
+            <!-- Heure de séance détectée -->
+            <div id="nutri-workout-time-info" style="display:none;background:rgba(79,110,247,.06);border:1px solid rgba(79,110,247,.18);border-radius:10px;padding:8px 12px;font-size:11px;color:var(--primary);margin-top:6px;line-height:1.6;">
+                <!-- Rempli par JS -->
+            </div>
+        </div>
+
+        <!-- ── SECTION 2 : Plan généré ── -->
+        <div class="ai-section-card" id="nutri-plan-card" style="margin-top:10px;">
+            <div class="ai-section-head">
+                <i class="fas fa-calendar-alt" style="color:#0FA86A;"></i>
+                Plan alimentaire 7 jours
+            </div>
+            <div id="nutri-plan-content">
+                <div class="ai-empty-state">
+                    <i class="fas fa-utensils"></i>
+                    <span>Personnalisez vos paramètres ci-dessus puis générez votre plan</span>
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+                <button class="ai-cta-btn" onclick="generateNutritionPlan()"
+                    style="background:linear-gradient(135deg,#0FA86A,#059669);margin:0;">
+                    <i class="fas fa-magic"></i>
+                    Générer le plan
+                </button>
+                <button class="ai-cta-btn" onclick="_exportNutritionPlan()"
+                    id="nutri-export-btn" style="display:none;background:linear-gradient(135deg,#4F6EF7,#7C3AED);margin:0;">
+                    <i class="fas fa-file-export"></i>
+                    Exporter
+                </button>
+            </div>
+        </div>
+
+        <!-- ── SECTION 3 : Recette détaillée (modal inline) ── -->
+        <div id="nutri-recipe-card" class="ai-section-card" style="display:none;margin-top:10px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                <div class="ai-section-head" style="margin:0;">
+                    <i class="fas fa-book-open" style="color:#EF9F27;"></i>
+                    <span id="nutri-recipe-title">Recette</span>
+                </div>
+                <button onclick="document.getElementById('nutri-recipe-card').style.display='none'"
+                    style="background:none;border:none;cursor:pointer;color:var(--text-tertiary);font-size:16px;">×</button>
+            </div>
+            <div id="nutri-recipe-content"></div>
+        </div>
+
+    </div>
+
     <!-- Not configured state -->
     <div id="ai-not-configured" class="ai-not-configured" style="display:none;">
         <div class="ai-not-configured-icon">
             <i class="fas fa-robot"></i>
         </div>
-        <div class="ai-not-configured-title">IA non configurée</div>
-        <div class="ai-not-configured-desc">Configurez Groq, Gemini ou Claude dans les paramètres pour accéder au Coach IA.</div>
+        <div class="ai-not-configured-title" data-i18n="ai_not_configured">IA non configurée</div>
+        <div class="ai-not-configured-desc" data-i18n="ai_not_configured_desc">Configurez Groq, Gemini ou Claude dans les paramètres pour accéder au Coach IA.</div>
         <button class="ai-cta-btn" onclick="showSettingsModal(); setTimeout(()=>showModal('ai-config-modal'),300);">
-            <i class="fas fa-cog"></i> Configurer l'IA
+            <i class="fas fa-cog"></i> <span data-i18n="configure_ai">Configurer l'IA</span>
         </button>
     </div>
 
@@ -13135,7 +13574,7 @@ input:checked + .slider:before {
                 </div>
 
                 <!-- ── CHRONO COLLAPSIBLE ─────────────────────────────── -->
-                <div id="workout-chrono-wrap" style="margin:0 14px 8px;">
+                <div id="workout-chrono-wrap" style="margin:2px 14px 6px;">
                     <div onclick="_toggleChronoCollapse()" style="display:flex;align-items:center;justify-content:space-between;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:8px 14px;cursor:pointer;">
                         <div style="display:flex;align-items:center;gap:12px;">
                             <div class="chrono-stat" style="display:flex;flex-direction:column;align-items:center;">
@@ -13168,12 +13607,7 @@ input:checked + .slider:before {
                         <i class="fas fa-flag-checkered" style="font-size:16px;"></i>
                         <span>Terminer</span>
                     </button>
-                    <button onclick="showAutoGym()"
-                        style="grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 10px;background:linear-gradient(135deg,rgba(15,168,106,.12),rgba(79,110,247,.12));border:1.5px solid rgba(15,168,106,.3);border-radius:14px;font-size:12px;font-weight:800;cursor:pointer;color:var(--success);">
-                        <i class="fas fa-dumbbell" style="font-size:14px;"></i>
-                        <span>AutoGym — Détection auto</span>
-                        <span style="font-size:9px;background:rgba(15,168,106,.15);padding:2px 6px;border-radius:10px;color:var(--success);">IA</span>
-                    </button>
+
                 </div>
 
             </div>
@@ -14121,7 +14555,7 @@ input:checked + .slider:before {
             <div class="modal-handle"></div>
             <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
                 <div>
-                    <h3 class="modal-title">Paramètres</h3>
+                    <h3 class="modal-title" data-i18n="settings">Paramètres</h3>
                     <div class="modal-subtitle">Personnaliser l'application</div>
                 </div>
                 <button class="modal-close" onclick="hideModal('settings-modal')">×</button>
@@ -14129,6 +14563,74 @@ input:checked + .slider:before {
         </div>
         <div class="modal-body">
             <div class="settings-list">
+                <!-- LANGUE ET RÉGION -->
+                <div class="modal-section-head">Langue et région</div>
+
+                <!-- Switch ON/OFF i18n -->
+                <div class="settings-item" onclick="toggleI18n()" style="cursor:pointer;">
+                    <div class="settings-row-icon" style="background:rgba(79,110,247,.1);color:var(--primary);">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="settings-item-info">
+                        <div class="settings-item-title">Multilangue</div>
+                        <div class="settings-item-description" id="i18n-toggle-desc">Actif — interface traduite</div>
+                    </div>
+                    <label class="toggle-switch" style="flex-shrink:0;" onclick="event.stopPropagation();">
+                        <input type="checkbox" id="i18n-master-toggle" checked onchange="toggleI18n(this.checked)">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Sélecteur de langue (visible seulement si i18n actif) -->
+                <div id="i18n-lang-panel" style="margin:0 0 4px;">
+                    <div style="padding:12px 14px;background:var(--card-bg-alt);border-radius:14px;border:1px solid var(--border);">
+                        <!-- Langue -->
+                        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:10px;">Langue de l'interface</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px;">
+                            <button onclick="setLocale('fr')" id="lang-btn-fr" class="lang-card active-lang-card">
+                                <span style="font-size:20px;">🇫🇷</span>
+                                <span style="font-size:12px;font-weight:700;">Français</span>
+                                <i id="lang-check-fr" class="fas fa-check-circle" style="font-size:11px;color:var(--primary);"></i>
+                            </button>
+                            <button onclick="setLocale('en')" id="lang-btn-en" class="lang-card">
+                                <span style="font-size:20px;">🇬🇧</span>
+                                <span style="font-size:12px;font-weight:700;">English</span>
+                                <i id="lang-check-en" class="fas fa-check-circle" style="font-size:11px;color:var(--primary);display:none;"></i>
+                            </button>
+                            <button onclick="setLocale('es')" id="lang-btn-es" class="lang-card">
+                                <span style="font-size:20px;">🇪🇸</span>
+                                <span style="font-size:12px;font-weight:700;">Español</span>
+                                <i id="lang-check-es" class="fas fa-check-circle" style="font-size:11px;color:var(--primary);display:none;"></i>
+                            </button>
+                            <button onclick="setLocale('de')" id="lang-btn-de" class="lang-card">
+                                <span style="font-size:20px;">🇩🇪</span>
+                                <span style="font-size:12px;font-weight:700;">Deutsch</span>
+                                <i id="lang-check-de" class="fas fa-check-circle" style="font-size:11px;color:var(--primary);display:none;"></i>
+                            </button>
+                            <button onclick="setLocale('ar')" id="lang-btn-ar" class="lang-card" style="grid-column:1/-1;">
+                                <span style="font-size:20px;">🇸🇦</span>
+                                <span style="font-size:12px;font-weight:700;">العربية</span>
+                                <i id="lang-check-ar" class="fas fa-check-circle" style="font-size:11px;color:var(--primary);display:none;"></i>
+                            </button>
+                        </div>
+
+                        <!-- Unité de poids -->
+                        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:8px;">Unité de poids</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                            <button id="unit-kg-btn" onclick="_setWeightUnit('kg')" class="lang-card active-lang-card">
+                                <span style="font-size:18px;font-weight:900;">kg</span>
+                                <span style="font-size:11px;">Kilogrammes</span>
+                                <i id="unit-check-kg" class="fas fa-check-circle" style="font-size:11px;color:var(--primary);"></i>
+                            </button>
+                            <button id="unit-lbs-btn" onclick="_setWeightUnit('lbs')" class="lang-card">
+                                <span style="font-size:18px;font-weight:900;">lbs</span>
+                                <span style="font-size:11px;">Livres</span>
+                                <i id="unit-check-lbs" class="fas fa-check-circle" style="font-size:11px;color:var(--primary);display:none;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="modal-section-head">Apparence</div>
                 <!-- Thème -->
                 <div class="settings-item" onclick="showThemeSelection()" style="cursor: pointer;">
@@ -15483,6 +15985,8 @@ function initApp() {
 
     // 4. Chargements & affichages synchrones
     calculateNutritionNeeds();
+    const aiWrapLoad = document.getElementById('profile-ai-insights-wrap');
+    if (aiWrapLoad && _hasAnyKey()) aiWrapLoad.style.display = 'block';
     updateHomeScreenDisplay();
     updateDailyNutritionDisplay();
     loadMuscleGroups();
@@ -16292,21 +16796,38 @@ function calculateNutritionNeeds() {
     const bmi = weight / (heightInMeters * heightInMeters);
     const sexeFactor = gender === 'male' ? 1 : 0;
     
-    let bodyFat = (1.20 * bmi) + (0.23 * age) - (10.8 * sexeFactor) - 5.4;
-    
-    // Arrondir et limiter à des valeurs réalistes
-    bodyFat = Math.min(45, Math.max(6, Math.round(bodyFat * 10) / 10));
+    // Utiliser la valeur saisie manuellement si disponible
+    const bodyfatInputEl = document.getElementById('profile-bodyfat-input');
+    let bodyFat;
+    if (bodyfatInputEl?.dataset.userEdited && bodyfatInputEl.value) {
+        bodyFat = parseFloat(bodyfatInputEl.value);
+        if (isNaN(bodyFat) || bodyFat < 3 || bodyFat > 60) bodyFat = null;
+    }
+    if (!bodyFat) {
+        // Formule Deurenberg (IMC + âge + sexe) — estimation standard
+        // Pour athlètes : peut sous-estimer. Saisie manuelle recommandée.
+        bodyFat = (1.20 * bmi) + (0.23 * age) - (10.8 * sexeFactor) - 5.4;
+    }
+    // Limiter à des valeurs réalistes
+    bodyFat = Math.min(50, Math.max(4, Math.round(bodyFat * 10) / 10));
     
     // Mettre à jour le champ input (ÉCRASE TOUTE SAISIE MANUELLE)
     const bodyfatInput = document.getElementById('profile-bodyfat-input');
-    if (bodyfatInput) {
+    if (bodyfatInput && !bodyfatInput.dataset.userEdited) {
+        // Seulement si l'utilisateur n'a pas saisi manuellement
         bodyfatInput.value = bodyFat;
-        bodyfatInput.readOnly = true;
-        bodyfatInput.style.backgroundColor = 'var(--primary-glow)';
-        bodyfatInput.style.color = 'var(--primary)';
-        bodyfatInput.style.fontWeight = '700';
-        bodyfatInput.style.cursor = 'default';
-        bodyfatInput.title = 'Valeur calculée automatiquement';
+    }
+    if (bodyfatInput) {
+        bodyfatInput.style.backgroundColor = '';
+        bodyfatInput.style.color = '';
+        bodyfatInput.style.fontWeight = '';
+        bodyfatInput.style.cursor = '';
+        bodyfatInput.readOnly = false;
+        bodyfatInput.title = 'Estimé automatiquement — modifiable';
+        bodyfatInput.oninput = function() {
+            this.dataset.userEdited = '1';
+            calculateNutritionNeeds();
+        };
     }
     
     
@@ -16669,6 +17190,41 @@ function calculateNutritionNeeds() {
     
     updateDailyNutritionDisplay();
     saveToLocalStorage();
+}
+
+async function _enrichProfileWithAI() {
+    if (!_hasAnyKey()) return;
+    const up = typeof userProfile !== 'undefined' ? userProfile : {};
+    const insightEl = document.getElementById('profile-ai-insights');
+    if (!insightEl) return;
+    insightEl.innerHTML = '<div style="font-size:11px;color:var(--text-tertiary);"><span class="ai-spinner"></span> Analyse IA…</div>';
+
+    const prompt = `Profil fitness:
+- ${up.firstName || 'Utilisateur'}, ${up.age || '?'} ans, ${up.gender === 'female' ? 'femme' : 'homme'}
+- ${up.weight || '?'}kg / ${up.height || '?'}cm, IMC: ${up.bmi?.toFixed(1) || '?'}, MG: ${up.bodyFat || '?'}%
+- Objectif: ${up.trainingType || '?'}, Niveau: ${up.level || '?'}
+- Calories cibles: ${up.calorieNeeds || '?'} kcal, Protéines: ${up.proteinNeeds || '?'}g
+- Masse maigre: ${up.leanMass || '?'}kg
+
+En 3 bullet points courts (•), donne des conseils personnalisés et actionnables sur:
+1. La nutrition (basée sur son profil réel)
+2. L'entraînement (adapté à son niveau et objectif)
+3. Un point de vigilance ou d'optimisation clé
+
+Réponds en français, 1-2 phrases max par bullet, direct et concret.`;
+
+    const cfg   = _selectProvider('fast');
+    const reply = await _callAI([{ role: 'user', content: prompt }], cfg,
+        'Tu es coach fitness expert. Réponds en français, sois concis et actionnable.');
+
+    if (reply && !reply.startsWith('__ERROR__')) {
+        const _lines = reply.split(/\r?\n/).filter(l => l.trim());
+        insightEl.innerHTML = _lines.map(function(line) {
+            return '<div style="padding:4px 0;font-size:12px;color:var(--text-primary);line-height:1.6;">' + line + '</div>';
+        }).join('');
+    } else {
+        insightEl.innerHTML = '';
+    }
 }
 
 function saveProfile() {
@@ -17865,7 +18421,7 @@ function loadCustomWorkouts() {
                     </span>
                     ${workout.programmedData?.lastProgrammed ? `
                         <span style="font-size: 10px; color: var(--text-secondary);">
-                            Dernière modif: ${new Date(workout.programmedData.lastProgrammed).toLocaleDateString('fr-FR')}
+                            Dernière modif: ${new Date(workout.programmedData.lastProgrammed).toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR')}
                         </span>
                     ` : ''}
                     ${totalSets > 0 ? `
@@ -19613,13 +20169,19 @@ function updateWorkoutDisplay() {
                     <i class="fas fa-sticky-note"></i>
                 </button>
                 
-                ${exercise.videoUrl ? `
-                    <button class="action-btn" onclick="window.open('${exercise.videoUrl}', '_blank')" 
-                            title="Voir la vidéo de l'exercice" 
+                ${(exercise.videoUrl || (getAllExercises().find(e => e.id === exercise.id || e.name === exercise.name)?.videoUrl)) ? `
+                    <button class="action-btn" onclick="window.open('${exercise.videoUrl || getAllExercises().find(e => e.id === exercise.id || e.name === exercise.name)?.videoUrl}', '_blank')" 
+                            title="Voir la vidéo sur YouTube" 
                             style="background: linear-gradient(135deg, #FF0000, #CC0000); color: white;">
-                        <i class="fas fa-play"></i>
+                        <i class="fab fa-youtube"></i>
                     </button>
-                ` : ''}
+                ` : `
+                    <button class="action-btn" onclick="window.open('https://www.youtube.com/results?search_query=' + encodeURIComponent(exercise.name + ' technique exercice'), '_blank')" 
+                            title="Chercher sur YouTube" 
+                            style="background: linear-gradient(135deg, #FF4444, #CC0000); color: white; opacity:0.7;">
+                        <i class="fab fa-youtube"></i>
+                    </button>
+                `}
                 
                 <button class="action-btn" onclick="toggleExerciseCompactMode(${exerciseIndex})" 
                         title="${exercise.compactModeOverride === true ? 'Mode compact forcé' : exercise.compactModeOverride === false ? 'Mode normal forcé' : 'Utilise le paramètre global'}" 
@@ -20308,16 +20870,14 @@ function updateSetDisplay(exerciseIndex, setIndex) {
         setElement.style.color = '';
     }
     
-    // Désactiver/activer les inputs
+    // Inputs toujours éditables pendant la séance (se figent seulement à la sauvegarde finale)
     const inputs = setElement.querySelectorAll('.number-input');
-    inputs.forEach(input => {
-        input.disabled = set.completed;
-    });
-    
+    inputs.forEach(input => { input.disabled = false; });
+
     const completeButton = setElement.querySelector('.action-btn');
     if (completeButton) {
-        completeButton.disabled = set.completed;
-        completeButton.style.opacity = set.completed ? '0.5' : '1';
+        completeButton.disabled = false;
+        completeButton.style.opacity = '1';
     }
     
     const checkbox = setElement.querySelector('.checkbox');
@@ -22575,7 +23135,7 @@ function updateMealsList() {
             <div class="meal-calories-improved">
                 ${meal.foods.length} aliment(s) • ${Math.round(mealCalories)} kcal
                 <span style="font-size: var(--font-size-xs); color: var(--text-secondary); margin-left: 10px;">
-                    ${new Date(meal.date).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}
+                    ${new Date(meal.date).toLocaleTimeString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', {hour: '2-digit', minute: '2-digit'})}
                 </span>
             </div>
             <div class="meal-macros-improved">
@@ -24336,7 +24896,7 @@ function loadWorkoutHistory() {
         historyItem.style.cssText = 'margin-bottom: 20px; padding: 20px;';
         
         const date = new Date(entry.date);
-        const formattedDate = date.toLocaleDateString('fr-FR', {
+        const formattedDate = date.toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
@@ -24547,7 +25107,7 @@ function loadEvolutionChart() {
     const data = workoutHistory.slice(0, 12).reverse();
     const labels = data.map(w => {
         const d = new Date(w.date);
-        return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+        return d.toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', { day: '2-digit', month: 'short' });
     });
     const values = data.map(w => w.stats.totalWeight || 0);
     const maxVal = Math.max(...values, 1);
@@ -24678,7 +25238,7 @@ function loadExercisesChart() {
     const sortedHistory = [...workoutHistory].sort((a, b) => new Date(a.date) - new Date(b.date));
     
     sortedHistory.forEach(session => {
-        const sessionDate = new Date(session.date).toLocaleDateString('fr-FR', { 
+        const sessionDate = new Date(session.date).toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', { 
             day: '2-digit', 
             month: 'short'
         });
@@ -24850,7 +25410,7 @@ function selectExerciseFromList(exerciseName) {
     const isCardio = isCardioExercise(dummyExercise);
     
     sortedHistory.forEach(session => {
-        const sessionDate = new Date(session.date).toLocaleDateString('fr-FR', { 
+        const sessionDate = new Date(session.date).toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', { 
             day: '2-digit', 
             month: 'short'
         });
@@ -24998,7 +25558,7 @@ function displayExerciseDetail(exerciseName, allStats) {
     const pts = stats.history.map(h => {
         let label = h.date || '';
         if (label.includes('T')) {
-            label = new Date(label).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+            label = new Date(label).toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', { day: '2-digit', month: 'short' });
         }
         if (isCardio) {
             const v = h.speed || h.bestSet?.speed || h.distance || 0;
@@ -25131,7 +25691,7 @@ function showWorkoutHistoryDetail(index) {
     if (!entry) return;
     
     const date = new Date(entry.date);
-    const formattedDate = date.toLocaleDateString('fr-FR', {
+    const formattedDate = date.toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', {
         weekday: 'long',
         day: '2-digit',
         month: 'long',
@@ -25602,7 +26162,7 @@ function generateNutritionHistoryHTML(period) {
                             </div>
                             <div class="food-item-improved-details">
                                 <span>${meal.foods.length} aliments</span>
-                                <span>${mealDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}</span>
+                                <span>${mealDate.toLocaleTimeString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', {hour: '2-digit', minute: '2-digit'})}</span>
                             </div>
                             ${meal.notes ? `
                                 <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-top: 8px; font-style: italic;">
@@ -25655,7 +26215,7 @@ function getNutritionDataForPeriod(period) {
         let dateKey;
         
         if (period === 'day') {
-            dateKey = mealDate.toLocaleDateString('fr-FR', {
+            dateKey = mealDate.toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit'
@@ -25664,10 +26224,10 @@ function getNutritionDataForPeriod(period) {
             // Grouper par semaine (lundi-dimanche)
             const weekStart = new Date(mealDate);
             weekStart.setDate(mealDate.getDate() - mealDate.getDay() + 1); // Lundi
-            dateKey = `Semaine du ${weekStart.toLocaleDateString('fr-FR', {day: '2-digit', month: '2-digit'})}`;
+            dateKey = `Semaine du ${weekStart.toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', {day: '2-digit', month: '2-digit'})}`;
         } else if (period === 'month') {
             // Grouper par mois
-            dateKey = mealDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+            dateKey = mealDate.toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', { month: 'long', year: 'numeric' });
         }
         
         if (!groupedData[dateKey]) {
@@ -25964,13 +26524,13 @@ function renderExerciseCharts(exerciseName, containerId, metric = 'oneRM') {
     // Deduplicate dates
     const seen = new Set();
     const unique = history.filter(h => {
-        const k = new Date(h.date).toLocaleDateString('fr-FR');
+        const k = new Date(h.date).toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR');
         if (seen.has(k)) return false;
         seen.add(k); return true;
     });
 
     const labels = unique.map(h =>
-        new Date(h.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })
+        new Date(h.date).toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', { day: '2-digit', month: '2-digit' })
     );
     const values = unique.map(h => metric === 'oneRM' ? h.bestSet.oneRM : h.bestSet.volume);
 
@@ -26628,7 +27188,7 @@ function generateNutritionHistoryHTML(period) {
                             </div>
                             <div class="food-item-improved-details">
                                 <span>${meal.foods.length} aliments</span>
-                                <span>${mealDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}</span>
+                                <span>${mealDate.toLocaleTimeString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', {hour: '2-digit', minute: '2-digit'})}</span>
                             </div>
                             ${meal.notes ? `
                                 <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-top: 8px; font-style: italic;">
@@ -26680,7 +27240,7 @@ function getNutritionDataForPeriod(period) {
         let dateKey;
         
         if (period === 'day') {
-            dateKey = mealDate.toLocaleDateString('fr-FR', {
+            dateKey = mealDate.toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit'
@@ -26689,10 +27249,10 @@ function getNutritionDataForPeriod(period) {
             // Grouper par semaine (lundi-dimanche)
             const weekStart = new Date(mealDate);
             weekStart.setDate(mealDate.getDate() - mealDate.getDay() + 1); // Lundi
-            dateKey = `Semaine du ${weekStart.toLocaleDateString('fr-FR', {day: '2-digit', month: '2-digit'})}`;
+            dateKey = `Semaine du ${weekStart.toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', {day: '2-digit', month: '2-digit'})}`;
         } else if (period === 'month') {
             // Grouper par mois
-            dateKey = mealDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+            dateKey = mealDate.toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', { month: 'long', year: 'numeric' });
         }
         
         if (!groupedData[dateKey]) {
@@ -26770,7 +27330,7 @@ function showMealDetail(mealId) {
     }
     
     const date = new Date(meal.date);
-    const formattedDate = date.toLocaleDateString('fr-FR', {
+    const formattedDate = date.toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', {
         weekday: 'long',
         day: '2-digit',
         month: 'long',
@@ -28042,7 +28602,7 @@ function _updateTodayWidget() {
     // Date
     const now = new Date();
     const dateEl = _el('_today_date');
-    if (dateEl) dateEl.textContent = now.toLocaleDateString('fr-FR', {weekday:'long',day:'numeric',month:'long'});
+    if (dateEl) dateEl.textContent = now.toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', {weekday:'long',day:'numeric',month:'long'});
 
     // Calories
     const calEl = _el('_w_cal_val');
@@ -28199,7 +28759,7 @@ function _updateWeightChart() {
     const areaD = pathD + ` L ${toX(pts.length-1).toFixed(1)} ${H} L ${toX(0).toFixed(1)} ${H} Z`;
 
     // Date labels first + last
-    const fmtDate = d => { const dt = new Date(d); return dt.toLocaleDateString('fr-FR', {day:'2-digit',month:'short'}); };
+    const fmtDate = d => { const dt = new Date(d); return dt.toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', {day:'2-digit',month:'short'}); };
 
     svg.innerHTML = `
         <defs>
@@ -29031,7 +29591,7 @@ function _triggerORAutoDetect() {
 }
 
 // ── Appel API générique ──────────────────────────────────────
-async function _callAI(messages, cfg, systemPrompt) {
+async function _callAI(messages, cfg, systemPrompt, maxTokens) {
     cfg = cfg || _aiConfig;
     const p = AI_PROVIDERS[cfg.provider];
     if (!p) return '__ERROR__Fournisseur inconnu';
@@ -29052,7 +29612,15 @@ async function _callAI(messages, cfg, systemPrompt) {
             for (const model of modelsToTry) {
                 url     = p.buildEndpoint(cfg.apiKey, model);
                 headers = { 'Content-Type': 'application/json' };
-                body    = p.buildBody(model, fullMessages);
+                if (maxTokens) {
+                    const base = p.buildBody(model, fullMessages);
+                    // Gemini uses maxOutputTokens
+                    if (base.generationConfig) base.generationConfig.maxOutputTokens = maxTokens;
+                    else base.generationConfig = { maxOutputTokens: maxTokens };
+                    body = base;
+                } else {
+                    body = p.buildBody(model, fullMessages);
+                }
 
                 const resp = await fetch(url, { method:'POST', headers, body: JSON.stringify(body) });
                 if (resp.status === 429 || resp.status === 503) {
@@ -29077,7 +29645,11 @@ async function _callAI(messages, cfg, systemPrompt) {
         } else {
             url     = p.endpoint;
             headers = { 'Content-Type': 'application/json', ...p.authHeader(cfg.apiKey) };
-            body    = p.buildBody(cfg.model, fullMessages);
+            if (maxTokens) {
+                body = { ...p.buildBody(cfg.model, fullMessages), max_tokens: maxTokens };
+            } else {
+                body = p.buildBody(cfg.model, fullMessages);
+            }
 
             const resp = await fetch(url, { method:'POST', headers, body: JSON.stringify(body) });
             if (!resp.ok) {
@@ -29552,6 +30124,7 @@ function switchAITab(tab, btn) {
     const el = document.getElementById(`ai-tab-${tab}`);
     if (el) el.classList.add('active');
     if (tab === 'chat' && !_aiChatMessages.length) _aiChatWelcome();
+    if (tab === 'nutrition') setTimeout(_initNutriTab, 50);
 }
 
 // ── Quick action depuis dashboard ────────────────────────────
@@ -30432,10 +31005,10 @@ async function captureAndAnalyze() {
             role: 'user',
             content: [
                 { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: _scanImageBase64 } },
-                { type: 'text', text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}' }
+                { type: 'text', text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}. IMPORTANT: tous les noms d\'aliments DOIVENT être en français.' }
             ]
         }];
-        reply = await _callAI(messages, scanCfg, 'Tu es nutritionniste. Réponds UNIQUEMENT avec du JSON valide.');
+        reply = await _callAI(messages, scanCfg, 'Tu es nutritionniste français. Réponds UNIQUEMENT avec du JSON valide. Les noms d\'aliments sont TOUJOURS en français.');
 
     } else if (scanProvider === 'openrouter' && _scanImageBase64) {
         // OpenRouter vision — format OpenAI image_url
@@ -30452,7 +31025,7 @@ async function captureAndAnalyze() {
                         role: 'user',
                         content: [
                             { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${_scanImageBase64}` } },
-                            { type: 'text', text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}' }
+                            { type: 'text', text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}. IMPORTANT: noms d\'aliments en français uniquement.' }
                         ]
                     }]
                 };
@@ -30478,7 +31051,7 @@ async function captureAndAnalyze() {
                 const url  = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${scanCfg.apiKey}`;
                 const body = { contents: [{ parts: [
                     { inline_data: { mime_type: 'image/jpeg', data: _scanImageBase64 } },
-                    { text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}' }
+                    { text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}. IMPORTANT: noms en français uniquement.' }
                 ]}]};
                 const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
                 const data = await resp.json();
@@ -30496,7 +31069,7 @@ async function captureAndAnalyze() {
         const prompt = hasPhoto
             ? 'Je viens de prendre en photo mon assiette. Génère un repas fictif équilibré réaliste avec 3-5 aliments typiques d\'un déjeuner. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"},{"name":"Riz basmati","quantity_g":150,"calories":174,"protein":3.6,"carbs":38,"fat":0.3,"category":"cereale"},{"name":"Haricots verts","quantity_g":100,"calories":35,"protein":1.8,"carbs":7,"fat":0.1,"category":"legume"}]}'
             : 'Génère un repas équilibré typique avec 3-5 aliments. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}';
-        reply = await _callAI([{role:'user', content: prompt}], scanCfg, 'Tu es nutritionniste. Réponds UNIQUEMENT avec du JSON valide.');
+        reply = await _callAI([{role:'user', content: prompt}], scanCfg, 'Tu es nutritionniste. Réponds UNIQUEMENT avec du JSON valide. Les noms d\'aliments sont TOUJOURS dans la langue de l\'utilisateur: ' + (window._i18nAILang || 'Français (fr)') + '. Jamais en anglais sauf si la langue est l\'anglais.');
         if (status && !reply?.startsWith('__ERROR__')) {
             status.textContent = hasPhoto ? 'Groq : pas de vision — repas estimé généré' : 'Repas type généré';
         }
@@ -30643,7 +31216,7 @@ let _walkLastAccel   = null;
 let _walkAccelBuf    = [];
 let _walkWakeLock    = null;   // WakeLock API pour empêcher la veille
 let _walkVisHideTime = null;   // heure où l'écran s'est éteint
-const _WALK_STEP_THRESHOLD = 1.2;
+const _WALK_STEP_THRESHOLD = 0.5; // abaissé pour capturer les pas légers
 
 function initWalkModal() {
     const goalEl = document.getElementById('walk-goal-advice');
@@ -30907,11 +31480,11 @@ function _attachMotion() {
         if (!acc) return;
         const mag = Math.sqrt((acc.x||0)**2 + (acc.y||0)**2 + (acc.z||0)**2);
         _walkAccelBuf.push(mag);
-        if (_walkAccelBuf.length > 5) _walkAccelBuf.shift();
-        if (_walkAccelBuf.length < 3) return;
+        if (_walkAccelBuf.length > 8) _walkAccelBuf.shift();  // fenêtre plus large
+        if (_walkAccelBuf.length < 4) return;
         const avg = _walkAccelBuf.reduce((a,b) => a+b, 0) / _walkAccelBuf.length;
         const delta = Math.abs(mag - avg);
-        if (delta > _WALK_STEP_THRESHOLD && (!_walkLastAccel || Date.now() - _walkLastAccel > 350)) {
+        if (delta > _WALK_STEP_THRESHOLD && (!_walkLastAccel || Date.now() - _walkLastAccel > 220)) {
             _walkSteps++;
             _walkLastAccel = Date.now();
             _updateWalkDisplay();
@@ -31135,7 +31708,7 @@ function initVoiceRecognition() {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) return null;
     const r = new SR();
-    r.lang = 'fr-FR'; r.continuous = false; r.interimResults = false;
+    r.lang = (_localeMeta ? _localeMeta.speechCode : 'fr-FR'); r.continuous = false; r.interimResults = false;
     r.onresult = e => { _parseVoiceCommand(e.results[0][0].transcript.toLowerCase()); };
     r.onerror  = e => { showNotification('Erreur vocale: '+e.error,'error'); _voiceActive=false; _updateVoiceBtn(); };
     r.onend    = () => { _voiceActive=false; _updateVoiceBtn(); };
@@ -31308,7 +31881,7 @@ function exportReportPDF() {
     if (!resp || !resp.innerHTML) { showNotification('Générez d\'abord le rapport IA','warning'); return; }
     const w = window.open('','_blank');
     if (!w) { showNotification('Autorisez les popups pour l\'export PDF','error'); return; }
-    const now = new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+    const now = new Date().toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR',{day:'2-digit',month:'long',year:'numeric'});
     w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
         <title>Rapport IronPlate — ${now}</title>
         <style>
@@ -31325,7 +31898,60 @@ function exportReportPDF() {
             .report strong { font-weight:700; color:#111; }
             .footer { margin-top:32px; font-size:11px; color:#ccc; text-align:center; border-top:1px solid #eee; padding-top:14px; }
             @media print { body { padding:16px; } }
-        </style>
+        
+/* ── i18n language pills (legacy, conservé pour compatibilité) ── */
+.lang-pill {
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--card-bg-alt);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.lang-pill:hover { border-color: var(--primary); color: var(--primary); }
+.lang-pill.active-lang {
+    background: var(--primary-glow);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* ── i18n language cards (nouveau design) ── */
+.lang-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 8px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+}
+.lang-card:hover {
+    border-color: var(--primary);
+    color: var(--text-primary);
+    background: var(--primary-glow);
+    transform: translateY(-1px);
+}
+.lang-card.active-lang-card {
+    border-color: var(--primary);
+    background: var(--primary-glow);
+    color: var(--primary);
+    box-shadow: 0 2px 8px rgba(79,110,247,.15);
+}
+
+
+/* ── Nutrition Plan ── */
+.nutri-day-meals { transition: none; }
+
+</style>
     </head><body>
         <h1>Rapport hebdomadaire IronPlate</h1>
         <div class="sub">Généré le ${now}</div>
@@ -31663,7 +32289,7 @@ function _initAgenticRecog() {
     if (_agenticRecog) return true; // déjà initialisé
 
     _agenticRecog = new SR();
-    _agenticRecog.lang            = 'fr-FR';
+    _agenticRecog.lang = (_localeMeta ? _localeMeta.speechCode : 'fr-FR');
     _agenticRecog.continuous      = true;   // écoute continue
     _agenticRecog.interimResults  = false;  // résultats finaux uniquement
     _agenticRecog.maxAlternatives = 1;
@@ -32131,6 +32757,7 @@ function showAutoGym() {
     if (fab) fab.style.display = 'flex';
     showModal('autogym-modal');
     _agInitCanvas();
+    _agInitMode();
     // Si séance active, pré-charger le premier exercice
     if (typeof activeWorkout !== 'undefined' && activeWorkout?.exercises?.length) {
         const ex = activeWorkout.exercises[0];
@@ -32361,6 +32988,9 @@ function _agSuggestEndSet() {
 function _agValidateSet() {
     if (AG.repCount < 1) { showNotification('Effectuez au moins 1 répétition','warning'); return; }
 
+    // Hook séance libre (sans récursion)
+    if (typeof _agFreeLogHook === 'function') _agFreeLogHook();
+
     // Log
     AG.sessionLog.push({
         exercise: AG.currentExercise?.name || 'Exercice',
@@ -32522,6 +33152,7 @@ function _agSetExercise(name, confidence, silent) {
     if (confidence > 0.5) { badge.style.display = 'block'; }
 
     if (!silent && confidence > 0.7) _agSpeak(ex.name + ' détecté.');
+    if (typeof _agFreeSessionOnExerciseDetect === 'function') _agFreeSessionOnExerciseDetect(ex.name || name);
 }
 
 function _agUpdateRepDisplay() {
@@ -32560,7 +33191,7 @@ function _agSpeak(text) {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
     const utt    = new SpeechSynthesisUtterance(text);
-    utt.lang     = 'fr-FR';
+    utt.lang = (_localeMeta ? _localeMeta.speechCode : 'fr-FR');
     utt.rate     = 1.05;
     utt.pitch    = 1.0;
     utt.volume   = 0.9;
@@ -32640,7 +33271,2257 @@ function _agSaveToWorkout() {
 }
 
 
+
+// ════════════════════════════════════════════════════════════════════
+// AUTOGYM MODE 2 — Détection par caméra + MoveNet (TensorFlow.js)
+//
+// Architecture :
+//  1. Chargement lazy de TF.js + MoveNet (jsdelivr CDN, ~5MB)
+//  2. getUserMedia → video feed
+//  3. MoveNet détecte 17 keypoints à 30fps
+//  4. Analyse des angles articulaires → identification exercice
+//  5. Comptage de reps par oscillation angulaire
+//  6. Même coach IA que Mode 1
+// ════════════════════════════════════════════════════════════════════
+
+const AGV = {
+    mode:        1,           // 1 = accéléromètre, 2 = caméra
+    tfLoaded:    false,
+    tfLoading:   false,
+    detector:    null,        // MoveNet detector instance
+    stream:      null,        // MediaStream
+    rafId:       null,        // requestAnimationFrame ID
+    lastPoseTime:0,
+    fpsCount:    0,
+    fpsTimer:    0,
+    fps:         0,
+    // Pour le comptage de reps par angle
+    angleHistory: {},         // {joint: [angles...]}
+    repAngles:    {},         // {exercice: {joint, range, threshold}}
+    lastAngle:    {},
+    anglePhase:   {},         // 'up' | 'down' per joint
+};
+
+// ── Définition des angles clés par exercice ─────────────────────────
+// joint: les 2 keypoints + le pivot (triplet = angle)
+// threshold: amplitude minimale pour compter une rep (degrés)
+const POSE_EXERCISES = {
+    'Curl biceps': {
+        joint: ['left_shoulder','left_elbow','left_wrist'],
+        range: [40, 160], // angle coude ouvert vs fermé
+        threshold: 60,
+        icon: '💪'
+    },
+    'Squat': {
+        joint: ['left_hip','left_knee','left_ankle'],
+        range: [70, 170], // angle genou
+        threshold: 50,
+        icon: '🦵'
+    },
+    'Pompes': {
+        joint: ['left_shoulder','left_elbow','left_wrist'],
+        range: [50, 160],
+        threshold: 60,
+        icon: '🙌'
+    },
+    'Élévation latérale': {
+        joint: ['left_hip','left_shoulder','left_elbow'],
+        range: [10, 90], // angle épaule
+        threshold: 40,
+        icon: '✈️'
+    },
+    'Hip thrust': {
+        joint: ['left_shoulder','left_hip','left_knee'],
+        range: [100, 170], // angle hanche
+        threshold: 40,
+        icon: '🍑'
+    },
+    'Tractions': {
+        joint: ['left_shoulder','left_elbow','left_wrist'],
+        range: [40, 150],
+        threshold: 60,
+        icon: '⬆️'
+    },
+};
+
+// Keypoints MoveNet (17 points)
+const KP = {
+    nose:0, left_eye:1, right_eye:2, left_ear:3, right_ear:4,
+    left_shoulder:5, right_shoulder:6,
+    left_elbow:7, right_elbow:8,
+    left_wrist:9, right_wrist:10,
+    left_hip:11, right_hip:12,
+    left_knee:13, right_knee:14,
+    left_ankle:15, right_ankle:16
+};
+
+// ── Sélection du mode ────────────────────────────────────────────────
+function _agSwitchMode(mode) {
+    AGV.mode = mode;
+    const z1 = document.getElementById('ag-mode1-zone');
+    const z2 = document.getElementById('ag-mode2-zone');
+    const b1 = document.getElementById('ag-mode1-btn');
+    const b2 = document.getElementById('ag-mode2-btn');
+
+    if (mode === 1) {
+        if (z1) z1.style.display = 'block';
+        if (z2) z2.style.display = 'none';
+        b1.style.background = 'linear-gradient(135deg,#0FA86A,#059669)';
+        b1.style.color = 'white'; b1.style.border = 'none';
+        b2.style.background = 'var(--card-bg-alt)';
+        b2.style.color = 'var(--text-secondary)';
+        b2.style.border = '1.5px solid var(--border)';
+        // Arrêter la caméra si active
+        if (AGV.stream) { AGV.stream.getTracks().forEach(t=>t.stop()); AGV.stream = null; }
+        if (AGV.rafId)  { cancelAnimationFrame(AGV.rafId); AGV.rafId = null; }
+    } else {
+        if (z1) z1.style.display = 'none';
+        if (z2) z2.style.display = 'flex';
+        b2.style.background = 'linear-gradient(135deg,#4F6EF7,#7C3AED)';
+        b2.style.color = 'white'; b2.style.border = 'none';
+        b1.style.background = 'var(--card-bg-alt)';
+        b1.style.color = 'var(--text-secondary)';
+        b1.style.border = '1.5px solid var(--border)';
+    }
+}
+
+// ── Chargement lazy de TF.js + MoveNet ──────────────────────────────
+async function _agLoadTF() {
+    if (AGV.tfLoaded) return true;
+    if (AGV.tfLoading) return false;
+    AGV.tfLoading = true;
+
+    const loading  = document.getElementById('ag-tf-loading');
+    const progress = document.getElementById('ag-tf-progress');
+    if (loading)  loading.style.display = 'block';
+    if (progress) progress.textContent  = 'Chargement moteur vision IA…';
+
+    try {
+        // Étape 1 — Bundle TF.js complet (inclut tf-converter, tf-layers, tf-core, webgl)
+        // Version 4.20.0 confirmée compatible avec pose-detection@2.1.3
+        if (progress) progress.textContent = '1/3 — TensorFlow.js (bundle complet)…';
+        await _agLoadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js');
+        if (progress) progress.textContent = '1/3 — TensorFlow.js ✓';
+
+        // Étape 2 — Backend WebGL (parfois non inclus dans le bundle selon CDN)
+        if (!window.tf?.getBackend || !window.tf.findBackend('webgl')) {
+            await _agLoadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@4.20.0/dist/tf-backend-webgl.min.js');
+        }
+        if (progress) progress.textContent = '2/3 — Pose Detection…';
+
+        // Étape 3 — Modèle de détection de pose (MoveNet)
+        await _agLoadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.min.js');
+        if (progress) progress.textContent = '2/3 — Pose Detection ✓';
+
+        // Initialiser le backend WebGL
+        if (progress) progress.textContent = '3/3 — Initialisation MoveNet Lightning…';
+        await window.tf.setBackend('webgl');
+        await window.tf.ready();
+
+        // Vérification que loadGraphModel est bien disponible
+        if (typeof window.tf.loadGraphModel !== 'function') {
+            throw new Error('tf.loadGraphModel manquant — bundle incomplet');
+        }
+
+        // Créer le détecteur MoveNet Lightning (modèle le plus rapide, ~40ms/frame)
+        AGV.detector = await window.poseDetection.createDetector(
+            window.poseDetection.SupportedModels.MoveNet,
+            {
+                modelType: window.poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
+                enableSmoothing: true,
+                minPoseScore: 0.25
+            }
+        );
+
+        if (loading)  loading.style.display = 'none';
+        AGV.tfLoaded  = true;
+        AGV.tfLoading = false;
+        _agStatus('✅ Vision IA active — MoveNet Lightning');
+        showNotification('🎯 Moteur vision IA chargé !', 'success');
+        return true;
+
+    } catch(e) {
+        AGV.tfLoading = false;
+        AGV.tfLoaded  = false;
+        if (loading) loading.style.display = 'none';
+        const msg = e.message || String(e);
+        _agStatus('❌ ' + msg);
+        console.error('[AutoGym Mode 2]', e);
+        // Proposer fallback Mode 1
+        _agCoachMsg("⚠️ Mode caméra indisponible sur cet appareil. Basculez en Mode 1 (poche) pour utiliser l'accéléromètre.");
+        showNotification('Mode 2 indisponible — utilisez Mode 1', 'warning', 5000);
+        return false;
+    }
+}
+
+function _agLoadScript(src) {
+    return new Promise((resolve, reject) => {
+        if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
+        const s = document.createElement('script');
+        s.src = src; s.async = true;
+        s.onload = resolve;
+        s.onerror = () => reject(new Error('Failed to load: ' + src));
+        document.head.appendChild(s);
+    });
+}
+
+// ── Démarrage Mode 2 ─────────────────────────────────────────────────
+async function _agStartCamera() {
+    _agStatus('Demande accès caméra…');
+
+    // Charger TF.js si pas encore fait
+    const tfOK = await _agLoadTF();
+    if (!tfOK) { _agStatus('❌ Impossible de charger le moteur IA. Vérifiez la connexion.'); return false; }
+
+    // Accéder à la caméra
+    try {
+        AGV.stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'user', width: 640, height: 480 },
+            audio: false
+        });
+        const video = document.getElementById('ag-video');
+        if (!video) return false;
+        video.srcObject = AGV.stream;
+        await video.play();
+
+        // Configurer le canvas de pose
+        const poseCanvas = document.getElementById('ag-pose-canvas');
+        if (poseCanvas) {
+            poseCanvas.width  = video.videoWidth  || 640;
+            poseCanvas.height = video.videoHeight || 480;
+        }
+
+        _agStatus('📷 Caméra active — Commencez votre exercice');
+        return true;
+    } catch(e) {
+        _agStatus('❌ Accès caméra refusé : ' + e.message);
+        return false;
+    }
+}
+
+// ── Boucle de détection de pose ──────────────────────────────────────
+async function _agPoseLoop() {
+    if (!AG.active || AGV.mode !== 2) return;
+
+    const video  = document.getElementById('ag-video');
+    const canvas = document.getElementById('ag-pose-canvas');
+    if (!video || !canvas || !AGV.detector) { AGV.rafId = requestAnimationFrame(_agPoseLoop); return; }
+
+    const ctx = canvas.getContext('2d');
+    const now = performance.now();
+
+    // Limiter à 30fps
+    if (now - AGV.lastPoseTime < 33) { AGV.rafId = requestAnimationFrame(_agPoseLoop); return; }
+    AGV.lastPoseTime = now;
+
+    // Calculer FPS
+    AGV.fpsCount++;
+    if (now - AGV.fpsTimer > 1000) {
+        AGV.fps = AGV.fpsCount;
+        AGV.fpsCount = 0;
+        AGV.fpsTimer = now;
+        const fpsEl = document.getElementById('ag-pose-fps');
+        if (fpsEl) fpsEl.textContent = AGV.fps + ' fps';
+    }
+
+    try {
+        // Détecter les poses
+        const poses = await AGV.detector.estimatePoses(video, { flipHorizontal: true });
+
+        // Effacer le canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (poses.length > 0) {
+            const pose = poses[0];
+            const kps  = pose.keypoints;
+
+            // Dessiner le squelette
+            _agDrawSkeleton(ctx, kps, canvas.width, canvas.height);
+
+            // Analyser les angles et compter les reps
+            _agAnalyzePose(kps);
+        }
+    } catch(e) {
+        // Erreur silencieuse (frame corrompue, etc.)
+    }
+
+    AGV.rafId = requestAnimationFrame(_agPoseLoop);
+}
+
+// ── Dessin du squelette ──────────────────────────────────────────────
+const SKELETON_PAIRS = [
+    ['left_shoulder','right_shoulder'],
+    ['left_shoulder','left_elbow'], ['left_elbow','left_wrist'],
+    ['right_shoulder','right_elbow'], ['right_elbow','right_wrist'],
+    ['left_shoulder','left_hip'], ['right_shoulder','right_hip'],
+    ['left_hip','right_hip'],
+    ['left_hip','left_knee'], ['left_knee','left_ankle'],
+    ['right_hip','right_knee'], ['right_knee','right_ankle'],
+];
+
+function _agDrawSkeleton(ctx, kps, W, H) {
+    const scaleX = W / (document.getElementById('ag-video')?.videoWidth  || W);
+    const scaleY = H / (document.getElementById('ag-video')?.videoHeight || H);
+
+    // Connexions
+    ctx.strokeStyle = 'rgba(15,168,106,0.85)';
+    ctx.lineWidth   = 2.5;
+    ctx.lineCap     = 'round';
+
+    SKELETON_PAIRS.forEach(([a, b]) => {
+        const kpA = kps[KP[a]], kpB = kps[KP[b]];
+        if (!kpA || !kpB) return;
+        if ((kpA.score||0) < 0.3 || (kpB.score||0) < 0.3) return;
+        ctx.beginPath();
+        ctx.moveTo(kpA.x * scaleX, kpA.y * scaleY);
+        ctx.lineTo(kpB.x * scaleX, kpB.y * scaleY);
+        ctx.stroke();
+    });
+
+    // Points (17 keypoints)
+    kps.forEach((kp, i) => {
+        if ((kp.score||0) < 0.3) return;
+        const isTrunk = [5,6,11,12].includes(i); // épaules + hanches
+        ctx.beginPath();
+        ctx.arc(kp.x * scaleX, kp.y * scaleY, isTrunk ? 6 : 4, 0, 2*Math.PI);
+        ctx.fillStyle = isTrunk ? '#4F6EF7' : '#0FA86A';
+        ctx.fill();
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+    });
+}
+
+// ── Analyse des angles + comptage de reps ────────────────────────────
+function _agAnalyzePose(kps) {
+    // Détecter l'exercice selon la posture globale
+    const detectedEx = _agClassifyPose(kps);
+    if (detectedEx) {
+        _agSetExercise(detectedEx.name, 0.85, AG.currentExercise?.name === detectedEx.name);
+        const el = document.getElementById('ag-pose-exercise');
+        if (el) el.textContent = detectedEx.icon + ' ' + detectedEx.name;
+
+        // Compter les reps via angle articulaire
+        const def = POSE_EXERCISES[detectedEx.name];
+        if (def) _agCountRepByAngle(kps, def, detectedEx.name);
+    }
+}
+
+function _agClassifyPose(kps) {
+    // Évaluer quelle posture correspond le mieux
+    const scores = [];
+
+    // Squat : genoux fléchis, corps vertical
+    const kneeAngle = _agAngle3(kps, 'left_hip', 'left_knee', 'left_ankle');
+    if (kneeAngle && kneeAngle < 150) scores.push({ name:'Squat', icon:'🦵', score: (150-kneeAngle)/80 });
+
+    // Curl biceps : coude fléchi, bras levé
+    const elbowAngle = _agAngle3(kps, 'left_shoulder', 'left_elbow', 'left_wrist');
+    if (elbowAngle && elbowAngle < 130) scores.push({ name:'Curl biceps', icon:'💪', score: (130-elbowAngle)/90 });
+
+    // Élévation latérale : bras levé latéralement
+    const shoulderAngle = _agAngle3(kps, 'left_hip', 'left_shoulder', 'left_elbow');
+    if (shoulderAngle && shoulderAngle > 40 && shoulderAngle < 110) {
+        scores.push({ name:'Élévation latérale', icon:'✈️', score: 0.7 });
+    }
+
+    // Hip thrust : debout avec hanches fléchies
+    const hipAngle = _agAngle3(kps, 'left_shoulder', 'left_hip', 'left_knee');
+    if (hipAngle && hipAngle < 155 && hipAngle > 80) scores.push({ name:'Hip thrust', icon:'🍑', score: (155-hipAngle)/75 });
+
+    // Pompes : corps horizontal (hanches proches des épaules verticalement)
+    const ls = kps[KP.left_shoulder], lh = kps[KP.left_hip];
+    if (ls && lh && Math.abs(ls.y - lh.y) < 50) scores.push({ name:'Pompes', icon:'🙌', score: 0.75 });
+
+    // Tractions : bras levés au-dessus de la tête
+    const lw = kps[KP.left_wrist], head = kps[KP.nose];
+    if (lw && head && lw.y < head.y - 30) scores.push({ name:'Tractions', icon:'⬆️', score: 0.8 });
+
+    if (!scores.length) return null;
+    // Si séance active, prioriser l'exercice en cours
+    if (typeof activeWorkout !== 'undefined' && activeWorkout?.exercises?.length) {
+        const activeEx = activeWorkout.exercises.find(e => !e.sets?.every(s => s.completed));
+        if (activeEx) {
+            const match = scores.find(s => activeEx.name.toLowerCase().includes(s.name.toLowerCase().split(' ')[0]));
+            if (match) return match;
+        }
+    }
+    return scores.sort((a,b) => b.score - a.score)[0];
+}
+
+function _agAngle3(kps, nameA, nameB, nameC) {
+    const a = kps[KP[nameA]], b = kps[KP[nameB]], c = kps[KP[nameC]];
+    if (!a || !b || !c) return null;
+    if ((a.score||0) < 0.3 || (b.score||0) < 0.3 || (c.score||0) < 0.3) return null;
+    // Vecteurs BA et BC
+    const baX = a.x - b.x, baY = a.y - b.y;
+    const bcX = c.x - b.x, bcY = c.y - b.y;
+    const dot  = baX*bcX + baY*bcY;
+    const magA = Math.sqrt(baX*baX + baY*baY);
+    const magC = Math.sqrt(bcX*bcX + bcY*bcY);
+    if (magA === 0 || magC === 0) return null;
+    const cosAngle = Math.max(-1, Math.min(1, dot / (magA * magC)));
+    return Math.round(Math.acos(cosAngle) * 180 / Math.PI);
+}
+
+function _agCountRepByAngle(kps, def, exName) {
+    const angle = _agAngle3(kps, def.joint[0], def.joint[1], def.joint[2]);
+    if (angle === null) return;
+
+    // Historique d'angle
+    if (!AGV.angleHistory[exName]) AGV.angleHistory[exName] = [];
+    AGV.angleHistory[exName].push(angle);
+    if (AGV.angleHistory[exName].length > 30) AGV.angleHistory[exName].shift();
+
+    // Détecter les phases up/down
+    const [minR, maxR] = def.range;
+    const mid = (minR + maxR) / 2;
+    const prev = AGV.anglePhase[exName];
+
+    if (angle < mid - def.threshold * 0.3) {
+        // Position basse / contractée
+        if (prev === 'up' || prev === undefined) {
+            AGV.anglePhase[exName] = 'down';
+        }
+    } else if (angle > mid + def.threshold * 0.3) {
+        // Position haute / relâchée → rep complète si on était en bas
+        if (prev === 'down') {
+            AGV.anglePhase[exName] = 'up';
+            const now = Date.now();
+            if (now - AG.lastRepTime > 400) {
+                AG.lastRepTime = now;
+                AG.repCount++;
+                _agOnRep();
+            }
+        } else if (prev === undefined) {
+            AGV.anglePhase[exName] = 'up';
+        }
+    }
+}
+
+// ── toggleAutoGym étendu (pas de patch récursif) ─────────────────────
+// La vraie fonction est dans le code original; on la remplace proprement
+// via AGV.mode flag lu depuis l'event handler du bouton.
+// Le bouton id="ag-start-btn" appelle toggleAutoGym() qui est REDÉFINI ici
+// MAIS on ne peut pas patcher une function déclaration — on utilise plutôt
+// window._agHandleToggle() appelé depuis le bouton HTML
+
+async function _agStartMode2() {
+    AG.active      = true;
+    AG.repCount    = 0;
+    AG.setCount    = 1;
+    AG.inMotion    = false;
+    AG.lastRepTime = 0;
+    AGV.anglePhase = {};
+    AGV.angleHistory = {};
+
+    _agUpdateUI();
+
+    const btn = document.getElementById('ag-start-btn');
+    if (btn) { btn.style.background = 'linear-gradient(135deg,#E03E3E,#C62828)'; btn.innerHTML = '<i class="fas fa-stop"></i> Arrêter'; }
+    document.getElementById('ag-validate-btn').style.display = 'block';
+
+    // WakeLock
+    if ('wakeLock' in navigator) {
+        try { AG.wakeLock = await navigator.wakeLock.request('screen'); } catch(e) {}
+    }
+
+    const cameraOK = await _agStartCamera();
+    if (!cameraOK) { _agStopMode2(); return; }
+
+    _agSpeak('Mode caméra activé. Placez-vous face au téléphone et commencez.');
+    if (_hasAnyKey()) setTimeout(_agCoachRecommend, 3000);
+
+    // Lancer la boucle de pose
+    AGV.rafId = requestAnimationFrame(_agPoseLoop);
+}
+
+function _agStopMode2() {
+    AG.active = false;
+    if (AGV.rafId)  { cancelAnimationFrame(AGV.rafId); AGV.rafId = null; }
+    if (AGV.stream) { AGV.stream.getTracks().forEach(t => t.stop()); AGV.stream = null; }
+    if (AG.wakeLock){ AG.wakeLock.release().catch(()=>{}); AG.wakeLock = null; }
+
+    const video = document.getElementById('ag-video');
+    if (video) { video.srcObject = null; }
+
+    const canvas = document.getElementById('ag-pose-canvas');
+    if (canvas) canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+
+    const btn = document.getElementById('ag-start-btn');
+    if (btn) { btn.style.background = 'linear-gradient(135deg,#0FA86A,#059669)'; btn.innerHTML = '<i class="fas fa-play"></i> Démarrer'; }
+    document.getElementById('ag-validate-btn').style.display = 'none';
+    _agStatus('Session caméra terminée.');
+    _agSaveToWorkout();
+}
+
+// closeAutoGym étendu — appelé depuis le × du modal
+// On utilise _agCloseModal() pour éviter la récursion
+function _agCloseModal() {
+    if (AGV.mode === 2 && AG.active) _agStopMode2();
+    else if (AGV.mode === 1 && AG.active) stopAutoGym();
+    hideModal('autogym-modal');
+}
+
+// Initialiser le mode au démarrage
+function _agInitMode() {
+    _agSwitchMode(1); // Mode 1 par défaut
+}
+
+// Bouton démarrer/arrêter — dispatche selon le mode actif
+function _agHandleStart() {
+    if (AGV.mode === 2) {
+        AG.active ? _agStopMode2() : _agStartMode2();
+    } else {
+        AG.active ? stopAutoGym() : startAutoGym();
+    }
+}
+
+
+
+// ════════════════════════════════════════════════════════════════════
+// AUTOGYM — SÉANCE LIBRE (détection automatique sans séance prédéfinie)
+// L'utilisateur parle/bouge → AutoGym détecte les exercices un à un
+// À la fin → IA génère un nom + résumé → sauvegarde dans l'historique
+// ════════════════════════════════════════════════════════════════════
+
+AG.freeMode     = false;  // true = séance libre en cours
+AG.freeLog      = [];     // [{exercise, sets:[{reps,weight}]}]
+AG.freeStart    = null;
+AG.freeLastEx   = null;
+
+function _agStartFreeSession() {
+    AG.freeMode   = true;
+    AG.freeLog    = [];
+    AG.freeStart  = new Date();
+    AG.freeLastEx = null;
+
+    // Démarrer une "séance active" vide pour que showScreen fonctionne
+    if (typeof activeWorkout === 'undefined' || !activeWorkout) {
+        activeWorkout = {
+            name: 'Séance AutoGym', exercises: [],
+            startTime: new Date(), completedSets: 0,
+            totalWeight: 0, totalDistance: 0
+        };
+        activeWorkoutStartTime = new Date();
+        activeWorkoutTimer = setInterval(updateWorkoutTimer, 1000);
+    }
+
+    showScreen('active-workout-screen');
+    showAutoGym();
+
+    const fab = document.getElementById('ag-finish-free-btn');
+    if (fab) fab.style.display = 'block';
+    const valBtn = document.getElementById('ag-validate-btn');
+    if (valBtn) valBtn.style.display = 'block';
+
+    _agSpeak('Séance libre démarrée. Je détecte vos exercices automatiquement. Commencez quand vous voulez.');
+    _agCoachMsg('Séance libre — je détecte vos exercices un à un. Validez chaque série, changez d\'exercice quand vous voulez.');
+    showNotification('Séance libre AutoGym démarrée !', 'success');
+}
+
+// Hook: quand un exercice est détecté en mode libre → l'ajouter à la log si nouveau
+function _agFreeSessionOnExerciseDetect(exName) {
+    if (!AG.freeMode) return;
+    if (AG.freeLastEx !== exName) {
+        AG.freeLastEx = exName;
+        // Ajouter à la log si pas déjà présent
+        if (!AG.freeLog.find(e => e.exercise === exName)) {
+            AG.freeLog.push({ exercise: exName, icon: AG.currentExercise?.icon || '💪', sets: [] });
+        }
+    }
+}
+
+// freeLog hook intégré directement dans _agValidateSet (pas de patch récursif)
+// Le code freeLog est appelé depuis _agValidateSet original via _agFreeLogHook()
+function _agFreeLogHook() {
+    if (!AG.freeMode || !AG.currentExercise || AG.repCount < 1) return;
+    let entry = AG.freeLog.find(e => e.exercise === AG.currentExercise.name);
+    if (!entry) {
+        entry = { exercise: AG.currentExercise.name, icon: AG.currentExercise.icon || '💪', sets: [] };
+        AG.freeLog.push(entry);
+    }
+    entry.sets.push({ reps: AG.repCount, weight: AG.recommendedWeight || 0 });
+}
+
+// Terminer la séance libre → IA génère le nom + résumé
+async function _agFinishFreeSession() {
+    if (!AG.freeLog.length) {
+        showNotification('Aucun exercice détecté', 'warning'); return;
+    }
+
+    const btn = document.getElementById('ag-finish-free-btn');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="ai-spinner"></span> IA génère le résumé…'; }
+
+    // Construire le résumé
+    const dur = Math.round((new Date() - AG.freeStart) / 60000);
+    const totalSets = AG.freeLog.reduce((s, e) => s + e.sets.length, 0);
+    const exercises = AG.freeLog.map(e =>
+        `${e.icon} ${e.exercise}: ${e.sets.length} série(s) — ` +
+        e.sets.map(s => `${s.reps} reps${s.weight ? ' × '+s.weight+'kg' : ''}`).join(', ')
+    ).join('\n');
+
+    let aiName = 'Séance AutoGym ' + new Date().toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR');
+    let aiSummary = exercises;
+
+    // Générer nom IA si clé disponible
+    if (_hasAnyKey()) {
+        const cfg = _selectProvider('fast');
+        const prompt = `Séance fitness:
+Durée: ${dur} minutes
+Exercices:\n${exercises}
+
+Génère:
+1. Un nom accrocheur pour cette séance (max 4 mots)
+2. Un résumé court (2 phrases max)
+
+JSON: {"name":"...", "summary":"..."}`;
+
+        const reply = await _callAI([{role:'user',content:prompt}], cfg,
+            'Tu es un coach fitness. Réponds UNIQUEMENT en JSON.');
+        if (reply && !reply.startsWith('__ERROR__')) {
+            try {
+                const r = JSON.parse(reply.replace(/```json|```/g,'').trim());
+                if (r.name)    aiName    = r.name;
+                if (r.summary) aiSummary = r.summary + '\n\n' + exercises;
+            } catch(e) {}
+        }
+    }
+
+    // Afficher le modal de sauvegarde
+    const nameEl = document.getElementById('ag-save-name');
+    const sumEl  = document.getElementById('ag-save-summary');
+    if (nameEl) nameEl.value = aiName;
+    if (sumEl)  sumEl.textContent = `${dur} min · ${totalSets} séries · ${AG.freeLog.length} exercices\n\n${aiSummary}`;
+
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-flag-checkered"></i> Terminer et enregistrer la séance'; }
+    showModal('ag-save-modal');
+}
+
+function _agConfirmSave() {
+    const name = document.getElementById('ag-save-name')?.value?.trim() || 'Séance AutoGym';
+    const dur  = Math.round((new Date() - AG.freeStart) / 1000);
+
+    // Construire l'entrée d'historique
+    const exercises = AG.freeLog.map(e => ({
+        name: e.exercise,
+        sets: e.sets.map((s,i) => ({
+            number: i+1, reps: String(s.reps), weight: String(s.weight),
+            completed: true
+        }))
+    }));
+
+    const totalWeight = AG.freeLog.reduce((sum, e) =>
+        sum + e.sets.reduce((s2, s) => s2 + (s.weight||0) * (s.reps||0), 0), 0);
+
+    const histEntry = {
+        id: Date.now(),
+        name,
+        date: new Date().toISOString(),
+        duration: dur,
+        exercises,
+        stats: {
+            totalSets:    AG.freeLog.reduce((s,e) => s + e.sets.length, 0),
+            totalWeight,
+            totalReps:    AG.freeLog.reduce((s,e) => s + e.sets.reduce((r,set) => r + (parseInt(set.reps)||0), 0), 0),
+            completedSets: AG.freeLog.reduce((s,e) => s + e.sets.length, 0)
+        },
+        source: 'autogym'
+    };
+
+    if (typeof workoutHistory === 'undefined') window.workoutHistory = [];
+    workoutHistory.unshift(histEntry);
+    localStorage.setItem('ironplate_history', JSON.stringify(workoutHistory));
+
+    // Terminer la séance active
+    activeWorkout = null;
+    activeWorkoutStartTime = null;
+    if (activeWorkoutTimer) { clearInterval(activeWorkoutTimer); activeWorkoutTimer = null; }
+    AG.freeMode = false;
+
+    hideModal('ag-save-modal');
+    _agCloseModal();
+    showScreen('history-screen');
+    showNotification(`✅ "${name}" enregistrée dans l'historique !`, 'success');
+    _agSpeak('Séance enregistrée. Excellent travail !');
+}
+
+
+
+// ════════════════════════════════════════════════════════
+// PLAN IA SUR-MESURE — génération avec paramètres utilisateur
+// ════════════════════════════════════════════════════════
+async function generateCustomWeekPlan() {
+    if (!_hasAnyKey()) { showNotification('Configurez l\'IA dans Paramètres', 'error'); return; }
+
+    // Lire les paramètres du formulaire
+    const daysPerWeek = parseInt(document.getElementById('plan-days-per-week')?.value || 3);
+    const duration    = parseInt(document.getElementById('plan-session-duration')?.value || 60);
+    const equipment   = document.getElementById('plan-equipment')?.value || 'salle complète';
+    const focus       = document.getElementById('plan-focus')?.value?.trim() || 'équilibré';
+    const constraints = document.getElementById('plan-constraints')?.value?.trim() || 'aucune';
+
+    // Jours de repos cochés
+    const restDays = ['lun','mar','mer','jeu','ven','sam','dim']
+        .filter(d => document.getElementById('rest-' + d)?.checked)
+        .map(d => ({ lun:'Lundi',mar:'Mardi',mer:'Mercredi',jeu:'Jeudi',ven:'Vendredi',sam:'Samedi',dim:'Dimanche' })[d]);
+
+    const container = document.getElementById('ai-custom-plan-content');
+    if (container) {
+        container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);"><span class="ai-spinner"></span> Génération du plan sur-mesure…</div>';
+    }
+
+    // Profil utilisateur
+    const up = typeof userProfile !== 'undefined' ? userProfile : {};
+
+    const prompt = `Tu es coach fitness expert. Génère un programme d'entraînement hebdomadaire personnalisé.
+
+PROFIL:
+- Prénom: ${up.firstName || 'Utilisateur'}
+- Poids: ${up.weight || '?'}kg, Taille: ${up.height || '?'}cm, Âge: ${up.age || '?'} ans
+- Objectif: ${up.trainingType || 'Maintien'}, Niveau: ${up.level || 'Intermédiaire'}
+
+CONTRAINTES UTILISATEUR:
+- Jours d'entraînement par semaine: ${daysPerWeek}
+- Durée par séance: ${duration} minutes
+- Jours de repos souhaités: ${restDays.length ? restDays.join(', ') : 'flexible'}
+- Équipement: ${equipment}
+- Groupes musculaires prioritaires: ${focus}
+- Contraintes / blessures: ${constraints}
+
+Génère le plan en JSON strict:
+{"days":[{"day":"Lundi","type":"rest|workout","workout_name":"Push Day","focus":"pectoraux, triceps, épaules","exercises":[{"name":"Développé couché","sets":4,"reps":"8-10","rest":90,"notes":"Contrôle la descente"}],"duration_min":${duration},"notes":"Conseil du jour"}]}
+
+RÈGLES:
+- Exactement 7 jours (Lundi à Dimanche)
+- Respecter les jours de repos demandés
+- Adapter le volume à ${daysPerWeek} séances/semaine
+- Exercices adaptés à l'équipement: ${equipment}
+- Éviter: ${constraints}
+- Répondre UNIQUEMENT en JSON valide, rien d'autre`;
+
+    const cfg   = _selectProvider('fast');
+    const reply = await _callAI([{ role: 'user', content: prompt }], cfg,
+        'Tu es coach fitness. Réponds UNIQUEMENT avec du JSON valide.');
+
+    if (!reply || reply.startsWith('__ERROR__')) {
+        if (container) container.innerHTML = '<div style="color:var(--danger);padding:10px;font-size:12px;">Erreur IA: ' + (reply||'').replace('__ERROR__','') + '</div>';
+        return;
+    }
+
+    try {
+        const clean = reply.replace(/```json|```/g, '').trim();
+        const plan  = JSON.parse(clean);
+        // Réutiliser le rendu de generateWeekPlan en stockant dans weekPlan
+        window._customWeekPlan = plan;
+        _renderCustomWeekPlan(plan, container);
+    } catch(e) {
+        if (container) container.innerHTML = '<div style="color:var(--danger);padding:10px;font-size:12px;">Erreur parsing JSON. Réessayez.</div>';
+    }
+}
+
+function _renderCustomWeekPlan(plan, container) {
+    if (!container || !plan?.days) return;
+    const days = plan.days;
+    const html = days.map(day => {
+        if (day.type === 'rest') {
+            return `<div style="padding:10px 12px;background:var(--card-bg-alt);border-radius:10px;border:1px solid var(--border);margin-bottom:6px;display:flex;align-items:center;gap:8px;">
+                <i class="fas fa-bed" style="color:var(--text-tertiary);"></i>
+                <span style="font-size:13px;font-weight:700;color:var(--text-primary);">${day.day}</span>
+                <span style="font-size:11px;color:var(--text-tertiary);">— Repos</span>
+                ${day.notes ? `<span style="font-size:10px;color:var(--text-tertiary);margin-left:auto;">${day.notes}</span>` : ''}
+            </div>`;
+        }
+        const exList = (day.exercises || []).map(ex =>
+            `<div style="padding:5px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:11px;font-weight:700;color:var(--text-primary);">${ex.name}</span>
+                <span style="font-size:10px;color:var(--text-tertiary);">${ex.sets}×${ex.reps} — ${ex.rest}s repos</span>
+            </div>`
+        ).join('');
+        return `<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden;">
+            <div style="padding:10px 12px;background:linear-gradient(135deg,rgba(79,110,247,.08),rgba(124,58,237,.08));border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+                <div>
+                    <span style="font-size:13px;font-weight:900;color:var(--text-primary);">${day.day}</span>
+                    <span style="font-size:11px;color:var(--primary);font-weight:700;margin-left:8px;">${day.workout_name || ''}</span>
+                </div>
+                <span style="font-size:10px;color:var(--text-tertiary);">${day.duration_min || ''}min · ${day.focus || ''}</span>
+            </div>
+            <div style="padding:8px 12px;">${exList}</div>
+            ${day.notes ? `<div style="padding:6px 12px;font-size:10px;color:var(--text-tertiary);border-top:1px solid var(--border);">💡 ${day.notes}</div>` : ''}
+        </div>`;
+    }).join('');
+
+    container.innerHTML = html + `
+        <button onclick="_importCustomPlan()" style="width:100%;margin-top:10px;padding:11px;background:linear-gradient(135deg,#0FA86A,#059669);color:white;border:none;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer;">
+            <i class="fas fa-file-import"></i> Importer ce plan dans mes séances
+        </button>`;
+}
+
+function _importCustomPlan() {
+    const plan = window._customWeekPlan;
+    if (!plan?.days) return;
+    // Reuse existing import logic
+    if (typeof _confirmImport === 'function' && plan.days) {
+        // Convert to importPlan format
+        window.importPlan = plan;
+        showNotification('Plan importé — disponible dans vos séances !', 'success');
+    } else {
+        showNotification('Plan généré — utilisez "Importer" dans Coach IA → Plan', 'info');
+    }
+}
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// IRONPLATE — SYSTÈME D'INTERNATIONALISATION (i18n)
+// Architecture : LOCALE global + dictionnaire TRANSLATIONS + fonction t()
+// Langues : fr, en, es, de, ar
+// Unités  : kg/lbs auto selon locale
+// ══════════════════════════════════════════════════════════════════════
+
+// ── Dictionnaires de traduction ────────────────────────────────────────
+const TRANSLATIONS = {
+
+  fr: {
+    // Navbar
+    nav_home: 'Accueil', nav_workouts: 'Séances', nav_exercises: 'Exercices',
+    nav_nutrition: 'Nutrition', nav_history: 'Historique', nav_coach: 'IA Coach',
+    // Header
+    app_name: 'Iron', new_workout: 'Nouvelle séance',
+    // Home
+    greeting_morning: 'Bonjour', greeting_afternoon: 'Bon après-midi',
+    greeting_evening: 'Bonsoir', greeting_night: 'Bonne nuit',
+    // Workout screen
+    workout_in_progress: 'Séance en cours', series: 'Séries', volume: 'Volume',
+    add_exercise: 'Ajouter exercice', finish_workout: 'Terminer',
+    rest_label: 'repos', next_set: 'Série suivante',
+    // Exercises
+    sets: 'séries', reps: 'reps', weight: 'kg', rest_time: 'repos',
+    complete_set: '✓', add_set: '+ Série', remove_set: '- Série',
+    // Nutrition
+    calories: 'kcal', protein: 'Protéines', carbs: 'Glucides', fat: 'Lipides',
+    add_meal: 'Ajouter un repas', scan_plate: 'Scanner l\'assiette',
+    breakfast: 'Petit-déjeuner', lunch: 'Déjeuner', dinner: 'Dîner', snack: 'Collation',
+    // History
+    no_history: 'Aucune séance enregistrée', duration: 'Durée', total_sets: 'Séries',
+    // Settings
+    settings: 'Paramètres', appearance: 'Apparence', language: 'Langue et région',
+    units: 'Unités de mesure', weight_unit_kg: 'Kilogrammes (kg)',
+    weight_unit_lbs: 'Livres (lbs)', notifications: 'Notifications',
+    save: 'Sauvegarder', cancel: 'Annuler', close: 'Fermer',
+    // Profile
+    profile: 'Mon profil', age: 'Âge', height: 'Taille', gender: 'Sexe',
+    male: 'Homme', female: 'Femme', level: 'Niveau', goal: 'Objectif',
+    // AI
+    ai_coach: 'Coach IA', generate_plan: 'Générer mon plan', thinking: 'Réflexion…',
+    // Notifications
+    workout_started: 'Séance démarrée !', workout_saved: 'Séance enregistrée !',
+    set_complete: 'Série validée', pr_new: '🏆 Nouveau record !',
+    // AutoGym
+    autogym_listening: '🎤 Je vous écoute…', autogym_detected: 'détecté',
+    autogym_reps: 'répétitions', autogym_set: 'Série',
+    // Errors
+    no_ai_key: 'Configurez une clé IA dans Paramètres',
+    camera_denied: 'Accès caméra refusé',
+    // Days
+    monday: 'Lundi', tuesday: 'Mardi', wednesday: 'Mercredi', thursday: 'Jeudi',
+    friday: 'Vendredi', saturday: 'Samedi', sunday: 'Dimanche',
+    today: 'Aujourd\'hui', yesterday: 'Hier',
+    // Extra UI keys
+    appearance: 'Apparence', language: 'Langue et région',
+    workout_new: 'Nouvelle séance', workout_free: 'Séance libre IA',
+    autogym_detect: 'AutoGym détection',
+    plan_week: 'Plan 7 jours', report_weekly: 'Rapport hebdo',
+    add_food: 'Ajouter un aliment', custom_exercises: 'Mes exercices',
+    predefined: 'Prédéfinies', all: 'Toutes', favorites: 'Favoris',
+    repeat_yesterday: 'Répéter hier', scan_plate: 'Scanner l\'assiette',
+    walk_start: 'Démarrer la marche', walk_goal: 'Objectif',
+    bmi: 'IMC', body_fat: 'Masse grasse', lean_mass: 'Masse maigre',
+    calories_target: 'Objectif calorique',
+    generate_plan: 'Générer mon plan', generate_custom: 'Plan sur-mesure',
+    import_plan: 'Importer dans mes séances',
+    duration: 'Durée', total_reps: 'Total répétitions',
+    ai_not_configured: 'IA non configurée', configure_ai: 'Configurer l\'IA',
+    workout_saved: 'Séance enregistrée !', workout_started: 'Séance démarrée !',
+  },
+
+  en: {
+    nav_home: 'Home', nav_workouts: 'Workouts', nav_exercises: 'Exercises',
+    nav_nutrition: 'Nutrition', nav_history: 'History', nav_coach: 'AI Coach',
+    app_name: 'Iron', new_workout: 'New workout',
+    greeting_morning: 'Good morning', greeting_afternoon: 'Good afternoon',
+    greeting_evening: 'Good evening', greeting_night: 'Good night',
+    workout_in_progress: 'Workout in progress', series: 'Sets', volume: 'Volume',
+    add_exercise: 'Add exercise', finish_workout: 'Finish',
+    rest_label: 'rest', next_set: 'Next set',
+    sets: 'sets', reps: 'reps', weight: 'kg', rest_time: 'rest',
+    complete_set: '✓', add_set: '+ Set', remove_set: '- Set',
+    calories: 'kcal', protein: 'Protein', carbs: 'Carbs', fat: 'Fat',
+    add_meal: 'Add a meal', scan_plate: 'Scan plate',
+    breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snack: 'Snack',
+    no_history: 'No workouts recorded', duration: 'Duration', total_sets: 'Sets',
+    settings: 'Settings', appearance: 'Appearance', language: 'Language & region',
+    units: 'Units of measure', weight_unit_kg: 'Kilograms (kg)',
+    weight_unit_lbs: 'Pounds (lbs)', notifications: 'Notifications',
+    save: 'Save', cancel: 'Cancel', close: 'Close',
+    profile: 'My profile', age: 'Age', height: 'Height', gender: 'Gender',
+    male: 'Male', female: 'Female', level: 'Level', goal: 'Goal',
+    ai_coach: 'AI Coach', generate_plan: 'Generate my plan', thinking: 'Thinking…',
+    workout_started: 'Workout started!', workout_saved: 'Workout saved!',
+    set_complete: 'Set complete', pr_new: '🏆 New personal record!',
+    autogym_listening: '🎤 Listening…', autogym_detected: 'detected',
+    autogym_reps: 'reps', autogym_set: 'Set',
+    no_ai_key: 'Configure an AI key in Settings',
+    camera_denied: 'Camera access denied',
+    monday: 'Monday', tuesday: 'Tuesday', wednesday: 'Wednesday', thursday: 'Thursday',
+    friday: 'Friday', saturday: 'Saturday', sunday: 'Sunday',
+    today: 'Today', yesterday: 'Yesterday',
+    appearance: 'Appearance', language: 'Language & region',
+    workout_new: 'New workout', workout_free: 'Free AI session',
+    autogym_detect: 'AutoGym detection',
+    plan_week: '7-day plan', report_weekly: 'Weekly report',
+    add_food: 'Add food', custom_exercises: 'My exercises',
+    predefined: 'Predefined', all: 'All', favorites: 'Favorites',
+    repeat_yesterday: 'Repeat yesterday', scan_plate: 'Scan plate',
+    walk_start: 'Start walking', walk_goal: 'Goal',
+    bmi: 'BMI', body_fat: 'Body fat', lean_mass: 'Lean mass',
+    calories_target: 'Calorie goal',
+    generate_plan: 'Generate my plan', generate_custom: 'Custom plan',
+    import_plan: 'Import to my workouts',
+    duration: 'Duration', total_reps: 'Total reps',
+    ai_not_configured: 'AI not configured', configure_ai: 'Configure AI',
+  },
+
+  es: {
+    nav_home: 'Inicio', nav_workouts: 'Entrenamientos', nav_exercises: 'Ejercicios',
+    nav_nutrition: 'Nutrición', nav_history: 'Historial', nav_coach: 'Coach IA',
+    app_name: 'Iron', new_workout: 'Nuevo entrenamiento',
+    greeting_morning: 'Buenos días', greeting_afternoon: 'Buenas tardes',
+    greeting_evening: 'Buenas tardes', greeting_night: 'Buenas noches',
+    workout_in_progress: 'Entrenamiento en curso', series: 'Series', volume: 'Volumen',
+    add_exercise: 'Añadir ejercicio', finish_workout: 'Terminar',
+    rest_label: 'descanso', next_set: 'Siguiente serie',
+    sets: 'series', reps: 'reps', weight: 'kg', rest_time: 'descanso',
+    complete_set: '✓', add_set: '+ Serie', remove_set: '- Serie',
+    calories: 'kcal', protein: 'Proteínas', carbs: 'Carbohidratos', fat: 'Grasas',
+    add_meal: 'Añadir comida', scan_plate: 'Escanear plato',
+    breakfast: 'Desayuno', lunch: 'Almuerzo', dinner: 'Cena', snack: 'Merienda',
+    no_history: 'Sin entrenamientos registrados', duration: 'Duración', total_sets: 'Series',
+    settings: 'Ajustes', appearance: 'Apariencia', language: 'Idioma y región',
+    units: 'Unidades de medida', weight_unit_kg: 'Kilogramos (kg)',
+    weight_unit_lbs: 'Libras (lbs)', notifications: 'Notificaciones',
+    save: 'Guardar', cancel: 'Cancelar', close: 'Cerrar',
+    profile: 'Mi perfil', age: 'Edad', height: 'Altura', gender: 'Género',
+    male: 'Hombre', female: 'Mujer', level: 'Nivel', goal: 'Objetivo',
+    ai_coach: 'Coach IA', generate_plan: 'Generar mi plan', thinking: 'Pensando…',
+    workout_started: '¡Entrenamiento iniciado!', workout_saved: '¡Entrenamiento guardado!',
+    set_complete: 'Serie completada', pr_new: '🏆 ¡Nuevo récord personal!',
+    autogym_listening: '🎤 Escuchando…', autogym_detected: 'detectado',
+    autogym_reps: 'repeticiones', autogym_set: 'Serie',
+    no_ai_key: 'Configura una clave IA en Ajustes',
+    camera_denied: 'Acceso a cámara denegado',
+    monday: 'Lunes', tuesday: 'Martes', wednesday: 'Miércoles', thursday: 'Jueves',
+    friday: 'Viernes', saturday: 'Sábado', sunday: 'Domingo',
+    today: 'Hoy', yesterday: 'Ayer',
+    appearance: 'Apariencia', language: 'Idioma y región',
+    workout_new: 'Nuevo entrenamiento', workout_free: 'Sesión libre IA',
+    autogym_detect: 'AutoGym detección',
+    plan_week: 'Plan 7 días', report_weekly: 'Informe semanal',
+    add_food: 'Añadir alimento', custom_exercises: 'Mis ejercicios',
+    predefined: 'Predefinidos', all: 'Todos', favorites: 'Favoritos',
+    repeat_yesterday: 'Repetir ayer',
+    bmi: 'IMC', body_fat: 'Grasa corporal', lean_mass: 'Masa magra',
+    calories_target: 'Objetivo calórico',
+    generate_plan: 'Generar mi plan', generate_custom: 'Plan personalizado',
+    duration: 'Duración', total_reps: 'Total repeticiones',
+    ai_not_configured: 'IA no configurada', configure_ai: 'Configurar IA',
+  },
+
+  de: {
+    nav_home: 'Startseite', nav_workouts: 'Training', nav_exercises: 'Übungen',
+    nav_nutrition: 'Ernährung', nav_history: 'Verlauf', nav_coach: 'KI-Coach',
+    app_name: 'Iron', new_workout: 'Neues Training',
+    greeting_morning: 'Guten Morgen', greeting_afternoon: 'Guten Nachmittag',
+    greeting_evening: 'Guten Abend', greeting_night: 'Gute Nacht',
+    workout_in_progress: 'Training läuft', series: 'Sätze', volume: 'Volumen',
+    add_exercise: 'Übung hinzufügen', finish_workout: 'Beenden',
+    rest_label: 'Pause', next_set: 'Nächster Satz',
+    sets: 'Sätze', reps: 'Wdh.', weight: 'kg', rest_time: 'Pause',
+    complete_set: '✓', add_set: '+ Satz', remove_set: '- Satz',
+    calories: 'kcal', protein: 'Eiweiß', carbs: 'Kohlenhydrate', fat: 'Fett',
+    add_meal: 'Mahlzeit hinzufügen', scan_plate: 'Teller scannen',
+    breakfast: 'Frühstück', lunch: 'Mittagessen', dinner: 'Abendessen', snack: 'Snack',
+    no_history: 'Kein Training aufgezeichnet', duration: 'Dauer', total_sets: 'Sätze',
+    settings: 'Einstellungen', appearance: 'Erscheinungsbild', language: 'Sprache & Region',
+    units: 'Maßeinheiten', weight_unit_kg: 'Kilogramm (kg)',
+    weight_unit_lbs: 'Pfund (lbs)', notifications: 'Benachrichtigungen',
+    save: 'Speichern', cancel: 'Abbrechen', close: 'Schließen',
+    profile: 'Mein Profil', age: 'Alter', height: 'Größe', gender: 'Geschlecht',
+    male: 'Männlich', female: 'Weiblich', level: 'Niveau', goal: 'Ziel',
+    ai_coach: 'KI-Coach', generate_plan: 'Plan generieren', thinking: 'Denke…',
+    workout_started: 'Training gestartet!', workout_saved: 'Training gespeichert!',
+    set_complete: 'Satz abgeschlossen', pr_new: '🏆 Neuer persönlicher Rekord!',
+    autogym_listening: '🎤 Höre zu…', autogym_detected: 'erkannt',
+    autogym_reps: 'Wiederholungen', autogym_set: 'Satz',
+    no_ai_key: 'KI-Schlüssel in Einstellungen konfigurieren',
+    camera_denied: 'Kamerazugriff verweigert',
+    monday: 'Montag', tuesday: 'Dienstag', wednesday: 'Mittwoch', thursday: 'Donnerstag',
+    friday: 'Freitag', saturday: 'Samstag', sunday: 'Sonntag',
+    today: 'Heute', yesterday: 'Gestern',
+    appearance: 'Erscheinungsbild', language: 'Sprache & Region',
+    workout_new: 'Neues Training', workout_free: 'Freies KI-Training',
+    autogym_detect: 'AutoGym Erkennung',
+    plan_week: '7-Tage-Plan', report_weekly: 'Wochenbericht',
+    add_food: 'Lebensmittel hinzufügen', custom_exercises: 'Meine Übungen',
+    predefined: 'Vordefiniert', all: 'Alle', favorites: 'Favoriten',
+    repeat_yesterday: 'Gestern wiederholen',
+    bmi: 'BMI', body_fat: 'Körperfett', lean_mass: 'Muskelmasse',
+    calories_target: 'Kalorienziel',
+    generate_plan: 'Plan generieren', generate_custom: 'Individueller Plan',
+    duration: 'Dauer', total_reps: 'Gesamtwiederholungen',
+    ai_not_configured: 'KI nicht konfiguriert', configure_ai: 'KI konfigurieren',
+  },
+
+  ar: {
+    nav_home: 'الرئيسية', nav_workouts: 'التمارين', nav_exercises: 'التمارين',
+    nav_nutrition: 'التغذية', nav_history: 'السجل', nav_coach: 'مدرب الذكاء الاصطناعي',
+    app_name: 'آيرون', new_workout: 'تمرين جديد',
+    greeting_morning: 'صباح الخير', greeting_afternoon: 'مساء الخير',
+    greeting_evening: 'مساء الخير', greeting_night: 'تصبح على خير',
+    workout_in_progress: 'التمرين جارٍ', series: 'مجموعات', volume: 'حجم',
+    add_exercise: 'إضافة تمرين', finish_workout: 'إنهاء',
+    rest_label: 'راحة', next_set: 'المجموعة التالية',
+    sets: 'مجموعات', reps: 'تكرار', weight: 'كغ', rest_time: 'راحة',
+    complete_set: '✓', add_set: '+ مجموعة', remove_set: '- مجموعة',
+    calories: 'سعرة', protein: 'بروتين', carbs: 'كربوهيدرات', fat: 'دهون',
+    add_meal: 'إضافة وجبة', scan_plate: 'مسح الطبق',
+    breakfast: 'الإفطار', lunch: 'الغداء', dinner: 'العشاء', snack: 'وجبة خفيفة',
+    no_history: 'لا توجد تمارين مسجلة', duration: 'المدة', total_sets: 'المجموعات',
+    settings: 'الإعدادات', appearance: 'المظهر', language: 'اللغة والمنطقة',
+    units: 'وحدات القياس', weight_unit_kg: 'كيلوغرام (كغ)',
+    weight_unit_lbs: 'رطل (lbs)', notifications: 'الإشعارات',
+    save: 'حفظ', cancel: 'إلغاء', close: 'إغلاق',
+    profile: 'ملفي', age: 'العمر', height: 'الطول', gender: 'الجنس',
+    male: 'ذكر', female: 'أنثى', level: 'المستوى', goal: 'الهدف',
+    ai_coach: 'مدرب الذكاء الاصطناعي', generate_plan: 'إنشاء خطتي', thinking: 'جارٍ التفكير…',
+    workout_started: 'بدأ التمرين!', workout_saved: 'تم حفظ التمرين!',
+    set_complete: 'اكتملت المجموعة', pr_new: '🏆 رقم قياسي جديد!',
+    autogym_listening: '🎤 أستمع…', autogym_detected: 'تم اكتشاف',
+    autogym_reps: 'تكرار', autogym_set: 'مجموعة',
+    no_ai_key: 'قم بإعداد مفتاح الذكاء الاصطناعي في الإعدادات',
+    camera_denied: 'تم رفض الوصول إلى الكاميرا',
+    monday: 'الإثنين', tuesday: 'الثلاثاء', wednesday: 'الأربعاء', thursday: 'الخميس',
+    friday: 'الجمعة', saturday: 'السبت', sunday: 'الأحد',
+    today: 'اليوم', yesterday: 'أمس',
+    appearance: 'المظهر', language: 'اللغة والمنطقة',
+    workout_new: 'تمرين جديد', workout_free: 'جلسة ذكاء اصطناعي حرة',
+    autogym_detect: 'اكتشاف AutoGym',
+    plan_week: 'خطة 7 أيام', report_weekly: 'التقرير الأسبوعي',
+    add_food: 'إضافة طعام', custom_exercises: 'تمريناتي',
+    predefined: 'معرّفة مسبقاً', all: 'الكل', favorites: 'المفضلة',
+    repeat_yesterday: 'تكرار أمس',
+    bmi: 'مؤشر كتلة الجسم', body_fat: 'الدهون', lean_mass: 'الكتلة العضلية',
+    calories_target: 'هدف السعرات',
+    generate_plan: 'إنشاء خطتي', generate_custom: 'خطة مخصصة',
+    duration: 'المدة', total_reps: 'إجمالي التكرارات',
+    ai_not_configured: 'الذكاء الاصطناعي غير مُعدّ', configure_ai: 'إعداد الذكاء الاصطناعي',
+  },
+};
+
+// ── Métadonnées des locales ────────────────────────────────────────────
+const LOCALES_META = {
+  fr: { name: 'Français',    flag: '🇫🇷', speechCode: 'fr-FR', dateLocale: 'fr-FR', dir: 'ltr', weightUnit: 'kg',  weightFactor: 1 },
+  en: { name: 'English',     flag: '🇬🇧', speechCode: 'en-US', dateLocale: 'en-US', dir: 'ltr', weightUnit: 'lbs', weightFactor: 2.20462 },
+  es: { name: 'Español',     flag: '🇪🇸', speechCode: 'es-ES', dateLocale: 'es-ES', dir: 'ltr', weightUnit: 'kg',  weightFactor: 1 },
+  de: { name: 'Deutsch',     flag: '🇩🇪', speechCode: 'de-DE', dateLocale: 'de-DE', dir: 'ltr', weightUnit: 'kg',  weightFactor: 1 },
+  ar: { name: 'العربية',     flag: '🇸🇦', speechCode: 'ar-SA', dateLocale: 'ar-SA', dir: 'rtl', weightUnit: 'كغ',  weightFactor: 1 },
+};
+
+// ── LOCALE actuel ─────────────────────────────────────────────────────
+let _locale = localStorage.getItem('ironplate_locale') || _detectLocale();
+let _localeMeta = LOCALES_META[_locale] || LOCALES_META['fr'];
+let _weightUnit = localStorage.getItem('ironplate_weight_unit') || _localeMeta.weightUnit;
+
+function _detectLocale() {
+  const lang = (navigator.language || 'fr').toLowerCase().slice(0,2);
+  return LOCALES_META[lang] ? lang : 'fr';
+}
+
+// ── Fonction de traduction principale ─────────────────────────────────
+function t(key, fallback) {
+  const dict = TRANSLATIONS[_locale] || TRANSLATIONS['fr'];
+  return dict[key] || (TRANSLATIONS['fr'][key]) || fallback || key;
+}
+
+// ── Affichage du poids avec conversion ────────────────────────────────
+function displayWeight(kg, decimals) {
+  if (kg === null || kg === undefined || isNaN(kg)) return '—';
+  const factor = _localeMeta.weightFactor || 1;
+  const val    = Math.round(kg * factor * (decimals ? Math.pow(10,decimals) : 10)) / (decimals ? Math.pow(10,decimals) : 10);
+  return val + (_weightUnit !== 'kg' ? ' ' + _weightUnit : 'kg');
+}
+
+// Convertit une valeur affichée (lbs/kg) vers kg interne
+function toKg(val) {
+  const v = parseFloat(val);
+  if (isNaN(v)) return 0;
+  return _localeMeta.weightFactor > 1 ? v / _localeMeta.weightFactor : v;
+}
+
+// ── Format date selon la locale ────────────────────────────────────────
+function formatDate(dateInput, options) {
+  try {
+    return new Date(dateInput).toLocaleDateString(
+      _localeMeta.dateLocale,
+      options || { day:'2-digit', month:'short', year:'numeric' }
+    );
+  } catch(e) { return String(dateInput); }
+}
+function formatTime(dateInput) {
+  try {
+    return new Date(dateInput).toLocaleTimeString(
+      _localeMeta.dateLocale,
+      { hour:'2-digit', minute:'2-digit' }
+    );
+  } catch(e) { return ''; }
+}
+
+// ── Changement de locale ───────────────────────────────────────────────
+function setLocale(lang, weightUnitOverride) {
+  if (!LOCALES_META[lang]) return;
+  _locale     = lang;
+  _localeMeta = LOCALES_META[lang];
+  _weightUnit = weightUnitOverride || _localeMeta.weightUnit;
+  localStorage.setItem('ironplate_locale', lang);
+  localStorage.setItem('ironplate_weight_unit', _weightUnit);
+
+  // Direction du texte (arabe = RTL)
+  document.documentElement.lang = lang;
+  document.documentElement.dir  = _localeMeta.dir;
+  document.body.style.direction  = _localeMeta.dir;
+
+  // Mettre à jour les éléments i18n dans le DOM
+  _applyI18nDOM();
+
+  // Mettre à jour les langues de reconnaissance vocale
+  if (typeof _agenticRecog !== 'undefined' && _agenticRecog) {
+    _agenticRecog.lang = _localeMeta.speechCode;
+  }
+
+  if (window._i18nEnabled) _applyI18nDOM();
+  _updateLangButtons();
+  showNotification(_localeMeta.flag + ' ' + _localeMeta.name, 'success');
+}
+
+// ── Appliquer les traductions aux éléments data-i18n ──────────────────
+function _applyI18nDOM() {
+  if (!window._i18nEnabled) return; // switch OFF → garder le français
+
+  const d = document;
+
+  // ── Langue HTML + direction ─────────────────────────────────────────
+  d.documentElement.lang = _locale;
+  d.documentElement.dir  = _localeMeta.dir;
+  d.body.style.direction  = _localeMeta.dir;
+
+  // ── Navbar ──────────────────────────────────────────────────────────
+  const navMap = {
+    'home-screen': t('nav_home'), 'workouts-screen': t('nav_workouts'),
+    'exercises-screen': t('nav_exercises'), 'nutrition-screen': t('nav_nutrition'),
+    'history-screen': t('nav_history'), 'ai-screen': t('nav_coach'),
+  };
+  d.querySelectorAll('.nav-item[data-screen]').forEach(item => {
+    const lbl = item.querySelector('.nav-text');
+    if (lbl && navMap[item.dataset.screen]) lbl.textContent = navMap[item.dataset.screen];
+  });
+
+  // ── Header ──────────────────────────────────────────────────────────
+  const appTitle = d.querySelector('.app-title');
+  if (appTitle) appTitle.textContent = t('app_name');
+
+  // ── Greeting ────────────────────────────────────────────────────────
+  const greeting = d.querySelector('.hero-greeting');
+  if (greeting) {
+    const up = typeof userProfile !== 'undefined' ? userProfile : {};
+    greeting.textContent = _i18nGreeting() + (up.firstName ? ' ' + up.firstName : '') + ' 👋';
+  }
+
+  // ── Workout screen ───────────────────────────────────────────────────
+  const wpt = d.getElementById('workout-progress-title');
+  if (wpt) wpt.textContent = t('workout_in_progress');
+  const csLabel = d.querySelector('#workout-chrono-wrap .chrono-stat:first-child div:last-child');
+  if (csLabel) csLabel.textContent = t('series').toUpperCase();
+  const volLabel = d.querySelector('#workout-chrono-wrap .chrono-stat:last-child div:last-child');
+  if (volLabel) volLabel.textContent = t('volume').toUpperCase();
+  const addExBtn = d.getElementById('add-exercise-workout-btn');
+  if (addExBtn) { const sp = addExBtn.querySelector('span'); if (sp) sp.textContent = t('add_exercise'); }
+  const finBtn = d.getElementById('finish-workout-btn');
+  if (finBtn) { const sp = finBtn.querySelector('span'); if (sp) sp.textContent = t('finish_workout'); }
+
+  // ── Settings modal ───────────────────────────────────────────────────
+  const settingsTitles = d.querySelectorAll('.modal-title');
+  settingsTitles.forEach(el => {
+    if (el.textContent.trim() === 'Paramètres') el.textContent = t('settings');
+  });
+
+  // ── Buttons: Save / Cancel / Close ──────────────────────────────────
+  d.querySelectorAll('button').forEach(btn => {
+    const txt = btn.textContent.trim();
+    if (txt === 'Sauvegarder le profil' || txt === 'Sauvegarder')
+      { const ic = btn.querySelector('i'); btn.textContent = ''; if(ic)btn.prepend(ic); btn.append(' ' + t('save')); }
+    if (txt === 'Annuler') btn.textContent = t('cancel');
+    if (txt === 'Fermer')  btn.textContent = t('close');
+  });
+
+  // ── Modal titles (static) ─────────────────────────────────────────────
+  const modalTitleMap = {
+    'Ajouter un repas': t('add_meal'),
+    'Choisir un exercice': t('nav_exercises'),
+    'Historique': t('nav_history'),
+  };
+  d.querySelectorAll('.modal-title, h3.modal-title').forEach(el => {
+    const key = el.textContent.replace(/^\s*[^\s]+\s+/, '').trim(); // strip icon
+    if (modalTitleMap[key]) el.textContent = modalTitleMap[key];
+  });
+
+  // ── Section headers ──────────────────────────────────────────────────
+  d.querySelectorAll('.section-title, .screen-section-label, .modal-section-head').forEach(el => {
+    const txt = el.textContent.trim();
+    const sectionMap = {
+      'Mes séances': t('nav_workouts'), 'Programmes': t('nav_workouts'),
+      'Nutrition': t('nav_nutrition'), 'Historique': t('nav_history'),
+      'Exercices': t('nav_exercises'), 'Accueil': t('nav_home'),
+      'Paramètres': t('settings'), 'Apparence': t('appearance'),
+      'Langue et région': t('language'),
+    };
+    if (sectionMap[txt]) el.textContent = sectionMap[txt];
+  });
+
+  // ── Filter pills (onglet Séances) ─────────────────────────────────────
+  const pillMap = { 'Toutes': t('nav_workouts'), 'Mes séances': t('nav_workouts'),
+    'Prédéfinies': _locale === 'en' ? 'Predefined' : _locale === 'es' ? 'Predefinidos' :
+                   _locale === 'de' ? 'Vordefiniert' : _locale === 'ar' ? 'معرّفة مسبقاً' : 'Prédéfinies' };
+
+  // ── Nutrition types ───────────────────────────────────────────────────
+  d.querySelectorAll('[data-meal-type]').forEach(el => {
+    const mt = el.dataset.mealType;
+    const mtMap = { breakfast: t('breakfast'), lunch: t('lunch'), dinner: t('dinner'), snack: t('snack') };
+    if (mtMap[mt]) el.textContent = mtMap[mt];
+  });
+
+  // ── AI Coach tab labels ───────────────────────────────────────────────
+  const aiTabMap = {
+    'Dashboard': _locale === 'en' ? 'Dashboard' : _locale === 'ar' ? 'لوحة القيادة' : 'Dashboard',
+    'Rapport': _locale === 'en' ? 'Report' : _locale === 'es' ? 'Informe' :
+               _locale === 'de' ? 'Bericht' : _locale === 'ar' ? 'التقرير' : 'Rapport',
+    'Plan': 'Plan',
+    'Chat': 'Chat',
+  };
+  d.querySelectorAll('.ai-tab-btn').forEach(btn => {
+    const lbl = btn.querySelector('span') || btn;
+    if (aiTabMap[lbl.textContent.trim()]) lbl.textContent = aiTabMap[lbl.textContent.trim()];
+  });
+
+  // ── Profile labels ────────────────────────────────────────────────────
+  const profileLabelMap = {
+    'Âge': t('age'), 'Taille': t('height'), 'Sexe': t('gender'),
+    'Niveau': t('level'), 'Objectif': t('goal'),
+  };
+  d.querySelectorAll('.input-label, label').forEach(el => {
+    if (profileLabelMap[el.textContent.trim()]) el.textContent = profileLabelMap[el.textContent.trim()];
+  });
+
+  // ── Notifications dynamiques (hook) ─────────────────────────────────
+  window._i18nAILang = _localeMeta.name + ' (' + _locale + ')';
+
+  // ── Traduction automatique via data-i18n ─────────────────────────────
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if (val && val !== key) {
+      if (el.children.length === 0) el.textContent = val;
+      else { const tn = el.querySelector('span[data-i18n]') || el; tn.textContent = val; }
+    }
+  });
+  // Greeting dynamique
+  document.querySelectorAll('[data-i18n-greet]').forEach(el => {
+    const up = typeof userProfile !== 'undefined' ? userProfile : {};
+    el.textContent = _i18nGreeting() + (up.firstName ? ' ' + up.firstName : '') + ' 👋';
+  });
+
+  // ── Mettre à jour les boutons de langue dans Settings ───────────────
+  _updateLangButtons();
+}
+
+// ── Salutation dynamique selon l'heure ────────────────────────────────
+function _i18nGreeting() {
+  const h = new Date().getHours();
+  if (h >= 5  && h < 12) return t('greeting_morning');
+  if (h >= 12 && h < 18) return t('greeting_afternoon');
+  if (h >= 18 && h < 22) return t('greeting_evening');
+  return t('greeting_night');
+}
+
+
+
+
+// État du switch i18n (persisté)
+window._i18nEnabled = localStorage.getItem('ironplate_i18n') !== 'off';
+
+// Toggle ON/OFF de l'internationalisation
+function toggleI18n(enabled) {
+    if (enabled === undefined) enabled = !window._i18nEnabled;
+    window._i18nEnabled = enabled;
+    localStorage.setItem('ironplate_i18n', enabled ? 'on' : 'off');
+
+    const toggle  = document.getElementById('i18n-master-toggle');
+    const desc    = document.getElementById('i18n-toggle-desc');
+    const panel   = document.getElementById('i18n-lang-panel');
+    if (toggle) toggle.checked = enabled;
+    if (panel)  panel.style.display = enabled ? 'block' : 'none';
+
+    if (enabled) {
+        if (desc) desc.textContent = 'Actif — interface traduite';
+        _applyI18nDOM();
+    } else {
+        if (desc) desc.textContent = 'Désactivé — interface en français';
+        // Restaurer le français sur la navbar seulement
+        document.querySelectorAll('.nav-text').forEach((el, i) => {
+            const labels = ['Accueil','Séances','Exercices','Nutrition','Historique','IA Coach'];
+            if (labels[i]) el.textContent = labels[i];
+        });
+        document.documentElement.lang = 'fr';
+        document.documentElement.dir  = 'ltr';
+        document.body.style.direction = 'ltr';
+    }
+}
+
+// Met à jour les cartes de langue actives
+function _updateLangButtons() {
+    // Cartes de langue (nouveau design)
+    ['fr','en','es','de','ar'].forEach(lang => {
+        const btn   = document.getElementById('lang-btn-' + lang);
+        const check = document.getElementById('lang-check-' + lang);
+        if (btn) btn.classList.toggle('active-lang-card', lang === _locale);
+        if (check) check.style.display = (lang === _locale) ? 'inline' : 'none';
+    });
+    // Unité de poids
+    const kgBtn     = document.getElementById('unit-kg-btn');
+    const lbsBtn    = document.getElementById('unit-lbs-btn');
+    const kgCheck   = document.getElementById('unit-check-kg');
+    const lbsCheck  = document.getElementById('unit-check-lbs');
+    if (kgBtn)    kgBtn.classList.toggle('active-lang-card',    _weightUnit === 'kg');
+    if (lbsBtn)   lbsBtn.classList.toggle('active-lang-card',   _weightUnit !== 'kg');
+    if (kgCheck)  kgCheck.style.display  = (_weightUnit === 'kg')  ? 'inline' : 'none';
+    if (lbsCheck) lbsCheck.style.display = (_weightUnit !== 'kg') ? 'inline' : 'none';
+    // Toggle principal
+    const toggle = document.getElementById('i18n-master-toggle');
+    const panel  = document.getElementById('i18n-lang-panel');
+    if (toggle) toggle.checked = !!window._i18nEnabled;
+    if (panel)  panel.style.display = window._i18nEnabled ? 'block' : 'none';
+    const desc = document.getElementById('i18n-toggle-desc');
+    if (desc) desc.textContent = window._i18nEnabled ? 'Actif — interface traduite' : 'Désactivé — interface en français';
+}
+
+// Changer l'unité de poids indépendamment de la langue
+function _setWeightUnit(unit) {
+    _weightUnit = unit;
+    localStorage.setItem('ironplate_weight_unit', unit);
+    _updateLangButtons();
+    showNotification(unit === 'lbs' ? 'Unité : livres (lbs)' : 'Unité : kilogrammes (kg)', 'success');
+}
+
+// Greeter i18n pour la home screen
+function _updateGreeting() {
+    const el = document.querySelector('.hero-greeting');
+    if (el) {
+        const up = typeof userProfile !== 'undefined' ? userProfile : {};
+        const name = up.firstName || '';
+        el.textContent = _i18nGreeting() + (name ? ' ' + name : '') + ' 👋';
+    }
+}
+
+
+
+// ══════════════════════════════════════════════════════════════════════
+// PLAN NUTRITION IA — Plan alimentaire sur-mesure avec recettes
+// ══════════════════════════════════════════════════════════════════════
+
+let _nutriPlan = null; // plan JSON généré
+
+// ── Initialisation de l'onglet nutrition ─────────────────────────────
+// Toggle visibilité de la fenêtre de jeûne
+// Durées des fenêtres alimentaires par protocole (en heures)
+const _FASTING_WINDOWS = {
+    '16:8': 8, '18:6': 6, '20:4': 4, 'OMAD': 1, '5:2': 12, 'personnalisé': 8
+};
+// Heures de début par défaut selon le protocole
+const _FASTING_DEFAULTS = {
+    '16:8': '12:00', '18:6': '13:00', '20:4': '14:00',
+    'OMAD': '13:00', '5:2': '08:00', 'personnalisé': '12:00'
+};
+
+function _onFastingChange(val) {
+    const row = document.getElementById('nutri-fasting-win-row');
+    if (!row) return;
+    row.style.display = (val !== 'aucun') ? 'block' : 'none';
+    if (val === 'aucun') return;
+
+    // Pré-remplir heure de début
+    const startInput = document.getElementById('nutri-fast-start');
+    if (startInput && _FASTING_DEFAULTS[val]) {
+        startInput.value = _FASTING_DEFAULTS[val];
+    }
+    _updateFastEnd();
+}
+
+function _updateFastEnd() {
+    const startInput = document.getElementById('nutri-fast-start');
+    const endDisplay = document.getElementById('nutri-fast-end');
+    const infoEl     = document.getElementById('nutri-fast-info');
+    const hiddenInput= document.getElementById('nutri-fasting-window');
+    const protocol   = document.getElementById('nutri-fasting')?.value || 'personnalisé';
+
+    if (!startInput?.value || !endDisplay) return;
+
+    const windowHours = _FASTING_WINDOWS[protocol] || 8;
+
+    // Parser heure début
+    const [startH, startM] = startInput.value.split(':').map(Number);
+    const startTotalMin = startH * 60 + (startM || 0);
+
+    // Calculer fin
+    const endTotalMin = startTotalMin + windowHours * 60;
+    const endH = Math.floor(endTotalMin / 60) % 24;
+    const endM = endTotalMin % 60;
+    const endStr = String(endH).padStart(2,'0') + 'h' + String(endM).padStart(2,'0');
+    const startStr = String(startH).padStart(2,'0') + 'h' + String(startM||0).padStart(2,'0');
+
+    endDisplay.textContent = endStr;
+
+    // Info
+    const jeuneDur = 24 - windowHours;
+    if (infoEl) {
+        infoEl.innerHTML = '<i class="fas fa-info-circle" style="color:var(--primary);"></i> ' +
+            'Fenêtre : <strong>' + startStr + ' → ' + endStr + '</strong> (' + windowHours + 'h) · ' +
+            'Jeûne : <strong>' + jeuneDur + 'h</strong>';
+    }
+
+    // Mettre à jour le champ caché pour le prompt IA
+    if (hiddenInput) hiddenInput.value = startStr + ' - ' + endStr;
+}
+
+function _initNutriTab() {
+    const up = typeof userProfile !== 'undefined' ? userProfile : {};
+
+    // ── Détecter l'heure habituelle de séance ─────────────────────────
+    const wTimeInfo = document.getElementById('nutri-workout-time-info');
+    if (wTimeInfo && typeof workoutHistory !== 'undefined' && workoutHistory.length > 0) {
+        const hours = workoutHistory.slice(0, 15)
+            .map(w => w.date ? new Date(w.date).getHours() : null)
+            .filter(h => h !== null && !isNaN(h));
+        if (hours.length >= 2) {
+            const avgHour = Math.round(hours.reduce((a,b) => a+b, 0) / hours.length);
+            const minH = Math.min(...hours), maxH = Math.max(...hours);
+            wTimeInfo.style.display = 'block';
+            wTimeInfo.innerHTML = '<i class="fas fa-clock" style="margin-right:6px;"></i>' +
+                '<strong>Heure habituelle de séance :</strong> ~' + avgHour + 'h00 ' +
+                '(fourchette ' + minH + 'h-' + maxH + 'h, basé sur ' + hours.length + ' séances)<br>' +
+                '<span style="opacity:.8;">Les repas pré/post-entraînement seront placés en conséquence.</span>';
+        } else {
+            wTimeInfo.style.display = 'none';
+        }
+    }
+
+    // Initialiser le champ heure de séance (input time)
+    setTimeout(_resetWorkoutTimeFromHistory, 100);
+
+    // Pré-remplir le résumé de profil
+    const summary = document.getElementById('nutri-profile-summary');
+    if (summary) {
+        const cal  = up.calorieNeeds  || '?';
+        const prot = up.proteinNeeds  || '?';
+        const carb = up.carbsNeeds    || '?';
+        const fat  = up.fatNeeds      || '?';
+        const goal = up.trainingType  || 'Maintien';
+        const bmi  = up.bmi ? up.bmi.toFixed(1) : '?';
+        // Détecter source du plan sport pour affichage
+        let planSrcDisplay = '';
+        if (typeof window.importPlan !== 'undefined' && window.importPlan?.days?.length)
+            planSrcDisplay = '📅 Plan séance IA importé synchronisé';
+        else if (typeof window._customWeekPlan !== 'undefined' && window._customWeekPlan?.days?.length)
+            planSrcDisplay = '📅 Plan sur-mesure Coach IA synchronisé';
+        else if (typeof workoutHistory !== 'undefined' && workoutHistory.length >= 3)
+            planSrcDisplay = '📅 Planning déduit de l\'historique (' + Math.min(28,workoutHistory.length) + ' séances)';
+        else
+            planSrcDisplay = '📅 Planning standard (aucun historique)';
+
+        summary.innerHTML =
+            '📊 <strong>Profil utilisé :</strong> ' + (up.weight||'?') + 'kg · ' + (up.height||'?') + 'cm · ' + (up.age||'?') + ' ans · ' + (up.gender==='female'?'Femme':'Homme') + '<br>' +
+            '🎯 <strong>Objectif :</strong> ' + goal + ' · IMC ' + bmi + '<br>' +
+            '🔥 <strong>Besoins :</strong> ' + cal + ' kcal/j · ' + prot + 'g protéines · ' + carb + 'g glucides · ' + fat + 'g lipides<br>' +
+            planSrcDisplay;
+    }
+
+    // Pré-sélectionner le régime selon le profil
+    const dietSel = document.getElementById('nutri-diet-type');
+    if (dietSel && up.trainingType) {
+        if (up.trainingType === 'Perte de poids') dietSel.value = 'méditerranéen';
+        else if (up.trainingType === 'Hypertrophie' || up.trainingType === 'Volume musculaire') dietSel.value = 'omnivore';
+    }
+
+    // Initialiser l'heure de séance
+    setTimeout(_resetWorkoutTimeFromHistory, 100);
+
+    // Pré-sélectionner objectif
+    const goalSel = document.getElementById('nutri-goal-specific');
+    if (goalSel && up.trainingType) {
+        const goalMap = {
+            'Perte de poids': 'perte de gras',
+            'Hypertrophie': 'prise de masse',
+            'Volume musculaire': 'prise de masse',
+            'Force': 'prise de masse',
+            'Cardio': 'performance',
+            'Endurance musculaire': 'performance',
+            'Maintien': 'auto',
+        };
+        if (goalMap[up.trainingType]) goalSel.value = goalMap[up.trainingType];
+    }
+}
+
+// ── Génération du plan nutrition ─────────────────────────────────────
+async function generateNutritionPlan() {
+    if (!_hasAnyKey()) {
+        showNotification('Configurez une clé IA dans Paramètres', 'error');
+        return;
+    }
+
+    const container = document.getElementById('nutri-plan-content');
+    const genBtn    = document.querySelector('[onclick="generateNutritionPlan()"]');
+    if (container) container.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-secondary);"><span class="ai-spinner"></span><br><br>Génération de votre plan alimentaire…<br><span style="font-size:11px;opacity:.7;">Cela peut prendre 15-30 secondes</span></div>';
+    if (genBtn) { genBtn.disabled = true; genBtn.innerHTML = '<span class="ai-spinner"></span> Génération…'; }
+
+    // ── Lire les paramètres ──────────────────────────────────────────
+    const mealsPerDayRaw = parseInt(document.getElementById('nutri-meals-per-day')?.value || '4');
+    const dietType     = document.getElementById('nutri-diet-type')?.value       || 'omnivore';
+    const cookTime     = document.getElementById('nutri-cook-time')?.value       || 'modéré';
+    const budget       = document.getElementById('nutri-budget')?.value          || 'moyen';
+    const allergies    = document.getElementById('nutri-allergies')?.value?.trim()   || 'aucune';
+    const prefs        = document.getElementById('nutri-preferences')?.value?.trim() || 'aucune';
+    const goalSpecific = document.getElementById('nutri-goal-specific')?.value   || 'auto';
+    const fastingType  = document.getElementById('nutri-fasting')?.value         || 'aucun';
+    const fastingWin   = document.getElementById('nutri-fasting-window')?.value  || '';
+
+    // ── Calcul du nombre de repas réel selon le protocole de jeûne ─────
+    const fastingTypeNow = document.getElementById('nutri-fasting')?.value || 'aucun';
+
+    // Max repas autorisés selon le protocole
+    const maxMealsByProtocol = {
+        'aucun': 99, '16:8': 4, '18:6': 3, '20:4': 2, '5:2': 3, 'OMAD': 1, 'personnalisé': 4
+    };
+    const maxAllowed = maxMealsByProtocol[fastingTypeNow] || 99;
+    const mealsPerDay = Math.min(mealsPerDayRaw, maxAllowed);
+
+    // Si incohérence → afficher une notification informative (non bloquante)
+    if (mealsPerDay < mealsPerDayRaw && mealsPerDayRaw > 1) {
+        showNotification(
+            `Jeûne ${fastingTypeNow} : ${mealsPerDayRaw} repas demandés → réduit à ${mealsPerDay} repas possibles dans la fenêtre`,
+            'info', 5000
+        );
+        // Mettre à jour le sélecteur
+        const mpdEl = document.getElementById('nutri-meals-per-day');
+        if (mpdEl) mpdEl.value = String(mealsPerDay);
+    }
+
+    // Heure de séance (champ modifiable, avec fallback historique)
+    const workoutTimeInput = document.getElementById('nutri-workout-time')?.value || '';
+    const workoutHourFinal = workoutTimeInput
+        ? parseInt(workoutTimeInput.split(':')[0])
+        : (_nutri_wh !== null ? _nutri_wh : 18);
+
+    // Compléments sélectionnés
+    const selectedSupps = _getSelectedSupplements();
+
+    // ── Profil utilisateur ────────────────────────────────────────────
+    const up  = typeof userProfile !== 'undefined' ? userProfile : {};
+    const cal = up.calorieNeeds  || 2500;
+    const prot= up.proteinNeeds  || 150;
+    const carb= up.carbsNeeds    || 250;
+    const fat = up.fatNeeds      || 80;
+
+    // ── Extraire l'heure habituelle d'entraînement depuis l'historique ─
+    let typicalWorkoutHour = null;
+    if (typeof workoutHistory !== 'undefined' && workoutHistory.length > 0) {
+        const hours = workoutHistory.slice(0, 10)
+            .map(w => w.date ? new Date(w.date).getHours() : null)
+            .filter(h => h !== null && !isNaN(h));
+        if (hours.length > 0) {
+            typicalWorkoutHour = Math.round(hours.reduce((a,b) => a+b, 0) / hours.length);
+        }
+    }
+    // workoutHourFinal est déjà calculé plus haut
+    const workoutTimeStr = `${workoutHourFinal}h00`;
+
+    // ── Plan d'entraînement — synchro avec toutes les sources ───────────
+    let workoutPlan = '';
+    let workoutPlanSource = '';
+
+    // Priorité 1 : plan IA importé (window.importPlan)
+    if (typeof window.importPlan !== 'undefined' && window.importPlan?.days?.length) {
+        workoutPlan = window.importPlan.days
+            .map(d => d.day + ':' + (d.type === 'rest' ? 'repos' : 'entraînement (' + (d.workout_name||d.focus||'') + ')'))
+            .join(', ');
+        workoutPlanSource = 'Plan IA importé';
+    }
+    // Priorité 2 : plan sur-mesure Coach IA (_customWeekPlan)
+    else if (typeof window._customWeekPlan !== 'undefined' && window._customWeekPlan?.days?.length) {
+        workoutPlan = window._customWeekPlan.days
+            .map(d => d.day + ':' + (d.type === 'rest' ? 'repos' : 'entraînement (' + (d.workout_name||d.focus||'') + ')'))
+            .join(', ');
+        workoutPlanSource = 'Plan sur-mesure Coach IA';
+    }
+    // Priorité 3 : déduire depuis l'historique (jours/heures des séances récentes)
+    else if (typeof workoutHistory !== 'undefined' && workoutHistory.length >= 3) {
+        const dayNames = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+        const dayCount = [0,0,0,0,0,0,0];
+        workoutHistory.slice(0, 28).forEach(w => {
+            if (w.date) dayCount[new Date(w.date).getDay()]++;
+        });
+        const trainDays = dayCount
+            .map((c,i) => ({ day: dayNames[i], count: c }))
+            .filter(d => d.count >= 2)
+            .sort((a,b) => b.count - a.count)
+            .map(d => d.day + ':entraînement');
+        const allDays = dayNames.map(d => {
+            const found = trainDays.find(t => t.startsWith(d));
+            return found || (d + ':repos');
+        });
+        workoutPlan = allDays.join(', ');
+        workoutPlanSource = 'Déduit de l\'historique (' + workoutHistory.slice(0,28).length + ' séances)';
+    }
+    else {
+        workoutPlan = 'Lundi:entraînement, Mardi:repos, Mercredi:entraînement, Jeudi:repos, Vendredi:entraînement, Samedi:repos, Dimanche:repos';
+        workoutPlanSource = 'Standard par défaut';
+    }
+
+    // ── Contrainte jeûne + détection séance à jeun ─────────────────────
+    let fastingStr = '';
+    let trainingFasted = false;
+    if (fastingType !== 'aucun') {
+        fastingStr = `\nJEÛNE INTERMITTENT: ${fastingType}`;
+        if (fastingWin) fastingStr += `, fenêtre alimentaire: ${fastingWin}`;
+
+        // Détecter si la séance est à jeun (heure séance avant fenêtre alimentaire)
+        if (fastingWin) {
+            const winStart = parseInt(fastingWin.split('-')[0]?.replace('h','').trim()) || null;
+            if (winStart !== null && workoutHourFinal < winStart) {
+                trainingFasted = true;
+                fastingStr += `\nSÉANCE À JEUN: OUI (séance à ${workoutHourFinal}h00, fenêtre commence à ${winStart}h00)`;
+            } else {
+                fastingStr += `\nSÉANCE À JEUN: NON (séance à ${workoutHourFinal}h00 dans la fenêtre alimentaire)`;
+            }
+        }
+    }
+
+    // ── Compléments alimentaires ──────────────────────────────────────
+    let suppStr = '';
+    if (selectedSupps.length > 0) {
+        suppStr = `\nCOMPLÉMENTS SOUHAITÉS: ${selectedSupps.join(', ')}`;
+    }
+
+    // ── Calcul répartition calorique par repas ─────────────────────────
+    const kcalPerMeal = Math.round(cal / mealsPerDay);
+    const _kd = Array.from({length: mealsPerDay}, (_, i) => {
+        if (mealsPerDay === 1) return cal;
+        if (mealsPerDay === 2) return i === 0 ? Math.round(cal*0.45) : Math.round(cal*0.55);
+        if (mealsPerDay === 3) return [Math.round(cal*0.25),Math.round(cal*0.40),Math.round(cal*0.35)][i];
+        if (mealsPerDay === 4) return [Math.round(cal*0.20),Math.round(cal*0.35),Math.round(cal*0.30),Math.round(cal*0.15)][i];
+        if (mealsPerDay === 5) return [Math.round(cal*0.15),Math.round(cal*0.25),Math.round(cal*0.30),Math.round(cal*0.20),Math.round(cal*0.10)][i];
+        return kcalPerMeal;
+    });
+    const kcalDistrib = _kd.join(' + ') + ' = ' + _kd.reduce((a,b)=>a+b,0) + ' kcal';
+
+    // ── PROMPT COMPACT ────────────────────────────────────────────────
+    const prompt = `Tu es nutritionniste sportif expert. Génère un plan alimentaire 7 jours COMPACT.
+
+PROFIL: ${up.firstName||'Utilisateur'}, ${up.age||'?'}ans, ${up.gender==='female'?'F':'M'}, ${up.weight||'?'}kg/${up.height||'?'}cm
+OBJECTIF: ${up.trainingType||'Maintien'}
+RÉGIME: ${dietType} | Budget: ${budget} | Cuisine: ${cookTime}
+ALLERGIES: ${allergies} | PRÉFERENCES: ${prefs}
+OBJECTIF SPÉCIFIQUE: ${goalSpecific === 'auto' ? (up.trainingType||'Maintien') : goalSpecific}
+PLAN SPORT (source: ${workoutPlanSource}): ${workoutPlan}
+HEURE DE SÉANCE: ${workoutHourFinal}h00${fastingStr}${suppStr}
+
+=== CIBLES NUTRITIONNELLES OBLIGATOIRES - NE JAMAIS RÉDUIRE ===
+CALORIES JOURNALIERES: ${cal} kcal/jour  <-- OBLIGATOIRE
+PROTEINES: ${prot}g/jour
+GLUCIDES: ${carb}g/jour
+LIPIDES: ${fat}g/jour
+NOMBRE DE REPAS: ${mealsPerDay} repas/jour
+CIBLE PAR REPAS: ~${kcalPerMeal} kcal/repas
+=================================================================
+
+REPARTITION SUGGÉRÉE (${mealsPerDay} repas): ${kcalDistrib}
+Adapter TOUTES les portions pour atteindre EXACTEMENT ${cal} kcal/jour.
+
+ATTENTION: L'utilisateur DOIT consommer ${cal} kcal/jour. Ne pas reduire.
+Si tu proposes moins de ${Math.round(cal*0.95)} kcal, c'est une ERREUR.
+
+
+RÈGLES ABSOLUES — À RESPECTER SCRUPULEUSEMENT:
+
+═══ CALORIES (CRITIQUE) ═══
+R1. La SOMME des kcal de TOUS les repas d'un jour DOIT être égale à total_kcal (tolérance ±30 kcal max).
+    EXEMPLE: si total_kcal=2700, la somme des kcal des repas doit être entre 2670 et 2730.
+    AVANT d'écrire total_kcal, additionner mentalement tous les repas et ajuster.
+R2. week_calories_avg = moyenne arithmétique exacte des total_kcal des 7 jours.
+R3. Les macros des repas doivent être cohérentes avec les kcal (P×4 + G×4 + L×9 ≈ kcal du repas ±30).
+
+═══ ORDRE DES JOURS ═══
+R4. Le plan commence TOUJOURS par Lundi et se termine par Dimanche (ordre fixe: Lundi, Mardi, Mercredi, Jeudi, Vendredi, Samedi, Dimanche).
+
+═══ ORDRE DES REPAS ═══
+R5. Les repas de chaque jour sont classés par heure croissante (du matin au soir).
+    JAMAIS un repas à 06h30 si le jeûne démarre à 10h00.
+
+═══ JEÛNE INTERMITTENT (SI ACTIF) ═══
+R6. Si jeûne actif: le PREMIER repas de la journée doit avoir une heure ≥ heure de début de fenêtre.
+    AUCUN repas ne peut avoir une heure < début de fenêtre. AUCUNE EXCEPTION.
+R7. Si séance à jeun (heure séance < début fenêtre): PAS DE REPAS avant la séance.
+    Seuls compléments autorisés AVANT la séance si à jeun: Collagène (15-30min avant), Créatine (avec eau).
+    La Whey EST INTERDITE avant séance à jeun (elle rompt le jeûne).
+    Post-séance: le premier repas après la séance marque la rupture du jeûne.
+
+═══ COMPLÉMENTS (SI SÉLECTIONNÉS) ═══
+R8. Whey: UNIQUEMENT dans la fenêtre alimentaire, jamais à jeun. Post-entraînement idéalement.
+R9. Créatine: 5g/jour, avec le repas principal ou post-entraînement (insensible au jeûne).
+R10. Collagène: 10-15g le matin (peut être pris à jeun car ne stimule pas l'insuline de façon significative).
+R11. supplements_advice doit être une phrase concise avec timing exact (ex: "Créatine 5g avec le déjeuner. Collagène 15g au réveil.").
+
+FORMAT JSON STRICT (sans texte avant/après, sans markdown):
+{"week_calories_avg":2650,"week_protein_avg":150,"days":[{"day":"Lundi","type":"training","total_kcal":2700,"total_protein":155,"total_carbs":280,"total_fat":82,"supplements_advice":"Créatine 5g avec le déjeuner post-entraînement.","training_fasted":false,"meals":[{"type":"breakfast","name":"Porridge protéiné aux myrtilles","time":"10:00","kcal":480,"protein":32,"carbs":62,"fat":11,"prep_time":5,"needs_cooking":false,"short_desc":"Flocons d'avoine 80g, whey vanille 25g, lait 200ml, myrtilles 100g, miel 1cc"},{"type":"pre_workout","name":"Riz complet et thon en sauce tomate","time":"15:30","kcal":620,"protein":48,"carbs":78,"fat":10,"prep_time":15,"needs_cooking":true,"short_desc":"Riz complet 150g cuit, thon au naturel 150g, sauce tomate 80g, poivrons grillés 100g"},{"type":"post_workout","name":"Shake récupération et banana bread","time":"18:00","kcal":540,"protein":45,"carbs":68,"fat":9,"prep_time":5,"needs_cooking":false,"short_desc":"Whey chocolat 30g, lait écrémé 300ml, banane 120g"},{"type":"dinner","name":"Saumon au four, quinoa et légumes rôtis","time":"20:00","kcal":680,"protein":42,"carbs":58,"fat":22,"prep_time":30,"needs_cooking":true,"short_desc":"Saumon 200g, quinoa 120g cuit, courgettes 150g, poivrons 100g, huile d'olive 10g"},{"type":"snack","name":"Fromage blanc et noix","time":"22:00","kcal":380,"protein":28,"carbs":14,"fat":30,"prep_time":2,"needs_cooking":false,"short_desc":"Fromage blanc 0% 200g, noix 30g, miel 10g"}]}]}
+
+VÉRIFICATION EXEMPLE: 480+620+540+680+380 = 2700 ✓
+
+CHAMPS REQUIS PAR REPAS: type, name, time (HH:MM 24h), kcal (int), protein (int), carbs (int), fat (int), prep_time (int), needs_cooking (bool), short_desc
+CHAMPS REQUIS PAR JOUR: day, type, total_kcal, total_protein, total_carbs, total_fat, supplements_advice, training_fasted
+NE PAS inclure ingredients et instructions.
+Génère les 7 jours COMPLETS de Lundi à Dimanche.`;
+
+    // Augmenter max_tokens pour un plan 7j complet
+    const cfg   = _selectProvider('fast');
+    const reply = await _callAI([{ role: 'user', content: prompt }], cfg,
+        'Tu es nutritionniste. Réponds UNIQUEMENT avec du JSON valide sans markdown ni texte.',
+        4000  // max_tokens élevé pour le plan complet
+    );
+
+    if (genBtn) { genBtn.disabled = false; genBtn.innerHTML = '<i class="fas fa-magic"></i> Régénérer'; }
+
+    if (!reply || reply.startsWith('__ERROR__')) {
+        if (container) container.innerHTML = '<div style="color:var(--danger);padding:12px;font-size:12px;text-align:center;">Erreur IA : ' + (reply||'').replace('__ERROR__','') + '</div>';
+        return;
+    }
+
+    try {
+        const clean = reply.replace(/```json|```/g, '').trim();
+        _nutriPlan  = JSON.parse(clean);
+        _nutriPlan._params = { dietType, cookTime, budget, allergies, prefs, goalSpecific, fastingType, fastingWin };
+
+        // ── Post-processing : corriger les incohérences ──────────────
+        _nutriPlan._targetCal = cal; // stocker pour le rendu
+        _sanitizeNutritionPlan(_nutriPlan, {
+            targetCal: cal, fastingType, fastingWin,
+            workoutHour: workoutHourFinal
+        });
+
+        _renderNutritionPlan(_nutriPlan, container);
+        const expBtn = document.getElementById('nutri-export-btn');
+        if (expBtn) expBtn.style.display = 'flex';
+    } catch(e) {
+        console.error('[Nutrition Plan]', e, reply?.slice(0, 300));
+        if (container) container.innerHTML = '<div style="color:var(--danger);padding:12px;font-size:12px;text-align:center;">Format JSON invalide. Réessayez — le modèle a peut-être tronqué la réponse.<br><br><button onclick="generateNutritionPlan()" style="padding:8px 16px;background:var(--primary);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:700;">↺ Réessayer</button></div>';
+    }
+}
+
+// ── Rendu du plan 7 jours ─────────────────────────────────────────────
+function _renderNutritionPlan(plan, container) {
+    if (!plan?.days || !container) return;
+
+    const mealTypeNames = {
+        breakfast: '🌅 Petit-déjeuner', lunch: '☀️ Déjeuner',
+        dinner: '🌙 Dîner', snack: '🍎 Collation', pre_workout: '💪 Pré-entraînement',
+        post_workout: '🔄 Post-entraînement'
+    };
+
+    // Résumé semaine
+    const avgCal  = plan.week_calories_avg || 0;
+    const avgProt = plan.week_protein_avg  || 0;
+    const tooLowDays = (plan.days||[]).filter(d => d._kcal_too_low).length;
+    const targetCalRender = plan._targetCal || 0;
+
+    let html = '';
+
+    // Alerte calories si nécessaire
+    if (tooLowDays >= 2 && targetCalRender > 0) {
+        html += '<div style="background:rgba(226,75,74,.08);border:1.5px solid rgba(226,75,74,.3);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;gap:10px;align-items:flex-start;">' +
+            '<i class="fas fa-exclamation-triangle" style="color:#E24B4A;font-size:14px;margin-top:1px;flex-shrink:0;"></i>' +
+            '<div>' +
+                '<div style="font-size:12px;font-weight:800;color:#A32D2D;margin-bottom:3px;">Plan en dessous de votre cible calorique</div>' +
+                '<div style="font-size:11px;color:var(--text-secondary);line-height:1.6;">' +
+                    tooLowDays + ' jours sur 7 sont sous ' + Math.round(targetCalRender*0.80) + ' kcal (80% de votre cible de ' + targetCalRender + ' kcal). ' +
+                    "L'IA a peut-être sous-estimé les portions. <strong>Régénérez le plan</strong> pour de meilleurs résultats." +
+                '</div>' +
+                '<button onclick="generateNutritionPlan()" style="margin-top:8px;padding:6px 14px;background:linear-gradient(135deg,#E24B4A,#A32D2D);color:white;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;">↺ Régénérer le plan</button>' +
+            '</div>' +
+        '</div>';
+    }
+
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">' +
+        '<div style="background:var(--card-bg-alt);border:1px solid var(--border);border-radius:10px;padding:8px;text-align:center;">' +
+            '<div style="font-size:16px;font-weight:900;color:#EF9F27;">' + (avgCal||'—') + '</div>' +
+            '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);">kcal/j moy.</div></div>' +
+        '<div style="background:var(--card-bg-alt);border:1px solid var(--border);border-radius:10px;padding:8px;text-align:center;">' +
+            '<div style="font-size:16px;font-weight:900;color:var(--primary);">' + (avgProt||'—') + 'g</div>' +
+            '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);">protéines moy.</div></div>' +
+        '<div style="background:var(--card-bg-alt);border:1px solid var(--border);border-radius:10px;padding:8px;text-align:center;">' +
+            '<div style="font-size:16px;font-weight:900;color:var(--success);">' + (plan.days?.length || 7) + '</div>' +
+            '<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);">jours planifiés</div></div>' +
+        '</div>';
+
+    // Jours
+    plan.days.forEach((day, di) => {
+        const isTraining = day.type === 'training';
+        const badge = isTraining
+            ? '<span style="font-size:9px;background:rgba(79,110,247,.15);color:var(--primary);padding:2px 7px;border-radius:8px;font-weight:800;">ENTRAÎNEMENT</span>'
+            : '<span style="font-size:9px;background:rgba(99,99,99,.1);color:var(--text-tertiary);padding:2px 7px;border-radius:8px;font-weight:700;">REPOS</span>';
+
+        const fastedBadge = day.training_fasted
+            ? '<span style="font-size:9px;background:rgba(239,159,39,.15);color:#BA7517;padding:2px 7px;border-radius:8px;font-weight:800;">SÉANCE À JEUN</span>'
+            : '';
+
+        html += '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden;">';
+        // Header jour
+        html += '<div style="padding:10px 12px;background:' + (isTraining ? 'linear-gradient(135deg,rgba(79,110,247,.06),rgba(15,168,106,.06))' : 'var(--card-bg-alt)') + ';border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="_toggleNutriDay(this)">' +
+            '<div style="display:flex;align-items:center;gap:8px;">' +
+                '<span style="font-size:14px;font-weight:900;color:var(--text-primary);">' + day.day + '</span>' +
+                badge +
+            '</div>' +
+            '<div style="display:flex;align-items:center;gap:10px;">' +
+                '<span style="font-size:11px;font-weight:700;color:#EF9F27;">' + day.total_kcal + ' kcal</span>' +
+                (day._kcal_corrected ? '<span style="font-size:9px;color:var(--text-tertiary);margin-left:2px;" title="Total recalculé depuis la somme des repas">⚙️</span>' : '') +
+                (day._kcal_too_low ? '<span style="font-size:9px;background:rgba(226,75,74,.12);color:#A32D2D;padding:1px 5px;border-radius:5px;margin-left:3px;" title="En dessous de la cible profil — régénérez">⚠️ -' + day._kcal_gap + ' kcal</span>' : '') +
+                '<span style="font-size:11px;color:var(--text-tertiary);">P:' + day.total_protein + 'g</span>' +
+                '<i class="fas fa-chevron-down" style="font-size:10px;color:var(--text-tertiary);transition:transform .2s;"></i>' +
+            '</div>' +
+        '</div>';
+
+        // Repas (collapsibles, fermés par défaut sauf j0)
+        html += '<div class="nutri-day-meals" style="display:' + (di === 0 ? 'block' : 'none') + ';">';
+        (day.meals || []).forEach((meal, mi) => {
+            const mTypeName = mealTypeNames[meal.type] || meal.type || 'Repas';
+            const hasCooking = meal.needs_cooking;
+            const cookBadge = hasCooking
+                ? '<span style="font-size:9px;background:rgba(239,159,39,.15);color:#BA7517;padding:2px 6px;border-radius:6px;font-weight:700;">🍳 Cuisson</span>'
+                : '<span style="font-size:9px;background:rgba(15,168,106,.1);color:var(--success);padding:2px 6px;border-radius:6px;font-weight:700;">⚡ Rapide</span>';
+            // Heure du repas
+            const mealTimeStr = meal.time
+                ? '<span style="font-size:13px;font-weight:900;color:var(--primary);background:var(--primary-glow);padding:2px 8px;border-radius:6px;">' + meal.time + '</span>'
+                : '';
+
+            html += '<div style="padding:10px 12px;border-bottom:1px solid var(--border);">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
+                    '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">' +
+                        mealTimeStr +
+                        '<span style="font-size:11px;font-weight:700;color:var(--text-tertiary);">' + mTypeName + '</span>' +
+                        cookBadge +
+                        (meal.prep_time ? '<span style="font-size:9px;color:var(--text-tertiary);">⏱ ' + meal.prep_time + 'min</span>' : '') +
+                    '</div>' +
+                    '<span style="font-size:11px;font-weight:800;color:#EF9F27;">' + meal.kcal + ' kcal</span>' +
+                '</div>' +
+                '<div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:3px;">' + meal.name + '</div>' +
+                (meal.short_desc ? '<div style="font-size:10px;color:var(--text-tertiary);margin-bottom:6px;line-height:1.5;">' + meal.short_desc + '</div>' : '') +
+                '<div style="display:flex;gap:8px;margin-bottom:8px;">' +
+                    _macroPill('P', meal.protein + 'g', '#4F6EF7') +
+                    _macroPill('G', meal.carbs + 'g', '#EF9F27') +
+                    _macroPill('L', meal.fat + 'g', '#0FA86A') +
+                '</div>' +
+                '<button onclick="_showRecipe(' + di + ',' + mi + ')" style="width:100%;padding:7px;background:linear-gradient(135deg,rgba(239,159,39,.1),rgba(239,159,39,.2));border:1px solid rgba(239,159,39,.3);border-radius:8px;font-size:11px;font-weight:700;color:#BA7517;cursor:pointer;">' +
+                    '<i class="fas fa-book-open"></i> Voir la recette' +
+                '</button>' +
+            '</div>';
+        });
+        // ── Barre de vérification macros du jour ─────────────────────
+        const mealSum = (day.meals||[]).reduce((s,m) => s + (parseInt(m.kcal)||0), 0);
+        const protSum = (day.meals||[]).reduce((s,m) => s + (parseInt(m.protein)||0), 0);
+        html += '<div style="padding:8px 12px;background:var(--card-bg-alt);border-top:1px solid var(--border);display:flex;gap:10px;font-size:10px;font-weight:700;">' +
+            '<span style="color:#EF9F27;">Total réel : <strong>' + mealSum + ' kcal</strong></span>' +
+            '<span style="color:#4F6EF7;">P: ' + protSum + 'g</span>' +
+            '<span style="color:var(--text-tertiary);margin-left:auto;">Cible: ' + day.total_kcal + ' kcal</span>' +
+        '</div>';
+
+        // Conseils compléments du jour
+        if (day.supplements_advice) {
+            html += '<div style="padding:8px 12px;background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(79,110,247,.06));border-top:1px solid var(--border);">' +
+                '<div style="font-size:10px;font-weight:800;color:var(--primary);margin-bottom:3px;"><i class="fas fa-pills" style="margin-right:4px;"></i>Compléments du jour</div>' +
+                '<div style="font-size:11px;color:var(--text-secondary);line-height:1.6;">' + day.supplements_advice + '</div>' +
+                '</div>';
+        }
+        html += '</div></div>'; // close meals + day
+    });
+
+    container.innerHTML = html;
+}
+
+function _macroPill(label, val, color) {
+    return '<div style="background:rgba(0,0,0,.04);border-radius:6px;padding:3px 7px;font-size:10px;font-weight:700;color:' + color + ';">' + label + ' ' + val + '</div>';
+}
+
+// ── Toggle collapsible jour ───────────────────────────────────────────
+function _toggleNutriDay(header) {
+    const meals   = header.nextElementSibling;
+    const chevron = header.querySelector('.fa-chevron-down,.fa-chevron-up');
+    if (!meals) return;
+    const isOpen = meals.style.display !== 'none';
+    meals.style.display = isOpen ? 'none' : 'block';
+    if (chevron) {
+        chevron.classList.toggle('fa-chevron-down', isOpen);
+        chevron.classList.toggle('fa-chevron-up', !isOpen);
+    }
+}
+
+// ── Afficher la recette détaillée ─────────────────────────────────────
+async function _showRecipe(dayIdx, mealIdx) {
+    if (!_nutriPlan?.days?.[dayIdx]?.meals?.[mealIdx]) return;
+    const meal    = _nutriPlan.days[dayIdx].meals[mealIdx];
+    const card    = document.getElementById('nutri-recipe-card');
+    const title   = document.getElementById('nutri-recipe-title');
+    const rcontent= document.getElementById('nutri-recipe-content');
+    if (!card || !rcontent) return;
+
+    title.textContent = meal.name;
+    card.style.display = 'block';
+    setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+
+    // Si la recette est déjà générée, l'afficher directement
+    if (meal.ingredients && meal.instructions) {
+        _renderRecipeContent(meal, rcontent);
+        return;
+    }
+
+    // Sinon : générer la recette via IA (lazy loading)
+    if (!_hasAnyKey()) {
+        rcontent.innerHTML = '<div style="padding:12px;color:var(--text-secondary);font-size:12px;">Configurez une clé IA pour voir les recettes.</div>';
+        return;
+    }
+
+    rcontent.innerHTML = '<div style="text-align:center;padding:20px;"><span class="ai-spinner"></span><br><br><span style="font-size:12px;color:var(--text-secondary);">Génération de la recette…</span></div>';
+
+    const up     = typeof userProfile !== 'undefined' ? userProfile : {};
+    const params = _nutriPlan._params || {};
+
+    const prompt = `Tu es nutritionniste cuisinier. Génère la recette détaillée pour ce plat.
+
+PLAT: "${meal.name}"
+VALEURS CIBLES: ${meal.kcal} kcal | Protéines: ${meal.protein}g | Glucides: ${meal.carbs}g | Lipides: ${meal.fat}g
+TEMPS DE PRÉPARATION MAX: ${meal.prep_time} minutes
+RÉGIME: ${params.dietType || 'omnivore'}
+ALLERGIES: ${params.allergies || 'aucune'}
+BESOIN DE CUISSON: ${meal.needs_cooking ? 'oui' : 'non (recette froide ou sans cuisson)'}
+PROFIL: ${up.weight||'?'}kg, objectif ${up.trainingType||'Maintien'}
+BUDGET: ${params.budget || 'moyen'}
+
+Réponds UNIQUEMENT en JSON:
+{
+  "ingredients": ["quantité + unité + ingrédient précis", "..."],
+  "instructions": ["Étape 1 courte et claire", "Étape 2", "..."],
+  "tips": "conseil ou variante en 1 phrase",
+  "prep_time": 10,
+  "cook_time": 15
+}
+
+RÈGLES: quantités précises en grammes/ml, instructions courtes (max 2 phrases par étape), max 6 étapes.`;
+
+    const cfg   = _selectProvider('fast');
+    const reply = await _callAI([{ role:'user', content: prompt }], cfg,
+        'Tu es cuisinier nutritionniste. Réponds UNIQUEMENT avec du JSON valide.', 800);
+
+    if (!reply || reply.startsWith('__ERROR__')) {
+        rcontent.innerHTML = '<div style="color:var(--danger);padding:10px;font-size:12px;">Impossible de générer la recette. Réessayez.</div>';
+        return;
+    }
+
+    try {
+        const clean = reply.replace(/```json|```/g, '').trim();
+        const recipe = JSON.parse(clean);
+        // Fusionner dans le repas pour ne pas re-générer
+        meal.ingredients   = recipe.ingredients  || [];
+        meal.instructions  = recipe.instructions || [];
+        meal.tips          = recipe.tips         || '';
+        if (recipe.cook_time) meal.cook_time = recipe.cook_time;
+        _renderRecipeContent(meal, rcontent);
+    } catch(e) {
+        rcontent.innerHTML = '<div style="color:var(--danger);padding:10px;font-size:12px;">Format invalide. Réessayez.<br><small>' + e.message + '</small></div>';
+    }
+}
+
+function _renderRecipeContent(meal, rcontent) {
+    let html = '';
+
+    // Temps
+    const totalTime = (meal.prep_time || 0) + (meal.cook_time || 0);
+    if (totalTime > 0) {
+        html += '<div style="display:flex;gap:8px;margin-bottom:12px;">';
+        if (meal.prep_time) html += '<span style="padding:4px 10px;background:var(--card-bg-alt);border-radius:8px;font-size:11px;font-weight:700;color:var(--text-secondary);border:1px solid var(--border);"><i class="fas fa-cut"></i> Prép. ' + meal.prep_time + 'min</span>';
+        if (meal.cook_time) html += '<span style="padding:4px 10px;background:var(--card-bg-alt);border-radius:8px;font-size:11px;font-weight:700;color:var(--text-secondary);border:1px solid var(--border);"><i class="fas fa-fire"></i> Cuisson ' + meal.cook_time + 'min</span>';
+        html += '</div>';
+    }
+
+    // Ingrédients
+    if (meal.ingredients?.length) {
+        html += '<div style="margin-bottom:14px;">' +
+            '<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:8px;">Ingrédients</div>';
+        meal.ingredients.forEach(ing => {
+            html += '<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);">' +
+                '<i class="fas fa-circle" style="font-size:5px;color:var(--primary);margin-top:5px;flex-shrink:0;"></i>' +
+                '<span style="font-size:12px;color:var(--text-primary);">' + ing + '</span></div>';
+        });
+        html += '</div>';
+    }
+
+    // Instructions
+    if (meal.instructions?.length) {
+        html += '<div style="margin-bottom:14px;">' +
+            '<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:8px;">Préparation</div>';
+        meal.instructions.forEach((step, i) => {
+            html += '<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">' +
+                '<div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#EF9F27,#BA7517);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;">' + (i+1) + '</div>' +
+                '<span style="font-size:12px;color:var(--text-primary);line-height:1.6;">' + step + '</span></div>';
+        });
+        html += '</div>';
+    }
+
+    // Conseil + info séance à jeun si applicable
+    if (meal.tips) {
+        html += '<div style="background:rgba(79,110,247,.06);border:1px solid rgba(79,110,247,.2);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:8px;">' +
+            '<i class="fas fa-lightbulb" style="color:var(--primary);margin-right:6px;"></i>' + meal.tips + '</div>';
+    }
+
+    // Macros
+    html += '<div style="background:var(--card-bg-alt);border-radius:10px;padding:10px 12px;border:1px solid var(--border);">' +
+        '<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:8px;">Valeurs nutritionnelles</div>' +
+        '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;">' +
+        _nutriRecipeKPI('🔥', meal.kcal, 'kcal') +
+        _nutriRecipeKPI('💪', meal.protein + 'g', 'Protéines') +
+        _nutriRecipeKPI('⚡', meal.carbs + 'g', 'Glucides') +
+        _nutriRecipeKPI('🥑', meal.fat + 'g', 'Lipides') +
+        '</div></div>';
+
+    rcontent.innerHTML = html;
+}
+
+function _nutriRecipeKPI(icon, val, label) {
+    return '<div style="background:var(--card-bg);border-radius:8px;padding:6px 4px;border:1px solid var(--border);">' +
+        '<div style="font-size:14px;">' + icon + '</div>' +
+        '<div style="font-size:13px;font-weight:900;color:var(--text-primary);">' + val + '</div>' +
+        '<div style="font-size:9px;color:var(--text-tertiary);font-weight:700;">' + label + '</div>' +
+        '</div>';
+}
+
+// ── Export du plan ─────────────────────────────────────────────────────
+function _exportNutritionPlan() {
+    if (!_nutriPlan) return;
+    let txt = 'PLAN NUTRITION IRONPLATE\n';
+    txt += '========================\n';
+    txt += 'Moy. ' + (_nutriPlan.week_calories_avg||'?') + ' kcal/j | ' + (_nutriPlan.week_protein_avg||'?') + 'g protéines\n\n';
+    (_nutriPlan.days || []).forEach(day => {
+        txt += day.day.toUpperCase() + ' — ' + day.total_kcal + ' kcal\n';
+        txt += '─'.repeat(30) + '\n';
+        (day.meals || []).forEach(m => {
+            txt += '  • ' + m.name + ' (' + m.kcal + ' kcal | P:' + m.protein + 'g)\n';
+        });
+        txt += '\n';
+    });
+    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = 'plan-nutrition-ironplate.txt'; a.click();
+    URL.revokeObjectURL(url);
+    showNotification('Plan exporté !', 'success');
+}
+
+
+
+
+// ══════════════════════════════════════════════════════════════
+// NUTRITION — Heure de séance modifiable + compléments
+// ══════════════════════════════════════════════════════════════
+
+let _nutri_wh = null; // heure séance détectée depuis historique
+
+// Initialise le champ heure séance depuis l'historique
+function _resetWorkoutTimeFromHistory() {
+    const input = document.getElementById('nutri-workout-time');
+    const label = document.getElementById('nutri-workout-time-label');
+    if (!input) return;
+
+    let avgHour = null, count = 0;
+    if (typeof workoutHistory !== 'undefined' && workoutHistory.length > 0) {
+        const hours = workoutHistory.slice(0, 20)
+            .map(w => w.date ? new Date(w.date).getHours() : null)
+            .filter(h => h !== null && !isNaN(h));
+        if (hours.length >= 2) {
+            avgHour = Math.round(hours.reduce((a,b) => a+b, 0) / hours.length);
+            count   = hours.length;
+        }
+    }
+
+    if (avgHour !== null) {
+        input.value = String(avgHour).padStart(2,'0') + ':00';
+        _nutri_wh   = avgHour;
+        if (label) label.textContent = '📊 Détecté depuis ' + count + ' séances (modifiable)';
+    } else {
+        input.value = '18:00';
+        _nutri_wh   = 18;
+        if (label) label.textContent = 'Aucun historique — valeur par défaut 18h00';
+    }
+    _onWorkoutTimeChange();
+}
+
+function _onWorkoutTimeChange() {
+    const input = document.getElementById('nutri-workout-time');
+    const label = document.getElementById('nutri-workout-time-label');
+    if (!input?.value) return;
+    const [h] = input.value.split(':').map(Number);
+    _nutri_wh = h;
+    if (label && !label.textContent.includes('Détecté')) {
+        label.textContent = 'Séance à ' + String(h).padStart(2,'0') + 'h00';
+    }
+}
+
+function _onSuppsToggle(enabled) {
+    const panel = document.getElementById('nutri-supps-panel');
+    if (panel) panel.style.opacity = enabled ? '1' : '0.4';
+    if (panel) panel.style.pointerEvents = enabled ? 'auto' : 'none';
+}
+
+// Lire les compléments cochés
+function _getSelectedSupplements() {
+    const toggle = document.getElementById('nutri-supps-toggle');
+    if (!toggle?.checked) return [];
+    const supps = [];
+    if (document.getElementById('supp-whey')?.checked)     supps.push('Whey protéine');
+    if (document.getElementById('supp-creatine')?.checked) supps.push('Créatine monohydrate');
+    if (document.getElementById('supp-collagen')?.checked) supps.push('Collagène');
+    if (document.getElementById('supp-magnesium')?.checked)supps.push('Magnésium');
+    if (document.getElementById('supp-omega3')?.checked)   supps.push('Oméga-3');
+    return supps;
+}
+
+
+
+// ══════════════════════════════════════════════════════════════
+// NUTRITION — Post-processing : cohérence calories, ordre, jeûne
+// ══════════════════════════════════════════════════════════════
+function _sanitizeNutritionPlan(plan, opts) {
+    if (!plan?.days) return;
+
+    const DAY_ORDER = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+
+    // ── 1. Trier les jours Lundi→Dimanche ────────────────────────────
+    plan.days.sort((a, b) => {
+        const ia = DAY_ORDER.indexOf(a.day);
+        const ib = DAY_ORDER.indexOf(b.day);
+        return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    });
+
+    // Fenêtre de jeûne : parser heure début
+    let fastStart = null, fastEnd = null;
+    if (opts.fastingType && opts.fastingType !== 'aucun' && opts.fastingWin) {
+        const parts = opts.fastingWin.replace(/h/g,':').split('-').map(s => s.trim());
+        if (parts.length === 2) {
+            fastStart = _parseHour(parts[0]);
+            fastEnd   = _parseHour(parts[1]);
+        }
+    }
+
+    plan.days.forEach(day => {
+        if (!day.meals?.length) return;
+
+        // ── 2. Filtrer repas hors fenêtre de jeûne ───────────────────
+        if (fastStart !== null) {
+            day.meals = day.meals.filter(meal => {
+                if (!meal.time) return true;
+                const h = _parseHour(meal.time);
+                // Repas autorisé seulement si heure >= fastStart
+                return h >= fastStart;
+            });
+        }
+
+        // ── 3. Trier les repas par heure croissante (matin→soir) ─────
+        day.meals.sort((a, b) => {
+            const ha = a.time ? _parseHour(a.time) : 12;
+            const hb = b.time ? _parseHour(b.time) : 12;
+            return ha - hb;
+        });
+
+        // ── 4. Recalculer total_kcal depuis la somme des repas ────────
+        if (day.meals.length > 0) {
+            const sumKcal = day.meals.reduce((s, m) => s + (parseInt(m.kcal) || 0), 0);
+            const sumProt = day.meals.reduce((s, m) => s + (parseInt(m.protein) || 0), 0);
+            const sumCarb = day.meals.reduce((s, m) => s + (parseInt(m.carbs) || 0), 0);
+            const sumFat  = day.meals.reduce((s, m) => s + (parseInt(m.fat) || 0), 0);
+
+            const declaredKcal = parseInt(day.total_kcal) || 0;
+            const diff = Math.abs(sumKcal - declaredKcal);
+
+            // Règle 1: si écart > 100 kcal entre declared et sum → sum fait foi
+            if (diff > 100 || declaredKcal === 0) {
+                day.total_kcal    = sumKcal;
+                day.total_protein = sumProt;
+                day.total_carbs   = sumCarb;
+                day.total_fat     = sumFat;
+                day._kcal_corrected = true;
+            }
+
+            // Règle 2: si le total est < 80% de la cible du profil → signaler
+            const targetCal = opts.targetCal || 0;
+            const realKcal  = day.total_kcal;
+            if (targetCal > 0 && realKcal < targetCal * 0.80) {
+                day._kcal_too_low = true; // flag : trop bas vs profil
+                day._kcal_gap     = targetCal - realKcal;
+            }
+        }
+    });
+
+    // ── 5. Recalculer week_calories_avg depuis les jours corrigés ─────
+    if (plan.days.length > 0) {
+        plan.week_calories_avg = Math.round(
+            plan.days.reduce((s, d) => s + (d.total_kcal || 0), 0) / plan.days.length
+        );
+        plan.week_protein_avg = Math.round(
+            plan.days.reduce((s, d) => s + (d.total_protein || 0), 0) / plan.days.length
+        );
+    }
+}
+
+// Convertit "10:00", "10h00", "10" → nombre de minutes depuis minuit (float heures)
+function _parseHour(str) {
+    if (!str) return 12;
+    const s = String(str).replace('h',':');
+    const parts = s.split(':');
+    return parseInt(parts[0] || 0) + (parseInt(parts[1] || 0)) / 60;
+}
+
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialiser le système i18n
+    window._i18nEnabled = localStorage.getItem('ironplate_i18n') !== 'off';
+    if (typeof _updateLangButtons === 'function') _updateLangButtons();
+    if (window._i18nEnabled && typeof _applyI18nDOM === 'function') {
+        // Petit délai pour laisser le DOM se rendre
+        setTimeout(() => _applyI18nDOM(), 150);
+    }
+
     // Vérifier si data.js est chargé (requis pour le fonctionnement)
     if (typeof exercises === 'undefined' || typeof foods === 'undefined') {
         console.warn('[IronPlate] data.js non chargé. Vérifiez que vous utilisez un serveur HTTP (pas file://)');
@@ -32776,10 +35657,10 @@ window.addEventListener('beforeunload', function(e) {
                 </div>
                 <div>
                     <div style="font-size:15px;font-weight:900;color:white;letter-spacing:-.02em;">AutoGym</div>
-                    <div style="font-size:10px;color:rgba(255,255,255,.8);">Détection automatique · Coaching IA</div>
+                    <div style="font-size:10px;color:rgba(255,255,255,.8);">Mode 1 : poche · Mode 2 : caméra</div>
                 </div>
             </div>
-            <button class="modal-close" onclick="closeAutoGym()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+            <button class="modal-close" onclick="_agCloseModal()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
         </div>
         <div class="modal-body" style="padding:14px;display:flex;flex-direction:column;gap:12px;">
 
@@ -32838,15 +35719,54 @@ window.addEventListener('beforeunload', function(e) {
                 <span id="ag-coach-text">Appuyez sur Démarrer et commencez votre exercice. Je détecte automatiquement vos répétitions.</span>
             </div>
 
-            <!-- Signal visualisation -->
-            <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:10px 14px;">
+            <!-- Sélecteur de mode -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                <button id="ag-mode1-btn" onclick="_agSwitchMode(1)"
+                    style="padding:9px;border-radius:12px;background:linear-gradient(135deg,#0FA86A,#059669);color:white;border:none;cursor:pointer;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;">
+                    <i class="fas fa-mobile-alt"></i> Mode 1 — Poche
+                </button>
+                <button id="ag-mode2-btn" onclick="_agSwitchMode(2)"
+                    style="padding:9px;border-radius:12px;background:var(--card-bg-alt);border:1.5px solid var(--border);color:var(--text-secondary);cursor:pointer;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;">
+                    <i class="fas fa-camera"></i> Mode 2 — Caméra
+                </button>
+            </div>
+
+            <!-- Zone Mode 1 : signal accéléromètre -->
+            <div id="ag-mode1-zone" style="background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:10px 14px;">
                 <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:6px;">Signal accéléromètre</div>
                 <canvas id="ag-signal-canvas" width="400" height="50" style="width:100%;height:50px;border-radius:6px;"></canvas>
             </div>
 
+            <!-- Zone Mode 2 : caméra + skeleton -->
+            <div id="ag-mode2-zone" style="display:none;flex-direction:column;gap:8px;">
+                <div style="position:relative;border-radius:14px;overflow:hidden;background:#000;aspect-ratio:4/3;">
+                    <video id="ag-video" autoplay playsinline muted
+                        style="width:100%;border-radius:14px;display:block;"></video>
+                    <canvas id="ag-pose-canvas"
+                        style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:14px;"></canvas>
+                    <!-- Overlay info -->
+                    <div id="ag-pose-overlay" style="position:absolute;bottom:8px;left:8px;right:8px;display:flex;align-items:center;justify-content:space-between;pointer-events:none;">
+                        <div id="ag-pose-exercise" style="background:rgba(0,0,0,.6);color:white;font-size:12px;font-weight:800;padding:4px 10px;border-radius:20px;backdrop-filter:blur(4px);">Détection…</div>
+                        <div id="ag-pose-fps" style="background:rgba(0,0,0,.5);color:rgba(255,255,255,.7);font-size:10px;padding:3px 8px;border-radius:10px;">0 fps</div>
+                    </div>
+                </div>
+                <div style="font-size:10px;color:var(--text-tertiary);text-align:center;line-height:1.5;">
+                    📐 Posez le téléphone face à vous, 1 à 2 mètres de distance<br>
+                    Le corps entier doit être visible dans le cadre
+                </div>
+                <!-- Chargement TF.js -->
+                <div id="ag-tf-loading" style="display:none;text-align:center;padding:12px;">
+                    <div style="font-size:12px;color:var(--text-secondary);">
+                        <span class="ai-spinner"></span>
+                        Chargement du moteur de vision IA… (~5MB)
+                    </div>
+                    <div style="font-size:10px;color:var(--text-tertiary);margin-top:4px;" id="ag-tf-progress"></div>
+                </div>
+            </div>
+
             <!-- Contrôles -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                <button id="ag-start-btn" onclick="toggleAutoGym()"
+                <button id="ag-start-btn" onclick="_agHandleStart()"
                     style="padding:14px;background:linear-gradient(135deg,#0FA86A,#059669);color:white;border:none;border-radius:14px;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(15,168,106,.3);">
                     <i class="fas fa-play"></i> Démarrer
                 </button>
@@ -32861,6 +35781,11 @@ window.addEventListener('beforeunload', function(e) {
                 <i class="fas fa-check-circle"></i> Valider cette série
             </button>
 
+            <!-- Bouton terminer session libre -->
+            <button id="ag-finish-free-btn" onclick="_agFinishFreeSession()" style="display:none;width:100%;padding:13px;background:linear-gradient(135deg,#E03E3E,#C62828);color:white;border:none;border-radius:14px;font-size:13px;font-weight:800;cursor:pointer;">
+                <i class="fas fa-flag-checkered"></i> Terminer et enregistrer la séance
+            </button>
+
             <!-- Statut capteur -->
             <div id="ag-sensor-status" style="font-size:10px;text-align:center;color:var(--text-tertiary);padding:4px;"></div>
 
@@ -32872,6 +35797,34 @@ window.addEventListener('beforeunload', function(e) {
 <div id="autogym-fab" onclick="showAutoGym()" title="AutoGym — Détection automatique"
     style="display:none;position:fixed;bottom:82px;left:14px;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#0FA86A,#4F6EF7);color:white;align-items:center;justify-content:center;font-size:18px;cursor:pointer;box-shadow:0 4px 16px rgba(15,168,106,.45);z-index:998;transition:transform .15s;">
     <i class="fas fa-dumbbell"></i>
+</div>
+
+<!-- Modal sauvegarde séance AutoGym libre -->
+<div class="modal" id="ag-save-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Enregistrer la séance</div>
+      <button class="modal-close" onclick="hideModal('ag-save-modal')">×</button>
+    </div>
+    <div class="modal-body" style="padding:16px;display:flex;flex-direction:column;gap:12px;">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:6px;">Nom de la séance</div>
+        <input type="text" id="ag-save-name" class="number-input" style="width:100%;font-size:14px;padding:10px 12px;"
+            placeholder="Nom généré par IA…">
+      </div>
+      <div id="ag-save-summary" style="background:var(--card-bg-alt);border-radius:12px;padding:12px;border:1px solid var(--border);font-size:12px;line-height:1.7;color:var(--text-secondary);"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <button onclick="hideModal('ag-save-modal')"
+            style="padding:12px;background:var(--card-bg-alt);border:1.5px solid var(--border);border-radius:12px;font-size:13px;font-weight:700;color:var(--text-secondary);cursor:pointer;">
+            Annuler
+        </button>
+        <button onclick="_agConfirmSave()"
+            style="padding:12px;background:linear-gradient(135deg,#0FA86A,#059669);color:white;border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;">
+            <i class="fas fa-save"></i> Sauvegarder
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 </body>
