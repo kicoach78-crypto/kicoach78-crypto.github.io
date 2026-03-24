@@ -13198,6 +13198,8 @@ input:checked + .slider:before {
                         placeholder="ex: douleur épaule droite, pas de squat lourd…">
                 </div>
 
+
+
             </div>
 
             <div id="ai-custom-plan-content" style="margin-top:10px;"></div>
@@ -13242,7 +13244,7 @@ input:checked + .slider:before {
          ══════════════════════════════════════════════════════ -->
     <div id="ai-tab-nutrition" class="ai-tab-content">
 
-        <!-- ── SECTION 1 : Paramètres personnalisés ── -->
+        <!-- ── SECTION 1 : Paramètres ── -->
         <div class="ai-section-card" id="nutri-params-card">
             <div class="ai-section-head">
                 <i class="fas fa-sliders-h" style="color:#0FA86A;"></i>
@@ -13254,7 +13256,6 @@ input:checked + .slider:before {
 
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
 
-                <!-- Nb repas -->
                 <div>
                     <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Repas / jour</div>
                     <select id="nutri-meals-per-day" class="filter-select" style="width:100%;font-size:13px;">
@@ -13265,7 +13266,6 @@ input:checked + .slider:before {
                     </select>
                 </div>
 
-                <!-- Type de régime -->
                 <div>
                     <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Régime</div>
                     <select id="nutri-diet-type" class="filter-select" style="width:100%;font-size:13px;">
@@ -13280,7 +13280,6 @@ input:checked + .slider:before {
                     </select>
                 </div>
 
-                <!-- Temps de cuisine -->
                 <div>
                     <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Temps cuisine</div>
                     <select id="nutri-cook-time" class="filter-select" style="width:100%;font-size:13px;">
@@ -13291,7 +13290,6 @@ input:checked + .slider:before {
                     </select>
                 </div>
 
-                <!-- Budget -->
                 <div>
                     <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Budget</div>
                     <select id="nutri-budget" class="filter-select" style="width:100%;font-size:13px;">
@@ -13301,23 +13299,16 @@ input:checked + .slider:before {
                     </select>
                 </div>
 
-                <!-- Allergies -->
                 <div style="grid-column:1/-1;">
                     <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Allergies / intolérances</div>
-                    <input type="text" id="nutri-allergies" class="number-input"
-                        style="width:100%;font-size:12px;"
-                        placeholder="ex: lactose, arachides, gluten… (ou laisser vide)">
+                    <input type="text" id="nutri-allergies" class="number-input" style="width:100%;font-size:12px;" placeholder="ex: lactose, arachides, gluten…">
                 </div>
 
-                <!-- Aliments aimés / détestés -->
                 <div style="grid-column:1/-1;">
                     <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Préférences alimentaires</div>
-                    <input type="text" id="nutri-preferences" class="number-input"
-                        style="width:100%;font-size:12px;"
-                        placeholder="ex: j'adore le poulet, pas de brocolis…">
+                    <input type="text" id="nutri-preferences" class="number-input" style="width:100%;font-size:12px;" placeholder="ex: j'adore le poulet, pas de brocolis…">
                 </div>
 
-                <!-- Objectif spécifique -->
                 <div style="grid-column:1/-1;">
                     <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Objectif nutritionnel</div>
                     <select id="nutri-goal-specific" class="filter-select" style="width:100%;font-size:13px;">
@@ -13331,7 +13322,6 @@ input:checked + .slider:before {
                     </select>
                 </div>
 
-                <!-- Jeûne intermittent -->
                 <div style="grid-column:1/-1;">
                     <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Jeûne intermittent</div>
                     <select id="nutri-fasting" class="filter-select" style="width:100%;font-size:13px;" onchange="_onFastingChange(this.value)">
@@ -13345,34 +13335,25 @@ input:checked + .slider:before {
                     </select>
                 </div>
 
-                <!-- Fenêtre alimentaire : 2 champs auto-calculés -->
                 <div id="nutri-fasting-win-row" style="grid-column:1/-1;display:none;">
                     <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:8px;">Fenêtre alimentaire</div>
                     <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;">
-                        <!-- Champ 1 : heure début (modifiable) -->
                         <div>
                             <div style="font-size:9px;color:var(--text-tertiary);font-weight:700;margin-bottom:4px;">Début (modifiable)</div>
-                            <div style="position:relative;">
-                                <input type="time" id="nutri-fast-start"
-                                    style="width:100%;padding:9px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card-bg);color:var(--text-primary);font-size:14px;font-weight:700;text-align:center;cursor:pointer;"
-                                    oninput="_updateFastEnd()">
-                            </div>
+                            <input type="time" id="nutri-fast-start"
+                                style="width:100%;padding:9px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card-bg);color:var(--text-primary);font-size:14px;font-weight:700;text-align:center;cursor:pointer;"
+                                oninput="_updateFastEnd()">
                         </div>
-                        <!-- Flèche -->
                         <div style="text-align:center;font-size:18px;color:var(--primary);padding-top:18px;">→</div>
-                        <!-- Champ 2 : heure fin (auto) -->
                         <div>
                             <div style="font-size:9px;color:var(--text-tertiary);font-weight:700;margin-bottom:4px;">Fin (auto-calculée)</div>
                             <div style="padding:9px 10px;border-radius:10px;border:1.5px solid var(--primary);background:var(--primary-glow);color:var(--primary);font-size:14px;font-weight:900;text-align:center;" id="nutri-fast-end">—</div>
                         </div>
                     </div>
-                    <!-- Info durée -->
                     <div id="nutri-fast-info" style="margin-top:6px;font-size:11px;color:var(--text-tertiary);text-align:center;"></div>
-                    <!-- Input caché pour compatibilité avec le reste du code -->
                     <input type="hidden" id="nutri-fasting-window">
                 </div>
 
-                <!-- Heure de séance — auto depuis historique, modifiable -->
                 <div style="grid-column:1/-1;">
                     <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:8px;">Heure habituelle de séance</div>
                     <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;">
@@ -13387,110 +13368,87 @@ input:checked + .slider:before {
                     <div id="nutri-workout-time-label" style="margin-top:5px;font-size:10px;color:var(--text-tertiary);"></div>
                 </div>
 
-                <!-- Compléments alimentaires -->
+                <!-- ══ COMPLÉMENTS ALIMENTAIRES ══ -->
                 <div style="grid-column:1/-1;">
                     <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:8px;">Compléments alimentaires</div>
                     <div style="background:var(--card-bg-alt);border:1px solid var(--border);border-radius:12px;padding:12px;">
-
-                        <!-- Toggle compléments ON/OFF -->
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                            <span style="font-size:12px;font-weight:700;color:var(--text-primary);">Inclure les conseils compléments</span>
+                            <span style="font-size:12px;font-weight:700;color:var(--text-primary);">Inclure dans le plan alimentaire</span>
                             <label class="toggle-switch" style="flex-shrink:0;">
                                 <input type="checkbox" id="nutri-supps-toggle" checked onchange="_onSuppsToggle(this.checked)">
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>
-
                         <div id="nutri-supps-panel">
-                            <!-- Whey Protéine -->
                             <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
                                 <div style="display:flex;align-items:center;gap:8px;">
-                                    <div style="width:30px;height:30px;border-radius:8px;background:rgba(79,110,247,.12);display:flex;align-items:center;justify-content:center;font-size:14px;">🥛</div>
+                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(79,110,247,.12);display:flex;align-items:center;justify-content:center;font-size:13px;">🥛</div>
                                     <div>
                                         <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Whey Protéine</div>
-                                        <div style="font-size:10px;color:var(--text-tertiary);">Récupération musculaire post-entraînement</div>
+                                        <div style="font-size:10px;color:var(--text-tertiary);">Récupération post-entraînement</div>
                                     </div>
                                 </div>
-                                <label class="toggle-switch" style="flex-shrink:0;">
-                                    <input type="checkbox" id="supp-whey" checked>
-                                    <span class="toggle-slider"></span>
-                                </label>
+                                <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-whey" checked><span class="toggle-slider"></span></label>
                             </div>
-
-                            <!-- Créatine -->
                             <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
                                 <div style="display:flex;align-items:center;gap:8px;">
-                                    <div style="width:30px;height:30px;border-radius:8px;background:rgba(15,168,106,.12);display:flex;align-items:center;justify-content:center;font-size:14px;">⚡</div>
+                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(15,168,106,.12);display:flex;align-items:center;justify-content:center;font-size:13px;">⚡</div>
                                     <div>
                                         <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Créatine Monohydrate</div>
                                         <div style="font-size:10px;color:var(--text-tertiary);">Force et volume musculaire</div>
                                     </div>
                                 </div>
-                                <label class="toggle-switch" style="flex-shrink:0;">
-                                    <input type="checkbox" id="supp-creatine">
-                                    <span class="toggle-slider"></span>
-                                </label>
+                                <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-creatine"><span class="toggle-slider"></span></label>
                             </div>
-
-                            <!-- Collagène -->
                             <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
                                 <div style="display:flex;align-items:center;gap:8px;">
-                                    <div style="width:30px;height:30px;border-radius:8px;background:rgba(239,159,39,.12);display:flex;align-items:center;justify-content:center;font-size:14px;">🦴</div>
+                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(239,159,39,.12);display:flex;align-items:center;justify-content:center;font-size:13px;">🦴</div>
                                     <div>
                                         <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Collagène</div>
                                         <div style="font-size:10px;color:var(--text-tertiary);">Articulations, peau, récupération</div>
                                     </div>
                                 </div>
-                                <label class="toggle-switch" style="flex-shrink:0;">
-                                    <input type="checkbox" id="supp-collagen">
-                                    <span class="toggle-slider"></span>
-                                </label>
+                                <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-collagen"><span class="toggle-slider"></span></label>
                             </div>
-
-                            <!-- Magnésium -->
                             <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
                                 <div style="display:flex;align-items:center;gap:8px;">
-                                    <div style="width:30px;height:30px;border-radius:8px;background:rgba(124,58,237,.12);display:flex;align-items:center;justify-content:center;font-size:14px;">💊</div>
+                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(124,58,237,.12);display:flex;align-items:center;justify-content:center;font-size:13px;">💊</div>
                                     <div>
                                         <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Magnésium</div>
                                         <div style="font-size:10px;color:var(--text-tertiary);">Récupération, sommeil, crampes</div>
                                     </div>
                                 </div>
-                                <label class="toggle-switch" style="flex-shrink:0;">
-                                    <input type="checkbox" id="supp-magnesium">
-                                    <span class="toggle-slider"></span>
-                                </label>
+                                <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-magnesium"><span class="toggle-slider"></span></label>
                             </div>
-
-                            <!-- Oméga-3 -->
-                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
                                 <div style="display:flex;align-items:center;gap:8px;">
-                                    <div style="width:30px;height:30px;border-radius:8px;background:rgba(59,139,212,.12);display:flex;align-items:center;justify-content:center;font-size:14px;">🐟</div>
+                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(59,139,212,.12);display:flex;align-items:center;justify-content:center;font-size:13px;">🐟</div>
                                     <div>
                                         <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Oméga-3</div>
                                         <div style="font-size:10px;color:var(--text-tertiary);">Anti-inflammatoire, santé cardio</div>
                                     </div>
                                 </div>
-                                <label class="toggle-switch" style="flex-shrink:0;">
-                                    <input type="checkbox" id="supp-omega3">
-                                    <span class="toggle-slider"></span>
-                                </label>
+                                <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-omega3"><span class="toggle-slider"></span></label>
+                            </div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(124,58,237,.12);display:flex;align-items:center;justify-content:center;font-size:13px;">🧬</div>
+                                    <div>
+                                        <div style="font-size:12px;font-weight:700;color:var(--text-primary);">BCAA</div>
+                                        <div style="font-size:10px;color:var(--text-tertiary);">Acides aminés, anti-catabolisme</div>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-bcaa"><span class="toggle-slider"></span></label>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
             </div>
 
-            <!-- Résumé des données profil utilisées -->
-            <div id="nutri-profile-summary" style="background:var(--card-bg-alt);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--text-tertiary);line-height:1.8;margin-top:4px;">
-                <!-- Rempli par JS -->
-            </div>
-            <!-- Heure de séance détectée -->
-            <div id="nutri-workout-time-info" style="display:none;background:rgba(79,110,247,.06);border:1px solid rgba(79,110,247,.18);border-radius:10px;padding:8px 12px;font-size:11px;color:var(--primary);margin-top:6px;line-height:1.6;">
-                <!-- Rempli par JS -->
-            </div>
+            <!-- Résumé profil -->
+            <div id="nutri-profile-summary" style="background:var(--card-bg-alt);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--text-tertiary);line-height:1.8;margin-top:8px;"></div>
+            <div id="nutri-workout-time-info" style="display:none;background:rgba(79,110,247,.06);border:1px solid rgba(79,110,247,.18);border-radius:10px;padding:8px 12px;font-size:11px;color:var(--primary);margin-top:6px;line-height:1.6;"></div>
         </div>
 
         <!-- ── SECTION 2 : Plan généré ── -->
@@ -13505,22 +13463,19 @@ input:checked + .slider:before {
                     <span>Personnalisez vos paramètres ci-dessus puis générez votre plan</span>
                 </div>
             </div>
-
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
                 <button class="ai-cta-btn" onclick="generateNutritionPlan()"
                     style="background:linear-gradient(135deg,#0FA86A,#059669);margin:0;">
-                    <i class="fas fa-magic"></i>
-                    Générer le plan
+                    <i class="fas fa-magic"></i> Générer le plan
                 </button>
                 <button class="ai-cta-btn" onclick="_exportNutritionPlan()"
                     id="nutri-export-btn" style="display:none;background:linear-gradient(135deg,#4F6EF7,#7C3AED);margin:0;">
-                    <i class="fas fa-file-export"></i>
-                    Exporter
+                    <i class="fas fa-file-export"></i> Exporter
                 </button>
             </div>
         </div>
 
-        <!-- ── SECTION 3 : Recette détaillée (modal inline) ── -->
+        <!-- ── SECTION 3 : Recette ── -->
         <div id="nutri-recipe-card" class="ai-section-card" style="display:none;margin-top:10px;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
                 <div class="ai-section-head" style="margin:0;">
@@ -13534,7 +13489,6 @@ input:checked + .slider:before {
         </div>
 
     </div>
-
     <!-- Not configured state -->
     <div id="ai-not-configured" class="ai-not-configured" style="display:none;">
         <div class="ai-not-configured-icon">
@@ -33032,18 +32986,186 @@ function _agValidateSet() {
     }
 }
 
+// ── Repos interactif avec voix bidirectionnelle ──────────────────────
+let _agRestRemaining  = 0;
+let _agRestTotal      = 0;
+let _agRestInterval   = null;
+let _agRestListening  = false;
+let _agNextWeight     = null;
+
 function _agStartRest(seconds) {
-    let remaining = seconds;
-    const tick = () => {
-        if (!AG.active) return;
-        _agStatus(`Repos : ${remaining}s restantes`);
-        if (remaining === 10) _agSpeak('10 secondes');
-        if (remaining === 3)  _agSpeak('3, 2, 1');
-        if (remaining === 0)  { _agStatus('C\'est parti !'); _agSpeak('Série suivante !'); return; }
-        remaining--;
-        setTimeout(tick, 1000);
+    _agRestRemaining = seconds;
+    _agRestTotal     = seconds;
+    _agNextWeight    = AG.recommendedWeight;
+
+    // Afficher la zone de repos
+    const restZone = document.getElementById('ag-rest-zone');
+    if (restZone) restZone.style.display = 'block';
+
+    // Masquer le signal accéléromètre pendant le repos
+    const mode1z = document.getElementById('ag-mode1-zone');
+    if (mode1z) mode1z.style.display = 'none';
+
+    // Initialiser le poids affiché
+    const nwEl = document.getElementById('ag-next-weight');
+    if (nwEl) nwEl.textContent = _agNextWeight ? _agNextWeight + '' : '—';
+
+    // Annonce vocale
+    const setNum = AG.setCount;
+    const nextW  = _agNextWeight ? `à ${_agNextWeight}kg` : '';
+    _agSpeak(`Série ${setNum} validée. Repos ${seconds} secondes. ${nextW}`);
+
+    // Démarrer le ticker
+    if (_agRestInterval) clearInterval(_agRestInterval);
+    _agRestInterval = setInterval(_agRestTick, 1000);
+
+    // Démarrer l'écoute vocale passive
+    setTimeout(_agStartRestListening, 1500);
+}
+
+function _agRestTick() {
+    if (!AG.active) { _agStopRest(); return; }
+    if (_agRestRemaining <= 0) { _agRestDone(); return; }
+
+    _agRestRemaining--;
+    _agUpdateRestUI();
+
+    // Jalons vocaux
+    if (_agRestRemaining === 30) _agSpeak('30 secondes');
+    if (_agRestRemaining === 10) _agSpeak('10 secondes');
+    if (_agRestRemaining === 5)  _agSpeak('5 secondes');
+    if (_agRestRemaining === 3)  _agSpeak('3');
+    if (_agRestRemaining === 2)  _agSpeak('2');
+    if (_agRestRemaining === 1)  _agSpeak('1');
+}
+
+function _agUpdateRestUI() {
+    const el  = document.getElementById('ag-rest-countdown');
+    const arc = document.getElementById('ag-rest-arc');
+    if (el)  el.textContent = _agRestRemaining;
+    if (arc) {
+        const pct   = _agRestTotal > 0 ? _agRestRemaining / _agRestTotal : 0;
+        const circ  = 2 * Math.PI * 48; // r=48
+        arc.setAttribute('stroke-dasharray', (pct * circ).toFixed(1) + ' ' + circ.toFixed(1));
+    }
+    _agStatus(`Repos : ${_agRestRemaining}s`);
+}
+
+function _agRestDone() {
+    _agStopRest();
+    if (_agNextWeight) AG.recommendedWeight = _agNextWeight;
+    const el = document.getElementById('ag-recommended-weight');
+    if (el) el.textContent = _agNextWeight ? _agNextWeight + ' kg' : '—';
+    const nextSeries = AG.setCount + 1;
+    const nextW = _agNextWeight ? `à ${_agNextWeight} kg` : '';
+    _agSpeak(`Série ${nextSeries} ${nextW}. C'est parti !`);
+    _agCoachMsg(`💪 Série ${nextSeries} — ${nextW}. Allez !`);
+    _agStatus("C'est parti !");
+}
+
+function _agStopRest() {
+    if (_agRestInterval) { clearInterval(_agRestInterval); _agRestInterval = null; }
+    const restZone = document.getElementById('ag-rest-zone');
+    if (restZone) restZone.style.display = 'none';
+    const mode1z = document.getElementById('ag-mode1-zone');
+    if (AGV.mode === 1 && mode1z) mode1z.style.display = 'block';
+    _agStopRestListening();
+}
+
+function _agAddRest(delta) {
+    _agRestRemaining = Math.max(0, _agRestRemaining + delta);
+    if (delta > 0) { _agRestTotal = Math.max(_agRestTotal, _agRestRemaining); }
+    _agUpdateRestUI();
+    if (delta > 0) _agSpeak(`${delta} secondes ajoutées`);
+    else if (_agRestRemaining === 0) _agRestDone();
+}
+
+function _agSkipRest() {
+    _agRestRemaining = 0;
+    _agRestDone();
+}
+
+function _agAdjustWeight(delta) {
+    const base = _agNextWeight || AG.recommendedWeight || 0;
+    _agNextWeight = Math.max(0, Math.round((base + delta) * 2) / 2);
+    const el = document.getElementById('ag-next-weight');
+    if (el) el.textContent = _agNextWeight;
+}
+
+function _agSetWeightPreset(preset) {
+    const base = _agNextWeight || AG.recommendedWeight || 0;
+    if (preset === 'same')   _agNextWeight = base;
+    if (preset === 'plus2')  _agNextWeight = Math.round((base + 2.5) * 2) / 2;
+    if (preset === 'plus5')  _agNextWeight = Math.round((base + 5)   * 2) / 2;
+    if (preset === 'minus2') _agNextWeight = Math.max(0, Math.round((base - 2.5) * 2) / 2);
+    const el = document.getElementById('ag-next-weight');
+    if (el) el.textContent = _agNextWeight;
+    _agSpeak(_agNextWeight + ' kilogrammes');
+}
+
+// ── Écoute vocale passive pendant le repos ────────────────────────────
+let _agRestRecog = null;
+
+function _agStartRestListening() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) return;
+    if (_agRestListening) return;
+    _agRestListening = true;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    _agRestRecog = new SR();
+    _agRestRecog.lang = (_localeMeta?.speechCode || 'fr-FR');
+    _agRestRecog.continuous = false;
+    _agRestRecog.interimResults = false;
+    _agRestRecog.onresult = (e) => {
+        const cmd = e.results[0][0].transcript.toLowerCase().trim();
+        _agHandleRestVoiceCmd(cmd);
     };
-    tick();
+    _agRestRecog.onerror  = () => {};
+    _agRestRecog.onend    = () => {
+        if (_agRestListening && _agRestRemaining > 3) {
+            try { _agRestRecog.start(); } catch(e) {}
+        }
+    };
+    try { _agRestRecog.start(); } catch(e) {}
+}
+
+function _agStopRestListening() {
+    _agRestListening = false;
+    if (_agRestRecog) { try { _agRestRecog.stop(); } catch(e) {} _agRestRecog = null; }
+}
+
+function _agHandleRestVoiceCmd(cmd) {
+    // Poids
+    if (cmd.includes('même poids') || cmd.includes('même')) { _agSetWeightPreset('same'); return; }
+    if (cmd.includes('plus cinq') || cmd.includes('+5'))    { _agSetWeightPreset('plus5'); return; }
+    if (cmd.includes('plus deux') || cmd.includes('+2'))    { _agSetWeightPreset('plus2'); return; }
+    if (cmd.includes('moins cinq'))                         { _agSetWeightPreset('minus2'); return; }
+
+    // Chercher un nombre (poids)
+    const numMatch = cmd.match(/(\d+(?:[,.]\d+)?)\s*(?:kg|kilo|kilos)?$/);
+    if (numMatch && !cmd.includes('seconde') && !cmd.includes('minute')) {
+        const w = parseFloat(numMatch[1].replace(',','.'));
+        if (w >= 1 && w <= 500) {
+            _agNextWeight = Math.round(w * 2) / 2;
+            const el = document.getElementById('ag-next-weight');
+            if (el) el.textContent = _agNextWeight;
+            _agSpeak(_agNextWeight + ' kg');
+            return;
+        }
+    }
+
+    // Temps
+    if (cmd.includes("c'est parti") || cmd.includes('allez') || cmd.includes('go') || cmd.includes('démarrer')) {
+        _agSkipRest(); return;
+    }
+    if (cmd.includes('encore') || cmd.includes('plus de temps')) {
+        const m = cmd.match(/(\d+)/);
+        _agAddRest(m ? parseInt(m[1]) : 30); return;
+    }
+    if (cmd.includes('trente') || cmd.includes('30'))     { _agAddRest(30); return; }
+    if (cmd.includes('soixante') || cmd.includes('60') || cmd.includes('une minute')) { _agAddRest(60); return; }
+    if (cmd.includes('stop') || cmd.includes('pause') || cmd.includes('arrêt'))  {
+        _agRestRemaining += 120; _agUpdateRestUI(); _agSpeak('Pause prolongée'); return;
+    }
 }
 
 function _agResetSession() {
@@ -33954,7 +34076,7 @@ function _agConfirmSave() {
 async function generateCustomWeekPlan() {
     if (!_hasAnyKey()) { showNotification('Configurez l\'IA dans Paramètres', 'error'); return; }
 
-    // Lire les paramètres du formulaire
+    // ── Lire les paramètres ────────────────────────────────────────────
     const daysPerWeek = parseInt(document.getElementById('plan-days-per-week')?.value || 3);
     const duration    = parseInt(document.getElementById('plan-session-duration')?.value || 60);
     const equipment   = document.getElementById('plan-equipment')?.value || 'salle complète';
@@ -33966,63 +34088,76 @@ async function generateCustomWeekPlan() {
         .filter(d => document.getElementById('rest-' + d)?.checked)
         .map(d => ({ lun:'Lundi',mar:'Mardi',mer:'Mercredi',jeu:'Jeudi',ven:'Vendredi',sam:'Samedi',dim:'Dimanche' })[d]);
 
-    const container = document.getElementById('ai-custom-plan-content');
-    if (container) {
-        container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);"><span class="ai-spinner"></span> Génération du plan sur-mesure…</div>';
-    }
+    // Compléments depuis le module Nutrition (IDs: supp-*)
+    const planSupps = _getSelectedSupplements ? _getSelectedSupplements() : [];
+    const suppsStr = planSupps.length ? planSupps.join(', ') : 'aucun';
 
-    // Profil utilisateur
+    const container = document.getElementById('ai-custom-plan-content');
+    if (container) container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);"><span class="ai-spinner"></span> Génération du plan sur-mesure…<br><span style="font-size:11px;opacity:.6;">Peut prendre 15-30 secondes</span></div>';
+
+    // ── Profil utilisateur ────────────────────────────────────────────
     const up = typeof userProfile !== 'undefined' ? userProfile : {};
 
-    const prompt = `Tu es coach fitness expert. Génère un programme d'entraînement hebdomadaire personnalisé.
+    // ── JSON exemple propre (sans template expressions imbriquées) ────
+    const jsonExample = '{"days":[{"day":"Lundi","type":"workout","workout_name":"Push Day","focus":"pectoraux, triceps","exercises":[{"name":"Développé couché","sets":4,"reps":"8-10","rest":90,"notes":"Contrôle la descente","supplements_timing":""}],"duration_min":' + duration + ',"notes":"Conseil du jour","supplements_advice":""}]}';
+
+    const prompt = `Tu es coach fitness expert. Génère un programme hebdomadaire personnalisé.
 
 PROFIL:
-- Prénom: ${up.firstName || 'Utilisateur'}
-- Poids: ${up.weight || '?'}kg, Taille: ${up.height || '?'}cm, Âge: ${up.age || '?'} ans
-- Objectif: ${up.trainingType || 'Maintien'}, Niveau: ${up.level || 'Intermédiaire'}
+- ${up.firstName||'Utilisateur'}, ${up.age||'?'} ans, ${up.weight||'?'}kg/${up.height||'?'}cm
+- Objectif: ${up.trainingType||'Maintien'}, Niveau: ${up.level||'Intermédiaire'}
 
-CONTRAINTES UTILISATEUR:
-- Jours d'entraînement par semaine: ${daysPerWeek}
+CONTRAINTES:
+- Jours entraînement/semaine: ${daysPerWeek}
 - Durée par séance: ${duration} minutes
 - Jours de repos souhaités: ${restDays.length ? restDays.join(', ') : 'flexible'}
 - Équipement: ${equipment}
-- Groupes musculaires prioritaires: ${focus}
-- Contraintes / blessures: ${constraints}
+- Groupes prioritaires: ${focus}
+- Contraintes/blessures: ${constraints}
+- Compléments à intégrer: ${suppsStr}
 
-Génère le plan en JSON strict:
-{"days":[{"day":"Lundi","type":"rest|workout","workout_name":"Push Day","focus":"pectoraux, triceps, épaules","exercises":[{"name":"Développé couché","sets":4,"reps":"8-10","rest":90,"notes":"Contrôle la descente"}],"duration_min":${duration},"notes":"Conseil du jour"}]}
+RÈGLES ABSOLUES:
+1. Exactement 7 jours de Lundi à Dimanche
+2. Exactement ${daysPerWeek} jours entraînement et ${7-daysPerWeek} jours de repos
+3. Jours de repos imposés: ${restDays.length ? restDays.join(', ') : 'au choix'}
+4. Exercices uniquement avec: ${equipment}
+5. Éviter absolument: ${constraints}
+${planSupps.length ? '6. Pour chaque jour entraînement: indiquer supplements_advice avec timing précis (' + suppsStr + ')' : ''}
+7. Répondre UNIQUEMENT en JSON valide, aucun texte avant ou après
 
-RÈGLES:
-- Exactement 7 jours (Lundi à Dimanche)
-- Respecter les jours de repos demandés
-- Adapter le volume à ${daysPerWeek} séances/semaine
-- Exercices adaptés à l'équipement: ${equipment}
-- Éviter: ${constraints}
-- Répondre UNIQUEMENT en JSON valide, rien d'autre`;
-
+FORMAT JSON STRICT:
+{"days":[{"day":"Lundi","type":"workout","workout_name":"Push Day","focus":"pectoraux, triceps","exercises":[{"name":"Développé couché","sets":4,"reps":"8-10","rest":90,"notes":"Contrôle la descente"}],"duration_min":${duration},"notes":"Conseil","supplements_advice":"Whey 30g dans les 30min post-séance. Créatine 5g avec le dîner."},{"day":"Mardi","type":"rest","workout_name":"","focus":"","exercises":[],"duration_min":0,"notes":"Repos actif","supplements_advice":""}]}`
     const cfg   = _selectProvider('fast');
-    const reply = await _callAI([{ role: 'user', content: prompt }], cfg,
-        'Tu es coach fitness. Réponds UNIQUEMENT avec du JSON valide.');
+    const reply = await _callAI([{ role:'user', content: prompt }], cfg,
+        'Tu es coach fitness. Réponds UNIQUEMENT avec du JSON valide, sans markdown.',
+        3000); // max_tokens élevé pour éviter la troncature
 
     if (!reply || reply.startsWith('__ERROR__')) {
-        if (container) container.innerHTML = '<div style="color:var(--danger);padding:10px;font-size:12px;">Erreur IA: ' + (reply||'').replace('__ERROR__','') + '</div>';
+        if (container) container.innerHTML = '<div style="color:var(--danger);padding:10px;font-size:12px;">Erreur IA: ' + (reply||'').replace('__ERROR__','') + '<br><button onclick="generateCustomWeekPlan()" style="margin-top:8px;padding:6px 14px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">↺ Réessayer</button></div>';
         return;
     }
 
     try {
         const clean = reply.replace(/```json|```/g, '').trim();
         const plan  = JSON.parse(clean);
-        // Réutiliser le rendu de generateWeekPlan en stockant dans weekPlan
         window._customWeekPlan = plan;
+        window._customPlanSupps = planSupps; // stocker pour affichage
         _renderCustomWeekPlan(plan, container);
     } catch(e) {
-        if (container) container.innerHTML = '<div style="color:var(--danger);padding:10px;font-size:12px;">Erreur parsing JSON. Réessayez.</div>';
+        console.error('[Custom Plan]', e.message, reply?.slice(0,200));
+        if (container) container.innerHTML =
+            '<div style="color:var(--danger);padding:10px;font-size:12px;">' +
+            '⚠️ Format JSON invalide — le modèle a probablement tronqué la réponse.<br>' +
+            '<small style="opacity:.7;">' + e.message + '</small><br>' +
+            '<button onclick="generateCustomWeekPlan()" style="margin-top:8px;padding:6px 14px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">↺ Réessayer</button>' +
+            '</div>';
     }
 }
 
 function _renderCustomWeekPlan(plan, container) {
     if (!container || !plan?.days) return;
     const days = plan.days;
+    const planSupps = window._customPlanSupps || [];
     const html = days.map(day => {
         if (day.type === 'rest') {
             return `<div style="padding:10px 12px;background:var(--card-bg-alt);border-radius:10px;border:1px solid var(--border);margin-bottom:6px;display:flex;align-items:center;gap:8px;">
@@ -34048,6 +34183,7 @@ function _renderCustomWeekPlan(plan, container) {
             </div>
             <div style="padding:8px 12px;">${exList}</div>
             ${day.notes ? `<div style="padding:6px 12px;font-size:10px;color:var(--text-tertiary);border-top:1px solid var(--border);">💡 ${day.notes}</div>` : ''}
+            ${(day.supplements_advice && (window._customPlanSupps||[]).length > 0) ? `<div style="padding:8px 12px;background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(79,110,247,.06));border-top:1px solid var(--border);"><div style="font-size:10px;font-weight:800;color:var(--primary);margin-bottom:3px;"><i class="fas fa-pills" style="margin-right:4px;"></i>Compléments du jour</div><div style="font-size:11px;color:var(--text-secondary);line-height:1.6;">${day.supplements_advice}</div></div>` : ''}
         </div>`;
     }).join('');
 
@@ -35414,6 +35550,7 @@ function _getSelectedSupplements() {
     if (document.getElementById('supp-collagen')?.checked) supps.push('Collagène');
     if (document.getElementById('supp-magnesium')?.checked)supps.push('Magnésium');
     if (document.getElementById('supp-omega3')?.checked)   supps.push('Oméga-3');
+    if (document.getElementById('supp-bcaa')?.checked)     supps.push('BCAA');
     return supps;
 }
 
@@ -35512,6 +35649,11 @@ function _parseHour(str) {
     return parseInt(parts[0] || 0) + (parseInt(parts[1] || 0)) / 60;
 }
 
+
+function _toggleAgGuide() {
+    const guide = document.getElementById('ag-guide');
+    if (guide) guide.style.display = guide.style.display === 'none' ? 'block' : 'none';
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialiser le système i18n
@@ -35660,8 +35802,61 @@ window.addEventListener('beforeunload', function(e) {
                     <div style="font-size:10px;color:rgba(255,255,255,.8);">Mode 1 : poche · Mode 2 : caméra</div>
                 </div>
             </div>
+            <button onclick="_toggleAgGuide()" title="Guide d'utilisation"
+                style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:white;border-radius:10px;padding:5px 10px;cursor:pointer;font-size:11px;font-weight:700;">
+                <i class="fas fa-question-circle"></i> Guide
+            </button>
             <button class="modal-close" onclick="_agCloseModal()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
         </div>
+
+        <!-- Guide d'utilisation collapsible -->
+        <div id="ag-guide" style="display:none;background:rgba(0,0,0,.12);padding:14px;border-bottom:1px solid rgba(255,255,255,.1);">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <!-- Mode 1 -->
+                <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:10px;">
+                    <div style="font-size:11px;font-weight:900;color:white;margin-bottom:6px;"><i class="fas fa-mobile-alt"></i> Mode 1 — Poche</div>
+                    <div style="font-size:10px;color:rgba(255,255,255,.85);line-height:1.7;">
+                        📱 Glissez le téléphone dans la poche de short ou fixez-le sur vous<br>
+                        ▶️ Appuyez Démarrer<br>
+                        🏋️ Effectuez vos reps normalement<br>
+                        ✅ L'app détecte et compte automatiquement<br>
+                        🎤 Dites <em>"valider"</em> ou appuyez ✓<br>
+                        😮‍💨 Pendant le repos :<br>
+                        &nbsp;&nbsp;• Ajustez le poids avec +/−<br>
+                        &nbsp;&nbsp;• Dites <em>"même poids"</em>, <em>"plus cinq"</em><br>
+                        &nbsp;&nbsp;• Dites <em>"c'est parti"</em> pour démarrer<br>
+                        &nbsp;&nbsp;• <em>"encore 30 secondes"</em> pour prolonger
+                    </div>
+                </div>
+                <!-- Mode 2 -->
+                <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:10px;">
+                    <div style="font-size:11px;font-weight:900;color:white;margin-bottom:6px;"><i class="fas fa-camera"></i> Mode 2 — Caméra</div>
+                    <div style="font-size:10px;color:rgba(255,255,255,.85);line-height:1.7;">
+                        📷 Posez le téléphone face à vous, 1-2m de distance<br>
+                        👤 Corps entier visible dans le cadre<br>
+                        ▶️ Appuyez Démarrer — chargement IA ~10s<br>
+                        🦴 Le squelette s'affiche en temps réel<br>
+                        🔄 L'exercice est détecté par les angles<br>
+                        ✅ Même commandes vocales que Mode 1<br>
+                        💡 Meilleure lumière = meilleure détection<br>
+                        ⚡ Nécessite connexion internet (1ère fois)
+                    </div>
+                </div>
+            </div>
+            <!-- Commandes vocales communes -->
+            <div style="margin-top:8px;background:rgba(255,255,255,.08);border-radius:10px;padding:10px;">
+                <div style="font-size:11px;font-weight:900;color:white;margin-bottom:6px;"><i class="fas fa-microphone"></i> Commandes vocales (pendant le repos)</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:10px;color:rgba(255,255,255,.85);">
+                    <div>🎤 <em>"même poids"</em> → poids inchangé</div>
+                    <div>🎤 <em>"plus cinq"</em> → +5 kg</div>
+                    <div>🎤 <em>"plus deux"</em> → +2,5 kg</div>
+                    <div>🎤 <em>"60 kilos"</em> → définit 60kg</div>
+                    <div>🎤 <em>"c'est parti"</em> → démarre</div>
+                    <div>🎤 <em>"encore 30"</em> → +30s repos</div>
+                </div>
+            </div>
+        </div>
+
         <div class="modal-body" style="padding:14px;display:flex;flex-direction:column;gap:12px;">
 
             <!-- Exercice détecté -->
@@ -35717,6 +35912,66 @@ window.addEventListener('beforeunload', function(e) {
             <div id="ag-coach-msg" style="background:linear-gradient(135deg,rgba(79,110,247,.08),rgba(124,58,237,.08));border:1px solid rgba(79,110,247,.2);border-radius:12px;padding:12px 14px;font-size:12px;color:var(--text-primary);line-height:1.6;min-height:48px;display:flex;align-items:center;gap:10px;">
                 <i class="fas fa-robot" style="color:var(--primary);font-size:16px;flex-shrink:0;"></i>
                 <span id="ag-coach-text">Appuyez sur Démarrer et commencez votre exercice. Je détecte automatiquement vos répétitions.</span>
+            </div>
+
+            <!-- ═══ ZONE REPOS INTERACTIVE ═══ -->
+            <div id="ag-rest-zone" style="display:none;background:linear-gradient(135deg,rgba(79,110,247,.08),rgba(124,58,237,.08));border:2px solid rgba(79,110,247,.3);border-radius:16px;padding:16px;text-align:center;">
+                <!-- Grand compte à rebours -->
+                <div style="position:relative;display:inline-block;margin-bottom:10px;">
+                    <svg width="110" height="110" viewBox="0 0 110 110">
+                        <circle cx="55" cy="55" r="48" fill="none" stroke="var(--border)" stroke-width="8"/>
+                        <circle id="ag-rest-arc" cx="55" cy="55" r="48" fill="none"
+                            stroke="url(#restGrad)" stroke-width="8"
+                            stroke-dasharray="301 301" stroke-linecap="round"
+                            transform="rotate(-90 55 55)" style="transition:stroke-dasharray .5s linear;"/>
+                        <defs>
+                            <linearGradient id="restGrad" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stop-color="#4F6EF7"/>
+                                <stop offset="100%" stop-color="#7C3AED"/>
+                            </linearGradient>
+                        </defs>
+                        <text id="ag-rest-countdown" x="55" y="50" text-anchor="middle"
+                            font-size="28" font-weight="900" fill="var(--primary)"
+                            font-family="Inter,sans-serif">60</text>
+                        <text x="55" y="68" text-anchor="middle" font-size="11"
+                            fill="var(--text-tertiary)" font-family="Inter,sans-serif">secondes</text>
+                    </svg>
+                </div>
+                <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--primary);margin-bottom:12px;">Temps de repos</div>
+
+                <!-- Boutons modifier le repos -->
+                <div style="display:flex;gap:6px;justify-content:center;margin-bottom:14px;">
+                    <button onclick="_agAddRest(-15)" style="padding:6px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card-bg);color:var(--text-secondary);font-size:11px;font-weight:700;cursor:pointer;">−15s</button>
+                    <button onclick="_agAddRest(-30)" style="padding:6px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card-bg);color:var(--text-secondary);font-size:11px;font-weight:700;cursor:pointer;">−30s</button>
+                    <button onclick="_agSkipRest()" style="padding:6px 16px;border-radius:10px;border:1.5px solid var(--success);background:rgba(15,168,106,.1);color:var(--success);font-size:11px;font-weight:800;cursor:pointer;">C'est parti !</button>
+                    <button onclick="_agAddRest(30)" style="padding:6px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card-bg);color:var(--text-secondary);font-size:11px;font-weight:700;cursor:pointer;">+30s</button>
+                    <button onclick="_agAddRest(60)" style="padding:6px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card-bg);color:var(--text-secondary);font-size:11px;font-weight:700;cursor:pointer;">+60s</button>
+                </div>
+
+                <!-- Poids de la prochaine série -->
+                <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:12px;">
+                    <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:8px;">Poids série suivante</div>
+                    <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:8px;">
+                        <button onclick="_agAdjustWeight(-2.5)" style="width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:var(--card-bg-alt);font-size:16px;font-weight:900;cursor:pointer;color:var(--text-primary);">−</button>
+                        <div style="text-align:center;">
+                            <div id="ag-next-weight" style="font-size:28px;font-weight:900;color:var(--success);letter-spacing:-.03em;">—</div>
+                            <div style="font-size:10px;color:var(--text-tertiary);">kg</div>
+                        </div>
+                        <button onclick="_agAdjustWeight(2.5)" style="width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:var(--card-bg-alt);font-size:16px;font-weight:900;cursor:pointer;color:var(--text-primary);">+</button>
+                    </div>
+                    <!-- Boutons rapides poids -->
+                    <div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap;">
+                        <button onclick="_agSetWeightPreset('same')" style="padding:5px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--card-bg-alt);font-size:10px;font-weight:700;cursor:pointer;color:var(--text-secondary);">Même</button>
+                        <button onclick="_agSetWeightPreset('plus2')" style="padding:5px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--card-bg-alt);font-size:10px;font-weight:700;cursor:pointer;color:var(--text-secondary);">+2.5 kg</button>
+                        <button onclick="_agSetWeightPreset('plus5')" style="padding:5px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--card-bg-alt);font-size:10px;font-weight:700;cursor:pointer;color:var(--text-secondary);">+5 kg</button>
+                        <button onclick="_agSetWeightPreset('minus2')" style="padding:5px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--card-bg-alt);font-size:10px;font-weight:700;cursor:pointer;color:var(--text-secondary);">−2.5 kg</button>
+                    </div>
+                </div>
+
+                <!-- Indication vocale -->
+                <div style="margin-top:8px;font-size:10px;color:var(--text-tertiary);line-height:1.6;">
+                    🎤 Dites : <em>"même poids"</em> · <em>"plus cinq"</em> · <em>"encore trente secondes"</em> · <em>"c'est parti"</em>
+                </div>
             </div>
 
             <!-- Sélecteur de mode -->
