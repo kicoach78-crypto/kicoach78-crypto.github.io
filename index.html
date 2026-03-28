@@ -13379,68 +13379,136 @@ input:checked + .slider:before {
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>
+                        <!-- Bouton proposition IA -->
+                        <div style="margin-bottom:10px;">
+                            <button onclick="_aiSuggestSupplements()" style="width:100%;padding:8px 12px;background:linear-gradient(135deg,rgba(79,110,247,.10),rgba(124,58,237,.10));border:1px solid rgba(79,110,247,.25);border-radius:10px;font-size:11px;font-weight:700;color:var(--primary);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+                                <i class="fas fa-robot"></i> Propositions IA selon mon profil
+                            </button>
+                        </div>
                         <div id="nutri-supps-panel">
-                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-                                <div style="display:flex;align-items:center;gap:8px;">
-                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(79,110,247,.12);display:flex;align-items:center;justify-content:center;font-size:13px;">🥛</div>
-                                    <div>
+                            <!-- Whey -->
+                            <div class="supp-row" style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:8px;">
+                                <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(79,110,247,.12);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">🥛</div>
+                                    <div style="min-width:0;">
                                         <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Whey Protéine</div>
-                                        <div style="font-size:10px;color:var(--text-tertiary);">Récupération post-entraînement</div>
+                                        <div style="font-size:10px;color:var(--text-tertiary);">Post-entraînement</div>
                                     </div>
                                 </div>
-                                <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-whey" checked><span class="toggle-slider"></span></label>
+                                <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                                    <input type="number" id="supp-qty-whey" value="30" min="1" max="100" style="width:52px;padding:4px 6px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text-primary);font-size:11px;font-weight:700;text-align:center;" title="Quantité en g">
+                                    <span style="font-size:10px;color:var(--text-tertiary);">g</span>
+                                    <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-whey" checked><span class="toggle-slider"></span></label>
+                                </div>
                             </div>
-                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-                                <div style="display:flex;align-items:center;gap:8px;">
-                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(15,168,106,.12);display:flex;align-items:center;justify-content:center;font-size:13px;">⚡</div>
-                                    <div>
+                            <!-- Créatine -->
+                            <div class="supp-row" style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:8px;">
+                                <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(15,168,106,.12);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">⚡</div>
+                                    <div style="min-width:0;">
                                         <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Créatine Monohydrate</div>
                                         <div style="font-size:10px;color:var(--text-tertiary);">Force et volume musculaire</div>
                                     </div>
                                 </div>
-                                <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-creatine"><span class="toggle-slider"></span></label>
+                                <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                                    <input type="number" id="supp-qty-creatine" value="5" min="1" max="20" style="width:52px;padding:4px 6px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text-primary);font-size:11px;font-weight:700;text-align:center;">
+                                    <span style="font-size:10px;color:var(--text-tertiary);">g</span>
+                                    <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-creatine"><span class="toggle-slider"></span></label>
+                                </div>
                             </div>
-                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-                                <div style="display:flex;align-items:center;gap:8px;">
-                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(239,159,39,.12);display:flex;align-items:center;justify-content:center;font-size:13px;">🦴</div>
-                                    <div>
+                            <!-- Collagène -->
+                            <div class="supp-row" style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:8px;">
+                                <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(239,159,39,.12);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">🦴</div>
+                                    <div style="min-width:0;">
                                         <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Collagène</div>
                                         <div style="font-size:10px;color:var(--text-tertiary);">Articulations, peau, récupération</div>
                                     </div>
                                 </div>
-                                <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-collagen"><span class="toggle-slider"></span></label>
+                                <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                                    <input type="number" id="supp-qty-collagen" value="10" min="1" max="30" style="width:52px;padding:4px 6px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text-primary);font-size:11px;font-weight:700;text-align:center;">
+                                    <span style="font-size:10px;color:var(--text-tertiary);">g</span>
+                                    <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-collagen"><span class="toggle-slider"></span></label>
+                                </div>
                             </div>
-                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-                                <div style="display:flex;align-items:center;gap:8px;">
-                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(124,58,237,.12);display:flex;align-items:center;justify-content:center;font-size:13px;">💊</div>
-                                    <div>
+                            <!-- Magnésium -->
+                            <div class="supp-row" style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:8px;">
+                                <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(124,58,237,.12);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">💊</div>
+                                    <div style="min-width:0;">
                                         <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Magnésium</div>
                                         <div style="font-size:10px;color:var(--text-tertiary);">Récupération, sommeil, crampes</div>
                                     </div>
                                 </div>
-                                <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-magnesium"><span class="toggle-slider"></span></label>
+                                <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                                    <input type="number" id="supp-qty-magnesium" value="300" min="50" max="600" style="width:52px;padding:4px 6px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text-primary);font-size:11px;font-weight:700;text-align:center;">
+                                    <span style="font-size:10px;color:var(--text-tertiary);">mg</span>
+                                    <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-magnesium"><span class="toggle-slider"></span></label>
+                                </div>
                             </div>
-                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-                                <div style="display:flex;align-items:center;gap:8px;">
-                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(59,139,212,.12);display:flex;align-items:center;justify-content:center;font-size:13px;">🐟</div>
-                                    <div>
+                            <!-- Oméga-3 -->
+                            <div class="supp-row" style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:8px;">
+                                <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(59,139,212,.12);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">🐟</div>
+                                    <div style="min-width:0;">
                                         <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Oméga-3</div>
                                         <div style="font-size:10px;color:var(--text-tertiary);">Anti-inflammatoire, santé cardio</div>
                                     </div>
                                 </div>
-                                <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-omega3"><span class="toggle-slider"></span></label>
+                                <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                                    <input type="number" id="supp-qty-omega3" value="2" min="1" max="6" step="0.5" style="width:52px;padding:4px 6px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text-primary);font-size:11px;font-weight:700;text-align:center;">
+                                    <span style="font-size:10px;color:var(--text-tertiary);">g</span>
+                                    <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-omega3"><span class="toggle-slider"></span></label>
+                                </div>
                             </div>
-                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;">
-                                <div style="display:flex;align-items:center;gap:8px;">
-                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(124,58,237,.12);display:flex;align-items:center;justify-content:center;font-size:13px;">🧬</div>
-                                    <div>
+                            <!-- BCAA -->
+                            <div class="supp-row" style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:8px;">
+                                <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(124,58,237,.12);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">🧬</div>
+                                    <div style="min-width:0;">
                                         <div style="font-size:12px;font-weight:700;color:var(--text-primary);">BCAA</div>
                                         <div style="font-size:10px;color:var(--text-tertiary);">Acides aminés, anti-catabolisme</div>
                                     </div>
                                 </div>
-                                <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-bcaa"><span class="toggle-slider"></span></label>
+                                <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                                    <input type="number" id="supp-qty-bcaa" value="5" min="1" max="20" style="width:52px;padding:4px 6px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text-primary);font-size:11px;font-weight:700;text-align:center;">
+                                    <span style="font-size:10px;color:var(--text-tertiary);">g</span>
+                                    <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-bcaa"><span class="toggle-slider"></span></label>
+                                </div>
+                            </div>
+                            <!-- Vitamine D -->
+                            <div class="supp-row" style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);gap:8px;">
+                                <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(251,191,36,.15);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">☀️</div>
+                                    <div style="min-width:0;">
+                                        <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Vitamine D3</div>
+                                        <div style="font-size:10px;color:var(--text-tertiary);">Immunité, os, hormones</div>
+                                    </div>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                                    <input type="number" id="supp-qty-vitd" value="2000" min="400" max="5000" step="200" style="width:52px;padding:4px 6px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text-primary);font-size:11px;font-weight:700;text-align:center;">
+                                    <span style="font-size:10px;color:var(--text-tertiary);">UI</span>
+                                    <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-vitd"><span class="toggle-slider"></span></label>
+                                </div>
+                            </div>
+                            <!-- Zinc -->
+                            <div class="supp-row" style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;gap:8px;">
+                                <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+                                    <div style="width:28px;height:28px;border-radius:8px;background:rgba(99,102,241,.12);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">🔩</div>
+                                    <div style="min-width:0;">
+                                        <div style="font-size:12px;font-weight:700;color:var(--text-primary);">Zinc</div>
+                                        <div style="font-size:10px;color:var(--text-tertiary);">Testostérone, immunité, cicatrisation</div>
+                                    </div>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                                    <input type="number" id="supp-qty-zinc" value="15" min="5" max="40" style="width:52px;padding:4px 6px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text-primary);font-size:11px;font-weight:700;text-align:center;">
+                                    <span style="font-size:10px;color:var(--text-tertiary);">mg</span>
+                                    <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-zinc"><span class="toggle-slider"></span></label>
+                                </div>
                             </div>
                         </div>
+                        <!-- Résumé IA suggestion -->
+                        <div id="nutri-supps-ai-advice" style="display:none;margin-top:10px;padding:10px;background:linear-gradient(135deg,rgba(79,110,247,.06),rgba(124,58,237,.06));border:1px solid rgba(79,110,247,.18);border-radius:10px;font-size:11px;color:var(--text-secondary);line-height:1.7;"></div>
                     </div>
                 </div>
 
@@ -14993,6 +15061,15 @@ input:checked + .slider:before {
                         </div>
                         <div class="ai-provider-name">OpenRouter</div>
                         <div class="ai-provider-tag ai-tag-free">Gratuit</div>
+                    </div>
+
+                    <!-- Mistral -->
+                    <div class="ai-provider-card" id="ai-card-mistral" onclick="selectAIProvider('mistral')">
+                        <div class="ai-provider-logo" style="background:linear-gradient(135deg,#FF7000,#FF4500);">
+                            <i class="fas fa-wind" style="color:white;font-size:14px;"></i>
+                        </div>
+                        <div class="ai-provider-name">Mistral</div>
+                        <div class="ai-provider-tag ai-tag-free">API</div>
                     </div>
                 </div>
             </div>
@@ -17394,6 +17471,10 @@ function loadExercises() {
                         <i class="fas fa-trash"></i>
                     </button>
                 ` : ''}
+                <button class="action-btn" onclick="_showExerciseViz('${exercise.name.replace(/'/g,"\\'")}'); event.stopPropagation();"
+                    title="Visualiser l'exercice" style="background:linear-gradient(135deg,rgba(79,110,247,.15),rgba(124,58,237,.15));color:var(--primary);">
+                    <i class="fas fa-eye"></i>
+                </button>
                 <button class="action-btn" onclick="addToWorkout('${exercise.id}')" title="Ajouter à une séance">
                     <i class="fas fa-plus"></i>
                 </button>
@@ -17437,6 +17518,10 @@ function showExerciseDetail(exerciseId, isCustom) {
     // Trouver le groupe musculaire
     const muscle = muscleGroups.find(m => m.id === displayExercise.muscleGroup);
     
+    // Identifiant unique pour le SVG de cet exercice (cache local)
+    const svgCacheKey = 'exercise_svg_' + (displayExercise.id || displayExercise.name.replace(/\s+/g,'_'));
+    const cachedSvg = sessionStorage.getItem(svgCacheKey);
+
     // Préparer le contenu HTML premium
     let contentHTML = `
         <div class="exercise-detail-header">
@@ -17452,6 +17537,22 @@ function showExerciseDetail(exerciseId, isCustom) {
                 ${displayExercise.category ? `<span class="exercise-category-badge">${displayExercise.category}</span>` : ''}
             </div>
         </div>
+
+        <!-- ── Illustration IA ── -->
+        ${_hasAnyKey() ? `
+        <div id="exercise-svg-container" style="background:var(--card-bg-alt);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;text-align:center;min-height:160px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;position:relative;">
+            ${cachedSvg
+                ? `<div id="exercise-svg-wrap" style="width:100%;">${cachedSvg}</div>`
+                : `<div id="exercise-svg-placeholder" style="display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text-tertiary);">
+                       <i class="fas fa-drafting-compass" style="font-size:22px;color:var(--primary);opacity:.5;"></i>
+                       <span style="font-size:11px;font-weight:600;color:var(--text-tertiary);">Illustration technique IA</span>
+                       <button onclick="generateExerciseSVG('${displayExercise.id||''}','${(displayExercise.name||'').replace(/'/g,'\\\'').replace(/"/g,'&quot;')}','${(muscle?muscle.name:displayExercise.muscleGroup||'').replace(/'/g,'\\\'').replace(/"/g,'&quot;')}','${(displayExercise.category||'').replace(/'/g,'\\\'')}','${svgCacheKey}')"
+                           style="padding:7px 16px;background:linear-gradient(135deg,var(--primary),#7C3AED);color:white;border:none;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;">
+                           <i class="fas fa-magic"></i> Générer l'illustration
+                       </button>
+                   </div>`
+            }
+        </div>` : ''}
         
         ${displayExercise.description ? `
             <div class="exercise-detail-section">
@@ -17591,6 +17692,93 @@ function showExerciseDetail(exerciseId, isCustom) {
     document.getElementById('exercise-detail-content').innerHTML = contentHTML;
     document.getElementById('exercise-detail-title').innerHTML = '<i class="fas fa-file-alt"></i> Fiche Exercice';
     showModal('exercise-detail-modal');
+}
+
+/**
+ * Génère une esquisse SVG technique de l'exercice via IA
+ * Pas de template prédéfini — 100% généré par le modèle
+ */
+async function generateExerciseSVG(exerciseId, exerciseName, muscleGroup, category, cacheKey) {
+    if (!_hasAnyKey()) {
+        showNotification('Configurez une clé IA dans Paramètres', 'error');
+        return;
+    }
+
+    const container = document.getElementById('exercise-svg-container');
+    const placeholder = document.getElementById('exercise-svg-placeholder');
+    if (placeholder) {
+        placeholder.innerHTML = `<span class="ai-spinner"></span><span style="font-size:11px;color:var(--text-tertiary);margin-top:6px;">Génération de l'esquisse…</span>`;
+    }
+
+    const cfg = _selectProvider('fast');
+    const prompt = `Tu es un illustrateur technique spécialisé en anatomie sportive. Génère uniquement du code SVG valide (viewBox="0 0 320 200") représentant une esquisse au trait (style dessin technique / schéma anatomique) de l'exercice de musculation suivant:
+
+Exercice: ${exerciseName}
+Groupe musculaire: ${muscleGroup}
+Catégorie: ${category || 'force'}
+
+RÈGLES STRICTES:
+1. SVG UNIQUEMENT — aucun texte avant ou après, aucun markdown, aucune balise html
+2. Commence directement par <svg et termine par </svg>
+3. Style: esquisse au trait, noir sur blanc, lignes fines, aucun remplissage coloré
+4. Dessine la silhouette humaine en train d'exécuter le mouvement avec les muscles cibles mis en valeur (légèrement plus épais ou pointillés)
+5. Utilise des traits <line>, <path>, <ellipse>, <circle> pour représenter le squelette/muscles
+6. Ajoute des flèches de mouvement (→) pour montrer la trajectoire
+7. Intègre 2-3 labels SVG <text> concis (ex: "pectoraux", "triceps", "mouvement")
+8. Palette: stroke="#1a1a2e" pour silhouette, stroke="#4F6EF7" pour muscles cibles, stroke="#E03E3E" pour flèches
+9. Doit être reconnaissable et anatomiquement cohérent
+10. Minimum 15 éléments SVG pour que le dessin soit détaillé`;
+
+    try {
+        const reply = await _callAI([{ role: 'user', content: prompt }], cfg,
+            'Tu es un expert SVG/illustration. Génère UNIQUEMENT du code SVG valide sans aucun autre texte.', 2500);
+
+        if (!reply || reply.startsWith('__ERROR__')) {
+            if (container) container.innerHTML = `<div style="padding:16px;text-align:center;color:var(--text-tertiary);font-size:12px;"><i class="fas fa-times-circle" style="color:var(--danger);margin-bottom:6px;font-size:20px;display:block;"></i>Erreur génération IA<br><button onclick="generateExerciseSVG('${exerciseId}','${exerciseName.replace(/'/g,"\\'")}','${muscleGroup.replace(/'/g,"\\'")}','${(category||'').replace(/'/g,"\\'")}','${cacheKey}')" style="margin-top:8px;padding:6px 14px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">↺ Réessayer</button></div>`;
+            return;
+        }
+
+        // Extraire le SVG proprement
+        let svgCode = reply.replace(/```svg|```xml|```/gi, '').trim();
+        const svgMatch = svgCode.match(/<svg[\s\S]*<\/svg>/i);
+        if (svgMatch) svgCode = svgMatch[0];
+
+        // Vérification minimale
+        if (!svgCode.includes('<svg') || !svgCode.includes('</svg>')) {
+            throw new Error('SVG invalide retourné par le modèle');
+        }
+
+        // Mettre en cache (sessionStorage pour la session)
+        try { sessionStorage.setItem(cacheKey, svgCode); } catch(e) {}
+
+        // Vérification qualité minimale : au moins 10 éléments SVG
+        const elementCount = (svgCode.match(/<(line|path|circle|ellipse|rect|polygon|polyline|text|g)\b/gi) || []).length;
+        if (elementCount < 8) {
+            throw new Error('Illustration trop simpliste — réessayez');
+        }
+
+        // Injecter dans le container
+        if (container) {
+            container.innerHTML = `<div id="exercise-svg-wrap" style="width:100%;position:relative;">
+                ${svgCode}
+                <button onclick="generateExerciseSVG('${exerciseId}','${exerciseName.replace(/'/g,"\\'")}','${muscleGroup.replace(/'/g,"\\'")}','${(category||'').replace(/'/g,"\\'")}','${cacheKey}')"
+                    style="position:absolute;top:6px;right:6px;padding:4px 10px;background:rgba(79,110,247,.12);color:var(--primary);border:1px solid var(--primary-glow);border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px);">
+                    <i class="fas fa-redo"></i> Refaire
+                </button>
+            </div>`;
+            // Force le SVG à s'adapter au container
+            const svgEl = container.querySelector('svg');
+            if (svgEl) {
+                svgEl.style.width = '100%';
+                svgEl.style.height = 'auto';
+                svgEl.style.maxHeight = '220px';
+            }
+        }
+        showNotification('Illustration générée ✓', 'success', 2000);
+    } catch(err) {
+        console.error('[SVG Exercise]', err);
+        if (container) container.innerHTML = `<div style="padding:16px;text-align:center;color:var(--text-tertiary);font-size:12px;"><i class="fas fa-exclamation-circle" style="color:var(--warning);margin-bottom:6px;font-size:20px;display:block;"></i>Illustration indisponible<br><small>${err.message}</small><br><button onclick="generateExerciseSVG('${exerciseId}','${exerciseName.replace(/'/g,"\\'")}','${muscleGroup.replace(/'/g,"\\'")}','${(category||'').replace(/'/g,"\\'")}','${cacheKey}')" style="margin-top:8px;padding:6px 14px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">↺ Réessayer</button></div>`;
+    }
 }
 
 function filterExercises() {
@@ -19814,7 +20002,37 @@ function startProgrammedWorkout(workout) {
     
     // Appliquer les paramètres programmés
     workout.programmedData.exercises.forEach((progExercise) => {
-        const exercise = getAllExercises().find(ex => ex.id === progExercise.exerciseId);
+        let exercise = getAllExercises().find(ex => ex.id === progExercise.exerciseId);
+
+        // Chercher aussi dans customExercises (exercices IA créés à l'import)
+        if (!exercise && typeof customExercises !== 'undefined') {
+            exercise = customExercises.find(ex => ex.id === progExercise.exerciseId);
+        }
+
+        // Fallback pour exercices IA non présents dans la base (id: ai_ex_*)
+        if (!exercise && progExercise._aiExercise) {
+            exercise = {
+                id:          progExercise.exerciseId,
+                name:        progExercise.exerciseName || progExercise._aiExercise.name || 'Exercice',
+                muscleGroup: progExercise._aiExercise.focus || 'Général',
+                difficulty:  'Intermédiaire',
+                custom:      false,
+                fromAI:      true
+            };
+        }
+
+        // Dernier fallback: créer un exercice générique avec le nom stocké
+        if (!exercise && progExercise.exerciseName) {
+            exercise = {
+                id:          progExercise.exerciseId,
+                name:        progExercise.exerciseName,
+                muscleGroup: 'Général',
+                difficulty:  'Intermédiaire',
+                custom:      true,
+                fromAI:      true
+            };
+        }
+
         if (!exercise) return;
         
         const isCardio = isCardioExercise(exercise);
@@ -20136,6 +20354,11 @@ function updateWorkoutDisplay() {
                         <i class="fab fa-youtube"></i>
                     </button>
                 `}
+                <button class="action-btn" onclick="_showExerciseViz('${exercise.name.replace(/'/g, "\\'")}')"
+                    title="Schéma IA de l'exercice"
+                    style="background:linear-gradient(135deg,rgba(79,110,247,.15),rgba(124,58,237,.15));color:var(--primary);">
+                    <i class="fas fa-eye"></i>
+                </button>
                 
                 <button class="action-btn" onclick="toggleExerciseCompactMode(${exerciseIndex})" 
                         title="${exercise.compactModeOverride === true ? 'Mode compact forcé' : exercise.compactModeOverride === false ? 'Mode normal forcé' : 'Utilise le paramètre global'}" 
@@ -29012,10 +29235,18 @@ const AI_PROVIDERS = {
         name: 'Gemini',
         label: 'Google Gemini',
         endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent',
-        models: ['gemini-1.5-flash-8b', 'gemini-1.5-flash', 'gemini-2.0-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-pro'],
-        defaultModel: 'gemini-1.5-flash-8b',
+        models: ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gemini-1.5-pro'],
+        modelLabels: {
+            'gemini-2.0-flash':      'Gemini 2.0 Flash — Vision ✓ (recommandé)',
+            'gemini-2.0-flash-lite': 'Gemini 2.0 Flash Lite — Vision ✓',
+            'gemini-1.5-flash':      'Gemini 1.5 Flash — Vision ✓',
+            'gemini-1.5-flash-8b':   'Gemini 1.5 Flash 8B — Vision ✓ (rapide)',
+            'gemini-1.5-pro':        'Gemini 1.5 Pro — Vision ✓ (puissant)'
+        },
+        visionModels: ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gemini-1.5-pro'],
+        defaultModel: 'gemini-2.0-flash',
         keyPrefix: 'AIza',
-        info: 'Gemini 1.5 Flash est gratuit (60 req/min). Après avoir créé la clé sur AI Studio, vérifiez que l\'API "Generative Language API" est activée dans votre projet Google Cloud.',
+        info: 'Gemini 2.0 Flash est gratuit (15 req/min) et supporte la vision (analyse de photos). Après avoir créé la clé sur AI Studio, vérifiez que l\'API "Generative Language API" est activée dans votre projet Google Cloud.',
         keyUrl: 'https://aistudio.google.com/app/apikey',
         keyUrlLabel: 'Obtenir une clé gratuite sur Google AI Studio →',
         authHeader: () => ({}),
@@ -29055,46 +29286,39 @@ const AI_PROVIDERS = {
         name: 'OpenRouter',
         label: 'OpenRouter (Multi-modèles)',
         endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-        // Modèles gratuits vérifiés — auto-sélection du meilleur disponible
         models: [
-            'openrouter/free',
-            'qwen/qwen2.5-vl-72b-instruct:free',
-            'qwen/qwen2.5-vl-32b-instruct:free',
-            'moonshotai/kimi-vl-a3b-thinking:free',
-            'meta-llama/llama-3.2-11b-vision-instruct:free',
-            'mistralai/mistral-small-3.1-24b-instruct:free',
+            'openrouter/auto',
             'google/gemma-3-27b-it:free',
             'google/gemma-3-12b-it:free',
+            'google/gemma-3-4b-it:free',
+            'mistralai/mistral-small-3.1-24b-instruct:free',
             'meta-llama/llama-3.3-70b-instruct:free',
             'deepseek/deepseek-chat-v3-0324:free',
-            'deepseek/deepseek-r1:free'
+            'deepseek/deepseek-r1:free',
+            'qwen/qwen3-30b-a3b:free',
+            'qwen/qwen3-8b:free'
         ],
         modelLabels: {
-            'openrouter/free':                                    'Auto-routeur (détection auto)',
-            'qwen/qwen2.5-vl-72b-instruct:free':                 'Qwen 2.5 VL 72B — Vision ✓',
-            'qwen/qwen2.5-vl-32b-instruct:free':                 'Qwen 2.5 VL 32B — Vision ✓',
-            'moonshotai/kimi-vl-a3b-thinking:free':              'Kimi VL — Vision ✓',
-            'meta-llama/llama-3.2-11b-vision-instruct:free':     'Llama 3.2 11B Vision ✓',
-            'mistralai/mistral-small-3.1-24b-instruct:free':     'Mistral Small 3.1 — Vision ✓',
+            'openrouter/auto':                                    'Auto (meilleur dispo)',
             'google/gemma-3-27b-it:free':                        'Gemma 3 27B — Vision ✓',
             'google/gemma-3-12b-it:free':                        'Gemma 3 12B — Vision ✓',
-            'meta-llama/llama-3.3-70b-instruct:free':            'Llama 3.3 70B — Texte rapide',
+            'google/gemma-3-4b-it:free':                         'Gemma 3 4B — Vision ✓',
+            'mistralai/mistral-small-3.1-24b-instruct:free':     'Mistral Small 3.1 — Vision ✓',
+            'meta-llama/llama-3.3-70b-instruct:free':            'Llama 3.3 70B — Texte',
             'deepseek/deepseek-chat-v3-0324:free':               'DeepSeek V3 — Texte',
-            'deepseek/deepseek-r1:free':                         'DeepSeek R1 — Raisonnement'
+            'deepseek/deepseek-r1:free':                         'DeepSeek R1 — Raisonnement',
+            'qwen/qwen3-30b-a3b:free':                           'Qwen3 30B — Texte',
+            'qwen/qwen3-8b:free':                                'Qwen3 8B — Texte rapide'
         },
         visionModels: [
-            'openrouter/free',
-            'qwen/qwen2.5-vl-72b-instruct:free',
-            'qwen/qwen2.5-vl-32b-instruct:free',
-            'moonshotai/kimi-vl-a3b-thinking:free',
-            'meta-llama/llama-3.2-11b-vision-instruct:free',
-            'mistralai/mistral-small-3.1-24b-instruct:free',
+            'openrouter/auto',
             'google/gemma-3-27b-it:free',
-            'google/gemma-3-12b-it:free'
+            'google/gemma-3-12b-it:free',
+            'google/gemma-3-4b-it:free',
+            'mistralai/mistral-small-3.1-24b-instruct:free'
         ],
-        // Meilleur modèle testé et validé (persisté en localStorage)
         _bestModel: null,
-        defaultModel: 'openrouter/free',
+        defaultModel: 'openrouter/auto',
         keyPrefix: 'sk-or-',
         info: 'OpenRouter donne accès à des dizaines de modèles gratuits dont plusieurs avec vision (analyse photo). Clé gratuite sans carte bancaire. 200 req/jour gratuit.',
         keyUrl: 'https://openrouter.ai/keys',
@@ -29106,12 +29330,44 @@ const AI_PROVIDERS = {
         }),
         buildBody: (model, messages) => ({ model, messages, max_tokens: 1024, stream: false }),
         parseResponse: data => data.choices?.[0]?.message?.content || '(pas de réponse)'
+    },
+    mistral: {
+        name: 'Mistral',
+        label: 'Mistral AI',
+        endpoint: 'https://api.mistral.ai/v1/chat/completions',
+        models: [
+            'mistral-small-latest',
+            'mistral-medium-latest',
+            'mistral-large-latest',
+            'pixtral-large-latest',
+            'pixtral-12b-latest',
+            'codestral-latest',
+            'open-mistral-nemo'
+        ],
+        modelLabels: {
+            'mistral-small-latest':  'Mistral Small (rapide)',
+            'mistral-medium-latest': 'Mistral Medium',
+            'mistral-large-latest':  'Mistral Large (puissant)',
+            'pixtral-large-latest':  'Pixtral Large — Vision ✓',
+            'pixtral-12b-latest':    'Pixtral 12B — Vision ✓',
+            'codestral-latest':      'Codestral (code)',
+            'open-mistral-nemo':     'Mistral Nemo (open, léger)'
+        },
+        visionModels: ['pixtral-large-latest', 'pixtral-12b-latest'],
+        defaultModel: 'mistral-small-latest',
+        keyPrefix: '',
+        info: 'Mistral AI propose des modèles performants dont Pixtral (vision). Mistral Small est très rapide. Pixtral supporte l\'analyse d\'images. Clé sur la Mistral Platform.',
+        keyUrl: 'https://console.mistral.ai/api-keys/',
+        keyUrlLabel: 'Obtenir une clé sur console.mistral.ai →',
+        authHeader: key => ({ 'Authorization': `Bearer ${key}` }),
+        buildBody: (model, messages) => ({ model, messages, max_tokens: 1024, stream: false }),
+        parseResponse: data => data.choices?.[0]?.message?.content || '(pas de réponse)'
     }
 };
 
 // ── État IA ─────────────────────────────────────────────────────
 // Multi-clés : chaque provider stocke sa propre clé et son modèle
-let _aiKeys = { grok: null, gemini: null, claude: null, openrouter: null };
+let _aiKeys = { grok: null, gemini: null, claude: null, openrouter: null, mistral: null };
 // _aiConfig = provider actif (pour le chat/actions générales)
 let _aiConfig = { provider: '', model: '', apiKey: '' };
 let _aiChatHistory = [];
@@ -29128,19 +29384,24 @@ function _selectProvider(capability) {
     // Toujours retourner une COPIE — jamais une référence directe à _aiConfig/_aiKeys
     const _copy = cfg => ({ ...cfg });
 
-    // Ordre de priorité vision : Claude > Gemini > OpenRouter (vision) > Groq (texte fallback)
+    // Ordre de priorité vision : Claude > Gemini > Mistral Pixtral > OpenRouter (vision) > Groq (texte fallback)
     if (capability === 'vision') {
         if (_aiKeys.claude?.apiKey)       return _copy({ ..._aiKeys.claude,      provider: 'claude' });
         if (_aiKeys.gemini?.apiKey)       return _copy({ ..._aiKeys.gemini,      provider: 'gemini' });
+        if (_aiKeys.mistral?.apiKey) {
+            const bestVisionM = AI_PROVIDERS.mistral.visionModels[0];
+            return _copy({ ..._aiKeys.mistral, provider: 'mistral', model: bestVisionM });
+        }
         if (_aiKeys.openrouter?.apiKey) {
             const bestVision = _orBestVisionModel || AI_PROVIDERS.openrouter.visionModels[0];
             return _copy({ ..._aiKeys.openrouter, provider: 'openrouter', model: bestVision });
         }
         if (_aiKeys.grok?.apiKey)         return _copy({ ..._aiKeys.grok,        provider: 'grok' });
     }
-    // Ordre de priorité rapidité : Groq > OpenRouter > Gemini > Claude
+    // Ordre de priorité rapidité : Groq > Mistral > OpenRouter > Gemini > Claude
     if (capability === 'fast') {
         if (_aiKeys.grok?.apiKey)         return _copy({ ..._aiKeys.grok,        provider: 'grok' });
+        if (_aiKeys.mistral?.apiKey)      return _copy({ ..._aiKeys.mistral,     provider: 'mistral' });
         if (_aiKeys.openrouter?.apiKey) {
             const bestTxt = _orBestModel || AI_PROVIDERS.openrouter.defaultModel;
             return _copy({ ..._aiKeys.openrouter, provider: 'openrouter', model: bestTxt });
@@ -29150,7 +29411,7 @@ function _selectProvider(capability) {
     }
     // Général : provider actif, sinon selon ordre de priorité défini par l'utilisateur
     if (_aiConfig.provider && _aiConfig.apiKey) return _copy(_aiConfig);
-    const order = typeof _aiPriorityOrder !== 'undefined' ? _aiPriorityOrder : ['claude','openrouter','gemini','grok'];
+    const order = typeof _aiPriorityOrder !== 'undefined' ? _aiPriorityOrder : ['claude','openrouter','gemini','grok','mistral'];
     for (const p of order) {
         if (_aiKeys[p]?.apiKey) return _copy({ ..._aiKeys[p], provider: p });
     }
@@ -29158,7 +29419,7 @@ function _selectProvider(capability) {
 }
 
 function _hasAnyKey() {
-    return !!(_aiKeys.grok?.apiKey || _aiKeys.gemini?.apiKey || _aiKeys.claude?.apiKey || _aiKeys.openrouter?.apiKey || _aiConfig.apiKey);
+    return !!(_aiKeys.grok?.apiKey || _aiKeys.gemini?.apiKey || _aiKeys.claude?.apiKey || _aiKeys.openrouter?.apiKey || _aiKeys.mistral?.apiKey || _aiConfig.apiKey);
 }
 
 // ── Chargement / sauvegarde config ──────────────────────────
@@ -29173,7 +29434,7 @@ function loadAIConfig() {
         // Charger les clés multi-providers
         const savedAll = localStorage.getItem(_AI_KEYS_ALL);
         if (savedAll) {
-            _aiKeys = { ...{ grok: null, gemini: null, claude: null, openrouter: null }, ...JSON.parse(savedAll) };
+            _aiKeys = { ...{ grok: null, gemini: null, claude: null, openrouter: null, mistral: null }, ...JSON.parse(savedAll) };
         } else if (_aiConfig.provider && _aiConfig.apiKey) {
             // Migration : copier la clé existante dans _aiKeys
             _aiKeys[_aiConfig.provider] = { apiKey: _aiConfig.apiKey, model: _aiConfig.model };
@@ -29215,7 +29476,7 @@ function clearAIConfig() {
     localStorage.removeItem(_AI_KEY);
     localStorage.removeItem(_AI_KEYS_ALL);
     _aiConfig = { provider:'', model:'', apiKey:'' };
-    _aiKeys   = { grok: null, gemini: null, claude: null, openrouter: null };
+    _aiKeys   = { grok: null, gemini: null, claude: null, openrouter: null, mistral: null };
     _aiCurrentProvider = null;
     _hideAIFab();
     _updateAISettingsStatus();
@@ -29333,7 +29594,7 @@ function _openAIConfig() {
 }
 
 // Ordre de priorité des providers (peut être réordonné par drag)
-let _aiPriorityOrder = JSON.parse(localStorage.getItem('_ai_priority') || '["claude","gemini","openrouter","grok"]');
+let _aiPriorityOrder = JSON.parse(localStorage.getItem('_ai_priority') || '["claude","gemini","openrouter","grok","mistral"]');
 
 function _refreshConfiguredKeysList() {
     const wrap = document.getElementById('ai-configured-keys');
@@ -30472,6 +30733,8 @@ function _confirmImport(day, hasBaseArr) {
             exerciseIds.push(newId);
             programmedExs.push({
                 exerciseId: newId,
+                exerciseName: aiEx.name,
+                _aiExercise: { name: aiEx.name, focus: muscleGroup },
                 programmedSets: Array.from({length: setsN}, () => ({
                     reps: repsStr,
                     weight: wNum,
@@ -30580,17 +30843,19 @@ PROFIL UTILISATEUR :
 RÈGLES IMPÉRATIVES :
 - Adapte STRICTEMENT les charges au profil (${level}, ${weight}kg)
 - Priorise les muscles peu travaillés : ${weakStr}
-- 4 à 6 exercices par jour de séance (pas moins)
-- 3 à 5 séries par exercice selon le niveau
-- Utilise des noms d'exercices en français précis (ex: "Développé couché barre", "Squat barre")
-- Inclure 2 jours de repos répartis intelligemment
-- Charges RÉALISTES pour niveau ${level}
+- VOLUME: ${Math.max(4, Math.round(45 / 7.5))} à ${Math.max(5, Math.round(60 / 7.5))} exercices par séance (séance ~45-60min)
+- 3 à 4 séries par exercice selon le niveau
+- Noms d'exercices en français précis ("Développé couché barre", "Squat barre")
+- Exactement 2 jours de repos (samedi et dimanche ou répartis)
+- REPS: mettre UN SEUL ENTIER dans "reps" (ex: 10), mettre la fourchette dans "notes" (ex: "8-12 reps conseillées")
+- Charges RÉALISTES et PRÉCISES pour niveau ${level}
 
 Réponds UNIQUEMENT avec ce JSON valide (aucun texte avant ou après) :
-{"lundi":{"type":"Push Day","tag":"Force","tagColor":"#4F6EF7","exercises":[{"name":"Développé couché barre","sets":4,"reps":"6-8","weight":"${level==='Débutant'?'40':'80'}kg"}]},"mardi":{"type":"Repos","tag":"Récupération","tagColor":"#6B7280","exercises":[]},"mercredi":{"type":"Pull Day","tag":"Hypertrophie","tagColor":"#0FA86A","exercises":[{"name":"Traction pronation","sets":4,"reps":"8-10","weight":"0kg"}]},"jeudi":{"type":"Leg Day","tag":"Force","tagColor":"#E07B1A","exercises":[{"name":"Squat barre","sets":4,"reps":"8","weight":"${level==='Débutant'?'50':'100'}kg"}]},"vendredi":{"type":"Épaules & Bras","tag":"Volume","tagColor":"#7C3AED","exercises":[{"name":"Développé militaire","sets":3,"reps":"10-12","weight":"${level==='Débutant'?'25':'50'}kg"}]},"samedi":{"type":"Full Body","tag":"Cardio-Musculation","tagColor":"#EC4899","exercises":[{"name":"Burpees","sets":3,"reps":"15","weight":"0kg"}]},"dimanche":{"type":"Repos","tag":"Récupération","tagColor":"#6B7280","exercises":[]}}`;
+{"lundi":{"type":"Push Day","tag":"Force","tagColor":"#4F6EF7","exercises":[{"name":"Développé couché barre","sets":4,"reps":7,"notes":"6-8 reps conseillées","weight":"${level==='Débutant'?'40':'80'}kg"}]},"mardi":{"type":"Repos","tag":"Récupération","tagColor":"#6B7280","exercises":[]},"mercredi":{"type":"Pull Day","tag":"Hypertrophie","tagColor":"#0FA86A","exercises":[{"name":"Traction pronation","sets":4,"reps":9,"notes":"8-10 reps conseillées","weight":"0kg"}]},"jeudi":{"type":"Leg Day","tag":"Force","tagColor":"#E07B1A","exercises":[{"name":"Squat barre","sets":4,"reps":"8","weight":"${level==='Débutant'?'50':'100'}kg"}]},"vendredi":{"type":"Épaules & Bras","tag":"Volume","tagColor":"#7C3AED","exercises":[{"name":"Développé militaire","sets":3,"reps":11,"notes":"10-12 reps conseillées","weight":"${level==='Débutant'?'25':'50'}kg"}]},"samedi":{"type":"Full Body","tag":"Cardio-Musculation","tagColor":"#EC4899","exercises":[{"name":"Burpees","sets":3,"reps":"15","weight":"0kg"}]},"dimanche":{"type":"Repos","tag":"Récupération","tagColor":"#6B7280","exercises":[]}}`;
 
-    const reply = await _callAI([{ role:'user', content: prompt }], null,
-        'Tu es un coach fitness expert. Réponds UNIQUEMENT avec du JSON valide et rien d\'autre. Pas de markdown, pas de texte, juste le JSON.');
+    const cfg = _selectProvider('fast');
+    const reply = await _callAI([{ role:'user', content: prompt }], cfg,
+        'Tu es un coach fitness expert. Réponds UNIQUEMENT avec du JSON valide et rien d\'autre. Pas de markdown, pas de texte, juste le JSON.', 4000);
 
     btn.classList.remove('ai-loading');
     btn.innerHTML = '<i class="fas fa-magic"></i> Générer mon plan semaine';
@@ -30930,15 +31195,11 @@ async function captureAndAnalyze() {
 
     if (!_hasAnyKey()) { showNotification('Configurez l\'IA dans les paramètres', 'error'); return; }
 
-    // Résoudre le provider à utiliser — NE PAS muter _aiConfig
-    const scanCfg = _selectProvider('vision');  // objet indépendant
-
     // Si pas d'image et caméra active → prendre la photo d'abord
     if (!_scanImageBase64) {
         const video = document.getElementById('scan-video');
         if (video && video.style.display !== 'none' && _scanStream) {
             takePhoto();
-            // takePhoto est synchrone, attendre un tick
             await new Promise(r => setTimeout(r, 50));
         } else {
             showNotification('Prenez ou importez une photo d\'abord', 'error');
@@ -30950,89 +31211,172 @@ async function captureAndAnalyze() {
     if (status) { status.style.display = 'block'; status.style.background = 'var(--primary-glow)'; status.style.color = 'var(--primary)'; status.textContent = 'Analyse en cours…'; }
     if (results) results.style.display = 'none';
 
-    let reply;
-    const scanProvider = scanCfg.provider;  // 'groq' | 'gemini' | 'claude'
+    // ── Construire la file vision-aware ──────────────────────────────────
+    // Ordre fixe : providers avec vraie vision en premier (forcés sur leur modèle vision)
+    // Groq en dernier (texte seulement = estimation fictive)
+    const _buildProviderQueue = () => {
+        const queue = [];
 
-    if (scanProvider === 'claude' && _scanImageBase64) {
-        // Claude vision (multimodal)
-        const messages = [{
-            role: 'user',
-            content: [
+        // Providers avec vraie capacité vision — forcer le bon modèle vision
+        const VISION_CAPABLE = ['claude', 'gemini', 'mistral', 'openrouter'];
+
+        for (const p of VISION_CAPABLE) {
+            const key = _aiKeys[p];
+            if (!key?.apiKey) continue;
+            const pDef = AI_PROVIDERS[p];
+            // Forcer le modèle vision du provider (pas le modèle texte choisi par l'utilisateur)
+            let visionModel = key.model;
+            if (pDef?.visionModels?.length) {
+                // Si le modèle actuel n'est pas vision-capable, forcer le premier vision
+                if (!pDef.visionModels.includes(visionModel)) {
+                    visionModel = pDef.visionModels[0];
+                }
+            } else if (p === 'openrouter') {
+                visionModel = _orBestVisionModel || pDef?.visionModels?.[0] || key.model;
+            }
+            queue.push({ provider: p, apiKey: key.apiKey, model: visionModel });
+        }
+
+        // Groq en dernier (texte seulement — estimation sans vraie analyse photo)
+        if (_aiKeys.grok?.apiKey) {
+            queue.push({ provider: 'grok', apiKey: _aiKeys.grok.apiKey, model: _aiKeys.grok.model || AI_PROVIDERS.grok?.defaultModel });
+        }
+
+        return queue;
+    };
+
+    // ── Tentative vision pour un provider donné ───────────────────────────
+    const _tryVisionProvider = async (cfg) => {
+        const p = cfg.provider;
+        const pName = AI_PROVIDERS[p]?.name || p;
+        if (status) status.textContent = `Analyse avec ${pName}…`;
+
+        if (p === 'claude' && _scanImageBase64) {
+            const messages = [{ role: 'user', content: [
                 { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: _scanImageBase64 } },
                 { type: 'text', text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}. IMPORTANT: tous les noms d\'aliments DOIVENT être en français.' }
-            ]
-        }];
-        reply = await _callAI(messages, scanCfg, 'Tu es nutritionniste français. Réponds UNIQUEMENT avec du JSON valide. Les noms d\'aliments sont TOUJOURS en français.');
+            ]}];
+            return await _callAI(messages, cfg, 'Tu es nutritionniste français. Réponds UNIQUEMENT avec du JSON valide. Les noms d\'aliments sont TOUJOURS en français.');
+        }
 
-    } else if (scanProvider === 'openrouter' && _scanImageBase64) {
-        // OpenRouter vision — format OpenAI image_url
-        try {
-            const orProvider = AI_PROVIDERS.openrouter;
-            const visionModels = orProvider.visionModels || orProvider.models;
-            const startModel = scanCfg.model || visionModels[0];
+        if (p === 'mistral' && _scanImageBase64) {
+            // Mistral Pixtral — essaie tous les modèles vision disponibles
+            const visionModels = AI_PROVIDERS.mistral.visionModels || ['pixtral-large-latest', 'pixtral-12b-latest'];
+            // cfg.model est déjà forcé sur le modèle vision par _buildProviderQueue
+            const startModel = visionModels.includes(cfg.model) ? cfg.model : visionModels[0];
             const modelsToTry = [startModel, ...visionModels.filter(m => m !== startModel)];
             for (const model of modelsToTry) {
-                const body = {
-                    model,
-                    max_tokens: 1024,
-                    messages: [{
-                        role: 'user',
-                        content: [
-                            { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${_scanImageBase64}` } },
-                            { type: 'text', text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}. IMPORTANT: noms d\'aliments en français uniquement.' }
-                        ]
-                    }]
-                };
-                const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${scanCfg.apiKey}`, 'HTTP-Referer': 'https://ironplate.app', 'X-Title': 'IronPlate' },
-                    body: JSON.stringify(body)
-                });
-                const data = await resp.json();
-                if (resp.ok) { reply = data.choices?.[0]?.message?.content || '__ERROR__Réponse vide'; break; }
-                const errMsg = data.error?.message || '';
-                if (resp.status === 429 || errMsg.includes('quota')) { console.warn(`[OR] ${model} quota, trying next`); continue; }
-                reply = '__ERROR__OpenRouter ' + resp.status + ': ' + errMsg.slice(0,100); break;
+                if (status) status.textContent = `Analyse avec Mistral ${model.replace('-latest','')}…`;
+                try {
+                    const body = { model, max_tokens: 1024, messages: [{ role: 'user', content: [
+                        { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${_scanImageBase64}` } },
+                        { type: 'text', text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}. Noms en français.' }
+                    ]}]};
+                    const resp = await fetch('https://api.mistral.ai/v1/chat/completions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.apiKey}` },
+                        body: JSON.stringify(body)
+                    });
+                    const data = await resp.json();
+                    if (resp.ok && data.choices?.[0]?.message?.content) {
+                        if (status) status.textContent = `Mistral ${model.replace('-latest','')} ✓`;
+                        return data.choices[0].message.content;
+                    }
+                    const errMsg = data.error?.message || '';
+                    if (resp.status === 429 || errMsg.includes('quota') || errMsg.includes('rate')) {
+                        if (status) status.textContent = `Mistral ${model.replace('-latest','')} quota — essai modèle suivant…`;
+                        continue;
+                    }
+                    console.warn(`[Mistral scan] ${model} error ${resp.status}: ${errMsg.slice(0,80)}`);
+                    continue;
+                } catch(e) { console.warn('[Mistral scan]', e.message); continue; }
             }
-            if (!reply) reply = '__ERROR__Aucun modèle vision disponible sur OpenRouter. Réessayez.';
-        } catch(e) { reply = '__ERROR__' + e.message; }
-
-    } else if (scanProvider === 'gemini' && _scanImageBase64) {
-        // Gemini vision — appel direct (format non-standard)
-        try {
-            const models = AI_PROVIDERS.gemini.models;
-            for (const model of [scanCfg.model, ...models.filter(m => m !== scanCfg.model)]) {
-                const url  = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${scanCfg.apiKey}`;
-                const body = { contents: [{ parts: [
-                    { inline_data: { mime_type: 'image/jpeg', data: _scanImageBase64 } },
-                    { text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}. IMPORTANT: noms en français uniquement.' }
-                ]}]};
-                const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
-                const data = await resp.json();
-                if (resp.ok) { reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '__ERROR__Réponse vide'; break; }
-                const errMsg = data.error?.message || '';
-                if (errMsg.includes('quota') || errMsg.includes('RESOURCE_EXHAUSTED') || resp.status === 429) continue;
-                reply = '__ERROR__' + _geminiErrorMsg(resp.status, data); break;
-            }
-            if (!reply) reply = '__ERROR__Quota dépassé sur tous les modèles Gemini.';
-        } catch(e) { reply = '__ERROR__' + e.message; }
-
-    } else {
-        // Groq / fallback texte : description libre ou depuis photo (Groq = texte uniquement)
-        const hasPhoto = !!_scanImageBase64;
-        const prompt = hasPhoto
-            ? 'Je viens de prendre en photo mon assiette. Génère un repas fictif équilibré réaliste avec 3-5 aliments typiques d\'un déjeuner. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"},{"name":"Riz basmati","quantity_g":150,"calories":174,"protein":3.6,"carbs":38,"fat":0.3,"category":"cereale"},{"name":"Haricots verts","quantity_g":100,"calories":35,"protein":1.8,"carbs":7,"fat":0.1,"category":"legume"}]}'
-            : 'Génère un repas équilibré typique avec 3-5 aliments. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}';
-        reply = await _callAI([{role:'user', content: prompt}], scanCfg, 'Tu es nutritionniste. Réponds UNIQUEMENT avec du JSON valide. Les noms d\'aliments sont TOUJOURS dans la langue de l\'utilisateur: ' + (window._i18nAILang || 'Français (fr)') + '. Jamais en anglais sauf si la langue est l\'anglais.');
-        if (status && !reply?.startsWith('__ERROR__')) {
-            status.textContent = hasPhoto ? 'Groq : pas de vision — repas estimé généré' : 'Repas type généré';
+            return '__ERROR__Mistral Pixtral indisponible';
         }
+
+        if (p === 'openrouter' && _scanImageBase64) {
+            const visionModels = AI_PROVIDERS.openrouter.visionModels || AI_PROVIDERS.openrouter.models;
+            const startModel = cfg.model || visionModels[0];
+            const modelsToTry = [startModel, ...visionModels.filter(m => m !== startModel)];
+            for (const model of modelsToTry) {
+                if (status) status.textContent = `OpenRouter — ${model.split('/').pop().replace(':free','')}…`;
+                try {
+                    const body = { model, max_tokens: 1024, messages: [{ role: 'user', content: [
+                        { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${_scanImageBase64}` } },
+                        { type: 'text', text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}. IMPORTANT: noms d\'aliments en français uniquement.' }
+                    ]}]};
+                    const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.apiKey}`, 'HTTP-Referer': 'https://ironplate.app', 'X-Title': 'IronPlate' },
+                        body: JSON.stringify(body)
+                    });
+                    const data = await resp.json();
+                    if (resp.ok && data.choices?.[0]?.message?.content) return data.choices[0].message.content;
+                    const errMsg = data.error?.message || '';
+                    // 404 = modèle retiré, 429 = quota → dans les deux cas essayer le suivant
+                    console.warn(`[OR scan] ${model} ${resp.status} — essai suivant`);
+                    continue;
+                } catch(e) { console.warn('[OR scan]', e.message); continue; }
+            }
+            return '__ERROR__Aucun modèle OpenRouter vision disponible (quota ou modèles retirés)';
+        }
+
+        if (p === 'gemini' && _scanImageBase64) {
+            const visionModels = AI_PROVIDERS.gemini.visionModels || AI_PROVIDERS.gemini.models;
+            const startModel = cfg.model || visionModels[0];
+            const modelsToTry = [startModel, ...visionModels.filter(m => m !== startModel)];
+            for (const model of modelsToTry) {
+                if (status) status.textContent = `Gemini ${model.replace('gemini-','')}…`;
+                try {
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cfg.apiKey}`;
+                    const body = { contents: [{ parts: [
+                        { inline_data: { mime_type: 'image/jpeg', data: _scanImageBase64 } },
+                        { text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}. IMPORTANT: noms en français uniquement.' }
+                    ]}]};
+                    const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+                    const data = await resp.json();
+                    if (resp.ok) return data.candidates?.[0]?.content?.parts?.[0]?.text || '__ERROR__Réponse vide';
+                    const errMsg = data.error?.message || '';
+                    if (errMsg.includes('quota') || errMsg.includes('RESOURCE_EXHAUSTED') || resp.status === 429) { console.warn(`[Gemini scan] ${model} quota`); continue; }
+                    return '__ERROR__' + _geminiErrorMsg(resp.status, data);
+                } catch(e) { console.warn('[Gemini scan]', e.message); continue; }
+            }
+            return '__ERROR__Quota dépassé sur tous les modèles Gemini';
+        }
+
+        // Groq / texte uniquement — AUCUNE vraie vision, repas INVENTÉ
+        if (status) {
+            status.style.background = 'rgba(224,123,26,.08)';
+            status.style.color = 'var(--warning)';
+            status.textContent = '⚠️ Aucun provider vision disponible — repas estimé (non analysé)';
+        }
+        const prompt = 'Génère un repas équilibré FICTIF typique avec 3-5 aliments d\'un déjeuner français standard. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner estimé","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"},{"name":"Riz basmati","quantity_g":150,"calories":174,"protein":3.6,"carbs":38,"fat":0.3,"category":"cereale"},{"name":"Haricots verts","quantity_g":100,"calories":35,"protein":1.8,"carbs":7,"fat":0.1,"category":"legume"}]}';
+        const r = await _callAI([{role:'user', content: prompt}], cfg, 'Tu es nutritionniste. Réponds UNIQUEMENT avec du JSON valide. Noms en français.');
+        return r;
+    };
+
+    // ── Boucle fallback sur tous les providers ────────────────────────────
+    const queue = _buildProviderQueue();
+    let reply = null;
+    let usedProvider = null;
+
+    for (const cfg of queue) {
+        const r = await _tryVisionProvider(cfg);
+        if (r && !r.startsWith('__ERROR__')) {
+            reply = r;
+            usedProvider = cfg.provider;
+            break;
+        }
+        console.warn(`[Scan] Provider ${cfg.provider} failed:`, r);
+        if (status) status.textContent = `${AI_PROVIDERS[cfg.provider]?.name || cfg.provider} indisponible — essai suivant…`;
     }
+
+    if (!reply) reply = '__ERROR__Aucun provider disponible. Vérifiez vos clés API.';
 
     if (capBtn) { capBtn.disabled = false; capBtn.innerHTML = '<i class="fas fa-redo"></i> Ré-analyser'; capBtn.onclick = captureAndAnalyze; }
 
     if (!reply || reply.startsWith('__ERROR__')) {
-        if (status) { status.style.background = 'rgba(224,62,62,.08)'; status.style.color = 'var(--danger)'; status.textContent = 'Erreur : ' + (reply||'').replace('__ERROR__',''); }
+        if (status) { status.style.background = 'rgba(224,62,62,.08)'; status.style.color = 'var(--danger)'; status.textContent = '❌ ' + (reply||'').replace('__ERROR__',''); }
         return;
     }
 
@@ -31053,7 +31397,12 @@ async function captureAndAnalyze() {
     _scanParsedMeal = meal;
 
     // Display results
-    if (status) { status.style.background = 'rgba(15,168,106,.08)'; status.style.color = 'var(--success)'; status.textContent = `✓ ${meal.items.length} aliment(s) détecté(s)`; }
+    if (status) {
+        const provName = usedProvider ? (AI_PROVIDERS[usedProvider]?.name || usedProvider) : '';
+        status.style.background = 'rgba(15,168,106,.08)';
+        status.style.color = 'var(--success)';
+        status.textContent = `✓ ${meal.items.length} aliment(s) détecté(s)${provName ? ' — via ' + provName : ''}`;
+    }
 
     const list = document.getElementById('scan-items-list');
     if (list) {
@@ -34071,139 +34420,196 @@ function _agConfirmSave() {
 
 
 // ════════════════════════════════════════════════════════
-// PLAN IA SUR-MESURE — génération avec paramètres utilisateur
+// PLAN IA SUR-MESURE — même format et rendu que generateWeekPlan
 // ════════════════════════════════════════════════════════
 async function generateCustomWeekPlan() {
     if (!_hasAnyKey()) { showNotification('Configurez l\'IA dans Paramètres', 'error'); return; }
 
-    // ── Lire les paramètres ────────────────────────────────────────────
+    // ── Bouton + container ────────────────────────────────────────────
+    const genBtn   = document.querySelector('[onclick="generateCustomWeekPlan()"]');
+    const container = document.getElementById('ai-custom-plan-content');
+    if (genBtn) { genBtn.disabled = true; genBtn.innerHTML = '<span class="ai-spinner"></span> Génération…'; }
+    if (container) container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);"><span class="ai-spinner"></span><br><br>Génération du plan sur-mesure…<br><span style="font-size:11px;opacity:.6;">15-30 secondes</span></div>';
+
+    // ── Lire les contraintes utilisateur ─────────────────────────────
     const daysPerWeek = parseInt(document.getElementById('plan-days-per-week')?.value || 3);
     const duration    = parseInt(document.getElementById('plan-session-duration')?.value || 60);
     const equipment   = document.getElementById('plan-equipment')?.value || 'salle complète';
-    const focus       = document.getElementById('plan-focus')?.value?.trim() || 'équilibré';
+    const focus       = document.getElementById('plan-focus')?.value?.trim() || '';
     const constraints = document.getElementById('plan-constraints')?.value?.trim() || 'aucune';
-
-    // Jours de repos cochés
-    const restDays = ['lun','mar','mer','jeu','ven','sam','dim']
+    const restDays    = ['lun','mar','mer','jeu','ven','sam','dim']
         .filter(d => document.getElementById('rest-' + d)?.checked)
         .map(d => ({ lun:'Lundi',mar:'Mardi',mer:'Mercredi',jeu:'Jeudi',ven:'Vendredi',sam:'Samedi',dim:'Dimanche' })[d]);
 
-    // Compléments depuis le module Nutrition (IDs: supp-*)
-    const planSupps = _getSelectedSupplements ? _getSelectedSupplements() : [];
-    const suppsStr = planSupps.length ? planSupps.join(', ') : 'aucun';
-
-    const container = document.getElementById('ai-custom-plan-content');
-    if (container) container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary);"><span class="ai-spinner"></span> Génération du plan sur-mesure…<br><span style="font-size:11px;opacity:.6;">Peut prendre 15-30 secondes</span></div>';
-
     // ── Profil utilisateur ────────────────────────────────────────────
-    const up = typeof userProfile !== 'undefined' ? userProfile : {};
+    const up        = typeof userProfile !== 'undefined' ? userProfile : {};
+    const level     = up.level     || 'Intermédiaire';
+    const goal      = up.trainingType || 'Maintien';
+    const weight    = up.weight    || 75;
+    const height    = up.height    || 175;
+    const age       = up.age       || 30;
+    const gender    = up.gender === 'female' ? 'femme' : 'homme';
+    const defSets   = up.defaultSets   || 3;
+    const defReps   = up.defaultReps   || '10';
+    const defWeight = up.defaultWeight || 20;
 
-    // ── JSON exemple propre (sans template expressions imbriquées) ────
-    const jsonExample = '{"days":[{"day":"Lundi","type":"workout","workout_name":"Push Day","focus":"pectoraux, triceps","exercises":[{"name":"Développé couché","sets":4,"reps":"8-10","rest":90,"notes":"Contrôle la descente","supplements_timing":""}],"duration_min":' + duration + ',"notes":"Conseil du jour","supplements_advice":""}]}';
+    // Muscles peu travaillés
+    const recentMuscles = {};
+    if (typeof workoutHistory !== 'undefined') {
+        workoutHistory.slice(0, 10).forEach(w => {
+            (w.exercises || []).forEach(ex => {
+                const mg = ex.muscleGroup || ex.muscle || '';
+                if (mg) recentMuscles[mg] = (recentMuscles[mg] || 0) + 1;
+            });
+        });
+    }
+    const allMg  = ['pectoraux','dos','epaules','biceps','triceps','jambes','abdominaux'];
+    const weakMg = allMg.filter(m => !recentMuscles[m]);
+    const weakStr = weakMg.length ? weakMg.join(', ') : 'aucun';
 
-    const prompt = `Tu es coach fitness expert. Génère un programme hebdomadaire personnalisé.
+    // Compléments
+    const planSupps = typeof _getSelectedSupplements === 'function' ? _getSelectedSupplements() : [];
+    const suppsStr  = planSupps.length ? planSupps.join(', ') : 'aucun';
 
-PROFIL:
-- ${up.firstName||'Utilisateur'}, ${up.age||'?'} ans, ${up.weight||'?'}kg/${up.height||'?'}cm
-- Objectif: ${up.trainingType||'Maintien'}, Niveau: ${up.level||'Intermédiaire'}
+    // Nombre d'exercices par séance selon durée
+    const exPerSession = Math.max(3, Math.round((duration - 10) / 7.5));
 
-CONTRAINTES:
-- Jours entraînement/semaine: ${daysPerWeek}
-- Durée par séance: ${duration} minutes
-- Jours de repos souhaités: ${restDays.length ? restDays.join(', ') : 'flexible'}
-- Équipement: ${equipment}
-- Groupes prioritaires: ${focus}
-- Contraintes/blessures: ${constraints}
-- Compléments à intégrer: ${suppsStr}
+    // ── Prompt — MÊME FORMAT que generateWeekPlan (objet lundi…dimanche) ─
+    const prompt = `Tu es coach fitness expert. Génère un plan d'entraînement 7 jours personnalisé sur-mesure.
 
-RÈGLES ABSOLUES:
-1. Exactement 7 jours de Lundi à Dimanche
-2. Exactement ${daysPerWeek} jours entraînement et ${7-daysPerWeek} jours de repos
-3. Jours de repos imposés: ${restDays.length ? restDays.join(', ') : 'au choix'}
-4. Exercices uniquement avec: ${equipment}
-5. Éviter absolument: ${constraints}
-${planSupps.length ? '6. Pour chaque jour entraînement: indiquer supplements_advice avec timing précis (' + suppsStr + ')' : ''}
-7. Répondre UNIQUEMENT en JSON valide, aucun texte avant ou après
+PROFIL UTILISATEUR:
+- Sexe: ${gender}, âge: ${age} ans
+- Poids: ${weight}kg, taille: ${height}cm
+- Niveau: ${level}, Objectif: ${goal}
+- Paramètres habituels: ${defSets} séries × ${defReps} reps, charges ~${defWeight}kg
+- Muscles peu travaillés récemment: ${weakStr} → à PRIORISER
 
-FORMAT JSON STRICT:
-{"days":[{"day":"Lundi","type":"workout","workout_name":"Push Day","focus":"pectoraux, triceps","exercises":[{"name":"Développé couché","sets":4,"reps":"8-10","rest":90,"notes":"Contrôle la descente"}],"duration_min":${duration},"notes":"Conseil","supplements_advice":"Whey 30g dans les 30min post-séance. Créatine 5g avec le dîner."},{"day":"Mardi","type":"rest","workout_name":"","focus":"","exercises":[],"duration_min":0,"notes":"Repos actif","supplements_advice":""}]}`
+CONTRAINTES PERSONNALISÉES:
+- Jours d'entraînement par semaine: ${daysPerWeek} (${7-daysPerWeek} jours de repos)
+- Jours de repos imposés: ${restDays.length ? restDays.join(', ') : 'au choix de l\'IA'}
+- Durée par séance: ${duration} min → ${exPerSession} exercices par séance
+- Équipement disponible: ${equipment}
+- Groupes musculaires prioritaires: ${focus || 'équilibré, selon muscles peu travaillés'}
+- Contraintes/blessures à éviter: ${constraints}
+- Compléments alimentaires: ${suppsStr}
+
+RÈGLES IMPÉRATIVES:
+- Adapte STRICTEMENT les charges au niveau ${level} (${weight}kg)
+- Priorise les muscles peu travaillés: ${weakStr}
+- VOLUME: EXACTEMENT ${exPerSession} exercices par séance de ${duration}min
+- 3 à 4 séries par exercice
+- Noms d'exercices PRÉCIS en français
+- Exactement ${daysPerWeek} jours entraînement et ${7-daysPerWeek} jours de repos
+- REPS: UN SEUL ENTIER dans "reps" (ex: 10), fourchette dans "notes" (ex: "8-12 reps")
+- Charges RÉALISTES pour niveau ${level}
+${planSupps.length ? '- supplements_advice: timing précis pour ' + suppsStr : ''}
+
+Réponds UNIQUEMENT avec ce JSON valide (format identique, objet indexé par jour en minuscules):
+{"lundi":{"type":"Push Day","tag":"Force","tagColor":"#4F6EF7","exercises":[{"name":"Développé couché barre","sets":4,"reps":8,"notes":"6-8 reps","weight":"${level==='Débutant'?'40':'80'}kg"}]},"mardi":{"type":"Repos","tag":"Récupération","tagColor":"#6B7280","exercises":[]},"mercredi":{"type":"Pull Day","tag":"Hypertrophie","tagColor":"#0FA86A","exercises":[{"name":"Traction pronation","sets":4,"reps":8,"notes":"8-10 reps","weight":"0kg"}]},"jeudi":{"type":"Leg Day","tag":"Force","tagColor":"#E07B1A","exercises":[{"name":"Squat barre","sets":4,"reps":8,"notes":"8-10 reps","weight":"${level==='Débutant'?'50':'100'}kg"}]},"vendredi":{"type":"Épaules & Bras","tag":"Volume","tagColor":"#7C3AED","exercises":[{"name":"Développé militaire","sets":3,"reps":10,"notes":"10-12 reps","weight":"${level==='Débutant'?'25':'50'}kg"}]},"samedi":{"type":"Repos","tag":"Récupération","tagColor":"#6B7280","exercises":[]},"dimanche":{"type":"Repos","tag":"Récupération","tagColor":"#6B7280","exercises":[]}}`;
+
     const cfg   = _selectProvider('fast');
     const reply = await _callAI([{ role:'user', content: prompt }], cfg,
-        'Tu es coach fitness. Réponds UNIQUEMENT avec du JSON valide, sans markdown.',
-        3000); // max_tokens élevé pour éviter la troncature
+        'Tu es coach fitness expert. Réponds UNIQUEMENT avec du JSON valide, aucun markdown, aucun texte avant ou après.', 5000);
+
+    if (genBtn) { genBtn.disabled = false; genBtn.innerHTML = '<i class="fas fa-sliders-h"></i> Générer mon plan sur-mesure'; }
 
     if (!reply || reply.startsWith('__ERROR__')) {
         if (container) container.innerHTML = '<div style="color:var(--danger);padding:10px;font-size:12px;">Erreur IA: ' + (reply||'').replace('__ERROR__','') + '<br><button onclick="generateCustomWeekPlan()" style="margin-top:8px;padding:6px 14px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">↺ Réessayer</button></div>';
         return;
     }
 
+    let plan;
     try {
         const clean = reply.replace(/```json|```/g, '').trim();
-        const plan  = JSON.parse(clean);
-        window._customWeekPlan = plan;
-        window._customPlanSupps = planSupps; // stocker pour affichage
-        _renderCustomWeekPlan(plan, container);
+        plan = JSON.parse(clean);
     } catch(e) {
-        console.error('[Custom Plan]', e.message, reply?.slice(0,200));
-        if (container) container.innerHTML =
-            '<div style="color:var(--danger);padding:10px;font-size:12px;">' +
-            '⚠️ Format JSON invalide — le modèle a probablement tronqué la réponse.<br>' +
-            '<small style="opacity:.7;">' + e.message + '</small><br>' +
-            '<button onclick="generateCustomWeekPlan()" style="margin-top:8px;padding:6px 14px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">↺ Réessayer</button>' +
-            '</div>';
+        const match = reply.match(/\{[\s\S]*\}/);
+        try { plan = match ? JSON.parse(match[0]) : null; } catch(e2) { plan = null; }
     }
-}
 
-function _renderCustomWeekPlan(plan, container) {
-    if (!container || !plan?.days) return;
-    const days = plan.days;
-    const planSupps = window._customPlanSupps || [];
-    const html = days.map(day => {
-        if (day.type === 'rest') {
-            return `<div style="padding:10px 12px;background:var(--card-bg-alt);border-radius:10px;border:1px solid var(--border);margin-bottom:6px;display:flex;align-items:center;gap:8px;">
-                <i class="fas fa-bed" style="color:var(--text-tertiary);"></i>
-                <span style="font-size:13px;font-weight:700;color:var(--text-primary);">${day.day}</span>
-                <span style="font-size:11px;color:var(--text-tertiary);">— Repos</span>
-                ${day.notes ? `<span style="font-size:10px;color:var(--text-tertiary);margin-left:auto;">${day.notes}</span>` : ''}
-            </div>`;
-        }
-        const exList = (day.exercises || []).map(ex =>
-            `<div style="padding:5px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-                <span style="font-size:11px;font-weight:700;color:var(--text-primary);">${ex.name}</span>
-                <span style="font-size:10px;color:var(--text-tertiary);">${ex.sets}×${ex.reps} — ${ex.rest}s repos</span>
-            </div>`
-        ).join('');
-        return `<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden;">
-            <div style="padding:10px 12px;background:linear-gradient(135deg,rgba(79,110,247,.08),rgba(124,58,237,.08));border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-                <div>
-                    <span style="font-size:13px;font-weight:900;color:var(--text-primary);">${day.day}</span>
-                    <span style="font-size:11px;color:var(--primary);font-weight:700;margin-left:8px;">${day.workout_name || ''}</span>
-                </div>
-                <span style="font-size:10px;color:var(--text-tertiary);">${day.duration_min || ''}min · ${day.focus || ''}</span>
-            </div>
-            <div style="padding:8px 12px;">${exList}</div>
-            ${day.notes ? `<div style="padding:6px 12px;font-size:10px;color:var(--text-tertiary);border-top:1px solid var(--border);">💡 ${day.notes}</div>` : ''}
-            ${(day.supplements_advice && (window._customPlanSupps||[]).length > 0) ? `<div style="padding:8px 12px;background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(79,110,247,.06));border-top:1px solid var(--border);"><div style="font-size:10px;font-weight:800;color:var(--primary);margin-bottom:3px;"><i class="fas fa-pills" style="margin-right:4px;"></i>Compléments du jour</div><div style="font-size:11px;color:var(--text-secondary);line-height:1.6;">${day.supplements_advice}</div></div>` : ''}
-        </div>`;
-    }).join('');
+    if (!plan) {
+        if (container) container.innerHTML = '<div style="color:var(--danger);padding:10px;font-size:12px;">⚠️ Format JSON invalide.<br><button onclick="generateCustomWeekPlan()" style="margin-top:8px;padding:6px 14px;background:var(--primary);color:white;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">↺ Réessayer</button></div>';
+        return;
+    }
 
-    container.innerHTML = html + `
-        <button onclick="_importCustomPlan()" style="width:100%;margin-top:10px;padding:11px;background:linear-gradient(135deg,#0FA86A,#059669);color:white;border:none;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer;">
-            <i class="fas fa-file-import"></i> Importer ce plan dans mes séances
-        </button>`;
+    // ── Stocker dans _weekPlanData (même variable que generateWeekPlan) ──
+    _weekPlanData = plan;
+    window._customWeekPlan = plan;
+    window._customPlanSupps = planSupps;
+
+    // ── Rendu identique à generateWeekPlan via _renderWeekPlan ───────────
+    if (container) {
+        _renderWeekPlan(plan, container);
+        // Ajouter le bouton d'import global
+        container.innerHTML += `
+            <button onclick="_importCustomPlan()" style="width:100%;margin-top:10px;padding:11px;background:linear-gradient(135deg,#0FA86A,#059669);color:white;border:none;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer;">
+                <i class="fas fa-file-import"></i> Importer ce plan dans mes séances
+            </button>`;
+    }
 }
 
 function _importCustomPlan() {
-    const plan = window._customWeekPlan;
-    if (!plan?.days) return;
-    // Reuse existing import logic
-    if (typeof _confirmImport === 'function' && plan.days) {
-        // Convert to importPlan format
-        window.importPlan = plan;
-        showNotification('Plan importé — disponible dans vos séances !', 'success');
-    } else {
-        showNotification('Plan généré — utilisez "Importer" dans Coach IA → Plan', 'info');
+    // _weekPlanData est déjà au bon format (peuplé par generateCustomWeekPlan)
+    if (!_weekPlanData || !Object.keys(_weekPlanData).length) {
+        showNotification('Aucun plan à importer', 'warning'); return;
     }
+
+    const trainDays = Object.keys(_weekPlanData).filter(k =>
+        _weekPlanData[k].exercises && _weekPlanData[k].exercises.length > 0
+    );
+
+    if (!trainDays.length) {
+        showNotification('Aucun exercice trouvé dans ce plan', 'warning'); return;
+    }
+
+    window.importPlan = window._customWeekPlan;
+    _showMultiDayImportModal(trainDays, _weekPlanData);
+}
+
+function _showMultiDayImportModal(trainDays, converted) {
+    let modal = document.getElementById('ai-multiday-import-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'ai-multiday-import-modal';
+        modal.className = 'modal';
+        document.body.appendChild(modal);
+    }
+
+    const dayLabels = {
+        lundi:'Lundi',mardi:'Mardi',mercredi:'Mercredi',jeudi:'Jeudi',
+        vendredi:'Vendredi',samedi:'Samedi',dimanche:'Dimanche'
+    };
+
+    const rows = trainDays.map(day => {
+        const d = converted[day];
+        return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+            <div>
+                <div style="font-size:13px;font-weight:800;color:var(--text-primary);">${dayLabels[day]||day} — ${d.type||''}</div>
+                <div style="font-size:11px;color:var(--text-tertiary);">${d.exercises.length} exercice${d.exercises.length>1?'s':''}</div>
+            </div>
+            <button onclick="hideModal('ai-multiday-import-modal'); _showImportChoiceModal('${day}');"
+                style="padding:7px 14px;background:var(--primary);color:white;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;">
+                <i class="fas fa-plus"></i> Importer
+            </button>
+        </div>`;
+    }).join('');
+
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-calendar-check" style="color:var(--primary);margin-right:6px;"></i>Importer le plan</h3>
+                <button class="modal-close" onclick="hideModal('ai-multiday-import-modal')">×</button>
+            </div>
+            <div class="modal-body" style="padding:16px;">
+                <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;">
+                    Choisissez quels jours importer dans vos séances :
+                </div>
+                ${rows}
+                <button onclick="trainDays.forEach ? null : null; hideModal('ai-multiday-import-modal');"
+                    style="display:none"></button>
+            </div>
+        </div>`;
+    showModal('ai-multiday-import-modal');
 }
 
 
@@ -35062,7 +35468,28 @@ async function generateNutritionPlan() {
     // ── Compléments alimentaires ──────────────────────────────────────
     let suppStr = '';
     if (selectedSupps.length > 0) {
-        suppStr = `\nCOMPLÉMENTS SOUHAITÉS: ${selectedSupps.join(', ')}`;
+        // Les quantités sont déjà intégrées dans selectedSupps (ex: "Whey protéine 30g")
+        const suppDetails = selectedSupps.join(', ');
+        suppStr = `
+
+=== COMPLÉMENTS ALIMENTAIRES À INTÉGRER OBLIGATOIREMENT ===
+L'utilisateur prend ces compléments avec les quantités indiquées. Pour CHAQUE jour du plan:
+  ${suppDetails}
+
+RÈGLES DE TIMING PAR COMPLÉMENT:
+- Whey protéine: dans les 30min POST-entraînement (shake séparé ou intégré au repas post-workout)
+- Créatine monohydrate: avec le repas post-entraînement ou repas principal
+- Collagène: le matin avec vitamine C, peut être pris à jeun
+- Magnésium: le soir au dîner ou avant le coucher
+- Oméga-3: avec un repas gras (déjeuner ou dîner), jamais à jeun
+- BCAA: pendant l'entraînement ou repas pré-workout si à jeun
+- Vitamine D3: le matin avec le petit-déjeuner (repas gras)
+- Zinc: le soir, à distance du calcium
+
+RÈGLE: Mentionner chaque complément dans supplements_advice avec horaire PRÉCIS et quantité.
+Pour les jours d'entraînement: adapter le timing à l'heure de séance ${typeof workoutHourFinal !== 'undefined' ? workoutHourFinal + 'h00' : ''}.
+Les compléments doivent APPARAÎTRE dans le plan (soit dans short_desc d'un repas, soit dans supplements_advice).
+===========================================================`;
     }
 
     // ── Calcul répartition calorique par repas ─────────────────────────
@@ -35100,8 +35527,9 @@ CIBLE PAR REPAS: ~${kcalPerMeal} kcal/repas
 REPARTITION SUGGÉRÉE (${mealsPerDay} repas): ${kcalDistrib}
 Adapter TOUTES les portions pour atteindre EXACTEMENT ${cal} kcal/jour.
 
-ATTENTION: L'utilisateur DOIT consommer ${cal} kcal/jour. Ne pas reduire.
-Si tu proposes moins de ${Math.round(cal*0.95)} kcal, c'est une ERREUR.
+RÈGLE ABSOLUE: L'utilisateur DOIT consommer ${cal} kcal/jour exactement.
+Augmenter les portions (riz, pâtes, huile, noix, viande) pour atteindre ${cal} kcal.
+INTERDIT de proposer moins de ${Math.round(cal*0.97)} kcal — le plan sera auto-corrigé.
 
 
 RÈGLES ABSOLUES — À RESPECTER SCRUPULEUSEMENT:
@@ -35115,6 +35543,14 @@ R3. Les macros des repas doivent être cohérentes avec les kcal (P×4 + G×4 + 
 
 ═══ ORDRE DES JOURS ═══
 R4. Le plan commence TOUJOURS par Lundi et se termine par Dimanche (ordre fixe: Lundi, Mardi, Mercredi, Jeudi, Vendredi, Samedi, Dimanche).
+
+═══ CALORIES PAR TYPE DE JOUR ═══
+R4b. Jours d'ENTRAÎNEMENT: ${cal} kcal (TDEE complet avec activité)
+R4c. Jours de REPOS: calculer précisément = BMR × 1.35 (récupération légère)
+     BMR estimé = ${Math.round(cal / (typeof userProfile !== 'undefined' ? (userProfile.pal || 1.55) : 1.55))} kcal
+     Calories repos = ${Math.round(cal / (typeof userProfile !== 'undefined' ? (userProfile.pal || 1.55) : 1.55) * 1.35)} kcal
+     → Protéines inchangées (reconstruction musculaire), glucides réduits, lipides maintenus
+     → Objectif: apport suffisant pour récupération sans surplus calorique inutile
 
 ═══ ORDRE DES REPAS ═══
 R5. Les repas de chaque jour sont classés par heure croissante (du matin au soir).
@@ -35148,7 +35584,7 @@ Génère les 7 jours COMPLETS de Lundi à Dimanche.`;
     const cfg   = _selectProvider('fast');
     const reply = await _callAI([{ role: 'user', content: prompt }], cfg,
         'Tu es nutritionniste. Réponds UNIQUEMENT avec du JSON valide sans markdown ni texte.',
-        4000  // max_tokens élevé pour le plan complet
+        6000  // max_tokens large pour plan 7j complet
     );
 
     if (genBtn) { genBtn.disabled = false; genBtn.innerHTML = '<i class="fas fa-magic"></i> Régénérer'; }
@@ -35198,7 +35634,7 @@ function _renderNutritionPlan(plan, container) {
     let html = '';
 
     // Alerte calories si nécessaire
-    if (tooLowDays >= 2 && targetCalRender > 0) {
+    if (tooLowDays >= 3 && targetCalRender > 0) {
         html += '<div style="background:rgba(226,75,74,.08);border:1.5px solid rgba(226,75,74,.3);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;gap:10px;align-items:flex-start;">' +
             '<i class="fas fa-exclamation-triangle" style="color:#E24B4A;font-size:14px;margin-top:1px;flex-shrink:0;"></i>' +
             '<div>' +
@@ -35355,27 +35791,33 @@ async function _showRecipe(dayIdx, mealIdx) {
     const up     = typeof userProfile !== 'undefined' ? userProfile : {};
     const params = _nutriPlan._params || {};
 
-    const prompt = `Tu es nutritionniste cuisinier. Génère la recette détaillée pour ce plat.
+    const prompt = `Tu es nutritionniste cuisinier. Génère la recette détaillée avec valeurs nutritionnelles par ingrédient.
 
 PLAT: "${meal.name}"
 VALEURS CIBLES: ${meal.kcal} kcal | Protéines: ${meal.protein}g | Glucides: ${meal.carbs}g | Lipides: ${meal.fat}g
 TEMPS DE PRÉPARATION MAX: ${meal.prep_time} minutes
 RÉGIME: ${params.dietType || 'omnivore'}
 ALLERGIES: ${params.allergies || 'aucune'}
-BESOIN DE CUISSON: ${meal.needs_cooking ? 'oui' : 'non (recette froide ou sans cuisson)'}
+BESOIN DE CUISSON: ${meal.needs_cooking ? 'oui' : 'non'}
 PROFIL: ${up.weight||'?'}kg, objectif ${up.trainingType||'Maintien'}
-BUDGET: ${params.budget || 'moyen'}
 
 Réponds UNIQUEMENT en JSON:
 {
-  "ingredients": ["quantité + unité + ingrédient précis", "..."],
-  "instructions": ["Étape 1 courte et claire", "Étape 2", "..."],
-  "tips": "conseil ou variante en 1 phrase",
+  "ingredients": [
+    {"name":"Blanc de poulet","qty":180,"unit":"g","kcal":198,"protein":37,"carbs":0,"fat":4},
+    {"name":"Riz basmati","qty":80,"unit":"g","kcal":280,"protein":6,"carbs":62,"fat":1}
+  ],
+  "instructions": ["Étape 1 claire", "Étape 2", "..."],
+  "tips": "conseil ou variante",
   "prep_time": 10,
   "cook_time": 15
 }
 
-RÈGLES: quantités précises en grammes/ml, instructions courtes (max 2 phrases par étape), max 6 étapes.`;
+RÈGLES: 
+- Chaque ingrédient DOIT avoir ses macros individuelles (kcal, protein, carbs, fat)
+- La somme des kcal des ingrédients doit approcher ${meal.kcal} kcal (±50)
+- Quantités précises en grammes/ml
+- Max 6 étapes de préparation, 2 phrases max par étape`;
 
     const cfg   = _selectProvider('fast');
     const reply = await _callAI([{ role:'user', content: prompt }], cfg,
@@ -35412,15 +35854,58 @@ function _renderRecipeContent(meal, rcontent) {
         html += '</div>';
     }
 
-    // Ingrédients
+    // Ingrédients avec macros
     if (meal.ingredients?.length) {
+        // Détecter si les ingrédients sont des objets (nouveau format) ou des strings (ancien)
+        const isRich = typeof meal.ingredients[0] === 'object';
         html += '<div style="margin-bottom:14px;">' +
             '<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:8px;">Ingrédients</div>';
+
         meal.ingredients.forEach(ing => {
-            html += '<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);">' +
-                '<i class="fas fa-circle" style="font-size:5px;color:var(--primary);margin-top:5px;flex-shrink:0;"></i>' +
-                '<span style="font-size:12px;color:var(--text-primary);">' + ing + '</span></div>';
+            if (isRich) {
+                const ingName = ing.name || ing;
+                const ingQty  = ing.qty ? (ing.qty + (ing.unit || 'g')) : '';
+                const ingKcal = ing.kcal || 0;
+                const ingProt = ing.protein || 0;
+                const ingCarb = ing.carbs || 0;
+                const ingFat  = ing.fat || 0;
+                html += '<div style="padding:6px 0;border-bottom:1px solid var(--border);">' +
+                    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">' +
+                        '<div style="display:flex;align-items:center;gap:6px;">' +
+                            '<i class="fas fa-circle" style="font-size:4px;color:var(--primary);flex-shrink:0;"></i>' +
+                            '<span style="font-size:12px;font-weight:700;color:var(--text-primary);">' + ingName + '</span>' +
+                            (ingQty ? '<span style="font-size:10px;color:var(--text-tertiary);">' + ingQty + '</span>' : '') +
+                        '</div>' +
+                        (ingKcal ? '<span style="font-size:11px;font-weight:800;color:#EF9F27;">' + ingKcal + ' kcal</span>' : '') +
+                    '</div>' +
+                    (ingKcal ? '<div style="display:flex;gap:6px;padding-left:14px;">' +
+                        '<span style="font-size:9px;font-weight:700;color:#4F6EF7;background:rgba(79,110,247,.08);padding:1px 5px;border-radius:4px;">P ' + ingProt + 'g</span>' +
+                        '<span style="font-size:9px;font-weight:700;color:#EF9F27;background:rgba(239,159,39,.08);padding:1px 5px;border-radius:4px;">G ' + ingCarb + 'g</span>' +
+                        '<span style="font-size:9px;font-weight:700;color:#0FA86A;background:rgba(15,168,106,.08);padding:1px 5px;border-radius:4px;">L ' + ingFat + 'g</span>' +
+                    '</div>' : '') +
+                '</div>';
+            } else {
+                // Ancien format string
+                html += '<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);">' +
+                    '<i class="fas fa-circle" style="font-size:5px;color:var(--primary);margin-top:5px;flex-shrink:0;"></i>' +
+                    '<span style="font-size:12px;color:var(--text-primary);">' + ing + '</span></div>';
+            }
         });
+
+        // Total des ingrédients si format riche
+        if (isRich) {
+            const totKcal = meal.ingredients.reduce((s,i) => s+(i.kcal||0), 0);
+            const totProt = meal.ingredients.reduce((s,i) => s+(i.protein||0), 0);
+            const totCarb = meal.ingredients.reduce((s,i) => s+(i.carbs||0), 0);
+            const totFat  = meal.ingredients.reduce((s,i) => s+(i.fat||0), 0);
+            html += '<div style="margin-top:6px;display:flex;gap:8px;align-items:center;background:var(--card-bg-alt);border-radius:8px;padding:6px 10px;">' +
+                '<span style="font-size:10px;font-weight:800;color:var(--text-tertiary);">TOTAL</span>' +
+                '<span style="font-size:11px;font-weight:900;color:#EF9F27;">' + totKcal + ' kcal</span>' +
+                '<span style="font-size:10px;font-weight:700;color:#4F6EF7;">P ' + totProt + 'g</span>' +
+                '<span style="font-size:10px;font-weight:700;color:#EF9F27;">G ' + totCarb + 'g</span>' +
+                '<span style="font-size:10px;font-weight:700;color:#0FA86A;">L ' + totFat + 'g</span>' +
+            '</div>';
+        }
         html += '</div>';
     }
 
@@ -35540,18 +36025,111 @@ function _onSuppsToggle(enabled) {
     if (panel) panel.style.pointerEvents = enabled ? 'auto' : 'none';
 }
 
-// Lire les compléments cochés
+// Lire les compléments cochés avec leurs quantités
 function _getSelectedSupplements() {
     const toggle = document.getElementById('nutri-supps-toggle');
     if (!toggle?.checked) return [];
+    const suppDefs = [
+        { id: 'whey',     name: 'Whey protéine',        qtyId: 'supp-qty-whey',     unit: 'g' },
+        { id: 'creatine', name: 'Créatine monohydrate',  qtyId: 'supp-qty-creatine', unit: 'g' },
+        { id: 'collagen', name: 'Collagène',              qtyId: 'supp-qty-collagen', unit: 'g' },
+        { id: 'magnesium',name: 'Magnésium',              qtyId: 'supp-qty-magnesium',unit: 'mg' },
+        { id: 'omega3',   name: 'Oméga-3',               qtyId: 'supp-qty-omega3',   unit: 'g' },
+        { id: 'bcaa',     name: 'BCAA',                  qtyId: 'supp-qty-bcaa',     unit: 'g' },
+        { id: 'vitd',     name: 'Vitamine D3',           qtyId: 'supp-qty-vitd',     unit: 'UI' },
+        { id: 'zinc',     name: 'Zinc',                  qtyId: 'supp-qty-zinc',     unit: 'mg' }
+    ];
     const supps = [];
-    if (document.getElementById('supp-whey')?.checked)     supps.push('Whey protéine');
-    if (document.getElementById('supp-creatine')?.checked) supps.push('Créatine monohydrate');
-    if (document.getElementById('supp-collagen')?.checked) supps.push('Collagène');
-    if (document.getElementById('supp-magnesium')?.checked)supps.push('Magnésium');
-    if (document.getElementById('supp-omega3')?.checked)   supps.push('Oméga-3');
-    if (document.getElementById('supp-bcaa')?.checked)     supps.push('BCAA');
+    suppDefs.forEach(s => {
+        const cb  = document.getElementById('supp-' + s.id);
+        const qty = document.getElementById(s.qtyId);
+        if (cb?.checked) {
+            const qtyVal = qty ? qty.value : '';
+            supps.push(qtyVal ? `${s.name} ${qtyVal}${s.unit}` : s.name);
+        }
+    });
     return supps;
+}
+
+/**
+ * Propose des compléments adaptés au profil via IA
+ * Met à jour les toggles + quantités automatiquement
+ */
+async function _aiSuggestSupplements() {
+    if (!_hasAnyKey()) {
+        showNotification('Configurez une clé IA dans Paramètres', 'error');
+        return;
+    }
+    const btn = document.querySelector('[onclick="_aiSuggestSupplements()"]');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="ai-spinner"></span> Analyse en cours…'; }
+
+    const up = typeof userProfile !== 'undefined' ? userProfile : {};
+    const goal = document.getElementById('nutri-goal-specific')?.value || up.trainingType || 'Maintien';
+    const diet = document.getElementById('nutri-diet-type')?.value || 'omnivore';
+
+    const prompt = `Tu es un nutritionniste sportif expert. Analyse ce profil et recommande les compléments alimentaires optimaux avec leurs quantités précises.
+
+PROFIL:
+- ${up.firstName||'Utilisateur'}, ${up.age||'?'}ans, ${up.gender==='female'?'Femme':'Homme'}, ${up.weight||'?'}kg
+- Niveau: ${up.level||'Intermédiaire'}
+- Objectif: ${goal}
+- Régime alimentaire: ${diet}
+- Taux de masse grasse: ${up.bodyFat||'?'}%
+
+COMPLÉMENTS DISPONIBLES (réponds UNIQUEMENT avec ce JSON):
+{
+  "whey":      {"active": true/false, "qty": nombre_en_g, "reason": "raison courte"},
+  "creatine":  {"active": true/false, "qty": nombre_en_g, "reason": "raison courte"},
+  "collagen":  {"active": true/false, "qty": nombre_en_g, "reason": "raison courte"},
+  "magnesium": {"active": true/false, "qty": nombre_en_mg, "reason": "raison courte"},
+  "omega3":    {"active": true/false, "qty": nombre_en_g, "reason": "raison courte"},
+  "bcaa":      {"active": true/false, "qty": nombre_en_g, "reason": "raison courte"},
+  "vitd":      {"active": true/false, "qty": nombre_en_UI, "reason": "raison courte"},
+  "zinc":      {"active": true/false, "qty": nombre_en_mg, "reason": "raison courte"},
+  "advice":    "conseil global 1-2 phrases"
+}
+Adapte les quantités au profil. Réponds UNIQUEMENT avec le JSON, sans markdown.`;
+
+    const cfg = _selectProvider('fast');
+    const reply = await _callAI([{ role: 'user', content: prompt }], cfg,
+        'Tu es nutritionniste. Réponds UNIQUEMENT avec du JSON valide.', 800);
+
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-robot"></i> Propositions IA selon mon profil'; }
+
+    if (!reply || reply.startsWith('__ERROR__')) {
+        showNotification('Erreur IA — réessayez', 'error'); return;
+    }
+
+    try {
+        const clean = reply.replace(/```json|```/g, '').trim();
+        const data  = JSON.parse(clean);
+
+        // Appliquer les recommandations
+        const fields = ['whey','creatine','collagen','magnesium','omega3','bcaa','vitd','zinc'];
+        fields.forEach(k => {
+            const rec = data[k];
+            if (!rec) return;
+            const cb  = document.getElementById('supp-' + k);
+            const qty = document.getElementById('supp-qty-' + k);
+            if (cb)  cb.checked  = !!rec.active;
+            if (qty && rec.qty)  qty.value = rec.qty;
+        });
+
+        // Afficher le conseil global + raisons
+        const advBox = document.getElementById('nutri-supps-ai-advice');
+        if (advBox) {
+            const reasons = fields
+                .filter(k => data[k]?.active && data[k]?.reason)
+                .map(k => `<b>${k === 'whey' ? 'Whey' : k === 'creatine' ? 'Créatine' : k === 'collagen' ? 'Collagène' : k === 'magnesium' ? 'Magnésium' : k === 'omega3' ? 'Oméga-3' : k === 'bcaa' ? 'BCAA' : k === 'vitd' ? 'Vit. D3' : 'Zinc'}:</b> ${data[k].reason}`)
+                .join('<br>');
+            advBox.style.display = 'block';
+            advBox.innerHTML = `<div style="font-size:10px;font-weight:800;color:var(--primary);margin-bottom:6px;"><i class="fas fa-robot" style="margin-right:4px;"></i>Recommandation IA</div>${reasons}${data.advice ? `<div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(79,110,247,.15);font-style:italic;">${data.advice}</div>` : ''}`;
+        }
+        showNotification('Compléments personnalisés ✓', 'success');
+    } catch(e) {
+        showNotification('Format IA invalide — réessayez', 'error');
+        console.error('[SuppAI]', e.message, reply?.slice(0,200));
+    }
 }
 
 
@@ -35620,12 +36198,26 @@ function _sanitizeNutritionPlan(plan, opts) {
                 day._kcal_corrected = true;
             }
 
-            // Règle 2: si le total est < 80% de la cible du profil → signaler
+            // Règle 2: si < 90% de la cible → scale up automatiquement
             const targetCal = opts.targetCal || 0;
             const realKcal  = day.total_kcal;
-            if (targetCal > 0 && realKcal < targetCal * 0.80) {
-                day._kcal_too_low = true; // flag : trop bas vs profil
-                day._kcal_gap     = targetCal - realKcal;
+            if (targetCal > 0 && realKcal > 0 && realKcal < targetCal * 0.90 && day.meals?.length > 0) {
+                const scaleFactor = targetCal / realKcal;
+                day.meals.forEach(meal => {
+                    meal.kcal    = Math.round((meal.kcal    || 0) * scaleFactor);
+                    meal.protein = Math.round((meal.protein || 0) * scaleFactor);
+                    meal.carbs   = Math.round((meal.carbs   || 0) * scaleFactor);
+                    meal.fat     = Math.round((meal.fat     || 0) * scaleFactor);
+                });
+                day.total_kcal    = Math.round(day.meals.reduce((s,m) => s+(m.kcal||0), 0));
+                day.total_protein = Math.round(day.meals.reduce((s,m) => s+(m.protein||0), 0));
+                day.total_carbs   = Math.round(day.meals.reduce((s,m) => s+(m.carbs||0), 0));
+                day.total_fat     = Math.round(day.meals.reduce((s,m) => s+(m.fat||0), 0));
+                day._kcal_corrected = true;
+                day._kcal_scaled    = true;
+            } else if (targetCal > 0 && realKcal < targetCal * 0.97) {
+                day._kcal_too_low = true;
+                day._kcal_gap     = Math.round(targetCal - realKcal);
             }
         }
     });
@@ -35654,6 +36246,272 @@ function _toggleAgGuide() {
     const guide = document.getElementById('ag-guide');
     if (guide) guide.style.display = guide.style.display === 'none' ? 'block' : 'none';
 }
+
+
+// ═══════════════════════════════════════════════════════════════════
+// VISUALISATION EXERCICE IA — schéma SVG généré via LLM
+// ═══════════════════════════════════════════════════════════════════
+
+async function _showExerciseViz(exerciseName) {
+    if (!exerciseName) return;
+
+    const modal   = document.getElementById('exercise-viz-modal');
+    const title   = document.getElementById('exercise-viz-title');
+    const content = document.getElementById('exercise-viz-content');
+    const tips    = document.getElementById('exercise-viz-tips');
+
+    if (title)   title.textContent   = exerciseName;
+    if (tips)    tips.style.display  = 'none';
+    if (content) content.innerHTML   =
+        '<div style="text-align:center;padding:30px;color:var(--text-secondary);">' +
+        '<span class="ai-spinner"></span>' +
+        '<div style="margin-top:12px;font-size:12px;">Génération du schéma IA…</div></div>';
+
+    showModal('exercise-viz-modal');
+
+    if (!_hasAnyKey()) {
+        if (content) content.innerHTML =
+            '<div style="padding:20px;text-align:center;color:var(--text-secondary);font-size:12px;">' +
+            '⚠️ Configurez une clé IA dans Paramètres pour voir les schémas.</div>';
+        return;
+    }
+
+    // Construire un schéma SVG pré-rempli selon le groupe musculaire
+    // puis demander à l'IA de l'annoter
+    const muscleGroup = _guessMuscleGroup(exerciseName);
+    const svgBase = _getExerciseSVGTemplate(exerciseName, muscleGroup);
+    if (svgBase) {
+        // Template statique disponible - pas besoin de l'IA
+        if (content) {
+            content.innerHTML = '<div style="text-align:center;">' + svgBase + '</div>';
+        }
+        _generateExerciseTips(exerciseName, tips);
+        return;
+    }
+
+    // Pas de template → demander à l'IA un SVG minimal
+    const prompt = `Génère EXACTEMENT ce SVG pour l'exercice "${exerciseName}". Réponds avec UNIQUEMENT le SVG, aucun texte avant ou après, pas de \`\`\`.
+
+<svg viewBox="0 0 300 240" xmlns="http://www.w3.org/2000/svg" width="300" height="240">
+<rect width="300" height="240" fill="#f8fafc"/>
+<text x="150" y="22" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b" font-family="Arial">${exerciseName}</text>
+<!-- Position 1: stick figure gauche -->
+<circle cx="75" cy="60" r="14" fill="none" stroke="#3b82f6" stroke-width="2.5"/>
+<line x1="75" y1="74" x2="75" y2="118" stroke="#3b82f6" stroke-width="2.5"/>
+<line x1="75" y1="88" x2="55" y2="108" stroke="#3b82f6" stroke-width="2.5"/>
+<line x1="75" y1="88" x2="95" y2="108" stroke="#3b82f6" stroke-width="2.5"/>
+<line x1="75" y1="118" x2="60" y2="148" stroke="#3b82f6" stroke-width="2.5"/>
+<line x1="75" y1="118" x2="90" y2="148" stroke="#3b82f6" stroke-width="2.5"/>
+<text x="75" y="166" text-anchor="middle" font-size="10" fill="#64748b" font-family="Arial">Départ</text>
+<!-- Flèche centrale -->
+<line x1="120" y1="100" x2="180" y2="100" stroke="#ef4444" stroke-width="2" marker-end="url(#arr)"/>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><polygon points="0,0 10,5 0,10" fill="#ef4444"/></marker></defs>
+<!-- Position 2: stick figure droite MODIFIÉE selon l'exercice -->
+<!-- ADAPTE les bras/jambes selon le mouvement de: ${exerciseName} -->
+<circle cx="225" cy="60" r="14" fill="none" stroke="#10b981" stroke-width="2.5"/>
+<line x1="225" y1="74" x2="225" y2="118" stroke="#10b981" stroke-width="2.5"/>
+<line x1="225" y1="88" x2="205" y2="75" stroke="#10b981" stroke-width="2.5"/>
+<line x1="225" y1="88" x2="245" y2="75" stroke="#10b981" stroke-width="2.5"/>
+<line x1="225" y1="118" x2="210" y2="148" stroke="#10b981" stroke-width="2.5"/>
+<line x1="225" y1="118" x2="240" y2="148" stroke="#10b981" stroke-width="2.5"/>
+<text x="225" y="166" text-anchor="middle" font-size="10" fill="#64748b" font-family="Arial">Arrivée</text>
+<!-- Muscle ciblé en surbrillance (ellipse) -->
+<text x="150" y="200" text-anchor="middle" font-size="10" fill="#7c3aed" font-family="Arial">Muscle: MUSCLE_PRINCIPAL</text>
+<text x="150" y="218" text-anchor="middle" font-size="9" fill="#94a3b8" font-family="Arial">Adapte les positions 2 à l'exercice réel</text>
+</svg>
+
+Modifie ce SVG: adapte les bras/jambes de la figure droite au mouvement exact de "${exerciseName}", remplace MUSCLE_PRINCIPAL par le vrai muscle ciblé. Réponds avec LE SVG COMPLET uniquement.`;
+
+    const cfg   = _selectProvider('fast');
+    const reply = await _callAI([{ role:'user', content: prompt }], cfg,
+        'Réponds avec uniquement du code SVG valide. Pas de texte, pas de markdown, juste <svg...>...</svg>.',
+        2000);
+
+    if (!reply || reply.startsWith('__ERROR__')) {
+        // Fallback: schéma générique avec texte
+        if (content) content.innerHTML = _exerciseVizFallback(exerciseName);
+        return;
+    }
+
+    // Extraire le SVG de la réponse
+    const svgMatch = reply.match(/<svg[\s\S]*?<\/svg>/i);
+    if (svgMatch) {
+        if (content) {
+            content.innerHTML = '<div style="text-align:center;">' +
+                svgMatch[0] + '</div>';
+        }
+        // Générer aussi des conseils techniques
+        _generateExerciseTips(exerciseName, tips);
+    } else {
+        if (content) content.innerHTML = _exerciseVizFallback(exerciseName);
+    }
+}
+
+function _exerciseVizFallback(name) {
+    // Schéma générique SVG si l'IA ne renvoie pas un SVG valide
+    return '<div style="padding:20px;text-align:center;">' +
+        '<svg viewBox="0 0 280 200" width="280" height="200" xmlns="http://www.w3.org/2000/svg">' +
+        '<text x="140" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--text-primary)" font-family="Arial">' + name + '</text>' +
+        // Stick figure position 1
+        '<circle cx="70" cy="60" r="12" fill="none" stroke="var(--primary)" stroke-width="2"/>' +
+        '<line x1="70" y1="72" x2="70" y2="110" stroke="var(--primary)" stroke-width="2"/>' +
+        '<line x1="70" y1="85" x2="50" y2="100" stroke="var(--primary)" stroke-width="2"/>' +
+        '<line x1="70" y1="85" x2="90" y2="100" stroke="var(--primary)" stroke-width="2"/>' +
+        '<line x1="70" y1="110" x2="55" y2="140" stroke="var(--primary)" stroke-width="2"/>' +
+        '<line x1="70" y1="110" x2="85" y2="140" stroke="var(--primary)" stroke-width="2"/>' +
+        '<text x="70" y="160" text-anchor="middle" font-size="10" fill="var(--text-tertiary)" font-family="Arial">Départ</text>' +
+        // Arrow
+        '<path d="M110 90 L150 90" stroke="#EF4444" stroke-width="2" marker-end="url(#arr)" fill="none"/>' +
+        '<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#EF4444"/></marker></defs>' +
+        // Stick figure position 2
+        '<circle cx="200" cy="60" r="12" fill="none" stroke="var(--success)" stroke-width="2"/>' +
+        '<line x1="200" y1="72" x2="200" y2="110" stroke="var(--success)" stroke-width="2"/>' +
+        '<line x1="200" y1="85" x2="180" y2="75" stroke="var(--success)" stroke-width="2"/>' +
+        '<line x1="200" y1="85" x2="220" y2="75" stroke="var(--success)" stroke-width="2"/>' +
+        '<line x1="200" y1="110" x2="185" y2="140" stroke="var(--success)" stroke-width="2"/>' +
+        '<line x1="200" y1="110" x2="215" y2="140" stroke="var(--success)" stroke-width="2"/>' +
+        '<text x="200" y="160" text-anchor="middle" font-size="10" fill="var(--text-tertiary)" font-family="Arial">Arrivée</text>' +
+        '<text x="140" y="190" text-anchor="middle" font-size="9" fill="var(--text-tertiary)" font-family="Arial">Consultez une vidéo YouTube pour plus de détails</text>' +
+        '</svg></div>';
+}
+
+async function _generateExerciseTips(name, tipsEl) {
+    if (!tipsEl || !_hasAnyKey()) return;
+    tipsEl.style.display = 'block';
+    tipsEl.innerHTML = '<span class="ai-spinner"></span> Chargement des conseils…';
+
+    const cfg   = _selectProvider('fast');
+    const reply = await _callAI([{
+        role: 'user',
+        content: 'Pour l\'exercice "' + name + '", donne en 3 points courts:\n1. Muscles ciblés principaux\n2. Erreurs fréquentes à éviter\n3. Conseil technique clé\nFormat: bullet points courts, max 2 lignes chacun.'
+    }], cfg, 'Tu es coach fitness. Sois concis et précis.', 400);
+
+    if (reply && !reply.startsWith('__ERROR__')) {
+        tipsEl.innerHTML = '<div style="font-weight:800;font-size:11px;text-transform:uppercase;color:var(--primary);margin-bottom:6px;">💡 Conseils techniques</div>' +
+            reply.split('\n').filter(l => l.trim()).map(l =>
+                '<div style="padding:3px 0;border-bottom:1px solid var(--border);">' + l + '</div>'
+            ).join('');
+    } else {
+        tipsEl.style.display = 'none';
+    }
+}
+
+
+
+// Templates SVG pré-construits pour les exercices courants
+function _getExerciseSVGTemplate(name, muscleGroup) {
+    const n = (name||'').toLowerCase();
+
+    // Couleurs par groupe musculaire
+    const colors = {
+        pectoraux: '#3b82f6', dos: '#0891b2', epaules: '#7c3aed',
+        biceps: '#059669', triceps: '#d97706', jambes: '#dc2626',
+        abdominaux: '#0d9488', fessiers: '#be185d', default: '#4f46e5'
+    };
+    const color = colors[muscleGroup] || colors.default;
+
+    // Helpers SVG
+    const hd = (cx,cy) => `<circle cx="${cx}" cy="${cy}" r="13" fill="none" stroke="${color}" stroke-width="2.5"/>`;
+    const ln = (x1,y1,x2,y2,c) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c||color}" stroke-width="2.5" stroke-linecap="round"/>`;
+    const arr = `<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><polygon points="0,0 10,5 0,10" fill="#ef4444"/></marker></defs>`;
+    const arrow = (x1,y1,x2,y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ef4444" stroke-width="2" marker-end="url(#ar)"/>`;
+    const lbl  = (x,y,t,c) => `<text x="${x}" y="${y}" text-anchor="middle" font-size="10" fill="${c||'#64748b'}" font-family="Arial">${t}</text>`;
+    const title= (t) => `<text x="150" y="22" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e293b" font-family="Arial">${t}</text>`;
+    const muscle = (m) => `<text x="150" y="218" text-anchor="middle" font-size="10" fill="${color}" font-weight="bold" font-family="Arial">💪 ${m}</text>`;
+    const bg   = `<rect width="300" height="230" fill="#f8fafc" rx="8"/>`;
+    const svgWrap = (body,name,musc) =>
+        `<svg viewBox="0 0 300 230" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:300px;">` +
+        bg + arr + title(name) + body + muscle(musc) + `</svg>`;
+
+    // Figure debout standard
+    const standPos1 = (cx,cy) => hd(cx,cy) + ln(cx,cy+13,cx,cy+55) + ln(cx,cy+25,cx-18,cy+45) + ln(cx,cy+25,cx+18,cy+45) + ln(cx,cy+55,cx-14,cy+85) + ln(cx,cy+55,cx+14,cy+85);
+    const standPos2 = (cx,cy,armAngle) => hd(cx,cy) + ln(cx,cy+13,cx,cy+55) + ln(cx,cy+25,cx-22,cy+15) + ln(cx,cy+25,cx+22,cy+15) + ln(cx,cy+55,cx-14,cy+85) + ln(cx,cy+55,cx+14,cy+85);
+
+    // Détecter le type d'exercice et retourner le SVG adapté
+    if (n.includes('couché') || n.includes('bench') || n.includes('développé')) {
+        const body =
+            // Barre
+            `<rect x="30" y="55" width="240" height="8" rx="4" fill="#94a3b8"/>` +
+            `<circle cx="35" cy="59" r="14" fill="#64748b"/><circle cx="265" cy="59" r="14" fill="#64748b"/>` +
+            // Figure allongée pos 1
+            `<ellipse cx="150" cy="90" rx="55" ry="12" fill="none" stroke="${color}" stroke-width="2"/>` +
+            `<circle cx="150" cy="74" r="11" fill="none" stroke="${color}" stroke-width="2"/>` +
+            `<line x1="95" y1="90" x2="72" y2="67" stroke="${color}" stroke-width="2.5"/>` +
+            `<line x1="205" y1="90" x2="228" y2="67" stroke="${color}" stroke-width="2.5"/>` +
+            lbl(150,118,'↑ Extension bras','#ef4444') +
+            lbl(150,133,'Position allongée sur banc',null);
+        return svgWrap(body, name, 'Pectoraux · Triceps · Épaules');
+    }
+    if (n.includes('squat') || n.includes('leg press') || n.includes('presse')) {
+        const body =
+            standPos1(80, 40) + lbl(80,145,'Debout',null) +
+            // Squat position
+            hd(220,40) + ln(220,53,220,70) +
+            ln(220,60,202,55) + ln(220,60,238,55) +
+            ln(220,70,205,95) + ln(220,70,235,95) +
+            ln(205,95,200,125) + ln(235,95,240,125) +
+            lbl(220,140,'Flexion',null) +
+            arrow(130,80,170,80);
+        return svgWrap(body, name, 'Quadriceps · Fessiers · Ischio');
+    }
+    if (n.includes('traction') || n.includes('pull') || n.includes('rowing') || n.includes('tirage')) {
+        const body =
+            // Barre haute
+            `<rect x="40" y="35" width="220" height="6" rx="3" fill="#94a3b8"/>` +
+            // Figure suspendue bras tendus
+            hd(150,65) + ln(150,78,150,118) +
+            ln(150,90,130,55) + ln(150,90,170,55) +
+            ln(150,118,136,148) + ln(150,118,164,148) +
+            lbl(150,165,'Bras tendus',null) +
+            // Figure tirée vers le haut
+            arrow(150,100,150,70) +
+            lbl(150,185,'→ Amener la barre à la nuque','#ef4444');
+        return svgWrap(body, name, 'Grand dorsal · Biceps · Rhomboïdes');
+    }
+    if (n.includes('curl') || n.includes('bicep') || n.includes('marteau')) {
+        const body =
+            standPos1(80,40) + lbl(80,145,'Bras tendu',null) +
+            hd(220,40) + ln(220,53,220,95) +
+            ln(220,65,202,60) + ln(220,65,238,45) +
+            ln(220,95,206,125) + ln(220,95,234,125) +
+            lbl(220,140,'Flexion',null) +
+            arrow(130,80,170,80);
+        return svgWrap(body, name, 'Biceps · Avant-bras');
+    }
+    if (n.includes('extension') && (n.includes('tricep') || n.includes('bras'))) {
+        const body =
+            standPos1(80,40) + lbl(80,145,'Bras tendu',null) +
+            hd(220,40) + ln(220,53,220,95) +
+            ln(220,65,238,50) + ln(220,65,202,55) +
+            ln(220,95,206,125) + ln(220,95,234,125) +
+            lbl(220,140,'Extension',null) +
+            arrow(130,80,170,80);
+        return svgWrap(body, name, 'Triceps');
+    }
+    if (n.includes('militaire') || n.includes('épaule') || n.includes('shoulder') || n.includes('ohp')) {
+        const body =
+            standPos1(80,40) + lbl(80,145,'Barre épaules',null) +
+            hd(220,40) + ln(220,53,220,95) +
+            ln(220,65,200,35) + ln(220,65,240,35) +
+            ln(220,95,206,125) + ln(220,95,234,125) +
+            lbl(220,140,'Bras en l\'air',null) +
+            arrow(130,80,170,80);
+        return svgWrap(body, name, 'Épaules · Trapèzes · Triceps');
+    }
+    if (n.includes('gainage') || n.includes('plank') || n.includes('abdo') || n.includes('crunch')) {
+        const body =
+            `<ellipse cx="150" cy="110" rx="70" ry="15" fill="none" stroke="${color}" stroke-width="2"/>` +
+            `<circle cx="82" cy="98" r="12" fill="none" stroke="${color}" stroke-width="2"/>` +
+            `<line x1="94" y1="108" x2="115" y2="100" stroke="${color}" stroke-width="2.5"/>` +
+            `<line x1="220" y1="118" x2="235" y2="108" stroke="${color}" stroke-width="2.5"/>` +
+            `<line x1="235" y1="108" x2="248" y2="125" stroke="${color}" stroke-width="2.5"/>` +
+            lbl(150,145,'Position gainage / plancher',null);
+        return svgWrap(body, name, 'Abdominaux · Core · Lombaires');
+    }
+    // Aucun template → l'IA génère
+    return null;
+}
+
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialiser le système i18n
@@ -35790,6 +36648,25 @@ window.addEventListener('beforeunload', function(e) {
 <!-- ═══════════════════════════════════════════════════════════
      MODULE AUTOGYM — Détection automatique d'exercices
      ═══════════════════════════════════════════════════════════ -->
+<!-- ── Modal visualisation exercice IA ── -->
+<div class="modal" id="exercise-viz-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title" id="exercise-viz-title">Schéma de l'exercice</div>
+            <button class="modal-close" onclick="hideModal('exercise-viz-modal')">×</button>
+        </div>
+        <div class="modal-body" style="padding:16px;">
+            <div id="exercise-viz-content" style="min-height:200px;display:flex;align-items:center;justify-content:center;">
+                <div style="text-align:center;color:var(--text-secondary);">
+                    <span class="ai-spinner"></span>
+                    <div style="margin-top:10px;font-size:12px;">Génération du schéma…</div>
+                </div>
+            </div>
+            <div id="exercise-viz-tips" style="margin-top:12px;font-size:12px;color:var(--text-secondary);line-height:1.7;display:none;"></div>
+        </div>
+    </div>
+</div>
+
 <div class="modal" id="autogym-modal">
     <div class="modal-content" style="max-height:96vh;overflow-y:auto;">
         <div class="modal-header" style="background:linear-gradient(135deg,#0FA86A,#4F6EF7);border-radius:18px 18px 0 0;padding:14px 18px;">
