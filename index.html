@@ -5136,6 +5136,11 @@ input:checked + .slider:before {
         padding: 120px 0 100px;
     }
     
+    /* Calendrier : sticky respecte le header de l'app */
+    .cal-header-bar { top: 68px; }
+    .cal-actions-bar { position:sticky;top:120px;z-index:18; }
+    .cal-week-stats { position:sticky;top:168px;z-index:17; }
+    
     .section-title {
         margin: 0 32px 24px;
         font-size: var(--font-size-3xl);
@@ -12226,6 +12231,106 @@ input:checked + .slider:before {
 .ob-goal-card.active { border-color: var(--primary); background: var(--primary-glow); }
 .ob-goal-card:hover  { border-color: var(--primary); }
 
+/* ══════════════════════════════════════════════════════════
+   SCAN ANIMATION
+   ══════════════════════════════════════════════════════════ */
+@keyframes scanRotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+@keyframes scanDot { 0%,80%,100%{transform:scale(0);opacity:.3} 40%{transform:scale(1);opacity:1} }
+@keyframes scanSweep { 0%{transform:translateY(-100%);opacity:.6} 50%{opacity:1} 100%{transform:translateY(220px);opacity:.6} }
+.scan-sweep-line { position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#4F6EF7,#7C3AED,transparent);animation:scanSweep 1.8s ease-in-out infinite;pointer-events:none; }
+.scan-correction-item { display:grid;grid-template-columns:1fr 70px 36px;gap:6px;align-items:center;padding:10px;background:var(--card-bg-alt);border-radius:12px;border:1px solid var(--border); }
+.scan-corr-input { background:var(--card-bg);border:1.5px solid var(--border);border-radius:8px;padding:6px 8px;font-size:12px;color:var(--text-primary);width:100%;font-family:inherit; }
+.scan-corr-input:focus { outline:none;border-color:var(--primary); }
+
+/* ══════════════════════════════════════════════════════════
+   CALENDRIER / PLANNING — Design premium
+   ══════════════════════════════════════════════════════════ */
+.cal-header-bar {
+    display:flex;align-items:center;gap:8px;
+    padding:12px 14px;background:var(--card-bg);
+    border-bottom:1px solid var(--border);
+    position:sticky;top:64px;z-index:19;
+}
+.cal-week-title { flex:1;text-align:center; }
+.cal-week-title .wt-label { font-size:13px;font-weight:900;color:var(--text-primary);letter-spacing:-.02em; }
+.cal-week-title .wt-range  { font-size:10px;color:var(--text-tertiary);margin-top:1px; }
+.cal-nav-btn { width:34px;height:34px;border-radius:10px;background:var(--card-bg-alt);border:1.5px solid var(--border);color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;flex-shrink:0; }
+.cal-nav-btn:hover { background:var(--primary);border-color:var(--primary);color:white; }
+.cal-today-btn { padding:0 12px;height:34px;border-radius:10px;background:var(--primary);color:white;border:none;font-size:11px;font-weight:800;cursor:pointer;flex-shrink:0; }
+.cal-actions-bar { display:flex;gap:8px;padding:10px 14px;background:var(--card-bg);border-bottom:1px solid var(--border);overflow-x:auto; }
+.cal-actions-bar::-webkit-scrollbar { display:none; }
+.cal-action-btn { flex-shrink:0;display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .15s;border:none; }
+.cal-action-btn.primary { background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;box-shadow:0 3px 10px rgba(79,110,247,.28); }
+.cal-action-btn.secondary { background:var(--card-bg-alt);color:var(--text-primary);border:1.5px solid var(--border); }
+.cal-action-btn.green { background:rgba(15,168,106,.1);color:#0FA86A;border:1px solid rgba(15,168,106,.25); }
+.cal-action-btn.orange { background:rgba(234,88,12,.08);color:#EA580C;border:1px solid rgba(234,88,12,.2); }
+
+/* Grille jours */
+.cal-days-header { display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:10px 10px 4px; }
+.cal-day-head { text-align:center;padding:5px 2px 7px;border-radius:10px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--text-tertiary);transition:all .15s; }
+.cal-day-head.today { background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;box-shadow:0 2px 8px rgba(79,110,247,.35); }
+.cal-day-head .day-num { display:block;font-size:15px;font-weight:900;margin-top:2px;letter-spacing:-.02em; }
+.cal-grid-body { display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:0 10px 16px;align-items:start; }
+.cal-col { display:flex;flex-direction:column;gap:3px;min-height:56px;border-radius:8px;padding:2px; }
+.cal-col.today-col { background:rgba(79,110,247,.04); }
+
+/* Événements */
+.cal-evt { border-radius:7px;padding:4px 5px;font-size:9px;font-weight:700;line-height:1.3;cursor:pointer;transition:transform .1s,box-shadow .12s;position:relative;overflow:hidden;border-left:2.5px solid transparent; }
+.cal-evt:hover { transform:scale(1.05);box-shadow:0 3px 10px rgba(0,0,0,.15); }
+.cal-evt::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent);pointer-events:none; }
+.cal-evt.workout { background:linear-gradient(135deg,rgba(79,110,247,.16),rgba(124,58,237,.08));border-color:#4F6EF7;color:#4F6EF7; }
+.cal-evt.meal    { background:linear-gradient(135deg,rgba(15,168,106,.14),rgba(5,150,105,.07));border-color:#0FA86A;color:#0FA86A; }
+.cal-evt.rest    { background:rgba(100,116,139,.08);border-color:#94A3B8;color:#94A3B8; }
+.cal-evt.real    { opacity:.7; }
+.cal-evt-icon { font-size:8px;margin-right:2px; }
+.cal-evt-sub  { font-size:8px;opacity:.7;margin-top:1px; }
+.cal-add-btn { width:100%;padding:5px 2px;background:none;border:1px dashed rgba(100,116,139,.3);border-radius:6px;font-size:12px;color:var(--text-tertiary);cursor:pointer;transition:all .12s;line-height:1; }
+.cal-add-btn:hover { border-color:var(--primary);color:var(--primary);background:rgba(79,110,247,.05); }
+
+/* Stats semaine */
+.cal-week-stats { display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 14px;background:var(--card-bg);border-bottom:1px solid var(--border); }
+.cal-stat-cell { background:var(--card-bg-alt);border-radius:10px;padding:8px 6px;text-align:center;border:1px solid var(--border); }
+.cal-stat-val { font-size:16px;font-weight:900;color:var(--primary);letter-spacing:-.02em; }
+.cal-stat-lbl { font-size:8px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-top:2px;letter-spacing:.04em; }
+
+/* Légende */
+.cal-legend { display:flex;gap:12px;padding:6px 14px 0;flex-wrap:wrap; }
+.cal-legend-item { display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text-tertiary); }
+.cal-legend-dot { width:10px;height:10px;border-radius:3px; }
+
+@media (max-width:380px) {
+    .cal-days-header,.cal-grid-body { gap:2px;padding:6px 6px; }
+    .cal-evt { font-size:8px;padding:3px 4px; }
+    .cal-day-head .day-num { font-size:13px; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   SILHOUETTE / SUIVI CORPS
+   ══════════════════════════════════════════════════════════ */
+.body-photo-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:8px; }
+.body-photo-card { aspect-ratio:3/4;border-radius:12px;overflow:hidden;position:relative;background:var(--card-bg-alt);border:1.5px solid var(--border);cursor:pointer;transition:transform .12s; }
+.body-photo-card:hover { transform:scale(1.02); }
+.body-photo-card img { width:100%;height:100%;object-fit:cover; }
+.body-photo-card .photo-date { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.75));color:white;font-size:8px;font-weight:700;padding:8px 6px 5px; }
+.body-metric-pill { display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;background:var(--card-bg-alt);border:1px solid var(--border);color:var(--text-secondary); }
+
+/* Onglets résultat IA silhouette */
+.sil-tab-bar { display:flex;gap:3px;background:var(--card-bg-alt);border-radius:13px;padding:4px;margin-bottom:12px;border:1px solid var(--border); }
+.sil-tab { flex:1;padding:7px 4px;border-radius:10px;border:none;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;background:none;color:var(--text-tertiary);font-family:inherit; }
+.sil-tab.active { background:var(--card-bg);color:var(--text-primary);box-shadow:0 2px 6px rgba(0,0,0,.1); }
+.sil-tab-pane { display:none; }
+.sil-tab-pane.active { display:block;animation:fadeIn .2s ease; }
+.sil-metric-card { display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:12px;background:var(--card-bg-alt);border:1px solid var(--border);margin-bottom:8px; }
+.sil-metric-label { font-size:11px;color:var(--text-secondary);font-weight:600; }
+.sil-metric-val   { font-size:16px;font-weight:900;color:var(--primary); }
+.sil-section-head { font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin:10px 0 6px;display:flex;align-items:center;gap:6px; }
+.sil-point { display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:11px;background:var(--card-bg-alt);border:1px solid var(--border);margin-bottom:6px;font-size:12px;color:var(--text-primary);line-height:1.55; }
+.sil-point-icon { flex-shrink:0;margin-top:1px;font-size:13px; }
+.sil-point.plus  { border-color:rgba(15,168,106,.3);background:rgba(15,168,106,.06); }
+.sil-point.minus { border-color:rgba(224,62,62,.25);background:rgba(224,62,62,.05); }
+.sil-point.tip   { border-color:rgba(79,110,247,.25);background:rgba(79,110,247,.05); }
+.sil-disclaimer  { font-size:9px;color:var(--text-tertiary);margin-top:8px;text-align:center;padding:5px 8px;background:var(--card-bg-alt);border-radius:8px;border:1px solid var(--border); }
+
     </style>
 </head>
 <body>
@@ -12244,6 +12349,11 @@ input:checked + .slider:before {
     </div>
     
     <div class="header-actions" style="display:flex;align-items:center;gap:6px;">
+        <!-- Exercices -->
+        <button onclick="showScreen('exercises-screen')" title="Exercices"
+            style="width:34px;height:34px;border-radius:10px;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.25);color:#7C3AED;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;">
+            <i class="fas fa-running"></i>
+        </button>
         <!-- Thème -->
         <button onclick="toggleTheme()" title="Thème"
             style="width:34px;height:34px;border-radius:10px;background:var(--card-bg);border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;">
@@ -13571,6 +13681,76 @@ input:checked + .slider:before {
 
 </div>
 
+
+            <div id="calendar-screen" class="screen" style="padding:0 0 90px;background:var(--bg);">
+
+                <!-- Header navigation -->
+                <div class="cal-header-bar">
+                    <button class="cal-nav-btn" onclick="calMoveWeek(-1)"><i class="fas fa-chevron-left"></i></button>
+                    <div class="cal-week-title">
+                        <div class="wt-label" id="cal-week-label"></div>
+                        <div class="wt-range" id="cal-week-range"></div>
+                    </div>
+                    <button class="cal-nav-btn" onclick="calMoveWeek(1)"><i class="fas fa-chevron-right"></i></button>
+                    <button class="cal-today-btn" onclick="calGoToday()">Auj.</button>
+                </div>
+
+                <!-- Statistiques de la semaine -->
+                <div class="cal-week-stats" id="cal-week-stats">
+                    <div class="cal-stat-cell">
+                        <div class="cal-stat-val" id="cal-stat-workouts">—</div>
+                        <div class="cal-stat-lbl">Séances</div>
+                    </div>
+                    <div class="cal-stat-cell">
+                        <div class="cal-stat-val" id="cal-stat-kcal" style="color:var(--success);">—</div>
+                        <div class="cal-stat-lbl">Kcal moy.</div>
+                    </div>
+                    <div class="cal-stat-cell">
+                        <div class="cal-stat-val" id="cal-stat-meals" style="color:#0FA86A;">—</div>
+                        <div class="cal-stat-lbl">Repas plan.</div>
+                    </div>
+                    <div class="cal-stat-cell">
+                        <div class="cal-stat-val" id="cal-stat-rest" style="color:#94A3B8;">—</div>
+                        <div class="cal-stat-lbl">Repos</div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="cal-actions-bar">
+                    <button class="cal-action-btn primary" onclick="openCalAIGenerate()">
+                        <i class="fas fa-magic"></i> Planifier avec l'IA
+                    </button>
+                    <button class="cal-action-btn secondary" onclick="openCalAddEvent()">
+                        <i class="fas fa-plus"></i> Ajouter
+                    </button>
+                    <button class="cal-action-btn orange" onclick="_calSyncFromHistory()">
+                        <i class="fas fa-sync-alt"></i> Sync historique
+                    </button>
+                    <button class="cal-action-btn green" onclick="openCalSilhouette()">
+                        <i class="fas fa-camera"></i> Silhouette
+                    </button>
+                </div>
+
+                <!-- En-têtes jours -->
+                <div class="cal-days-header" id="cal-week-header"></div>
+
+                <!-- Grille événements -->
+                <div class="cal-grid-body" id="cal-week-grid"></div>
+
+                <!-- Légende -->
+                <div class="cal-legend">
+                    <div class="cal-legend-item">
+                        <div class="cal-legend-dot" style="background:rgba(79,110,247,.18);border-left:2.5px solid #4F6EF7;"></div>Séance planifiée
+                    </div>
+                    <div class="cal-legend-item">
+                        <div class="cal-legend-dot" style="background:rgba(15,168,106,.14);border-left:2.5px solid #0FA86A;"></div>Repas planifié
+                    </div>
+                    <div class="cal-legend-item">
+                        <div class="cal-legend-dot" style="background:rgba(79,110,247,.35);border-left:2.5px solid #4F6EF7;"></div>Fait ✓
+                    </div>
+                </div>
+            </div>
+
             <!-- ÉCRAN D'ENTRAÎNEMENT ACTIF -->
             <div id="active-workout-screen" class="screen">
 
@@ -13674,9 +13854,9 @@ input:checked + .slider:before {
                 <div class="nav-icon"><i class="fas fa-dumbbell"></i></div>
                 <div class="nav-text">Séances</div>
             </div>
-            <div class="nav-item" data-screen="exercises-screen" onclick="showScreen('exercises-screen')">
-                <div class="nav-icon"><i class="fas fa-running"></i></div>
-                <div class="nav-text">Exercices</div>
+            <div class="nav-item" data-screen="calendar-screen" onclick="showScreen('calendar-screen');initCalendarScreen();">
+                <div class="nav-icon"><i class="fas fa-calendar-week"></i></div>
+                <div class="nav-text">Planning</div>
             </div>
             <div class="nav-item" data-screen="nutrition-screen" onclick="showScreen('nutrition-screen')">
                 <div class="nav-icon"><i class="fas fa-apple-alt"></i></div>
@@ -15190,15 +15370,15 @@ input:checked + .slider:before {
      MODAL SCAN ASSIETTE IA
      ═══════════════════════════════════════════════════════════ -->
 <div class="modal" id="ai-scan-modal">
-    <div class="modal-content" style="max-height:92vh;">
-        <div class="modal-header" style="background:linear-gradient(135deg,#4F6EF7,#7C3AED);border-radius:18px 18px 0 0;">
+    <div class="modal-content" style="max-height:94vh;overflow-y:auto;">
+        <div class="modal-header" style="background:linear-gradient(135deg,#4F6EF7,#7C3AED);border-radius:18px 18px 0 0;flex-shrink:0;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;">
                     <i class="fas fa-camera" style="color:white;font-size:14px;"></i>
                 </div>
                 <div>
                     <div class="modal-title" style="color:white;font-size:14px;">Scanner mon assiette</div>
-                    <div style="font-size:10px;color:rgba(255,255,255,.75);">Analyse IA des aliments</div>
+                    <div id="scan-provider-label" style="font-size:10px;color:rgba(255,255,255,.75);">Analyse IA des aliments</div>
                 </div>
             </div>
             <button class="modal-close" onclick="closeScanModal()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
@@ -15206,10 +15386,28 @@ input:checked + .slider:before {
         <div class="modal-body" style="padding:16px;">
 
             <!-- Camera / Preview zone -->
-            <div id="scan-camera-zone" style="position:relative;border-radius:14px;overflow:hidden;background:#000;margin-bottom:12px;min-height:200px;display:flex;align-items:center;justify-content:center;">
+            <div id="scan-camera-zone" style="position:relative;border-radius:14px;overflow:hidden;background:#0a0a18;margin-bottom:12px;min-height:220px;display:flex;align-items:center;justify-content:center;">
                 <video id="scan-video" autoplay playsinline style="width:100%;border-radius:14px;display:none;"></video>
                 <canvas id="scan-canvas" style="display:none;"></canvas>
                 <img id="scan-preview" style="width:100%;border-radius:14px;display:none;object-fit:cover;max-height:260px;" alt="Aperçu">
+                <!-- Animation analyse en cours -->
+                <div id="scan-analyzing-overlay" style="display:none;position:absolute;inset:0;background:rgba(10,10,24,.85);border-radius:14px;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
+                    <div style="position:relative;width:72px;height:72px;">
+                        <svg viewBox="0 0 72 72" width="72" height="72" style="animation:scanRotate 2s linear infinite;">
+                            <circle cx="36" cy="36" r="30" fill="none" stroke="rgba(79,110,247,.2)" stroke-width="4"/>
+                            <circle cx="36" cy="36" r="30" fill="none" stroke="#4F6EF7" stroke-width="4" stroke-dasharray="60 130" stroke-linecap="round"/>
+                        </svg>
+                        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-utensils" style="color:#4F6EF7;font-size:22px;"></i>
+                        </div>
+                    </div>
+                    <div id="scan-anim-text" style="color:white;font-size:12px;font-weight:700;text-align:center;padding:0 16px;"></div>
+                    <div style="display:flex;gap:5px;" id="scan-anim-dots">
+                        <div style="width:6px;height:6px;border-radius:50%;background:#4F6EF7;animation:scanDot 1.2s ease-in-out infinite;"></div>
+                        <div style="width:6px;height:6px;border-radius:50%;background:#7C3AED;animation:scanDot 1.2s ease-in-out .2s infinite;"></div>
+                        <div style="width:6px;height:6px;border-radius:50%;background:#4F6EF7;animation:scanDot 1.2s ease-in-out .4s infinite;"></div>
+                    </div>
+                </div>
                 <div id="scan-placeholder" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:32px;color:rgba(255,255,255,.6);">
                     <i class="fas fa-camera" style="font-size:40px;opacity:.5;"></i>
                     <span style="font-size:13px;font-weight:500;text-align:center;">Prenez en photo votre assiette<br>ou importez une image</span>
@@ -15235,9 +15433,12 @@ input:checked + .slider:before {
             <!-- Status -->
             <div id="scan-status" style="display:none;font-size:12px;font-weight:600;padding:10px;border-radius:10px;text-align:center;margin-bottom:10px;"></div>
 
-            <!-- Results -->
+            <!-- Results (lecture seule — avant correction) -->
             <div id="scan-results" style="display:none;">
-                <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:8px;">Aliments détectés</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);">Aliments détectés</div>
+                    <div style="font-size:10px;color:var(--text-tertiary);font-style:italic;" id="scan-confidence-label"></div>
+                </div>
                 <div id="scan-items-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;"></div>
                 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px;">
                     <div style="background:var(--card-bg-alt);border-radius:10px;padding:8px;text-align:center;border:1px solid var(--border);">
@@ -15257,14 +15458,52 @@ input:checked + .slider:before {
                         <div style="font-size:8px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-top:2px;">lip.</div>
                     </div>
                 </div>
-                <div style="display:flex;gap:8px;">
-                    <input id="scan-meal-name" type="text" class="number-input" placeholder="Nom du repas…" style="flex:1;font-size:13px;">
-                    <button onclick="saveScanMeal()" style="padding:10px 16px;background:var(--success);color:white;border:none;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;">
+                <!-- Nom + actions -->
+                <div style="margin-bottom:10px;">
+                    <input id="scan-meal-name" type="text" class="number-input" placeholder="Nom du repas…" style="width:100%;font-size:13px;margin-bottom:8px;">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <button onclick="openScanCorrection()" style="padding:11px;background:var(--card-bg-alt);color:var(--primary);border:1.5px solid var(--primary);border-radius:12px;font-size:12px;font-weight:800;cursor:pointer;">
+                        <i class="fas fa-edit"></i> Corriger
+                    </button>
+                    <button onclick="saveScanMeal()" style="padding:11px;background:var(--success);color:white;border:none;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer;">
                         <i class="fas fa-plus"></i> Ajouter
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
 
+<!-- ═══ MODAL CORRECTION SCAN ═══ -->
+<div class="modal" id="scan-correction-modal">
+    <div class="modal-content" style="max-height:92vh;overflow-y:auto;">
+        <div class="modal-header" style="background:linear-gradient(135deg,#0FA86A,#059669);border-radius:18px 18px 0 0;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;">
+                    <i class="fas fa-edit" style="color:white;font-size:14px;"></i>
+                </div>
+                <div>
+                    <div class="modal-title" style="color:white;font-size:14px;">Corriger l'analyse</div>
+                    <div style="font-size:10px;color:rgba(255,255,255,.75);">Modifiez les aliments, quantités, ajoutez des éléments manquants</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="hideModal('scan-correction-modal')" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+        </div>
+        <div class="modal-body" style="padding:16px;">
+            <div id="scan-correction-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
+            <button onclick="addScanCorrectionItem()" style="width:100%;padding:10px;background:var(--card-bg-alt);color:var(--primary);border:1.5px dashed var(--primary);border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:14px;">
+                <i class="fas fa-plus"></i> Ajouter un aliment manquant
+            </button>
+            <div id="scan-correction-status" style="display:none;font-size:12px;font-weight:600;padding:10px;border-radius:10px;text-align:center;margin-bottom:10px;"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <button onclick="hideModal('scan-correction-modal')" style="padding:11px;background:var(--card-bg-alt);color:var(--text-secondary);border:1.5px solid var(--border);border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;">
+                    Annuler
+                </button>
+                <button onclick="reanalyzeScanWithCorrections()" style="padding:11px;background:linear-gradient(135deg,#0FA86A,#059669);color:white;border:none;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer;">
+                    <i class="fas fa-sync-alt"></i> Ré-analyser avec l'IA
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -16555,6 +16794,12 @@ function hideModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.remove('active');
+        
+        // Réinitialiser le contexte du modal de sélection d'exercice
+        if (modalId === 'select-exercise-modal') {
+            modal.dataset.context = 'create';
+            modal.dataset.source  = '';
+        }
         
         // Retirer les classes d'animation spécifiques
         modal.classList.remove('nutrition-return-transition');
@@ -18728,8 +18973,11 @@ function showExerciseSelectionForCreate() {
         };
     }
     
-    modal.dataset.context = 'create';
-    modal.dataset.source = 'workout-creation';
+    // Ne pas écraser un contexte déjà positionné (ex: active-workout)
+    if (!modal.dataset.context || modal.dataset.context === 'create') {
+        modal.dataset.context = 'create';
+        modal.dataset.source  = 'workout-creation';
+    }
     
     setTimeout(() => {
         loadExerciseSelection('all');
@@ -20563,8 +20811,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
                               height: 36px;" inputmode="decimal" 
                        value="${value1}" 
                        oninput="updateSet(${exerciseIndex}, ${setIndex}, '${isCardio ? 'distance' : 'reps'}', this.value)" 
-                       onclick="this.select()"
-                       ${set.completed ? 'disabled' : ''}>
+                       onclick="this.select()">
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 3px;">
@@ -20584,8 +20831,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
                               height: 36px;" inputmode="decimal" 
                        value="${value2}" 
                        oninput="updateSet(${exerciseIndex}, ${setIndex}, '${isCardio ? 'time' : 'weight'}', this.value)"
-                       onclick="this.select()" 
-                       ${set.completed ? 'disabled' : ''}>
+                       onclick="this.select()">
             </div>
             
             <div style="display: flex; gap: 5px; align-items: center; min-width: 100px;">
@@ -20595,11 +20841,11 @@ function createSetElement(exerciseIndex, setIndex, set) {
                                 border: 1px solid ${set.completed ? 'rgba(255,255,255,0.3)' : 'var(--border)'}; 
                                 color: ${set.completed ? 'white' : 'var(--text-secondary)'}; 
                                 width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: var(--font-size-sm);" 
-                         onclick="completeSet(${exerciseIndex}, ${setIndex})" ${set.completed ? 'disabled style="opacity:0.5"' : ''}>
+                         onclick="completeSet(${exerciseIndex}, ${setIndex})">
                             <i class="fas fa-running"></i>
                         </button>` : 
                         `<button style="background: var(--warning); color: white; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: var(--font-size-sm);" 
-                         onclick="showSupersetButtonWarning()" ${set.completed ? 'disabled style="opacity:0.5"' : ''}>
+                         onclick="showSupersetButtonWarning()">
                             <i class="fas fa-exclamation-triangle"></i>
                         </button>`
                 ) : (
@@ -20607,7 +20853,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
                             border: 1px solid ${set.completed ? 'rgba(255,255,255,0.3)' : 'var(--border)'}; 
                             color: ${set.completed ? 'white' : 'var(--text-secondary)'}; 
                             width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: var(--font-size-sm);" 
-                     onclick="completeSet(${exerciseIndex}, ${setIndex})" ${set.completed ? 'disabled style="opacity:0.5"' : ''}>
+                     onclick="completeSet(${exerciseIndex}, ${setIndex})">
                         <i class="fas fa-check"></i>
                     </button>`
                 )}
@@ -20723,7 +20969,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
         <div class="set-header">
             <div class="set-number">Série ${set.number}</div>
             <div class="set-controls">
-                <button class="action-btn" onclick="completeSet(${exerciseIndex}, ${setIndex})" ${set.completed ? 'disabled' : ''}>
+                <button class="action-btn" onclick="completeSet(${exerciseIndex}, ${setIndex})">
                     <i class="fas fa-check"></i> Terminer
                 </button>
                 <div class="checkbox ${set.completed ? 'checked' : ''}" onclick="toggleSetCompletion(${exerciseIndex}, ${setIndex})">
@@ -20739,8 +20985,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
                 </div>
                 <input type="text" class="number-input" value="${value1}" 
                        oninput="updateSet(${exerciseIndex}, ${setIndex}, '${isCardio ? 'distance' : 'reps'}', this.value)" 
-                       onclick="this.select()"
-                       ${set.completed ? 'disabled' : ''}>
+                       onclick="this.select()">
             </div>
             
             <div class="input-group">
@@ -20749,8 +20994,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
                 </div>
                 <input type="number" inputmode="decimal" class="number-input" value="${value2}" 
                        oninput="updateSet(${exerciseIndex}, ${setIndex}, '${isCardio ? 'time' : 'weight'}', this.value)" 
-                       onclick="this.select()"
-                       ${set.completed ? 'disabled' : ''}>
+                       onclick="this.select()">
             </div>
         </div>
         
@@ -20762,8 +21006,8 @@ function createSetElement(exerciseIndex, setIndex, set) {
                     ${set.completed ? '<i class="fas fa-check-circle"></i> Terminée' : '<i class="far fa-clock"></i> En attente'}
                 </span>
             </div>
-            <button class="set-complete-btn ${set.completed ? 'completed' : ''}" onclick="completeSet(${exerciseIndex}, ${setIndex})" ${set.completed ? 'disabled' : ''}>
-                <i class="fas fa-${set.completed ? 'check' : 'play'}"></i> ${set.completed ? 'Terminée' : 'Marquer comme terminée'}
+            <button class="set-complete-btn ${set.completed ? 'completed' : ''}" onclick="completeSet(${exerciseIndex}, ${setIndex})">
+                <i class="fas fa-${set.completed ? 'undo' : 'play'}"></i> ${set.completed ? 'Décocher' : 'Marquer comme terminée'}
             </button>
         </div>
         
@@ -20843,13 +21087,18 @@ function completeSet(exerciseIndex, setIndex) {
     const exercise = activeWorkout.exercises[exerciseIndex];
     const set = exercise.sets[setIndex];
     
-    // RÉPARATION: S'assurer que les valeurs sont définies avant de compléter
-    if (set.reps === undefined) {
-        set.reps = userProfile.defaultReps;
+    // Si déjà cochée → décocher (toujours permis, même en superset)
+    if (set.completed) {
+        set.completed = false;
+        activeWorkout.completedSets = Math.max(0, (activeWorkout.completedSets || 0) - 1);
+        recalculateTotalWeight();
+        updateSetDisplay(exerciseIndex, setIndex);
+        return;
     }
-    if (set.weight === undefined) {
-        set.weight = userProfile.defaultWeight;
-    }
+    
+    // S'assurer que les valeurs sont définies avant de compléter
+    if (set.reps === undefined) set.reps = userProfile.defaultReps;
+    if (set.weight === undefined) set.weight = userProfile.defaultWeight;
     
     // Vérifier si on est dans un superset
     if (exercise.supersetId) {
@@ -20966,14 +21215,18 @@ function toggleSetCompletion(exerciseIndex, setIndex) {
     
     // Vérifier si on est dans un superset
     if (exercise.supersetId) {
-        // SUPERSET : ne permettre que de cocher (pas de décocher)
+        // SUPERSET : toggle autorisé dans les deux sens
         if (set.completed) {
-            showNotification('Dans un superset, une série cochée ne peut pas être décochée', 'warning');
+            // Décocher
+            set.completed = false;
+            activeWorkout.completedSets = Math.max(0, (activeWorkout.completedSets || 0) - 1);
+            recalculateTotalWeight();
+            updateSetDisplay(exerciseIndex, setIndex);
             return;
         }
         
         set.completed = true;
-        activeWorkout.completedSets++;
+        activeWorkout.completedSets = (activeWorkout.completedSets || 0) + 1;
         
         recalculateTotalWeight();
         updateSetDisplay(exerciseIndex, setIndex);
@@ -31101,53 +31354,94 @@ Valeurs réalistes pour ${qty}g.`;
 }
 
 // ════════════════════════════════════════════════════════════════
-// 2. SCAN ASSIETTE IA — Analyse photo → repas complet
+// 2. SCAN ASSIETTE IA — v2 : animation + correction + historique
 // ════════════════════════════════════════════════════════════════
 
-let _scanStream = null;
-let _scanImageBase64 = null;
-let _scanParsedMeal  = null;
+let _scanStream       = null;
+let _scanImageBase64  = null;
+let _scanParsedMeal   = null;
+let _scanEditingIdx   = null;  // index de l'événement calendrier en édition
+let _scanHistory      = JSON.parse(localStorage.getItem('ironplate_scan_history') || '[]');
+
+// ── Textes animation ─────────────────────────────────────────────
+const _SCAN_ANIM_TEXTS = [
+    'Détection des aliments…',
+    'Estimation des portions…',
+    'Calcul des macros…',
+    'Comparaison avec l\'historique…',
+    'Finalisation de l\'analyse…'
+];
+let _scanAnimInterval = null;
+
+function _startScanAnimation() {
+    const overlay = document.getElementById('scan-analyzing-overlay');
+    const textEl  = document.getElementById('scan-anim-text');
+    if (!overlay || !textEl) return;
+    let idx = 0;
+    textEl.textContent = _SCAN_ANIM_TEXTS[0];
+    overlay.style.display = 'flex';
+    // Ligne de balayage
+    const zone = document.getElementById('scan-camera-zone');
+    if (zone && !zone.querySelector('.scan-sweep-line')) {
+        const line = document.createElement('div');
+        line.className = 'scan-sweep-line';
+        zone.appendChild(line);
+    }
+    _scanAnimInterval = setInterval(() => {
+        idx = (idx + 1) % _SCAN_ANIM_TEXTS.length;
+        textEl.textContent = _SCAN_ANIM_TEXTS[idx];
+    }, 1400);
+}
+
+function _stopScanAnimation() {
+    clearInterval(_scanAnimInterval);
+    _scanAnimInterval = null;
+    const overlay = document.getElementById('scan-analyzing-overlay');
+    if (overlay) overlay.style.display = 'none';
+    const line = document.getElementById('scan-camera-zone')?.querySelector('.scan-sweep-line');
+    if (line) line.remove();
+}
 
 function initScanModal() {
-    document.getElementById('scan-camera-zone') && (_scanImageBase64 = null);
-    const video   = document.getElementById('scan-video');
+    _scanImageBase64 = null;
+    _scanParsedMeal  = null;
     const preview = document.getElementById('scan-preview');
     const ph      = document.getElementById('scan-placeholder');
     const capBtn  = document.getElementById('scan-capture-btn');
     const results = document.getElementById('scan-results');
     const status  = document.getElementById('scan-status');
-    if (video)   { video.style.display = 'none'; }
-    if (preview) { preview.style.display = 'none'; }
-    if (ph)      { ph.style.display = 'flex'; }
-    if (capBtn)  { capBtn.style.display = 'none'; }
-    if (results) { results.style.display = 'none'; }
-    if (status)  { status.style.display = 'none'; }
+    if (preview) { preview.style.display = 'none'; preview.src = ''; }
+    if (ph)      ph.style.display = 'flex';
+    if (capBtn)  capBtn.style.display = 'none';
+    if (results) results.style.display = 'none';
+    if (status)  status.style.display = 'none';
+    _stopScanAnimation();
 }
 
 function closeScanModal() {
-    if (_scanStream) { _scanStream.getTracks().forEach(t => t.stop()); _scanStream = null; }
     hideModal('ai-scan-modal');
+    if (_scanStream) { _scanStream.getTracks().forEach(t => t.stop()); _scanStream = null; }
+    _stopScanAnimation();
 }
 
 async function startScanCamera() {
-    const video = document.getElementById('scan-video');
-    const ph    = document.getElementById('scan-placeholder');
-    const capBtn= document.getElementById('scan-capture-btn');
+    const video  = document.getElementById('scan-video');
+    const ph     = document.getElementById('scan-placeholder');
+    const capBtn = document.getElementById('scan-capture-btn');
     if (!video) return;
     try {
-        if (_scanStream) { _scanStream.getTracks().forEach(t => t.stop()); }
+        if (_scanStream) _scanStream.getTracks().forEach(t => t.stop());
         _scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
         video.srcObject = _scanStream;
         video.style.display = 'block';
         if (ph) ph.style.display = 'none';
-        const preview = document.getElementById('scan-preview');
-        if (preview) preview.style.display = 'none';
-        if (capBtn) capBtn.style.display = 'block';
-        capBtn.textContent = '';
-        capBtn.innerHTML = '<i class="fas fa-camera"></i> Prendre la photo';
-        capBtn.onclick = () => { takePhoto(); };
+        if (capBtn) {
+            capBtn.style.display = 'block';
+            capBtn.innerHTML = '<i class="fas fa-camera"></i> Prendre la photo';
+            capBtn.onclick = () => { takePhoto(); };
+        }
     } catch(e) {
-        showNotification('Caméra non disponible : ' + e.message, 'error');
+        showNotification('Accès caméra refusé — utilisez la galerie', 'error');
     }
 }
 
@@ -31172,10 +31466,10 @@ function loadScanImage(event) {
 }
 
 function takePhoto() {
-    const video  = document.getElementById('scan-video');
-    const canvas = document.getElementById('scan-canvas');
-    const preview= document.getElementById('scan-preview');
-    const capBtn = document.getElementById('scan-capture-btn');
+    const video   = document.getElementById('scan-video');
+    const canvas  = document.getElementById('scan-canvas');
+    const preview = document.getElementById('scan-preview');
+    const capBtn  = document.getElementById('scan-capture-btn');
     if (!video || !canvas) return;
     canvas.width  = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -31188,14 +31482,29 @@ function takePhoto() {
     if (capBtn) { capBtn.innerHTML = '<i class="fas fa-search"></i> Analyser avec l\'IA'; capBtn.onclick = captureAndAnalyze; }
 }
 
-async function captureAndAnalyze() {
+// ── Prompt amélioré avec historique ─────────────────────────────
+function _buildScanPrompt(corrections) {
+    let histCtx = '';
+    if (_scanHistory.length > 0) {
+        const recent = _scanHistory.slice(-5).map(s => s.meal_name + ': ' + (s.items||[]).map(i => i.name).join(', ')).join(' | ');
+        histCtx = `\n\nHistorique récent de l'utilisateur : ${recent}. Utilise cet historique pour mieux identifier les aliments typiques de ses habitudes.`;
+    }
+    let corrCtx = '';
+    if (corrections && corrections.length) {
+        corrCtx = `\n\nL'utilisateur a apporté ces corrections à la première analyse : ${corrections.map(c => `${c.name} (${c.quantity_g}g)`).join(', ')}. Recalcule précisément les nutriments pour CES aliments et conserve le reste.`;
+    }
+    return `Identifie TOUS les aliments visibles dans cette assiette avec les quantités précises.${histCtx}${corrCtx}
+Réponds UNIQUEMENT en JSON valide : {"meal_name":"Déjeuner","confidence":"high|medium|low","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}
+IMPORTANT: noms d'aliments TOUJOURS en français. Sois précis sur les quantités visuelles.`;
+}
+
+async function captureAndAnalyze(corrections) {
     const status  = document.getElementById('scan-status');
     const results = document.getElementById('scan-results');
     const capBtn  = document.getElementById('scan-capture-btn');
 
     if (!_hasAnyKey()) { showNotification('Configurez l\'IA dans les paramètres', 'error'); return; }
 
-    // Si pas d'image et caméra active → prendre la photo d'abord
     if (!_scanImageBase64) {
         const video = document.getElementById('scan-video');
         if (video && video.style.display !== 'none' && _scanStream) {
@@ -31207,45 +31516,33 @@ async function captureAndAnalyze() {
         }
     }
 
-    if (capBtn) { capBtn.disabled = true; capBtn.innerHTML = '<span class="ai-spinner"></span> Analyse IA…'; }
-    if (status) { status.style.display = 'block'; status.style.background = 'var(--primary-glow)'; status.style.color = 'var(--primary)'; status.textContent = 'Analyse en cours…'; }
+    if (capBtn) { capBtn.disabled = true; capBtn.innerHTML = '<span class="ai-spinner"></span> Analyse…'; }
+    if (status) { status.style.display = 'block'; status.style.background = 'var(--primary-glow)'; status.style.color = 'var(--primary)'; status.textContent = 'Préparation de l\'analyse…'; }
     if (results) results.style.display = 'none';
+    _startScanAnimation();
 
-    // ── Construire la file vision-aware ──────────────────────────────────
-    // Ordre fixe : providers avec vraie vision en premier (forcés sur leur modèle vision)
-    // Groq en dernier (texte seulement = estimation fictive)
+    const prompt = _buildScanPrompt(corrections);
+
+    // ── File vision-aware ────────────────────────────────────────
     const _buildProviderQueue = () => {
         const queue = [];
-
-        // Providers avec vraie capacité vision — forcer le bon modèle vision
         const VISION_CAPABLE = ['claude', 'gemini', 'mistral', 'openrouter'];
-
         for (const p of VISION_CAPABLE) {
             const key = _aiKeys[p];
             if (!key?.apiKey) continue;
             const pDef = AI_PROVIDERS[p];
-            // Forcer le modèle vision du provider (pas le modèle texte choisi par l'utilisateur)
             let visionModel = key.model;
             if (pDef?.visionModels?.length) {
-                // Si le modèle actuel n'est pas vision-capable, forcer le premier vision
-                if (!pDef.visionModels.includes(visionModel)) {
-                    visionModel = pDef.visionModels[0];
-                }
+                if (!pDef.visionModels.includes(visionModel)) visionModel = pDef.visionModels[0];
             } else if (p === 'openrouter') {
                 visionModel = _orBestVisionModel || pDef?.visionModels?.[0] || key.model;
             }
             queue.push({ provider: p, apiKey: key.apiKey, model: visionModel });
         }
-
-        // Groq en dernier (texte seulement — estimation sans vraie analyse photo)
-        if (_aiKeys.grok?.apiKey) {
-            queue.push({ provider: 'grok', apiKey: _aiKeys.grok.apiKey, model: _aiKeys.grok.model || AI_PROVIDERS.grok?.defaultModel });
-        }
-
+        if (_aiKeys.grok?.apiKey) queue.push({ provider: 'grok', apiKey: _aiKeys.grok.apiKey, model: _aiKeys.grok.model || AI_PROVIDERS.grok?.defaultModel });
         return queue;
     };
 
-    // ── Tentative vision pour un provider donné ───────────────────────────
     const _tryVisionProvider = async (cfg) => {
         const p = cfg.provider;
         const pName = AI_PROVIDERS[p]?.name || p;
@@ -31254,129 +31551,82 @@ async function captureAndAnalyze() {
         if (p === 'claude' && _scanImageBase64) {
             const messages = [{ role: 'user', content: [
                 { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: _scanImageBase64 } },
-                { type: 'text', text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}. IMPORTANT: tous les noms d\'aliments DOIVENT être en français.' }
+                { type: 'text', text: prompt }
             ]}];
-            return await _callAI(messages, cfg, 'Tu es nutritionniste français. Réponds UNIQUEMENT avec du JSON valide. Les noms d\'aliments sont TOUJOURS en français.');
+            return await _callAI(messages, cfg, 'Tu es nutritionniste expert. Réponds UNIQUEMENT avec du JSON valide. Noms en français.');
         }
-
         if (p === 'mistral' && _scanImageBase64) {
-            // Mistral Pixtral — essaie tous les modèles vision disponibles
-            const visionModels = AI_PROVIDERS.mistral.visionModels || ['pixtral-large-latest', 'pixtral-12b-latest'];
-            // cfg.model est déjà forcé sur le modèle vision par _buildProviderQueue
-            const startModel = visionModels.includes(cfg.model) ? cfg.model : visionModels[0];
-            const modelsToTry = [startModel, ...visionModels.filter(m => m !== startModel)];
-            for (const model of modelsToTry) {
-                if (status) status.textContent = `Analyse avec Mistral ${model.replace('-latest','')}…`;
+            const visionModels = AI_PROVIDERS.mistral.visionModels || ['pixtral-large-latest'];
+            for (const model of visionModels) {
                 try {
                     const body = { model, max_tokens: 1024, messages: [{ role: 'user', content: [
                         { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${_scanImageBase64}` } },
-                        { type: 'text', text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}. Noms en français.' }
+                        { type: 'text', text: prompt }
                     ]}]};
-                    const resp = await fetch('https://api.mistral.ai/v1/chat/completions', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.apiKey}` },
-                        body: JSON.stringify(body)
-                    });
+                    const resp = await fetch('https://api.mistral.ai/v1/chat/completions', { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${cfg.apiKey}`}, body:JSON.stringify(body) });
                     const data = await resp.json();
-                    if (resp.ok && data.choices?.[0]?.message?.content) {
-                        if (status) status.textContent = `Mistral ${model.replace('-latest','')} ✓`;
-                        return data.choices[0].message.content;
-                    }
-                    const errMsg = data.error?.message || '';
-                    if (resp.status === 429 || errMsg.includes('quota') || errMsg.includes('rate')) {
-                        if (status) status.textContent = `Mistral ${model.replace('-latest','')} quota — essai modèle suivant…`;
-                        continue;
-                    }
-                    console.warn(`[Mistral scan] ${model} error ${resp.status}: ${errMsg.slice(0,80)}`);
+                    if (resp.ok && data.choices?.[0]?.message?.content) return data.choices[0].message.content;
+                    if (resp.status === 429) continue;
+                    console.warn(`[Mistral scan] ${model} ${resp.status}`);
                     continue;
-                } catch(e) { console.warn('[Mistral scan]', e.message); continue; }
+                } catch(e) { continue; }
             }
             return '__ERROR__Mistral Pixtral indisponible';
         }
-
         if (p === 'openrouter' && _scanImageBase64) {
             const visionModels = AI_PROVIDERS.openrouter.visionModels || AI_PROVIDERS.openrouter.models;
-            const startModel = cfg.model || visionModels[0];
-            const modelsToTry = [startModel, ...visionModels.filter(m => m !== startModel)];
-            for (const model of modelsToTry) {
-                if (status) status.textContent = `OpenRouter — ${model.split('/').pop().replace(':free','')}…`;
+            for (const model of [cfg.model, ...visionModels.filter(m=>m!==cfg.model)]) {
                 try {
-                    const body = { model, max_tokens: 1024, messages: [{ role: 'user', content: [
-                        { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${_scanImageBase64}` } },
-                        { type: 'text', text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}. IMPORTANT: noms d\'aliments en français uniquement.' }
+                    const body = { model, max_tokens:1024, messages:[{role:'user',content:[
+                        {type:'image_url',image_url:{url:`data:image/jpeg;base64,${_scanImageBase64}`}},
+                        {type:'text',text:prompt}
                     ]}]};
-                    const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.apiKey}`, 'HTTP-Referer': 'https://ironplate.app', 'X-Title': 'IronPlate' },
-                        body: JSON.stringify(body)
-                    });
+                    const resp = await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${cfg.apiKey}`,'HTTP-Referer':'https://ironplate.app','X-Title':'IronPlate'},body:JSON.stringify(body)});
                     const data = await resp.json();
                     if (resp.ok && data.choices?.[0]?.message?.content) return data.choices[0].message.content;
-                    const errMsg = data.error?.message || '';
-                    // 404 = modèle retiré, 429 = quota → dans les deux cas essayer le suivant
-                    console.warn(`[OR scan] ${model} ${resp.status} — essai suivant`);
                     continue;
-                } catch(e) { console.warn('[OR scan]', e.message); continue; }
+                } catch(e) { continue; }
             }
-            return '__ERROR__Aucun modèle OpenRouter vision disponible (quota ou modèles retirés)';
+            return '__ERROR__OpenRouter vision indisponible';
         }
-
         if (p === 'gemini' && _scanImageBase64) {
             const visionModels = AI_PROVIDERS.gemini.visionModels || AI_PROVIDERS.gemini.models;
-            const startModel = cfg.model || visionModels[0];
-            const modelsToTry = [startModel, ...visionModels.filter(m => m !== startModel)];
-            for (const model of modelsToTry) {
-                if (status) status.textContent = `Gemini ${model.replace('gemini-','')}…`;
+            for (const model of [cfg.model, ...visionModels.filter(m=>m!==cfg.model)]) {
                 try {
                     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cfg.apiKey}`;
-                    const body = { contents: [{ parts: [
-                        { inline_data: { mime_type: 'image/jpeg', data: _scanImageBase64 } },
-                        { text: 'Identifie tous les aliments dans cette assiette. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}. IMPORTANT: noms en français uniquement.' }
+                    const body = { contents:[{parts:[
+                        {inline_data:{mime_type:'image/jpeg',data:_scanImageBase64}},
+                        {text:prompt}
                     ]}]};
-                    const resp = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+                    const resp = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
                     const data = await resp.json();
-                    if (resp.ok) return data.candidates?.[0]?.content?.parts?.[0]?.text || '__ERROR__Réponse vide';
-                    const errMsg = data.error?.message || '';
-                    if (errMsg.includes('quota') || errMsg.includes('RESOURCE_EXHAUSTED') || resp.status === 429) { console.warn(`[Gemini scan] ${model} quota`); continue; }
-                    return '__ERROR__' + _geminiErrorMsg(resp.status, data);
-                } catch(e) { console.warn('[Gemini scan]', e.message); continue; }
+                    if (resp.ok) return data.candidates?.[0]?.content?.parts?.[0]?.text||'__ERROR__Réponse vide';
+                    if (resp.status===429||data.error?.message?.includes('quota')) continue;
+                    return '__ERROR__'+_geminiErrorMsg(resp.status, data);
+                } catch(e) { continue; }
             }
-            return '__ERROR__Quota dépassé sur tous les modèles Gemini';
+            return '__ERROR__Quota Gemini dépassé';
         }
-
-        // Groq / texte uniquement — AUCUNE vraie vision, repas INVENTÉ
-        if (status) {
-            status.style.background = 'rgba(224,123,26,.08)';
-            status.style.color = 'var(--warning)';
-            status.textContent = '⚠️ Aucun provider vision disponible — repas estimé (non analysé)';
-        }
-        const prompt = 'Génère un repas équilibré FICTIF typique avec 3-5 aliments d\'un déjeuner français standard. Réponds UNIQUEMENT en JSON : {"meal_name":"Déjeuner estimé","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"},{"name":"Riz basmati","quantity_g":150,"calories":174,"protein":3.6,"carbs":38,"fat":0.3,"category":"cereale"},{"name":"Haricots verts","quantity_g":100,"calories":35,"protein":1.8,"carbs":7,"fat":0.1,"category":"legume"}]}';
-        const r = await _callAI([{role:'user', content: prompt}], cfg, 'Tu es nutritionniste. Réponds UNIQUEMENT avec du JSON valide. Noms en français.');
+        // Groq fallback texte
+        if (status) { status.style.background='rgba(224,123,26,.08)';status.style.color='var(--warning)';status.textContent='⚠️ Pas de provider vision — repas estimé'; }
+        const r = await _callAI([{role:'user',content:'Génère un repas équilibré typique français 3-5 aliments. JSON : {"meal_name":"Déjeuner","confidence":"low","items":[{"name":"Poulet grillé","quantity_g":150,"calories":248,"protein":46,"carbs":0,"fat":5,"category":"viande"}]}'}], cfg, 'Nutritionniste. JSON uniquement. Noms français.');
         return r;
     };
 
-    // ── Boucle fallback sur tous les providers ────────────────────────────
     const queue = _buildProviderQueue();
     let reply = null;
     let usedProvider = null;
-
     for (const cfg of queue) {
         const r = await _tryVisionProvider(cfg);
-        if (r && !r.startsWith('__ERROR__')) {
-            reply = r;
-            usedProvider = cfg.provider;
-            break;
-        }
-        console.warn(`[Scan] Provider ${cfg.provider} failed:`, r);
-        if (status) status.textContent = `${AI_PROVIDERS[cfg.provider]?.name || cfg.provider} indisponible — essai suivant…`;
+        if (r && !r.startsWith('__ERROR__')) { reply = r; usedProvider = cfg.provider; break; }
+        if (status) status.textContent = `${AI_PROVIDERS[cfg.provider]?.name||cfg.provider} indisponible…`;
     }
 
-    if (!reply) reply = '__ERROR__Aucun provider disponible. Vérifiez vos clés API.';
-
+    _stopScanAnimation();
     if (capBtn) { capBtn.disabled = false; capBtn.innerHTML = '<i class="fas fa-redo"></i> Ré-analyser'; capBtn.onclick = captureAndAnalyze; }
 
     if (!reply || reply.startsWith('__ERROR__')) {
-        if (status) { status.style.background = 'rgba(224,62,62,.08)'; status.style.color = 'var(--danger)'; status.textContent = '❌ ' + (reply||'').replace('__ERROR__',''); }
+        if (status) { status.style.background='rgba(224,62,62,.08)';status.style.color='var(--danger)';status.textContent='❌ '+(reply||'Erreur').replace('__ERROR__',''); }
         return;
     }
 
@@ -31386,27 +31636,51 @@ async function captureAndAnalyze() {
         meal = JSON.parse(clean);
     } catch(e) {
         const m = reply.match(/\{[\s\S]*\}/);
-        try { meal = m ? JSON.parse(m[0]) : null; } catch(e2) { meal = null; }
+        try { meal = m ? JSON.parse(m[0]) : null; } catch { meal = null; }
     }
 
     if (!meal || !meal.items?.length) {
-        if (status) { status.style.background = 'rgba(224,62,62,.08)'; status.style.color = 'var(--danger)'; status.textContent = 'Impossible d\'analyser. Réessayez avec une image plus nette.'; }
+        if (status) { status.style.background='rgba(224,62,62,.08)';status.style.color='var(--danger)';status.textContent='Impossible d\'analyser. Réessayez avec une image plus nette.'; }
         return;
     }
 
     _scanParsedMeal = meal;
 
-    // Display results
-    if (status) {
-        const provName = usedProvider ? (AI_PROVIDERS[usedProvider]?.name || usedProvider) : '';
-        status.style.background = 'rgba(15,168,106,.08)';
-        status.style.color = 'var(--success)';
-        status.textContent = `✓ ${meal.items.length} aliment(s) détecté(s)${provName ? ' — via ' + provName : ''}`;
+    // Stocker photo compressée dans le meal (base64 réduite ~20KB)
+    if (_scanImageBase64) {
+        try {
+            const canvas = document.createElement('canvas');
+            const img    = new Image();
+            img.src = 'data:image/jpeg;base64,' + _scanImageBase64;
+            await new Promise(r => { img.onload = r; img.onerror = r; });
+            const maxW = 320;
+            const ratio = Math.min(maxW / img.width, maxW / img.height, 1);
+            canvas.width  = Math.round(img.width * ratio);
+            canvas.height = Math.round(img.height * ratio);
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            meal._photoThumb = canvas.toDataURL('image/jpeg', 0.6).split(',')[1];
+        } catch(e) {}
     }
 
-    const list = document.getElementById('scan-items-list');
+    // Afficher statut
+    const provName = usedProvider ? (AI_PROVIDERS[usedProvider]?.name || usedProvider) : '';
+    const confidenceBadge = meal.confidence === 'high' ? '🟢' : meal.confidence === 'medium' ? '🟡' : '🔴';
+    if (status) {
+        status.style.background = 'rgba(15,168,106,.08)';
+        status.style.color = 'var(--success)';
+        status.textContent = `✓ ${meal.items.length} aliment(s) détecté(s) ${confidenceBadge}${provName ? ' — via ' + provName : ''}`;
+    }
+    const confLabel = document.getElementById('scan-confidence-label');
+    if (confLabel) confLabel.textContent = meal.confidence === 'high' ? 'Haute confiance' : meal.confidence === 'medium' ? 'Confiance moyenne' : 'Confiance faible — vérifiez';
+
+    _renderScanResults(meal);
+}
+
+function _renderScanResults(meal) {
+    const results = document.getElementById('scan-results');
+    const list    = document.getElementById('scan-items-list');
     if (list) {
-        list.innerHTML = meal.items.map((item, i) => `
+        list.innerHTML = (meal.items||[]).map((item, i) => `
             <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--card-bg-alt);border-radius:10px;border:1px solid var(--border);">
                 <i class="fas fa-leaf" style="font-size:12px;color:var(--success);flex-shrink:0;"></i>
                 <div style="flex:1;min-width:0;">
@@ -31416,84 +31690,118 @@ async function captureAndAnalyze() {
                 <div style="font-size:13px;font-weight:900;color:var(--warning);">${item.calories} kcal</div>
             </div>`).join('');
     }
-
-    // Totals
-    const totCal  = meal.items.reduce((s,i) => s + (i.calories||0), 0);
-    const totProt = meal.items.reduce((s,i) => s + (i.protein||0), 0);
-    const totCarb = meal.items.reduce((s,i) => s + (i.carbs||0), 0);
-    const totFat  = meal.items.reduce((s,i) => s + (i.fat||0), 0);
-    const setT = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = Math.round(v); };
-    setT('scan-total-cal', totCal); setT('scan-total-prot', totProt); setT('scan-total-carbs', totCarb); setT('scan-total-fat', totFat);
-
+    const totCal  = (meal.items||[]).reduce((s,i) => s+(i.calories||0), 0);
+    const totProt = (meal.items||[]).reduce((s,i) => s+(i.protein||0), 0);
+    const totCarb = (meal.items||[]).reduce((s,i) => s+(i.carbs||0), 0);
+    const totFat  = (meal.items||[]).reduce((s,i) => s+(i.fat||0), 0);
+    const setT = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=Math.round(v); };
+    setT('scan-total-cal',totCal); setT('scan-total-prot',totProt); setT('scan-total-carbs',totCarb); setT('scan-total-fat',totFat);
     const nameInp = document.getElementById('scan-meal-name');
     if (nameInp) nameInp.value = meal.meal_name || 'Repas scanné';
-
     if (results) results.style.display = 'block';
+}
+
+// ── Modal de correction ──────────────────────────────────────────
+function openScanCorrection() {
+    if (!_scanParsedMeal) return;
+    const list = document.getElementById('scan-correction-list');
+    if (!list) return;
+    list.innerHTML = (_scanParsedMeal.items||[]).map((item,i) => `
+        <div class="scan-correction-item" data-idx="${i}">
+            <input class="scan-corr-input" type="text" value="${item.name}" placeholder="Aliment" data-field="name" data-idx="${i}">
+            <input class="scan-corr-input" type="number" value="${item.quantity_g}" placeholder="g" min="1" data-field="quantity_g" data-idx="${i}">
+            <button onclick="removeScanCorrectionItem(${i})" style="padding:6px;background:rgba(224,62,62,.1);color:var(--danger);border:none;border-radius:8px;cursor:pointer;font-size:13px;">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>`).join('');
+    showModal('scan-correction-modal');
+}
+
+function addScanCorrectionItem() {
+    if (!_scanParsedMeal) return;
+    _scanParsedMeal.items.push({ name:'', quantity_g:100, calories:0, protein:0, carbs:0, fat:0, category:'autre' });
+    openScanCorrection();
+}
+
+function removeScanCorrectionItem(idx) {
+    if (!_scanParsedMeal) return;
+    _scanParsedMeal.items.splice(idx, 1);
+    openScanCorrection();
+}
+
+async function reanalyzeScanWithCorrections() {
+    // Lire les corrections depuis les champs
+    const inputs = document.querySelectorAll('#scan-correction-list .scan-corr-input');
+    const corrections = [];
+    const map = {};
+    inputs.forEach(inp => {
+        const idx = inp.dataset.idx;
+        if (!map[idx]) map[idx] = {};
+        map[idx][inp.dataset.field] = inp.value;
+    });
+    Object.values(map).forEach(c => {
+        if (c.name?.trim()) corrections.push({ name: c.name.trim(), quantity_g: parseFloat(c.quantity_g)||100 });
+    });
+    // Mettre à jour _scanParsedMeal avec les noms/qtés corrigés
+    corrections.forEach((c,i) => {
+        if (_scanParsedMeal.items[i]) {
+            _scanParsedMeal.items[i].name = c.name;
+            _scanParsedMeal.items[i].quantity_g = c.quantity_g;
+        }
+    });
+
+    const statusEl = document.getElementById('scan-correction-status');
+    if (statusEl) { statusEl.style.display='block';statusEl.style.background='var(--primary-glow)';statusEl.style.color='var(--primary)';statusEl.textContent='Ré-analyse en cours…'; }
+
+    hideModal('scan-correction-modal');
+    await captureAndAnalyze(corrections);
 }
 
 function saveScanMeal() {
     if (!_scanParsedMeal) return;
     const name = document.getElementById('scan-meal-name')?.value?.trim() || 'Repas scanné';
 
-    // 1. Ensure each food exists in customFoods, collect {foodId, quantity}
+    // Sauvegarder dans l'historique des scans
+    const scanEntry = {
+        ..._scanParsedMeal,
+        date: new Date().toISOString(),
+        meal_name: name
+    };
+    _scanHistory.push(scanEntry);
+    if (_scanHistory.length > 30) _scanHistory = _scanHistory.slice(-30);
+    try { localStorage.setItem('ironplate_scan_history', JSON.stringify(_scanHistory)); } catch(e) {}
+
     const mealFoods = [];
     (_scanParsedMeal.items || []).forEach((item, idx) => {
-        const qty    = item.quantity_g || 100;
-        const per100 = qty > 0 ? 100 / qty : 1;
-        // Normalise values to per-100g
-        const cal100  = Math.round((item.calories || 0) * per100);
-        const prot100 = Math.round((item.protein  || 0) * per100 * 10) / 10;
-        const carb100 = Math.round((item.carbs    || 0) * per100 * 10) / 10;
-        const fat100  = Math.round((item.fat      || 0) * per100 * 10) / 10;
-
-        // Reuse existing food if name matches
-        let food = (typeof customFoods !== 'undefined'
-            ? customFoods.find(f => f.name.toLowerCase() === item.name.toLowerCase())
-            : null)
-            || (typeof foods !== 'undefined'
-            ? foods.find(f => f.name.toLowerCase() === item.name.toLowerCase())
-            : null);
-
+        const qty     = item.quantity_g || 100;
+        const per100  = qty > 0 ? 100 / qty : 1;
+        const cal100  = Math.round((item.calories||0) * per100);
+        const prot100 = Math.round((item.protein||0)  * per100 * 10) / 10;
+        const carb100 = Math.round((item.carbs||0)    * per100 * 10) / 10;
+        const fat100  = Math.round((item.fat||0)      * per100 * 10) / 10;
+        let food = (typeof customFoods !== 'undefined' ? customFoods.find(f => f.name.toLowerCase()===item.name.toLowerCase()) : null)
+                || (typeof foods !== 'undefined' ? foods.find(f => f.name.toLowerCase()===item.name.toLowerCase()) : null);
         if (!food) {
-            food = {
-                id: 'scan_' + Date.now() + '_' + idx,
-                name: item.name,
-                quantity: 100,
-                calories: cal100,
-                protein:  prot100,
-                carbs:    carb100,
-                fat:      fat100,
-                category: item.category || 'personnalisé',
-                custom: true,
-                source: 'ai_scan'
-            };
+            food = { id:'scan_'+Date.now()+'_'+idx, name:item.name, quantity:100, calories:cal100, protein:prot100, carbs:carb100, fat:fat100, category:item.category||'personnalisé', custom:true, source:'ai_scan' };
             if (typeof customFoods !== 'undefined') customFoods.push(food);
         }
-        // foods array uses {foodId, quantity} — EXACT format expected by updateMealsList
         mealFoods.push({ foodId: food.id, quantity: qty });
     });
 
-    // 2. Build meal in the exact format used by saveMealToStorage
     const mealId  = 'scan_' + Date.now();
     const newMeal = {
-        id:    mealId,
-        name:  name,
-        type:  'dejeuner',
+        id: mealId, name, type: 'dejeuner',
         notes: 'Repas scanné par IA',
         date:  new Date().toISOString(),
-        foods: mealFoods
+        foods: mealFoods,
+        _photoThumb: _scanParsedMeal._photoThumb || null
     };
 
-    // 3. Push to BOTH dailyNutrition.meals AND nutritionHistory (same as saveMealToStorage)
     if (typeof dailyNutrition !== 'undefined') {
         if (!dailyNutrition.meals) dailyNutrition.meals = [];
         dailyNutrition.meals.push(newMeal);
     }
-    if (typeof nutritionHistory !== 'undefined') {
-        nutritionHistory.push({...newMeal});
-    }
-
-    // 4. Recalculate totals + save + refresh UI
+    if (typeof nutritionHistory !== 'undefined') nutritionHistory.push({...newMeal});
     if (typeof calculateDailyNutritionFromMeals === 'function') calculateDailyNutritionFromMeals();
     if (typeof saveToLocalStorage === 'function') saveToLocalStorage();
     if (typeof updateDailyNutritionDisplay === 'function') updateDailyNutritionDisplay();
@@ -31504,16 +31812,1023 @@ function saveScanMeal() {
 }
 
 // ════════════════════════════════════════════════════════════════
+// CALENDRIER / PLANNING SEMAINE
+// ════════════════════════════════════════════════════════════════
+
+let _calWeekOffset  = 0;   // 0 = semaine courante, -1 = précédente, etc.
+let _calEvents      = JSON.parse(localStorage.getItem('ironplate_calendar') || '[]');
+let _calEditingIdx  = null;
+let _calSelectedType = 'workout';
+
+const CAL_DAYS_FR = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+
+function _calSave() {
+    try { localStorage.setItem('ironplate_calendar', JSON.stringify(_calEvents)); } catch(e) {}
+}
+
+function _calGetWeekDates(offset) {
+    const now = new Date();
+    const day = now.getDay(); // 0=Sun
+    const diffToMon = (day === 0) ? -6 : 1 - day;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() + diffToMon + offset * 7);
+    return Array.from({length:7}, (_,i) => {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        return d;
+    });
+}
+
+function initCalendarScreen() {
+    _calRenderWeek();
+}
+
+function _calRenderWeek() {
+    const dates  = _calGetWeekDates(_calWeekOffset);
+    const header = document.getElementById('cal-week-header');
+    const grid   = document.getElementById('cal-week-grid');
+    const label  = document.getElementById('cal-week-label');
+    const range  = document.getElementById('cal-week-range');
+    if (!header || !grid) return;
+
+    const weekNum = _calGetWeekNumber(dates[0]);
+    if (label) label.textContent = _calWeekOffset === 0 ? 'Cette semaine' : _calWeekOffset === 1 ? 'Semaine prochaine' : _calWeekOffset === -1 ? 'Semaine dernière' : `Semaine ${weekNum}`;
+    if (range) range.textContent = `${dates[0].toLocaleDateString('fr',{day:'numeric',month:'short'})} – ${dates[6].toLocaleDateString('fr',{day:'numeric',month:'short',year:'numeric'})}`;
+
+    const todayStr = new Date().toISOString().slice(0,10);
+    const evIcons  = { workout:'<i class="fas fa-dumbbell"></i>', meal:'<i class="fas fa-utensils"></i>', rest:'<i class="fas fa-moon"></i>' };
+
+    // Calculer stats semaine
+    const weekDateStrs = dates.map(d => d.toISOString().slice(0,10));
+    const weekEvents   = _calEvents.filter(e => weekDateStrs.includes(e.date));
+    const statWorkouts = weekEvents.filter(e => e.type==='workout').length;
+    const statMeals    = weekEvents.filter(e => e.type==='meal').length;
+    const statRest     = weekEvents.filter(e => e.type==='rest').length;
+
+    // Kcal moyenne depuis l'historique nutrition
+    let statKcal = '—';
+    if (typeof nutritionHistory !== 'undefined' && nutritionHistory.length) {
+        const weekNutr = nutritionHistory.filter(m => weekDateStrs.includes((m.date||'').slice(0,10)));
+        if (weekNutr.length) {
+            const totalKcal = weekNutr.reduce((s,m) => s + ((m.calories||0)), 0);
+            statKcal = Math.round(totalKcal / weekNutr.length);
+        }
+    }
+
+    const setS = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    setS('cal-stat-workouts', statWorkouts || '0');
+    setS('cal-stat-kcal',     statKcal);
+    setS('cal-stat-meals',    statMeals || '0');
+    setS('cal-stat-rest',     statRest || '0');
+
+    // En-têtes
+    header.innerHTML = dates.map((d,i) => {
+        const ds = d.toISOString().slice(0,10);
+        const isToday = ds === todayStr;
+        return `<div class="cal-day-head${isToday?' today':''}">
+            ${CAL_DAYS_FR[i]}<span class="day-num">${d.getDate()}</span>
+        </div>`;
+    }).join('');
+
+    // Colonnes
+    grid.innerHTML = dates.map((d,i) => {
+        const ds = d.toISOString().slice(0,10);
+        const isToday = ds === todayStr;
+        const dayEvents = _calEvents.filter(e => e.date === ds);
+
+        const evHtml = dayEvents.map(ev => {
+            const globalIdx = _calEvents.indexOf(ev);
+            const lbl  = (ev.label||'').length > 11 ? (ev.label||'').slice(0,10)+'…' : (ev.label||'');
+            const sub  = ev.detail ? `<div class="cal-evt-sub">${ev.detail.length>13?ev.detail.slice(0,12)+'…':ev.detail}</div>` : '';
+            const done = ev.done ? ' real' : '';
+
+            // Action au clic selon le type et l'état
+            let clickAction = `calEditEvent(${globalIdx})`;
+            if (ev.type === 'workout') {
+                if (ev.done && ev.workoutId) {
+                    // Séance faite → voir détail historique
+                    clickAction = `_calOpenDoneWorkout('${ev.workoutId}')`;
+                } else {
+                    // Séance planifiée → modal de lancement
+                    clickAction = `_calOpenPlannedWorkout(${globalIdx})`;
+                }
+            } else if (ev.type === 'meal') {
+                // Repas → modal résumé + navigation nutrition
+                clickAction = `_calOpenNutritionDay(${globalIdx})`;
+            }
+
+            const doneTag = ev.done
+                ? `<span style="font-size:7px;opacity:.8;margin-left:2px;background:rgba(255,255,255,.2);padding:0 3px;border-radius:3px;">✓</span>`
+                : '';
+            const planTag = !ev.done && ev.type==='workout' && ev.workoutName
+                ? `<span style="font-size:7px;opacity:.7;margin-left:2px;">▶</span>`
+                : '';
+
+            return `<div class="cal-evt ${ev.type}${done}" onclick="${clickAction}" title="${ev.label||''}${ev.detail?' · '+ev.detail:''}${ev.done?' — Fait':ev.type==='workout'?' — Appuyer pour démarrer':''}">
+                <span class="cal-evt-icon">${evIcons[ev.type]||''}</span>${lbl}${doneTag}${planTag}${sub}
+            </div>`;
+        }).join('');
+
+        return `<div class="cal-col${isToday?' today-col':''}" data-date="${ds}">
+            ${evHtml}
+            <button class="cal-add-btn" onclick="openCalAddEvent('${ds}')" title="Ajouter">＋</button>
+        </div>`;
+    }).join('');
+}
+
+// ── Sync depuis l'historique réel ─────────────────────────────────
+function _calSyncFromHistory() {
+    if (typeof workoutHistory === 'undefined' && typeof nutritionHistory === 'undefined') {
+        showNotification('Aucun historique disponible', 'warning');
+        return;
+    }
+    let added = 0;
+    const dates = _calGetWeekDates(_calWeekOffset);
+    const weekStrs = dates.map(d => d.toISOString().slice(0,10));
+
+    // Séances réelles
+    if (typeof workoutHistory !== 'undefined') {
+        workoutHistory.filter(w => weekStrs.includes((w.date||'').slice(0,10))).forEach(w => {
+            const ds = (w.date||'').slice(0,10);
+            const exists = _calEvents.find(e => e.date===ds && e.type==='workout' && e.workoutId===w.id);
+            if (!exists) {
+                _calEvents.push({ date:ds, type:'workout', label:w.name||'Séance', detail:`${w.duration?Math.round(w.duration/60)+'min':''}`, done:true, workoutId:w.id });
+                added++;
+            }
+        });
+    }
+    // Repas réels
+    if (typeof nutritionHistory !== 'undefined') {
+        const byDate = {};
+        nutritionHistory.forEach(m => {
+            const ds = (m.date||'').slice(0,10);
+            if (weekStrs.includes(ds)) { if (!byDate[ds]) byDate[ds]=0; byDate[ds]++; }
+        });
+        Object.entries(byDate).forEach(([ds, cnt]) => {
+            const exists = _calEvents.find(e => e.date===ds && e.type==='meal' && e.synced);
+            if (!exists) {
+                _calEvents.push({ date:ds, type:'meal', label:`${cnt} repas`, detail:'', done:true, synced:true });
+                added++;
+            }
+        });
+    }
+    _calSave();
+    _calRenderWeek();
+    showNotification(added > 0 ? `${added} événements importés depuis l'historique` : 'Historique déjà synchronisé', 'success');
+}
+
+function _calGetWeekNumber(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+}
+
+function calMoveWeek(delta) {
+    _calWeekOffset += delta;
+    _calRenderWeek();
+}
+
+function calGoToday() {
+    _calWeekOffset = 0;
+    _calRenderWeek();
+}
+
+function calSelectEventType(type) {
+    _calSelectedType = type;
+    ['workout','meal','rest'].forEach(t => {
+        const btn = document.getElementById('cal-type-'+t);
+        if (!btn) return;
+        const colors = { workout:'#4F6EF7', meal:'#0FA86A', rest:'#94A3B8' };
+        if (t === type) {
+            btn.style.border = `1.5px solid ${colors[t]}`;
+            btn.style.background = `rgba(${t==='workout'?'79,110,247':t==='meal'?'15,168,106':'148,163,184'},.12)`;
+            btn.style.color = colors[t];
+        } else {
+            btn.style.border = '1.5px solid var(--border)';
+            btn.style.background = 'var(--card-bg-alt)';
+            btn.style.color = 'var(--text-secondary)';
+        }
+    });
+    document.getElementById('cal-event-workout-fields').style.display = type === 'workout' ? 'block' : 'none';
+    document.getElementById('cal-event-meal-fields').style.display    = type === 'meal'    ? 'block' : 'none';
+}
+
+function openCalAddEvent(dateStr) {
+    _calEditingIdx = null;
+    const title = document.getElementById('cal-event-modal-title');
+    if (title) title.textContent = 'Ajouter un événement';
+    // Pré-remplir date
+    const dateInput = document.getElementById('cal-event-date');
+    if (dateInput) dateInput.value = dateStr || new Date().toISOString().slice(0,10);
+    // Pré-remplir liste séances
+    const sel = document.getElementById('cal-event-workout-select');
+    if (sel && typeof customWorkouts !== 'undefined') {
+        sel.innerHTML = '<option value="">— Choisir une séance —</option>' +
+            customWorkouts.map(w => `<option value="${w.name}">${w.name}</option>`).join('');
+    }
+    // Reset champs
+    ['cal-event-custom-label','cal-event-meal-label','cal-event-meal-kcal','cal-event-note'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+    });
+    calSelectEventType('workout');
+    showModal('cal-event-modal');
+}
+
+function calEditEvent(idx) {
+    const ev = _calEvents[idx];
+    if (!ev) return;
+    _calEditingIdx = idx;
+    const title = document.getElementById('cal-event-modal-title');
+    if (title) title.textContent = 'Modifier l\'événement';
+    const dateInput = document.getElementById('cal-event-date');
+    if (dateInput) dateInput.value = ev.date;
+    calSelectEventType(ev.type);
+    if (ev.type === 'workout') {
+        const sel = document.getElementById('cal-event-workout-select');
+        if (sel) { if (typeof customWorkouts!=='undefined') sel.innerHTML='<option value="">— Choisir —</option>'+customWorkouts.map(w=>`<option value="${w.name}">${w.name}</option>`).join(''); sel.value = ev.workoutName || ''; }
+        const cust = document.getElementById('cal-event-custom-label'); if (cust) cust.value = ev.label||'';
+    } else if (ev.type === 'meal') {
+        const lbl = document.getElementById('cal-event-meal-label'); if (lbl) lbl.value = ev.label||'';
+        const kcal = document.getElementById('cal-event-meal-kcal'); if (kcal) kcal.value = ev.detail||'';
+    }
+    const note = document.getElementById('cal-event-note'); if (note) note.value = ev.note||'';
+    showModal('cal-event-modal');
+}
+
+function saveCalEvent() {
+    const date = document.getElementById('cal-event-date')?.value;
+    if (!date) { showNotification('Sélectionnez une date', 'error'); return; }
+    const note = document.getElementById('cal-event-note')?.value?.trim() || '';
+    let ev = { date, type: _calSelectedType, note };
+
+    if (_calSelectedType === 'workout') {
+        const workoutSel = document.getElementById('cal-event-workout-select')?.value;
+        const customLbl  = document.getElementById('cal-event-custom-label')?.value?.trim();
+        ev.label = workoutSel || customLbl || 'Séance';
+        ev.workoutName = workoutSel || '';
+    } else if (_calSelectedType === 'meal') {
+        ev.label  = document.getElementById('cal-event-meal-label')?.value?.trim() || 'Repas';
+        ev.detail = document.getElementById('cal-event-meal-kcal')?.value?.trim() || '';
+    } else {
+        ev.label = 'Repos';
+    }
+
+    if (_calEditingIdx !== null) {
+        _calEvents[_calEditingIdx] = ev;
+    } else {
+        _calEvents.push(ev);
+    }
+    _calSave();
+    hideModal('cal-event-modal');
+    _calRenderWeek();
+    showNotification('Événement sauvegardé', 'success');
+}
+
+// ── Génération IA calendrier ─────────────────────────────────────
+async function generateCalAIPlan() {
+    if (!_hasAnyKey()) { showNotification('Configurez l\'IA d\'abord', 'error'); return; }
+    const btn = document.getElementById('cal-ai-gen-btn');
+    const statusEl = document.getElementById('cal-ai-status');
+    const resultEl = document.getElementById('cal-ai-result');
+    const days  = document.getElementById('cal-ai-days')?.value || '4';
+    const meals = document.getElementById('cal-ai-meals')?.value === 'yes';
+    const prefs = document.getElementById('cal-ai-prefs')?.value?.trim() || '';
+
+    if (btn) { btn.disabled=true; btn.innerHTML='<span class="ai-spinner"></span> Génération…'; }
+    if (statusEl) { statusEl.style.display='block';statusEl.style.background='var(--primary-glow)';statusEl.style.color='var(--primary)';statusEl.textContent='Génération du planning…'; }
+    if (resultEl) resultEl.style.display='none';
+
+    const prof = typeof userProfile!=='undefined' ? userProfile : {};
+    const prompt = `Génère un planning fitness hebdomadaire pour un utilisateur.
+Profil : ${prof.weight||75}kg, objectif ${prof.trainingType||'Maintien'}, niveau ${prof.level||'Intermédiaire'}.
+${days} séances par semaine. ${meals?'Inclure des suggestions de repas/recettes pour chaque jour.':'Séances seulement.'}
+${prefs?'Contraintes : '+prefs:''}
+Réponds UNIQUEMENT en JSON : {
+  "lundi":{"type":"Repos","label":"Repos","events":[]},
+  "mardi":{"type":"Séance","label":"Push — Pectoraux","events":[{"type":"workout","label":"Séance Push","detail":"Développé couché, développé incliné, écarté"},${meals?'{"type":"meal","label":"Poulet riz","detail":"650 kcal"}':''}]},
+  ...
+}
+Jours : lundi mardi mercredi jeudi vendredi samedi dimanche.`;
+
+    const cfg = _selectProvider('fast');
+    const reply = await _callAI([{role:'user',content:prompt}], cfg, 'Coach fitness. JSON uniquement.');
+
+    if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-magic"></i> Générer le planning'; }
+
+    if (!reply || reply.startsWith('__ERROR__')) {
+        if (statusEl) { statusEl.style.background='rgba(224,62,62,.08)';statusEl.style.color='var(--danger)';statusEl.textContent='Erreur : '+(reply||'').replace('__ERROR__',''); }
+        return;
+    }
+
+    let plan;
+    try { const cl = reply.replace(/```json|```/g,'').trim(); plan = JSON.parse(cl); }
+    catch { const m=reply.match(/\{[\s\S]*\}/); try{plan=m?JSON.parse(m[0]):null;}catch{plan=null;} }
+
+    if (!plan) { if(statusEl){statusEl.style.background='rgba(224,62,62,.08)';statusEl.style.color='var(--danger)';statusEl.textContent='Réponse invalide';} return; }
+
+    // Injecter dans le calendrier de la semaine courante
+    const dates = _calGetWeekDates(_calWeekOffset);
+    const dayNames = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
+    dayNames.forEach((dn, i) => {
+        const d = plan[dn];
+        if (!d) return;
+        const dateStr = dates[i].toISOString().slice(0,10);
+        (d.events||[]).forEach(ev => {
+            _calEvents.push({ date:dateStr, type:ev.type, label:ev.label, detail:ev.detail||'' });
+        });
+    });
+    _calSave();
+
+    if (statusEl) { statusEl.style.background='rgba(15,168,106,.08)';statusEl.style.color='var(--success)';statusEl.textContent='✓ Planning généré et importé dans le calendrier !'; }
+    if (resultEl) { resultEl.style.display='block'; resultEl.innerHTML = `<div style="font-size:12px;color:var(--text-secondary);text-align:center;"><i class="fas fa-check-circle" style="color:var(--success);margin-right:6px;"></i>Fermez ce modal pour voir votre planning.</div>`; }
+    setTimeout(() => { hideModal('cal-ai-modal'); _calRenderWeek(); }, 2000);
+}
+
+function openCalAIGenerate() { showModal('cal-ai-modal'); }
+
+// ════════════════════════════════════════════════════════════════
+// CALENDRIER — Sync et interactivité
+// ════════════════════════════════════════════════════════════════
+
+/**
+ * Sync global : importe le plan IA de la semaine (_weekPlanData)
+ * ET les séances/repas réels de l'historique pour la semaine affichée.
+ */
+function _calSyncFromHistory() {
+    let added = 0;
+    const dates    = _calGetWeekDates(_calWeekOffset);
+    const weekStrs = dates.map(d => d.toISOString().slice(0, 10));
+    const DAY_NAMES = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
+
+    // ── 1. Plan IA de la semaine (_weekPlanData) ─────────────────
+    if (_weekPlanData) {
+        DAY_NAMES.forEach((dn, i) => {
+            const d   = _weekPlanData[dn];
+            const ds  = weekStrs[i];
+            if (!d || !ds) return;
+
+            const isRest = !d.exercises?.length || (d.type||'').toLowerCase().includes('repos');
+
+            if (isRest) {
+                // Jour de repos
+                const exists = _calEvents.find(e => e.date === ds && e.type === 'rest' && e.fromPlan);
+                if (!exists) {
+                    _calEvents.push({ date:ds, type:'rest', label:'Repos', detail:d.type||'', fromPlan:true });
+                    added++;
+                }
+            } else {
+                // Séance planifiée
+                const exists = _calEvents.find(e => e.date === ds && e.type === 'workout' && e.fromPlan && e.planDay === dn);
+                if (!exists) {
+                    _calEvents.push({
+                        date: ds, type:'workout',
+                        label: d.type || 'Séance',
+                        detail: (d.exercises||[]).slice(0,2).map(ex => ex.name||'').join(', '),
+                        fromPlan: true,
+                        planDay: dn,
+                        planExercises: d.exercises || []
+                    });
+                    added++;
+                }
+            }
+
+            // Repas / nutrition du plan IA
+            if (d.meals?.length) {
+                d.meals.forEach(m => {
+                    const exists = _calEvents.find(e => e.date === ds && e.type === 'meal' && e.fromPlan && e.mealLabel === (m.name||m));
+                    if (!exists) {
+                        _calEvents.push({
+                            date: ds, type:'meal',
+                            label: m.name || m,
+                            detail: m.calories ? m.calories+'kcal' : (m.macros || ''),
+                            fromPlan: true,
+                            mealLabel: m.name || m,
+                            mealData: m
+                        });
+                        added++;
+                    }
+                });
+            }
+        });
+    }
+
+    // ── 2. Séances réellement effectuées (workoutHistory) ────────
+    if (typeof workoutHistory !== 'undefined') {
+        workoutHistory
+            .filter(w => weekStrs.includes((w.date||'').slice(0,10)))
+            .forEach(w => {
+                const ds = (w.date||'').slice(0,10);
+                const exists = _calEvents.find(e => e.date === ds && e.type === 'workout' && e.workoutId === w.id);
+                if (!exists) {
+                    const dur = w.duration ? Math.round(w.duration/60)+'min' : '';
+                    const vol = w.totalWeight ? Math.round(w.totalWeight)+'kg' : '';
+                    _calEvents.push({
+                        date: ds, type:'workout',
+                        label: w.name || 'Séance',
+                        detail: [dur, vol].filter(Boolean).join(' · '),
+                        done: true, workoutId: w.id
+                    });
+                    added++;
+                }
+            });
+    }
+
+    // ── 3. Repas enregistrés (dailyNutrition + nutritionHistory) ─
+    if (typeof dailyNutrition !== 'undefined' && dailyNutrition.meals?.length) {
+        const todayStr = new Date().toISOString().slice(0,10);
+        if (weekStrs.includes(todayStr)) {
+            const exists = _calEvents.find(e => e.date === todayStr && e.type === 'meal' && e.syncedToday);
+            if (!exists) {
+                const kcal = Math.round(dailyNutrition.calories || 0);
+                const meals = dailyNutrition.meals;
+                meals.forEach(m => {
+                    const mExists = _calEvents.find(e => e.date===todayStr && e.type==='meal' && e.mealId===m.id);
+                    if (!mExists) {
+                        const mKcal = (m.foods||[]).reduce((s,f) => {
+                            const food = (typeof customFoods!=='undefined'?customFoods:[]).concat(typeof foods!=='undefined'?foods:[]).find(fd=>fd.id===f.foodId);
+                            return s + (food ? Math.round(food.calories * f.quantity / 100) : 0);
+                        }, 0);
+                        _calEvents.push({
+                            date: todayStr, type:'meal',
+                            label: m.name || 'Repas',
+                            detail: mKcal ? mKcal+'kcal' : '',
+                            done: true, syncedToday: true, mealId: m.id
+                        });
+                        added++;
+                    }
+                });
+            }
+        }
+    }
+
+    _calSave();
+    _calRenderWeek();
+    const msg = added > 0
+        ? `${added} événement${added>1?'s':''} synchronisé${added>1?'s':''}`
+        : 'Planning déjà à jour';
+    showNotification(msg, 'success');
+}
+
+/**
+ * Clic sur une séance FAITE → ouvre le détail dans l'historique
+ */
+function _calOpenDoneWorkout(workoutId) {
+    if (!workoutId || typeof workoutHistory === 'undefined') {
+        showScreen('history-screen');
+        return;
+    }
+    const idx = workoutHistory.findIndex(w =>
+        w.id === workoutId || String(w.id) === String(workoutId)
+    );
+    showScreen('history-screen');
+    setTimeout(() => {
+        if (idx >= 0 && typeof showWorkoutHistoryDetail === 'function') {
+            showWorkoutHistoryDetail(idx);
+        }
+    }, 280);
+}
+
+/**
+ * Clic sur une séance PLANIFIÉE (depuis plan IA ou ajout manuel)
+ * → modal de lancement avec exercices pré-remplis
+ */
+function _calOpenPlannedWorkout(calIdx) {
+    const ev = _calEvents[calIdx];
+    if (!ev) return;
+
+    // Chercher une séance custom correspondante
+    let workout = null;
+    if (typeof customWorkouts !== 'undefined') {
+        workout = customWorkouts.find(w =>
+            w.name === ev.label ||
+            w.name.toLowerCase() === (ev.label||'').toLowerCase()
+        );
+    }
+
+    // Si le plan IA a les exercices dans l'événement, les utiliser
+    const planExercises = ev.planExercises || [];
+    const evDate = ev.date
+        ? new Date(ev.date + 'T12:00:00').toLocaleDateString('fr', {weekday:'long', day:'numeric', month:'long'})
+        : ev.label;
+
+    // Exercices à afficher
+    let exerciseItems = '';
+    if (workout?.exercises?.length) {
+        exerciseItems = workout.exercises.slice(0, 5).map(ex => {
+            const name = typeof ex === 'string' ? ex : (ex.name || ex.exerciseId || '');
+            return `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--card-bg-alt);border-radius:10px;border:1px solid var(--border);">
+                <i class="fas fa-dumbbell" style="font-size:10px;color:var(--primary);flex-shrink:0;"></i>
+                <span style="font-size:12px;font-weight:600;color:var(--text-primary);flex:1;">${name}</span>
+            </div>`;
+        }).join('') + (workout.exercises.length > 5 ? `<div style="font-size:10px;color:var(--text-tertiary);text-align:center;padding:4px;">+ ${workout.exercises.length - 5} autres</div>` : '');
+    } else if (planExercises.length) {
+        exerciseItems = planExercises.slice(0, 5).map(ex => {
+            const name = ex.name || '';
+            const detail = ex.sets ? `${ex.sets}×${ex.reps||'?'}${ex.weight?' · '+ex.weight:''}` : '';
+            return `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;background:var(--card-bg-alt);border-radius:10px;border:1px solid var(--border);">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="fas fa-robot" style="font-size:10px;color:#7C3AED;flex-shrink:0;"></i>
+                    <span style="font-size:12px;font-weight:600;color:var(--text-primary);">${name}</span>
+                </div>
+                ${detail ? `<span style="font-size:10px;color:var(--text-tertiary);flex-shrink:0;">${detail}</span>` : ''}
+            </div>`;
+        }).join('') + (planExercises.length > 5 ? `<div style="font-size:10px;color:var(--text-tertiary);text-align:center;padding:4px;">+ ${planExercises.length - 5} autres</div>` : '');
+    } else {
+        exerciseItems = `<div style="font-size:11px;color:var(--text-tertiary);padding:12px;text-align:center;">
+            <i class="fas fa-info-circle" style="margin-right:5px;"></i>
+            Créez cette séance dans "Mes Séances" pour voir les exercices
+        </div>`;
+    }
+
+    const existing = document.getElementById('cal-launch-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'cal-launch-modal';
+    modal.className = 'modal';
+    modal.style.cssText = 'z-index:9999;display:flex!important;';
+
+    // Bouton principal : démarrer si séance custom existe, sinon importer depuis plan IA
+    let primaryAction = '';
+    if (workout) {
+        primaryAction = `
+            document.getElementById('cal-launch-modal').remove();
+            startCustomWorkout(customWorkouts.find(function(w){return w.name==='${(ev.label||'').replace(/'/g,"\\'")}'}));
+            _calEvents[${calIdx}].done=true; _calSave(); _calRenderWeek();`;
+    } else if (planExercises.length && ev.planDay) {
+        primaryAction = `
+            document.getElementById('cal-launch-modal').remove();
+            if(_weekPlanData&&_weekPlanData['${ev.planDay||''}']){_showImportChoiceModal('${ev.planDay||''}');}
+            else{showScreen('workouts-screen');}`;
+    } else {
+        primaryAction = `
+            document.getElementById('cal-launch-modal').remove();
+            showScreen('workouts-screen');`;
+    }
+
+    modal.innerHTML = `
+    <div class="modal-content" style="max-height:90vh;overflow-y:auto;">
+        <div class="modal-header" style="background:linear-gradient(135deg,#4F6EF7,#7C3AED);border-radius:18px 18px 0 0;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;">
+                    <i class="fas fa-dumbbell" style="color:white;font-size:14px;"></i>
+                </div>
+                <div>
+                    <div class="modal-title" style="color:white;font-size:14px;">${ev.label||'Séance'}</div>
+                    <div style="font-size:10px;color:rgba(255,255,255,.75);">${evDate}</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="document.getElementById('cal-launch-modal').remove()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+        </div>
+        <div class="modal-body" style="padding:16px;">
+            ${ev.detail ? `<div style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px;">${ev.detail}</div>` : ''}
+            <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:8px;">Exercices</div>
+            <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:16px;">${exerciseItems}</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <button onclick="document.getElementById('cal-launch-modal').remove();calEditEvent(${calIdx});"
+                    style="padding:12px;background:var(--card-bg-alt);color:var(--text-secondary);border:1.5px solid var(--border);border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;">
+                    <i class="fas fa-pencil-alt"></i> Modifier
+                </button>
+                <button onclick="${primaryAction}"
+                    style="padding:12px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(79,110,247,.35);">
+                    <i class="fas fa-play"></i> ${workout ? 'Démarrer' : planExercises.length ? 'Importer + Démarrer' : 'Aller aux séances'}
+                </button>
+            </div>
+        </div>
+    </div>`;
+
+    document.body.appendChild(modal);
+    requestAnimationFrame(() => modal.classList.add('active'));
+}
+
+/**
+ * Clic sur un repas PLANIFIÉ ou FAIT → ouvre un résumé du repas
+ * avec navigation vers Nutrition
+ */
+function _calOpenNutritionDay(calIdx) {
+    const ev = _calEvents[calIdx];
+    if (!ev) { showScreen('nutrition-screen'); return; }
+
+    const evDate = ev.date
+        ? new Date(ev.date + 'T12:00:00').toLocaleDateString('fr', {weekday:'long', day:'numeric', month:'long'})
+        : ev.label;
+    const today = new Date().toISOString().slice(0,10);
+    const isToday = ev.date === today;
+
+    // Collecter les repas de ce jour depuis nutritionHistory ou dailyNutrition
+    let mealsOfDay = [];
+    if (isToday && typeof dailyNutrition !== 'undefined' && dailyNutrition.meals?.length) {
+        mealsOfDay = dailyNutrition.meals.map(m => {
+            const kcal = (m.foods||[]).reduce((s, f) => {
+                const food = (typeof customFoods!=='undefined'?customFoods:[])
+                    .concat(typeof foods!=='undefined'?foods:[])
+                    .find(fd => fd.id === f.foodId);
+                return s + (food ? Math.round(food.calories * f.quantity / 100) : 0);
+            }, 0);
+            return { name: m.name||'Repas', kcal, type: m.type||'' };
+        });
+    } else if (typeof nutritionHistory !== 'undefined') {
+        mealsOfDay = nutritionHistory
+            .filter(m => (m.date||'').slice(0,10) === ev.date)
+            .map(m => ({ name: m.name||'Repas', kcal: m.calories||0, type: m.type||'' }));
+    }
+
+    // Données du plan IA si disponibles dans l'événement
+    if (!mealsOfDay.length && ev.mealData) {
+        mealsOfDay = [{ name: ev.mealData.name || ev.label, kcal: ev.mealData.calories||0, type:'planifié' }];
+    }
+
+    const totalKcal = mealsOfDay.reduce((s, m) => s + (m.kcal||0), 0);
+
+    const mealRows = mealsOfDay.length
+        ? mealsOfDay.map(m => `
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--card-bg-alt);border-radius:10px;border:1px solid var(--border);">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="fas fa-utensils" style="font-size:10px;color:#0FA86A;"></i>
+                    <span style="font-size:12px;font-weight:600;color:var(--text-primary);">${m.name}</span>
+                    ${m.type?`<span style="font-size:9px;color:var(--text-tertiary);">${m.type}</span>`:''}
+                </div>
+                <span style="font-size:12px;font-weight:800;color:var(--success);">${m.kcal||'—'} kcal</span>
+            </div>`)
+            .join('')
+        : `<div style="font-size:11px;color:var(--text-tertiary);padding:12px;text-align:center;">
+            ${isToday ? 'Aucun repas enregistré aujourd\'hui' : 'Pas de repas dans l\'historique pour ce jour'}
+           </div>`;
+
+    const existing = document.getElementById('cal-meal-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'cal-meal-modal';
+    modal.className = 'modal';
+    modal.style.cssText = 'z-index:9999;display:flex!important;';
+
+    modal.innerHTML = `
+    <div class="modal-content" style="max-height:90vh;overflow-y:auto;">
+        <div class="modal-header" style="background:linear-gradient(135deg,#0FA86A,#059669);border-radius:18px 18px 0 0;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;">
+                    <i class="fas fa-utensils" style="color:white;font-size:14px;"></i>
+                </div>
+                <div>
+                    <div class="modal-title" style="color:white;font-size:14px;">${ev.label||'Repas'}</div>
+                    <div style="font-size:10px;color:rgba(255,255,255,.75);">${evDate}</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="document.getElementById('cal-meal-modal').remove()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+        </div>
+        <div class="modal-body" style="padding:16px;">
+            ${totalKcal > 0 ? `
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;">
+                <div style="background:rgba(15,168,106,.08);border:1px solid rgba(15,168,106,.2);border-radius:12px;padding:10px;text-align:center;">
+                    <div style="font-size:18px;font-weight:900;color:#0FA86A;">${totalKcal}</div>
+                    <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);">kcal total</div>
+                </div>
+                <div style="background:var(--card-bg-alt);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;">
+                    <div style="font-size:18px;font-weight:900;color:var(--text-primary);">${mealsOfDay.length}</div>
+                    <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);">repas</div>
+                </div>
+            </div>` : ''}
+            <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:8px;">Détail</div>
+            <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:16px;">${mealRows}</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <button onclick="document.getElementById('cal-meal-modal').remove();calEditEvent(${calIdx});"
+                    style="padding:12px;background:var(--card-bg-alt);color:var(--text-secondary);border:1.5px solid var(--border);border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;">
+                    <i class="fas fa-pencil-alt"></i> Modifier
+                </button>
+                <button onclick="document.getElementById('cal-meal-modal').remove();showScreen('nutrition-screen');"
+                    style="padding:12px;background:linear-gradient(135deg,#0FA86A,#059669);color:white;border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(15,168,106,.35);">
+                    <i class="fas fa-arrow-right"></i> Aller à Nutrition
+                </button>
+            </div>
+        </div>
+    </div>`;
+
+    document.body.appendChild(modal);
+    requestAnimationFrame(() => modal.classList.add('active'));
+}
+
+
+// ════════════════════════════════════════════════════════════════
+// SILHOUETTE — Suivi photos corps + analyse IA
+// ════════════════════════════════════════════════════════════════
+
+let _silhouettePhotos = JSON.parse(localStorage.getItem('ironplate_silhouette') || '[]');
+let _silhouetteImgB64 = null;
+let _silhouetteViewIdx = null;
+let _silRawAIText = null;  // texte brut IA avant parsing → pour restocker
+
+function _silSave() {
+    try {
+        // Ne pas stocker les photos complètes dans localStorage (trop lourd)
+        // On stocke seulement la miniature + métas
+        localStorage.setItem('ironplate_silhouette', JSON.stringify(_silhouettePhotos));
+    } catch(e) {
+        showNotification('Stockage plein — supprimez d\'anciennes photos', 'warning');
+    }
+}
+
+function openCalSilhouette() {
+    _silhouetteImgB64 = null;
+    document.getElementById('silhouette-preview-zone').style.display = 'none';
+    const aiResult = document.getElementById('silhouette-ai-result');
+    if (aiResult) { aiResult.style.display='none'; aiResult.innerHTML=''; }
+    _renderSilhouetteGallery();
+    showModal('silhouette-modal');
+}
+
+function silhouetteCamera() {
+    // Utiliser input file avec capture=environment
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*'; inp.capture = 'environment';
+    inp.onchange = e => loadSilhouetteImage(e);
+    inp.click();
+}
+
+function loadSilhouetteImage(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async e => {
+        const full = e.target.result;
+        // Comprimer
+        try {
+            const canvas = document.createElement('canvas');
+            const img = new Image(); img.src = full;
+            await new Promise(r => { img.onload=r; img.onerror=r; });
+            const maxW = 600;
+            const ratio = Math.min(maxW/img.width, maxW/img.height, 1);
+            canvas.width  = Math.round(img.width*ratio);
+            canvas.height = Math.round(img.height*ratio);
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            _silhouetteImgB64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+        } catch { _silhouetteImgB64 = full.split(',')[1]; }
+
+        const preview = document.getElementById('silhouette-preview-img');
+        if (preview) preview.src = 'data:image/jpeg;base64,' + _silhouetteImgB64;
+        const zone = document.getElementById('silhouette-preview-zone');
+        if (zone) zone.style.display = 'block';
+        const aiResult = document.getElementById('silhouette-ai-result');
+        if (aiResult) { aiResult.style.display='none'; aiResult.innerHTML=''; }
+    };
+    reader.readAsDataURL(file);
+}
+
+async function analyzeSilhouetteAI() {
+    if (!_silhouetteImgB64) { showNotification('Chargez une photo d\'abord', 'error'); return; }
+    if (!_hasAnyKey()) { showNotification('Configurez l\'IA dans les paramètres', 'error'); return; }
+
+    const btn = document.getElementById('silhouette-analyze-btn');
+    const result = document.getElementById('silhouette-ai-result');
+    if (btn) { btn.disabled=true; btn.innerHTML='<span class="ai-spinner"></span> Analyse…'; }
+    if (result) { result.style.display='none'; }
+
+    const weight = document.getElementById('silhouette-weight-input')?.value || '';
+    const prof   = typeof userProfile!=='undefined' ? userProfile : {};
+    const histCtx = _silhouettePhotos.length > 1
+        ? `\nHistorique : ${_silhouettePhotos.length} photos précédentes. Dernière masse grasse estimée : ${_silhouettePhotos[_silhouettePhotos.length-1]?.aiData?.bf||'?'}%.`
+        : '';
+
+    const prompt = `Analyse cette photo de silhouette.
+Profil : ${prof.gender==='female'?'Femme':'Homme'}, ${prof.age||30} ans, ${prof.height||175} cm, ${weight||prof.weight||75} kg.${histCtx}
+Fournis une analyse DÉTAILLÉE : estimation masse grasse (%), masse musculaire visible, posture, zones de développement, points forts, axes d'amélioration, recommandations.
+IMPORTANT : précise que ces estimations sont visuelles et approximatives (±3-5%). Sois bienveillant et constructif.
+Réponds en français, structuré avec des sections claires.`;
+
+    // Essai vision providers
+    const VISION_PROVIDERS = ['claude','gemini','mistral','openrouter'];
+    let reply = null;
+    for (const p of VISION_PROVIDERS) {
+        if (!_aiKeys[p]?.apiKey) continue;
+        const cfg = { provider:p, apiKey:_aiKeys[p].apiKey, model:_aiKeys[p].model };
+        let r = null;
+        if (p === 'claude') {
+            r = await _callAI([{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:_silhouetteImgB64}},{type:'text',text:prompt}]}], cfg, 'Coach fitness et nutritionniste. Sois précis et bienveillant.');
+        } else if (p === 'gemini') {
+            const pDef = AI_PROVIDERS.gemini;
+            const models = pDef?.visionModels||pDef?.models||[cfg.model];
+            for (const model of [cfg.model,...models.filter(m=>m!==cfg.model)]) {
+                try {
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cfg.apiKey}`;
+                    const body = {contents:[{parts:[{inline_data:{mime_type:'image/jpeg',data:_silhouetteImgB64}},{text:prompt}]}]};
+                    const resp = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+                    const data = await resp.json();
+                    if (resp.ok) { r = data.candidates?.[0]?.content?.parts?.[0]?.text||null; break; }
+                    if (resp.status===429) continue;
+                    break;
+                } catch { continue; }
+            }
+        } else if (p === 'mistral') {
+            const vms = AI_PROVIDERS.mistral?.visionModels||['pixtral-large-latest'];
+            for (const model of vms) {
+                try {
+                    const body = {model,max_tokens:1500,messages:[{role:'user',content:[{type:'image_url',image_url:{url:'data:image/jpeg;base64,'+_silhouetteImgB64}},{type:'text',text:prompt}]}]};
+                    const resp = await fetch('https://api.mistral.ai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${cfg.apiKey}`},body:JSON.stringify(body)});
+                    const data = await resp.json();
+                    if (resp.ok&&data.choices?.[0]?.message?.content) { r=data.choices[0].message.content; break; }
+                    if (resp.status===429) continue;
+                    break;
+                } catch { continue; }
+            }
+        }
+        if (r && !r.startsWith('__ERROR__')) { reply=r; break; }
+    }
+
+    if (btn) { btn.disabled=false; btn.innerHTML='<i class="fas fa-magic"></i> Analyser l\'IA'; }
+
+    if (!reply) {
+        showNotification('Aucun provider vision disponible', 'error');
+        return;
+    }
+
+    // Extraire estimation BF si possible
+    const bfMatch = reply.match(/(\d{1,2}(?:[.,]\d)?)\s*%.*?(?:masse|grais|corpo)/i) ||
+                    reply.match(/(?:masse|grais|corpo).*?(\d{1,2}(?:[.,]\d)?)\s*%/i);
+    const bf = bfMatch ? parseFloat(bfMatch[1].replace(',','.')) : null;
+
+    _silRawAIText = reply;  // stocker le brut pour sauvegarde ultérieure
+
+    // Parser et afficher avec onglets
+    if (result) {
+        result.style.display = 'block';
+        result.innerHTML = _renderSilhouetteAITabs(reply, bf);
+    }
+
+    // Stocker l'analyse dans la photo si elle est sauvegardée
+    if (_silhouettePhotos.length > 0) {
+        const last = _silhouettePhotos[_silhouettePhotos.length-1];
+        if (!last.aiData) {
+            last.aiData = { text: reply, bf: bf ? bf+'%' : null };
+            _silSave();
+        }
+    }
+}
+
+// ── Rendu onglets analyse silhouette ────────────────────────────
+function _renderSilhouetteAITabs(rawText, bf) {
+    // Nettoyer le texte : supprimer ### ** # etc.
+    const clean = t => (t||'')
+        .replace(/#{1,4}\s*/g,'')
+        .replace(/\*\*(.+?)\*\*/g,'$1')
+        .replace(/\*(.+?)\*/g,'$1')
+        .replace(/^\s*[-•]\s*/gm,'')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .trim();
+
+    // Extraire sections par mots-clés
+    const sections = {
+        metrics: [],
+        plus:    [],
+        minus:   [],
+        tips:    [],
+        raw:     rawText
+    };
+
+    const lines = rawText.split('\n').map(l => l.replace(/#{1,4}\s*/g,'').replace(/\*\*/g,'').replace(/\*/g,'').trim()).filter(Boolean);
+
+    let current = 'tips';
+    const PLUS_KW  = ['point fort','force','bien','développé','bon','musclé','posture correcte','positif'];
+    const MINUS_KW = ['améliorer','axe','travail','développer','manque','faible','déséquil','déficit','négatif'];
+    const TIPS_KW  = ['conseil','recommand','suggestion','programme','priorité','objectif','progression'];
+    const METRIC_KW= ['masse grasse','body fat','bf','imc','poids','taux','estimation'];
+
+    lines.forEach(line => {
+        const ll = line.toLowerCase();
+        if (METRIC_KW.some(k=>ll.includes(k))) { sections.metrics.push(clean(line)); return; }
+        if (PLUS_KW.some(k=>ll.includes(k)))   { current='plus';  sections.plus.push(clean(line)); return; }
+        if (MINUS_KW.some(k=>ll.includes(k)))  { current='minus'; sections.minus.push(clean(line)); return; }
+        if (TIPS_KW.some(k=>ll.includes(k)))   { current='tips';  sections.tips.push(clean(line)); return; }
+        if (line.length > 20) sections[current].push(clean(line));
+    });
+
+    // Construire les métriques
+    const metricsHtml = `
+        ${bf ? `<div class="sil-metric-card"><span class="sil-metric-label"><i class="fas fa-percentage" style="color:var(--warning);margin-right:5px;"></i>Masse grasse estimée</span><span class="sil-metric-val">${bf}%</span></div>` : ''}
+        ${sections.metrics.filter(m=>!m.toLowerCase().includes('estimat')&&m.length>5).slice(0,4).map(m=>
+            `<div class="sil-metric-card"><span class="sil-metric-label" style="font-size:10px;max-width:70%;">${m}</span></div>`
+        ).join('')}
+        ${!bf && !sections.metrics.length ? '<div style="font-size:11px;color:var(--text-tertiary);text-align:center;padding:12px;">Métriques non extraites</div>' : ''}
+    `;
+
+    const pointsHtml = (arr, cls, icon) => arr.slice(0,5).map(t =>
+        `<div class="sil-point ${cls}"><span class="sil-point-icon">${icon}</span>${t}</div>`
+    ).join('') || `<div style="font-size:11px;color:var(--text-tertiary);padding:8px;">—</div>`;
+
+    const tipsHtml = sections.tips.slice(0,5).map(t =>
+        `<div class="sil-point tip"><span class="sil-point-icon"><i class="fas fa-lightbulb" style="color:#4F6EF7;"></i></span>${t}</div>`
+    ).join('') || `<div style="font-size:11px;color:var(--text-tertiary);padding:8px;">—</div>`;
+
+    const uid = Date.now();
+    return `
+    <div class="sil-tab-bar">
+        <button class="sil-tab active" onclick="silSwitchTab(this,'sil-p-metrics-${uid}')"><i class="fas fa-chart-bar" style="margin-right:3px;"></i>Métriques</button>
+        <button class="sil-tab" onclick="silSwitchTab(this,'sil-p-plus-${uid}')"><i class="fas fa-star" style="margin-right:3px;"></i>Points +</button>
+        <button class="sil-tab" onclick="silSwitchTab(this,'sil-p-minus-${uid}')"><i class="fas fa-arrow-up" style="margin-right:3px;"></i>À travailler</button>
+        <button class="sil-tab" onclick="silSwitchTab(this,'sil-p-tips-${uid}')"><i class="fas fa-lightbulb" style="margin-right:3px;"></i>Conseils</button>
+    </div>
+    <div class="sil-tab-pane active" id="sil-p-metrics-${uid}">${metricsHtml}</div>
+    <div class="sil-tab-pane" id="sil-p-plus-${uid}">${pointsHtml(sections.plus,'plus','<i class="fas fa-check-circle" style="color:#0FA86A;"></i>')}</div>
+    <div class="sil-tab-pane" id="sil-p-minus-${uid}">${pointsHtml(sections.minus,'minus','<i class="fas fa-exclamation-circle" style="color:var(--warning);"></i>')}</div>
+    <div class="sil-tab-pane" id="sil-p-tips-${uid}">${tipsHtml}</div>
+    <div class="sil-disclaimer">⚠️ Estimations visuelles ± 3-5% — à titre indicatif uniquement</div>`;
+}
+
+function silSwitchTab(btn, tabId) {
+    // Remonter au wrapper qui contient à la fois la tab-bar et les panes
+    let wrapper = btn.parentElement; // sil-tab-bar
+    if (wrapper) wrapper = wrapper.parentElement; // conteneur parent
+    if (!wrapper) wrapper = document; // fallback
+    wrapper.querySelectorAll('.sil-tab').forEach(t => t.classList.remove('active'));
+    wrapper.querySelectorAll('.sil-tab-pane').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    const pane = wrapper.querySelector('#'+tabId) || document.getElementById(tabId);
+    if (pane) pane.classList.add('active');
+}
+
+function saveSilhouettePhoto() {
+    if (!_silhouetteImgB64) { showNotification('Chargez une photo d\'abord', 'error'); return; }
+    const weight = parseFloat(document.getElementById('silhouette-weight-input')?.value) || null;
+    const note   = document.getElementById('silhouette-note-input')?.value?.trim() || '';
+    const aiText = _silRawAIText || null;
+
+    const photo = {
+        id:    'sil_' + Date.now(),
+        date:  new Date().toISOString(),
+        thumb: _silhouetteImgB64,  // on stocke la version compressée
+        weight, note,
+        aiData: aiText ? { text: aiText } : null
+    };
+    _silhouettePhotos.push(photo);
+    _silSave();
+    _renderSilhouetteGallery();
+    document.getElementById('silhouette-preview-zone').style.display = 'none';
+    _silhouetteImgB64 = null;
+    showNotification('Photo de progression sauvegardée !', 'success');
+}
+
+function _renderSilhouetteGallery() {
+    const gallery = document.getElementById('silhouette-gallery');
+    if (!gallery) return;
+    if (!_silhouettePhotos.length) {
+        gallery.innerHTML = '<div style="text-align:center;color:var(--text-tertiary);font-size:11px;grid-column:1/-1;padding:20px;">Aucune photo enregistrée</div>';
+        return;
+    }
+    gallery.innerHTML = [..._silhouettePhotos].reverse().map(p => {
+        const idx = _silhouettePhotos.indexOf(p);
+        const d   = new Date(p.date).toLocaleDateString('fr',{day:'numeric',month:'short',year:'numeric'});
+        return `<div class="body-photo-card" onclick="viewSilhouettePhoto(${idx})">
+            <img src="data:image/jpeg;base64,${p.thumb}" alt="Photo ${d}">
+            <div class="photo-date">${d}${p.weight?' · '+p.weight+'kg':''}</div>
+        </div>`;
+    }).join('');
+}
+
+function viewSilhouettePhoto(idx) {
+    const p = _silhouettePhotos[idx];
+    if (!p) return;
+    _silhouetteViewIdx = idx;
+    const d   = new Date(p.date).toLocaleDateString('fr',{day:'numeric',month:'short',year:'numeric'});
+    const dateEl = document.getElementById('silhouette-detail-date');
+    if (dateEl) dateEl.textContent = 'Photo du ' + d;
+    const img = document.getElementById('silhouette-detail-img');
+    if (img) img.src = 'data:image/jpeg;base64,' + p.thumb;
+    const met = document.getElementById('silhouette-detail-metrics');
+    if (met) {
+        const pills = [];
+        if (p.weight) pills.push(`<div class="body-metric-pill"><i class="fas fa-weight" style="color:var(--primary);"></i> ${p.weight} kg</div>`);
+        if (p.note)   pills.push(`<div class="body-metric-pill"><i class="fas fa-sticky-note" style="color:var(--warning);"></i> ${p.note}</div>`);
+        if (p.aiData?.bf) pills.push(`<div class="body-metric-pill"><i class="fas fa-percentage" style="color:var(--success);"></i> BF ~${p.aiData.bf}</div>`);
+        met.innerHTML = pills.join('');
+    }
+    const aiEl = document.getElementById('silhouette-detail-ai');
+    if (aiEl) {
+        if (p.aiData?.text) {
+            aiEl.style.display = 'block';
+            const bfMatch = p.aiData.text.match(/(\d{1,2}(?:[.,]\d)?)\s*%/i);
+            const bf = bfMatch ? parseFloat(bfMatch[1].replace(',','.')) : null;
+            aiEl.innerHTML = _renderSilhouetteAITabs(p.aiData.text, bf);
+        } else {
+            aiEl.style.display = 'none';
+        }
+    }
+    showModal('silhouette-detail-modal');
+}
+
+function deleteSilhouettePhoto() {
+    if (_silhouetteViewIdx === null) return;
+    if (!confirm('Supprimer cette photo de progression ?')) return;
+    _silhouettePhotos.splice(_silhouetteViewIdx, 1);
+    _silSave();
+    hideModal('silhouette-detail-modal');
+    _renderSilhouetteGallery();
+    showNotification('Photo supprimée', 'success');
+}
+
+// ════════════════════════════════════════════════════════════════
 // 3. PODOMÈTRE & MARCHE IA — Compteur temps réel
 // ════════════════════════════════════════════════════════════════
 
-let _walkActive      = false;
-let _walkSteps       = 0;
-let _walkStartTime   = null;   // timestamp du démarrage
-let _walkPauseOffset = 0;      // ms cumulés en pause (pour le temps total correct)
-let _walkPausedAt    = null;   // timestamp de la dernière mise en pause
-let _walkTimer       = null;
-let _walkGoalSteps   = 8000;
 let _walkGoalKcal    = 320;
 let _walkLastAccel   = null;
 let _walkAccelBuf    = [];
@@ -32254,7 +33569,38 @@ function exportReportPDF() {
 /* ── Nutrition Plan ── */
 .nutri-day-meals { transition: none; }
 
-</style>
+/* ═══════════════════════════════════════════════════════════
+   SCAN ANIMATION
+   ═══════════════════════════════════════════════════════════ */
+@keyframes scanRotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+@keyframes scanDot { 0%,80%,100%{transform:scale(0);opacity:.3} 40%{transform:scale(1);opacity:1} }
+@keyframes scanSweep {
+  0%   { transform: translateY(-100%); opacity:.6; }
+  50%  { opacity:1; }
+  100% { transform: translateY(220px); opacity:.6; }
+}
+.scan-sweep-line {
+  position:absolute;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,#4F6EF7,#7C3AED,transparent);
+  animation:scanSweep 1.8s ease-in-out infinite;
+  pointer-events:none;
+}
+.scan-correction-item {
+  display:grid;grid-template-columns:1fr 70px 70px;gap:6px;
+  align-items:center;padding:10px;
+  background:var(--card-bg-alt);border-radius:12px;border:1px solid var(--border);
+}
+.scan-corr-input {
+  background:var(--card-bg);border:1.5px solid var(--border);border-radius:8px;
+  padding:6px 8px;font-size:12px;color:var(--text-primary);width:100%;
+  font-family:inherit;
+}
+.scan-corr-input:focus { outline:none;border-color:var(--primary); }
+
+/* ═══════════════════════════════════════════════════════════
+   CALENDRIER SEMAINE — Design premium
+   ═══════════════════════════════════════════════════════════ */
+
     </head><body>
         <h1>Rapport hebdomadaire IronPlate</h1>
         <div class="sub">Généré le ${now}</div>
@@ -36957,6 +38303,198 @@ window.addEventListener('beforeunload', function(e) {
       </div>
     </div>
   </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     ÉCRAN CALENDRIER / PLANNING SEMAINE
+     ═══════════════════════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL AJOUT / DÉTAIL ÉVÉNEMENT CALENDRIER
+     ═══════════════════════════════════════════════════════════ -->
+<div class="modal" id="cal-event-modal">
+    <div class="modal-content" style="max-height:88vh;overflow-y:auto;">
+        <div class="modal-header">
+            <h3 class="modal-title" id="cal-event-modal-title">Ajouter un événement</h3>
+            <button class="modal-close" onclick="hideModal('cal-event-modal')">×</button>
+        </div>
+        <div class="modal-body" style="padding:16px;">
+            <div style="margin-bottom:12px;">
+                <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:6px;">Type</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+                    <button id="cal-type-workout" onclick="calSelectEventType('workout')" style="padding:8px;border-radius:10px;border:1.5px solid #4F6EF7;background:rgba(79,110,247,.1);color:#4F6EF7;font-size:11px;font-weight:700;cursor:pointer;">
+                        <i class="fas fa-dumbbell"></i><br>Séance
+                    </button>
+                    <button id="cal-type-meal" onclick="calSelectEventType('meal')" style="padding:8px;border-radius:10px;border:1.5px solid var(--border);background:var(--card-bg-alt);color:var(--text-secondary);font-size:11px;font-weight:700;cursor:pointer;">
+                        <i class="fas fa-utensils"></i><br>Repas
+                    </button>
+                    <button id="cal-type-rest" onclick="calSelectEventType('rest')" style="padding:8px;border-radius:10px;border:1.5px solid var(--border);background:var(--card-bg-alt);color:var(--text-secondary);font-size:11px;font-weight:700;cursor:pointer;">
+                        <i class="fas fa-bed"></i><br>Repos
+                    </button>
+                </div>
+            </div>
+            <div style="margin-bottom:12px;">
+                <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:6px;">Date</div>
+                <input type="date" id="cal-event-date" class="number-input" style="width:100%;font-size:13px;">
+            </div>
+            <div id="cal-event-workout-fields" style="margin-bottom:12px;">
+                <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:6px;">Séance</div>
+                <select id="cal-event-workout-select" class="filter-select" style="width:100%;font-size:13px;margin-bottom:8px;">
+                    <option value="">— Choisir une séance —</option>
+                </select>
+                <input type="text" id="cal-event-custom-label" class="number-input" placeholder="Ou saisir un intitulé libre…" style="width:100%;font-size:13px;">
+            </div>
+            <div id="cal-event-meal-fields" style="margin-bottom:12px;display:none;">
+                <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:6px;">Recette / repas planifié</div>
+                <input type="text" id="cal-event-meal-label" class="number-input" placeholder="Ex : Poulet riz légumes…" style="width:100%;font-size:13px;margin-bottom:6px;">
+                <input type="text" id="cal-event-meal-kcal" class="number-input" placeholder="Calories estimées (optionnel)" style="width:100%;font-size:13px;">
+            </div>
+            <div style="margin-bottom:14px;">
+                <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:6px;">Note (optionnel)</div>
+                <textarea id="cal-event-note" class="number-input" rows="2" placeholder="Note…" style="width:100%;font-size:12px;resize:none;font-family:inherit;"></textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <button onclick="hideModal('cal-event-modal')" style="padding:11px;background:var(--card-bg-alt);color:var(--text-secondary);border:1.5px solid var(--border);border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;">Annuler</button>
+                <button onclick="saveCalEvent()" style="padding:11px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer;"><i class="fas fa-check"></i> Sauvegarder</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL GÉNÉRATION IA CALENDRIER
+     ═══════════════════════════════════════════════════════════ -->
+<div class="modal" id="cal-ai-modal">
+    <div class="modal-content" style="max-height:90vh;overflow-y:auto;">
+        <div class="modal-header" style="background:linear-gradient(135deg,#4F6EF7,#7C3AED);border-radius:18px 18px 0 0;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;"><i class="fas fa-robot" style="color:white;font-size:14px;"></i></div>
+                <div>
+                    <div class="modal-title" style="color:white;font-size:14px;">Générer mon planning IA</div>
+                    <div style="font-size:10px;color:rgba(255,255,255,.75);">Séances + recettes pour la semaine</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="hideModal('cal-ai-modal')" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+        </div>
+        <div class="modal-body" style="padding:16px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+                <div>
+                    <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:5px;">Jours séances</div>
+                    <select id="cal-ai-days" class="filter-select" style="width:100%;">
+                        <option value="3">3 jours / sem.</option>
+                        <option value="4" selected>4 jours / sem.</option>
+                        <option value="5">5 jours / sem.</option>
+                    </select>
+                </div>
+                <div>
+                    <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:5px;">Inclure repas</div>
+                    <select id="cal-ai-meals" class="filter-select" style="width:100%;">
+                        <option value="yes" selected>Oui — avec recettes</option>
+                        <option value="no">Non — séances only</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-bottom:14px;">
+                <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:5px;">Contraintes / préférences</div>
+                <textarea id="cal-ai-prefs" class="number-input" rows="3" placeholder="Ex : pas de gluten, végétarien, pas de legs lundi…" style="width:100%;font-size:12px;resize:none;font-family:inherit;"></textarea>
+            </div>
+            <div id="cal-ai-status" style="display:none;font-size:12px;font-weight:600;padding:10px;border-radius:10px;text-align:center;margin-bottom:10px;"></div>
+            <div id="cal-ai-result" style="display:none;margin-bottom:14px;"></div>
+            <button onclick="generateCalAIPlan()" id="cal-ai-gen-btn" style="width:100%;padding:13px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:14px;font-size:13px;font-weight:800;cursor:pointer;">
+                <i class="fas fa-magic"></i> Générer le planning
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL SILHOUETTE / PHOTOS CORPS
+     ═══════════════════════════════════════════════════════════ -->
+<div class="modal" id="silhouette-modal">
+    <div class="modal-content" style="max-height:94vh;overflow-y:auto;">
+        <div class="modal-header" style="background:linear-gradient(135deg,#0FA86A,#059669);border-radius:18px 18px 0 0;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;"><i class="fas fa-user" style="color:white;font-size:14px;"></i></div>
+                <div>
+                    <div class="modal-title" style="color:white;font-size:14px;">Suivi silhouette</div>
+                    <div style="font-size:10px;color:rgba(255,255,255,.75);">Photos de progression + analyse IA</div>
+                </div>
+            </div>
+            <button class="modal-close" onclick="hideModal('silhouette-modal')" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+        </div>
+        <div class="modal-body" style="padding:16px;">
+
+            <!-- Ajouter une photo -->
+            <div style="margin-bottom:16px;">
+                <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:8px;">Ajouter une photo</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <button onclick="silhouetteCamera()" style="padding:10px;background:var(--primary);color:white;border:none;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;">
+                        <i class="fas fa-camera"></i> Caméra
+                    </button>
+                    <label style="cursor:pointer;">
+                        <input type="file" id="silhouette-file-input" accept="image/*" style="display:none;" onchange="loadSilhouetteImage(event)">
+                        <div style="padding:10px;background:var(--card-bg-alt);color:var(--text-primary);border:1.5px solid var(--border);border-radius:12px;font-size:12px;font-weight:700;text-align:center;cursor:pointer;">
+                            <i class="fas fa-image"></i> Galerie
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Prévisualisation + analyse -->
+            <div id="silhouette-preview-zone" style="display:none;margin-bottom:14px;">
+                <img id="silhouette-preview-img" style="width:100%;border-radius:12px;max-height:300px;object-fit:contain;background:#0a0a18;margin-bottom:10px;" alt="Photo">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                    <div>
+                        <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);margin-bottom:4px;">Poids (kg)</div>
+                        <input type="number" inputmode="decimal" id="silhouette-weight-input" class="number-input" placeholder="Ex : 78.5" step="0.1" style="width:100%;font-size:13px;">
+                    </div>
+                    <div>
+                        <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);margin-bottom:4px;">Note</div>
+                        <input type="text" id="silhouette-note-input" class="number-input" placeholder="Semaine 4…" style="width:100%;font-size:13px;">
+                    </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <button onclick="analyzeSilhouetteAI()" id="silhouette-analyze-btn" style="padding:10px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer;">
+                        <i class="fas fa-magic"></i> Analyser l'IA
+                    </button>
+                    <button onclick="saveSilhouettePhoto()" style="padding:10px;background:var(--success);color:white;border:none;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer;">
+                        <i class="fas fa-save"></i> Sauvegarder
+                    </button>
+                </div>
+                <div id="silhouette-ai-result" style="display:none;" class="body-ai-result"></div>
+            </div>
+
+            <!-- Galerie progression -->
+            <div>
+                <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:8px;">Progression</div>
+                <div id="silhouette-gallery" class="body-photo-grid">
+                    <div style="text-align:center;color:var(--text-tertiary);font-size:11px;grid-column:1/-1;padding:20px;">
+                        Aucune photo enregistrée
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL DÉTAIL PHOTO SILHOUETTE
+     ═══════════════════════════════════════════════════════════ -->
+<div class="modal" id="silhouette-detail-modal">
+    <div class="modal-content" style="max-height:90vh;overflow-y:auto;">
+        <div class="modal-header">
+            <h3 class="modal-title" id="silhouette-detail-date">Photo du …</h3>
+            <button class="modal-close" onclick="hideModal('silhouette-detail-modal')">×</button>
+        </div>
+        <div class="modal-body" style="padding:16px;">
+            <img id="silhouette-detail-img" style="width:100%;border-radius:12px;max-height:400px;object-fit:contain;background:#0a0a18;margin-bottom:12px;" alt="">
+            <div id="silhouette-detail-metrics" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;"></div>
+            <div id="silhouette-detail-ai" style="display:none;" class="body-ai-result"></div>
+            <button onclick="deleteSilhouettePhoto()" style="width:100%;padding:10px;background:rgba(224,62,62,.08);color:var(--danger);border:1.5px solid rgba(224,62,62,.2);border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;margin-top:10px;">
+                <i class="fas fa-trash"></i> Supprimer cette photo
+            </button>
+        </div>
+    </div>
 </div>
 
 </body>
