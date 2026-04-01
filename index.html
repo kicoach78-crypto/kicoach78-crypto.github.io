@@ -12243,8 +12243,10 @@ input:checked + .slider:before {
 .scan-corr-input:focus { outline:none;border-color:var(--primary); }
 
 /* ══════════════════════════════════════════════════════════
-   CALENDRIER / PLANNING — Design premium
+   CALENDRIER / PLANNING — Design premium v2
    ══════════════════════════════════════════════════════════ */
+
+/* Header sticky */
 .cal-header-bar {
     display:flex;align-items:center;gap:8px;
     padding:12px 14px;background:var(--card-bg);
@@ -12254,55 +12256,204 @@ input:checked + .slider:before {
 .cal-week-title { flex:1;text-align:center; }
 .cal-week-title .wt-label { font-size:13px;font-weight:900;color:var(--text-primary);letter-spacing:-.02em; }
 .cal-week-title .wt-range  { font-size:10px;color:var(--text-tertiary);margin-top:1px; }
-.cal-nav-btn { width:34px;height:34px;border-radius:10px;background:var(--card-bg-alt);border:1.5px solid var(--border);color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;flex-shrink:0; }
+.cal-nav-btn {
+    width:34px;height:34px;border-radius:10px;background:var(--card-bg-alt);
+    border:1.5px solid var(--border);color:var(--text-secondary);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;transition:all .15s;flex-shrink:0;
+}
 .cal-nav-btn:hover { background:var(--primary);border-color:var(--primary);color:white; }
-.cal-today-btn { padding:0 12px;height:34px;border-radius:10px;background:var(--primary);color:white;border:none;font-size:11px;font-weight:800;cursor:pointer;flex-shrink:0; }
-.cal-actions-bar { display:flex;gap:8px;padding:10px 14px;background:var(--card-bg);border-bottom:1px solid var(--border);overflow-x:auto; }
-.cal-actions-bar::-webkit-scrollbar { display:none; }
-.cal-action-btn { flex-shrink:0;display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .15s;border:none; }
-.cal-action-btn.primary { background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;box-shadow:0 3px 10px rgba(79,110,247,.28); }
-.cal-action-btn.secondary { background:var(--card-bg-alt);color:var(--text-primary);border:1.5px solid var(--border); }
-.cal-action-btn.green { background:rgba(15,168,106,.1);color:#0FA86A;border:1px solid rgba(15,168,106,.25); }
-.cal-action-btn.orange { background:rgba(234,88,12,.08);color:#EA580C;border:1px solid rgba(234,88,12,.2); }
-
-/* Grille jours */
-.cal-days-header { display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:10px 10px 4px; }
-.cal-day-head { text-align:center;padding:5px 2px 7px;border-radius:10px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--text-tertiary);transition:all .15s; }
-.cal-day-head.today { background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;box-shadow:0 2px 8px rgba(79,110,247,.35); }
-.cal-day-head .day-num { display:block;font-size:15px;font-weight:900;margin-top:2px;letter-spacing:-.02em; }
-.cal-grid-body { display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:0 10px 16px;align-items:start; }
-.cal-col { display:flex;flex-direction:column;gap:3px;min-height:56px;border-radius:8px;padding:2px; }
-.cal-col.today-col { background:rgba(79,110,247,.04); }
-
-/* Événements */
-.cal-evt { border-radius:7px;padding:4px 5px;font-size:9px;font-weight:700;line-height:1.3;cursor:pointer;transition:transform .1s,box-shadow .12s;position:relative;overflow:hidden;border-left:2.5px solid transparent; }
-.cal-evt:hover { transform:scale(1.05);box-shadow:0 3px 10px rgba(0,0,0,.15); }
-.cal-evt::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent);pointer-events:none; }
-.cal-evt.workout { background:linear-gradient(135deg,rgba(79,110,247,.16),rgba(124,58,237,.08));border-color:#4F6EF7;color:#4F6EF7; }
-.cal-evt.meal    { background:linear-gradient(135deg,rgba(15,168,106,.14),rgba(5,150,105,.07));border-color:#0FA86A;color:#0FA86A; }
-.cal-evt.rest    { background:rgba(100,116,139,.08);border-color:#94A3B8;color:#94A3B8; }
-.cal-evt.real    { opacity:.7; }
-.cal-evt-icon { font-size:8px;margin-right:2px; }
-.cal-evt-sub  { font-size:8px;opacity:.7;margin-top:1px; }
-.cal-add-btn { width:100%;padding:5px 2px;background:none;border:1px dashed rgba(100,116,139,.3);border-radius:6px;font-size:12px;color:var(--text-tertiary);cursor:pointer;transition:all .12s;line-height:1; }
-.cal-add-btn:hover { border-color:var(--primary);color:var(--primary);background:rgba(79,110,247,.05); }
+.cal-today-btn {
+    padding:0 12px;height:34px;border-radius:10px;
+    background:var(--primary);color:white;border:none;
+    font-size:11px;font-weight:800;cursor:pointer;flex-shrink:0;
+    box-shadow:0 2px 8px rgba(79,110,247,.3);
+}
 
 /* Stats semaine */
-.cal-week-stats { display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 14px;background:var(--card-bg);border-bottom:1px solid var(--border); }
-.cal-stat-cell { background:var(--card-bg-alt);border-radius:10px;padding:8px 6px;text-align:center;border:1px solid var(--border); }
-.cal-stat-val { font-size:16px;font-weight:900;color:var(--primary);letter-spacing:-.02em; }
+.cal-week-stats {
+    display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
+    padding:10px 12px;background:var(--card-bg);border-bottom:1px solid var(--border);
+}
+.cal-stat-cell {
+    background:var(--card-bg-alt);border-radius:12px;
+    padding:8px 4px;text-align:center;border:1px solid var(--border);
+}
+.cal-stat-val { font-size:17px;font-weight:900;color:var(--primary);letter-spacing:-.03em; }
 .cal-stat-lbl { font-size:8px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);margin-top:2px;letter-spacing:.04em; }
 
+/* Barre d'actions */
+.cal-actions-bar {
+    display:flex;gap:8px;padding:10px 12px;background:var(--card-bg);
+    border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;
+}
+.cal-actions-bar::-webkit-scrollbar { display:none; }
+.cal-action-btn {
+    flex-shrink:0;display:flex;align-items:center;gap:6px;
+    padding:7px 14px;border-radius:20px;font-size:11px;font-weight:700;
+    cursor:pointer;white-space:nowrap;transition:all .15s;border:none;
+}
+.cal-action-btn.primary  { background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;box-shadow:0 2px 10px rgba(79,110,247,.3); }
+.cal-action-btn.secondary{ background:var(--card-bg-alt);color:var(--text-primary);border:1.5px solid var(--border); }
+.cal-action-btn.green    { background:linear-gradient(135deg,#0FA86A,#059669);color:white;box-shadow:0 2px 8px rgba(15,168,106,.25); }
+.cal-action-btn.orange   { background:rgba(234,88,12,.08);color:#EA580C;border:1px solid rgba(234,88,12,.2); }
+.cal-action-btn.danger   { background:rgba(224,62,62,.08);color:var(--danger);border:1px solid rgba(224,62,62,.2); }
+
+/* Scroll horizontal tactile — conteneur principal */
+.cal-scroll-wrap {
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    cursor:grab;
+    user-select:none;
+}
+.cal-scroll-wrap::-webkit-scrollbar { display:none; }
+.cal-scroll-wrap:active { cursor:grabbing; }
+
+/* En-têtes jours — largeur minimale pour forcer le scroll */
+.cal-days-header {
+    display:grid;
+    grid-template-columns:repeat(7, minmax(44px, 1fr));
+    gap:4px;
+    padding:10px 10px 4px;
+    min-width:340px;
+}
+.cal-day-head {
+    text-align:center;padding:6px 2px 8px;border-radius:12px;
+    font-size:9px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.03em;color:var(--text-tertiary);transition:all .15s;
+}
+.cal-day-head.today {
+    background:linear-gradient(135deg,#4F6EF7,#7C3AED);
+    color:white;box-shadow:0 3px 10px rgba(79,110,247,.35);
+}
+.cal-day-head .day-num { display:block;font-size:15px;font-weight:900;margin-top:2px;letter-spacing:-.03em; }
+
+/* Grille — même largeur min que l'en-tête */
+.cal-grid-body {
+    display:grid;
+    grid-template-columns:repeat(7, minmax(44px, 1fr));
+    gap:4px;
+    padding:0 10px 16px;
+    align-items:start;
+    min-width:340px;
+}
+.cal-col { display:flex;flex-direction:column;gap:4px;min-height:60px;border-radius:10px;padding:3px; }
+.cal-col.today-col { background:rgba(79,110,247,.05);box-shadow:inset 0 0 0 1px rgba(79,110,247,.15); }
+
+/* Événements — fond plein, texte blanc = toujours lisible */
+.cal-evt {
+    border-radius:9px;padding:5px 6px;font-size:9px;font-weight:700;line-height:1.35;
+    cursor:pointer;transition:transform .12s,box-shadow .12s;
+    position:relative;overflow:visible;border:none;
+    display:flex;flex-direction:column;
+}
+.cal-evt-row { display:flex;align-items:center;gap:2px;min-width:0; }
+.cal-evt:active { transform:scale(.96); }
+.cal-evt:hover  { transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.25); }
+
+/* Séance planifiée */
+.cal-evt.workout { background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;box-shadow:0 2px 6px rgba(79,110,247,.35); }
+/* Séance faite */
+.cal-evt.workout.done-evt { background:linear-gradient(135deg,#0FA86A,#059669);box-shadow:0 2px 6px rgba(15,168,106,.3); }
+/* Repas planifié */
+.cal-evt.meal { background:linear-gradient(135deg,#0FA86A,#059669);color:white;box-shadow:0 2px 6px rgba(15,168,106,.3); }
+/* Repas fait */
+.cal-evt.meal.done-evt { background:linear-gradient(135deg,#047857,#065f46);box-shadow:0 2px 6px rgba(4,120,87,.3); }
+/* Repos */
+.cal-evt.rest { background:var(--card-bg-alt);color:var(--text-secondary);border:1.5px solid var(--border); }
+
+/* Badge fait */
+.cal-evt-done-badge {
+    display:inline-flex;align-items:center;justify-content:center;
+    width:12px;height:12px;border-radius:50%;
+    background:rgba(255,255,255,.3);font-size:7px;color:white;
+    margin-left:2px;flex-shrink:0;border:1px solid rgba(255,255,255,.5);
+}
+.cal-evt-time { font-size:8px;opacity:.8;font-weight:600;flex-shrink:0; }
+.cal-evt-lbl  { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9px;font-weight:700; }
+.cal-evt-sub  { font-size:8px;opacity:.8;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,.85); }
+.cal-evt.rest .cal-evt-sub { color:var(--text-tertiary); }
+
+/* Poubelle sur événement */
+.cal-evt-wrap { position:relative; }
+.cal-evt-del {
+    position:absolute;top:-5px;right:-5px;
+    width:16px;height:16px;border-radius:50%;
+    background:#E03E3E;color:white;border:2px solid var(--card-bg);
+    font-size:7px;display:none;align-items:center;justify-content:center;
+    cursor:pointer;z-index:5;box-shadow:0 1px 4px rgba(0,0,0,.3);
+}
+.cal-evt-wrap:hover .cal-evt-del { display:flex; }
+
+/* Bouton + */
+.cal-add-btn {
+    width:100%;padding:5px 2px;background:none;
+    border:1.5px dashed rgba(100,116,139,.25);
+    border-radius:8px;font-size:13px;color:var(--text-tertiary);
+    cursor:pointer;transition:all .14s;line-height:1;font-weight:300;
+}
+.cal-add-btn:hover { border-color:var(--primary);color:var(--primary);background:rgba(79,110,247,.05); }
+
 /* Légende */
-.cal-legend { display:flex;gap:12px;padding:6px 14px 0;flex-wrap:wrap; }
-.cal-legend-item { display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text-tertiary); }
-.cal-legend-dot { width:10px;height:10px;border-radius:3px; }
+.cal-legend { display:flex;gap:12px;padding:8px 12px 0;flex-wrap:wrap; }
+.cal-legend-item { display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-tertiary); }
+.cal-legend-dot  { width:12px;height:12px;border-radius:4px; }
 
 @media (max-width:380px) {
     .cal-days-header,.cal-grid-body { gap:2px;padding:6px 6px; }
     .cal-evt { font-size:8px;padding:3px 4px; }
     .cal-day-head .day-num { font-size:13px; }
 }
+
+/* Modal ajout — design premium */
+.cal-type-btn {
+    padding:12px 6px;border-radius:14px;border:2px solid transparent;
+    font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;
+    display:flex;flex-direction:column;align-items:center;gap:5px;
+    background:var(--card-bg-alt);color:var(--text-secondary);
+}
+.cal-type-btn .cbt-icon {
+    width:36px;height:36px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;font-size:16px;
+    background:var(--border);color:var(--text-secondary);transition:all .15s;
+}
+.cal-type-btn.active-workout  { border-color:#4F6EF7;color:#4F6EF7;background:rgba(79,110,247,.06); }
+.cal-type-btn.active-workout .cbt-icon { background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white; }
+.cal-type-btn.active-meal     { border-color:#0FA86A;color:#0FA86A;background:rgba(15,168,106,.06); }
+.cal-type-btn.active-meal .cbt-icon { background:linear-gradient(135deg,#0FA86A,#059669);color:white; }
+.cal-type-btn.active-rest     { border-color:#94A3B8;color:#64748B;background:rgba(100,116,139,.06); }
+.cal-type-btn.active-rest .cbt-icon { background:#94A3B8;color:white; }
+
+.cal-field-lbl {
+    font-size:10px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:7px;
+    display:flex;align-items:center;gap:6px;
+}
+.cal-field-lbl::before { content:'';width:3px;height:12px;border-radius:2px;background:var(--primary);flex-shrink:0; }
+
+.cal-select-p {
+    width:100%;padding:11px 38px 11px 14px;border-radius:12px;
+    background:var(--card-bg-alt);border:1.5px solid var(--border);
+    color:var(--text-primary);font-size:13px;font-weight:600;font-family:inherit;
+    cursor:pointer;-webkit-appearance:none;appearance:none;transition:border-color .15s;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path fill='%2394A3B8' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/></svg>");
+    background-repeat:no-repeat;background-position:right 12px center;background-size:18px;
+}
+.cal-select-p:focus { outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,110,247,.12); }
+
+.cal-preview-box {
+    background:var(--card-bg-alt);border:1px solid var(--border);border-radius:12px;
+    padding:10px 12px;margin-top:8px;font-size:11px;color:var(--text-secondary);
+    max-height:130px;overflow-y:auto;animation:fadeIn .2s ease;
+}
+.cal-input-p {
+    width:100%;padding:11px 14px;border-radius:12px;
+    background:var(--card-bg-alt);border:1.5px solid var(--border);
+    color:var(--text-primary);font-size:13px;font-family:inherit;transition:border-color .15s;
+}
+.cal-input-p:focus { outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,110,247,.12); }
+
 
 /* ══════════════════════════════════════════════════════════
    SILHOUETTE / SUIVI CORPS
@@ -13718,24 +13869,29 @@ input:checked + .slider:before {
                 <!-- Actions -->
                 <div class="cal-actions-bar">
                     <button class="cal-action-btn primary" onclick="openCalAIGenerate()">
-                        <i class="fas fa-magic"></i> Planifier avec l'IA
+                        <i class="fas fa-magic"></i> Planifier IA
                     </button>
                     <button class="cal-action-btn secondary" onclick="openCalAddEvent()">
                         <i class="fas fa-plus"></i> Ajouter
                     </button>
                     <button class="cal-action-btn orange" onclick="_calSyncFromHistory()">
-                        <i class="fas fa-sync-alt"></i> Sync historique
+                        <i class="fas fa-sync-alt"></i> Sync
                     </button>
                     <button class="cal-action-btn green" onclick="openCalSilhouette()">
                         <i class="fas fa-camera"></i> Silhouette
                     </button>
+                    <button class="cal-action-btn danger" onclick="calResetAll()">
+                        <i class="fas fa-trash-alt"></i> Reset
+                    </button>
                 </div>
 
-                <!-- En-têtes jours -->
-                <div class="cal-days-header" id="cal-week-header"></div>
-
-                <!-- Grille événements -->
-                <div class="cal-grid-body" id="cal-week-grid"></div>
+                <!-- Grille scrollable horizontalement (swipe mobile) -->
+                <div class="cal-scroll-wrap" id="cal-scroll-wrap">
+                    <!-- En-têtes jours -->
+                    <div class="cal-days-header" id="cal-week-header"></div>
+                    <!-- Grille événements -->
+                    <div class="cal-grid-body" id="cal-week-grid"></div>
+                </div>
 
                 <!-- Légende -->
                 <div class="cal-legend">
@@ -22814,6 +22970,14 @@ function saveWorkoutData(saveToHistory = true) {
         };
         
         workoutHistory.unshift(historyEntry);
+
+        // ── Intégration Planning ─────────────────────────────────────────
+        // 1. Marquer l'événement planifié du jour comme fait
+        if (typeof _calMarkEventDone === 'function') _calMarkEventDone(historyEntry);
+        // 2. Planifier automatiquement la même séance semaine suivante
+        if (typeof _calAutoScheduleNextSession === 'function') _calAutoScheduleNextSession(historyEntry);
+        // ────────────────────────────────────────────────────────────────
+
         saveToLocalStorage();
         
         if (totalDistanceReelle > 0 && totalWeight > 0) {
@@ -31182,6 +31346,15 @@ function _renderWeekPlan(plan, container) {
                 </button>
             </div>`;
     }).join('');
+
+    // Bouton export vers planning
+    container.innerHTML += `
+    <div style="margin-top:14px;padding:12px;background:linear-gradient(135deg,rgba(79,110,247,.08),rgba(124,58,237,.06));border:1.5px solid rgba(79,110,247,.2);border-radius:14px;text-align:center;">
+        <div style="font-size:11px;color:var(--text-secondary);margin-bottom:8px;">Planifier toutes ces séances dans votre calendrier</div>
+        <button onclick="calExportWorkoutPlanToCalendar()" style="padding:10px 20px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:10px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 3px 10px rgba(79,110,247,.3);">
+            <i class="fas fa-calendar-plus"></i> → Exporter vers Planning
+        </button>
+    </div>`;
 }
 
 // Legacy alias
@@ -31856,30 +32029,23 @@ function _calRenderWeek() {
     if (range) range.textContent = `${dates[0].toLocaleDateString('fr',{day:'numeric',month:'short'})} – ${dates[6].toLocaleDateString('fr',{day:'numeric',month:'short',year:'numeric'})}`;
 
     const todayStr = new Date().toISOString().slice(0,10);
-    const evIcons  = { workout:'<i class="fas fa-dumbbell"></i>', meal:'<i class="fas fa-utensils"></i>', rest:'<i class="fas fa-moon"></i>' };
 
-    // Calculer stats semaine
+    // Stats semaine
     const weekDateStrs = dates.map(d => d.toISOString().slice(0,10));
     const weekEvents   = _calEvents.filter(e => weekDateStrs.includes(e.date));
     const statWorkouts = weekEvents.filter(e => e.type==='workout').length;
     const statMeals    = weekEvents.filter(e => e.type==='meal').length;
     const statRest     = weekEvents.filter(e => e.type==='rest').length;
-
-    // Kcal moyenne depuis l'historique nutrition
     let statKcal = '—';
     if (typeof nutritionHistory !== 'undefined' && nutritionHistory.length) {
         const weekNutr = nutritionHistory.filter(m => weekDateStrs.includes((m.date||'').slice(0,10)));
-        if (weekNutr.length) {
-            const totalKcal = weekNutr.reduce((s,m) => s + ((m.calories||0)), 0);
-            statKcal = Math.round(totalKcal / weekNutr.length);
-        }
+        if (weekNutr.length) statKcal = Math.round(weekNutr.reduce((s,m) => s+(m.calories||0),0) / weekNutr.length);
     }
-
-    const setS = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-    setS('cal-stat-workouts', statWorkouts || '0');
+    const setS = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+    setS('cal-stat-workouts', statWorkouts||'0');
     setS('cal-stat-kcal',     statKcal);
-    setS('cal-stat-meals',    statMeals || '0');
-    setS('cal-stat-rest',     statRest || '0');
+    setS('cal-stat-meals',    statMeals||'0');
+    setS('cal-stat-rest',     statRest||'0');
 
     // En-têtes
     header.innerHTML = dates.map((d,i) => {
@@ -31894,38 +32060,54 @@ function _calRenderWeek() {
     grid.innerHTML = dates.map((d,i) => {
         const ds = d.toISOString().slice(0,10);
         const isToday = ds === todayStr;
-        const dayEvents = _calEvents.filter(e => e.date === ds);
+        const dayEvents = _calEvents
+            .map((ev,idx) => ({ev,idx}))
+            .filter(({ev}) => ev.date === ds)
+            .sort((a,b) => {
+                // Trier par heure si disponible
+                const ta = a.ev.time||'99:99', tb = b.ev.time||'99:99';
+                return ta.localeCompare(tb);
+            });
 
-        const evHtml = dayEvents.map(ev => {
-            const globalIdx = _calEvents.indexOf(ev);
-            const lbl  = (ev.label||'').length > 11 ? (ev.label||'').slice(0,10)+'…' : (ev.label||'');
-            const sub  = ev.detail ? `<div class="cal-evt-sub">${ev.detail.length>13?ev.detail.slice(0,12)+'…':ev.detail}</div>` : '';
-            const done = ev.done ? ' real' : '';
+        const evHtml = dayEvents.map(({ev, idx: globalIdx}) => {
+            const isDone = !!ev.done;
+            const lbl    = (ev.label||'').length > 12 ? (ev.label||'').slice(0,11)+'…' : (ev.label||'');
+            const time   = ev.time ? `<span class="cal-evt-time">${ev.time}</span>` : '';
+            const doneBadge = isDone ? `<span class="cal-evt-done-badge"><i class="fas fa-check" style="font-size:6px;"></i></span>` : '';
+            // Badge "Moi" pour events créés manuellement (pas du plan IA, pas de l'historique)
+            const userBadge = (!ev.fromPlan && !ev.recurrenceSource && !ev.workoutId && !ev.done)
+                ? `<span style="font-size:7px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);border-radius:3px;padding:0 3px;margin-left:2px;flex-shrink:0;">✏</span>` : '';
+            // Type repas court
+            const mealTypeShort = ev.type === 'meal' && ev.nutritionPlanMeal?.type
+                ? ({breakfast:'PD', lunch:'DJ', dinner:'DN', snack:'Col', pre_workout:'Pré', post_workout:'Post'}[ev.nutritionPlanMeal.type] || '')
+                : '';
+            const sub    = ev.detail ? `<div class="cal-evt-sub">${ev.detail.length>15?ev.detail.slice(0,14)+'…':ev.detail}${mealTypeShort?' · '+mealTypeShort:''}</div>` : (mealTypeShort?`<div class="cal-evt-sub">${mealTypeShort}</div>`:'');
+            const doneClass = isDone ? ' done-evt' : '';
 
-            // Action au clic selon le type et l'état
-            let clickAction = `calEditEvent(${globalIdx})`;
+            // Action clic
+            let clickAction;
             if (ev.type === 'workout') {
-                if (ev.done && ev.workoutId) {
-                    // Séance faite → voir détail historique
-                    clickAction = `_calOpenDoneWorkout('${ev.workoutId}')`;
-                } else {
-                    // Séance planifiée → modal de lancement
-                    clickAction = `_calOpenPlannedWorkout(${globalIdx})`;
-                }
+                clickAction = isDone && ev.workoutId
+                    ? `_calOpenDoneWorkout('${ev.workoutId}')`
+                    : `_calOpenPlannedWorkout(${globalIdx})`;
             } else if (ev.type === 'meal') {
-                // Repas → modal résumé + navigation nutrition
                 clickAction = `_calOpenNutritionDay(${globalIdx})`;
+            } else {
+                clickAction = `calEditEvent(${globalIdx})`;
             }
 
-            const doneTag = ev.done
-                ? `<span style="font-size:7px;opacity:.8;margin-left:2px;background:rgba(255,255,255,.2);padding:0 3px;border-radius:3px;">✓</span>`
-                : '';
-            const planTag = !ev.done && ev.type==='workout' && ev.workoutName
-                ? `<span style="font-size:7px;opacity:.7;margin-left:2px;">▶</span>`
-                : '';
-
-            return `<div class="cal-evt ${ev.type}${done}" onclick="${clickAction}" title="${ev.label||''}${ev.detail?' · '+ev.detail:''}${ev.done?' — Fait':ev.type==='workout'?' — Appuyer pour démarrer':''}">
-                <span class="cal-evt-icon">${evIcons[ev.type]||''}</span>${lbl}${doneTag}${planTag}${sub}
+            return `<div class="cal-evt-wrap">
+                <div class="cal-evt ${ev.type}${doneClass}" onclick="${clickAction}">
+                    <div class="cal-evt-row">
+                        ${time}
+                        <span class="cal-evt-lbl">${lbl}</span>
+                        ${doneBadge}${userBadge}
+                    </div>
+                    ${sub}
+                </div>
+                <div class="cal-evt-del" onclick="calDeleteEvent(${globalIdx},event)" title="Supprimer">
+                    <i class="fas fa-times" style="font-size:7px;"></i>
+                </div>
             </div>`;
         }).join('');
 
@@ -31934,6 +32116,49 @@ function _calRenderWeek() {
             <button class="cal-add-btn" onclick="openCalAddEvent('${ds}')" title="Ajouter">＋</button>
         </div>`;
     }).join('');
+
+    // Activer le scroll tactile sur la grille
+    _calInitTouchScroll();
+}
+
+function calDeleteEvent(idx, e) {
+    if (e) { e.stopPropagation(); e.preventDefault(); }
+    if (!confirm('Supprimer cet événement ?')) return;
+    _calEvents.splice(idx, 1);
+    _calSave();
+    _calRenderWeek();
+}
+
+function _calInitTouchScroll() {
+    const wrap = document.getElementById('cal-scroll-wrap');
+    if (!wrap || wrap._touchInit) return;
+    wrap._touchInit = true;
+
+    // Mouse drag scroll
+    let isDown = false, startX = 0, scrollLeft = 0;
+    wrap.addEventListener('mousedown', e => { isDown=true; startX=e.pageX-wrap.offsetLeft; scrollLeft=wrap.scrollLeft; wrap.style.cursor='grabbing'; });
+    wrap.addEventListener('mouseleave', () => { isDown=false; wrap.style.cursor='grab'; });
+    wrap.addEventListener('mouseup', () => { isDown=false; wrap.style.cursor='grab'; });
+    wrap.addEventListener('mousemove', e => { if(!isDown) return; e.preventDefault(); const x=e.pageX-wrap.offsetLeft; wrap.scrollLeft=scrollLeft-(x-startX)*1.2; });
+
+    // Touch swipe — changer de semaine quand swipe hors grille (swipe ampli)
+    let touchStartX = 0, touchStartY = 0, touchStartScroll = 0;
+    wrap.addEventListener('touchstart', e => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchStartScroll = wrap.scrollLeft;
+    }, {passive:true});
+    wrap.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+        // Si swipe horizontal net (pas vertical) et grille déjà en bout
+        if (Math.abs(dx) > 60 && dy < 40) {
+            const atStart = wrap.scrollLeft <= 2;
+            const atEnd   = wrap.scrollLeft >= (wrap.scrollWidth - wrap.clientWidth - 2);
+            if (atStart && dx > 0)  { calMoveWeek(-1); }
+            if (atEnd   && dx < 0)  { calMoveWeek(1); }
+        }
+    }, {passive:true});
 }
 
 // ── Sync depuis l'historique réel ─────────────────────────────────
@@ -31999,39 +32224,33 @@ function calSelectEventType(type) {
     ['workout','meal','rest'].forEach(t => {
         const btn = document.getElementById('cal-type-'+t);
         if (!btn) return;
-        const colors = { workout:'#4F6EF7', meal:'#0FA86A', rest:'#94A3B8' };
-        if (t === type) {
-            btn.style.border = `1.5px solid ${colors[t]}`;
-            btn.style.background = `rgba(${t==='workout'?'79,110,247':t==='meal'?'15,168,106':'148,163,184'},.12)`;
-            btn.style.color = colors[t];
-        } else {
-            btn.style.border = '1.5px solid var(--border)';
-            btn.style.background = 'var(--card-bg-alt)';
-            btn.style.color = 'var(--text-secondary)';
-        }
+        // Utiliser les classes CSS premium
+        btn.className = 'cal-type-btn' + (t === type ? ' active-'+t : '');
     });
-    document.getElementById('cal-event-workout-fields').style.display = type === 'workout' ? 'block' : 'none';
-    document.getElementById('cal-event-meal-fields').style.display    = type === 'meal'    ? 'block' : 'none';
+    const wf = document.getElementById('cal-event-workout-fields');
+    const mf = document.getElementById('cal-event-meal-fields');
+    const rr = document.getElementById('cal-event-recurrence-row');
+    if (wf) wf.style.display = type === 'workout' ? 'block' : 'none';
+    if (mf) mf.style.display = type === 'meal'    ? 'block' : 'none';
+    if (rr) rr.style.display = type === 'rest'    ? 'none'  : 'block';
 }
+
+/** Reset complet du planning (tous les événements supprimés) */
+function calResetAll() {
+    if (!confirm('Supprimer TOUS les événements du planning ? Cette action est irréversible.')) return;
+    _calEvents = [];
+    _calSave();
+    _calRenderWeek();
+    showNotification('Planning réinitialisé', 'success');
+}
+
+// ════════════════════════════════════════════════════════════════
+// PLANNING — Modal d'ajout d'événement enrichi
+// ════════════════════════════════════════════════════════════════
 
 function openCalAddEvent(dateStr) {
     _calEditingIdx = null;
-    const title = document.getElementById('cal-event-modal-title');
-    if (title) title.textContent = 'Ajouter un événement';
-    // Pré-remplir date
-    const dateInput = document.getElementById('cal-event-date');
-    if (dateInput) dateInput.value = dateStr || new Date().toISOString().slice(0,10);
-    // Pré-remplir liste séances
-    const sel = document.getElementById('cal-event-workout-select');
-    if (sel && typeof customWorkouts !== 'undefined') {
-        sel.innerHTML = '<option value="">— Choisir une séance —</option>' +
-            customWorkouts.map(w => `<option value="${w.name}">${w.name}</option>`).join('');
-    }
-    // Reset champs
-    ['cal-event-custom-label','cal-event-meal-label','cal-event-meal-kcal','cal-event-note'].forEach(id => {
-        const el = document.getElementById(id); if (el) el.value = '';
-    });
-    calSelectEventType('workout');
+    _buildCalEventModal(dateStr || new Date().toISOString().slice(0,10), null);
     showModal('cal-event-modal');
 }
 
@@ -32039,37 +32258,183 @@ function calEditEvent(idx) {
     const ev = _calEvents[idx];
     if (!ev) return;
     _calEditingIdx = idx;
-    const title = document.getElementById('cal-event-modal-title');
-    if (title) title.textContent = 'Modifier l\'événement';
-    const dateInput = document.getElementById('cal-event-date');
-    if (dateInput) dateInput.value = ev.date;
-    calSelectEventType(ev.type);
-    if (ev.type === 'workout') {
-        const sel = document.getElementById('cal-event-workout-select');
-        if (sel) { if (typeof customWorkouts!=='undefined') sel.innerHTML='<option value="">— Choisir —</option>'+customWorkouts.map(w=>`<option value="${w.name}">${w.name}</option>`).join(''); sel.value = ev.workoutName || ''; }
-        const cust = document.getElementById('cal-event-custom-label'); if (cust) cust.value = ev.label||'';
-    } else if (ev.type === 'meal') {
-        const lbl = document.getElementById('cal-event-meal-label'); if (lbl) lbl.value = ev.label||'';
-        const kcal = document.getElementById('cal-event-meal-kcal'); if (kcal) kcal.value = ev.detail||'';
-    }
-    const note = document.getElementById('cal-event-note'); if (note) note.value = ev.note||'';
+    _buildCalEventModal(ev.date, ev);
     showModal('cal-event-modal');
+}
+
+function _buildCalEventModal(dateStr, ev) {
+    const isEdit   = ev !== null;
+    const type     = ev?.type || 'workout';
+    const title    = document.getElementById('cal-event-modal-title');
+    const dateInput= document.getElementById('cal-event-date');
+    const timeInput= document.getElementById('cal-event-time');
+    if (title)     title.textContent = isEdit ? 'Modifier l\'événement' : 'Ajouter un événement';
+    if (dateInput) dateInput.value   = dateStr;
+    if (timeInput) {
+        if (isEdit) {
+            timeInput.value = ev?.time || '';
+        } else {
+            // Heure par défaut selon le contexte (heure française actuelle arrondie)
+            const now = new Date();
+            const h = now.getHours().toString().padStart(2,'0');
+            const m = now.getMinutes() < 30 ? '00' : '30';
+            timeInput.value = `${h}:${m}`;
+        }
+    }
+
+    // Construire le picker de séances avec customWorkouts et plans IA
+    const workoutSel = document.getElementById('cal-event-workout-select');
+    if (workoutSel) {
+        let opts = '<option value="">— Choisir une séance existante —</option>';
+        // Séances personnalisées
+        if (typeof customWorkouts !== 'undefined' && customWorkouts.length) {
+            opts += '<optgroup label="📋 Mes séances">';
+            customWorkouts.forEach(w => {
+                opts += `<option value="cw::${w.name}">${w.name} (${w.exercises?.length||0} ex.)</option>`;
+            });
+            opts += '</optgroup>';
+        }
+        // Séances du plan IA si disponible
+        if (_weekPlanData) {
+            const DAYS = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
+            const planWorkouts = DAYS.filter(d => _weekPlanData[d]?.exercises?.length > 0);
+            if (planWorkouts.length) {
+                opts += '<optgroup label="🤖 Plan IA séances">';
+                planWorkouts.forEach(d => {
+                    const pd = _weekPlanData[d];
+                    opts += `<option value="ai::${d}">${pd.type||d} (${(pd.exercises||[]).length} ex.)</option>`;
+                });
+                opts += '</optgroup>';
+            }
+        }
+        // Séances récentes de l'historique (top 5 uniques)
+        if (typeof workoutHistory !== 'undefined' && workoutHistory.length) {
+            const seen = new Set();
+            const recent = workoutHistory.filter(w => !w.isAutoSave && w.name && !seen.has(w.name) && seen.add(w.name)).slice(0,5);
+            if (recent.length) {
+                opts += '<optgroup label="🕐 Récentes">';
+                recent.forEach(w => {
+                    opts += `<option value="hist::${w.id}">${w.name}</option>`;
+                });
+                opts += '</optgroup>';
+            }
+        }
+        workoutSel.innerHTML = opts;
+        if (isEdit && ev.type === 'workout') {
+            // Restaurer la sélection
+            if (ev.customWorkoutId) workoutSel.value = 'cw::' + ev.label;
+            else if (ev.planDay)    workoutSel.value = 'ai::' + ev.planDay;
+        }
+    }
+
+    // Construire le picker de repas
+    const mealSel = document.getElementById('cal-event-meal-select');
+    if (mealSel) {
+        let opts = '<option value="">— Choisir un repas planifié —</option>';
+        // Plan nutrition IA
+        if (_nutriPlan?.days) {
+            const DAYS_FR = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+            _nutriPlan.days.forEach((day, di) => {
+                if (!day.meals?.length) return;
+                opts += `<optgroup label="🥗 ${day.day||DAYS_FR[di]} — ${day.total_kcal||'?'} kcal">`;
+                day.meals.forEach((m, mi) => {
+                    opts += `<option value="np::${di}::${mi}">${m.name} (${m.kcal||'?'} kcal)</option>`;
+                });
+                opts += '</optgroup>';
+            });
+        }
+        // Repas de l'historique récents
+        if (typeof nutritionHistory !== 'undefined' && nutritionHistory.length) {
+            const seen = new Set();
+            const rMeals = nutritionHistory.filter(m => m.name && !seen.has(m.name) && seen.add(m.name)).slice(0,8);
+            if (rMeals.length) {
+                opts += '<optgroup label="🕐 Repas récents">';
+                rMeals.forEach(m => {
+                    opts += `<option value="nh::${m.id}">${m.name}</option>`;
+                });
+                opts += '</optgroup>';
+            }
+        }
+        mealSel.innerHTML = opts;
+    }
+
+    // Reset champs libres
+    const custLbl  = document.getElementById('cal-event-custom-label');
+    const mealLbl  = document.getElementById('cal-event-meal-label');
+    const mealKcal = document.getElementById('cal-event-meal-kcal');
+    const noteEl   = document.getElementById('cal-event-note');
+    if (custLbl)  custLbl.value  = isEdit && ev.type==='workout' ? ev.label||'' : '';
+    if (mealLbl)  mealLbl.value  = isEdit && ev.type==='meal'    ? ev.label||'' : '';
+    if (mealKcal) mealKcal.value = isEdit && ev.type==='meal'    ? ev.detail||'' : '';
+    if (noteEl)   noteEl.value   = ev?.note||'';
+
+    calSelectEventType(type);
 }
 
 function saveCalEvent() {
     const date = document.getElementById('cal-event-date')?.value;
     if (!date) { showNotification('Sélectionnez une date', 'error'); return; }
     const note = document.getElementById('cal-event-note')?.value?.trim() || '';
-    let ev = { date, type: _calSelectedType, note };
+    const time = document.getElementById('cal-event-time')?.value || '';
+    let ev = { id: _calEditingIdx !== null ? (_calEvents[_calEditingIdx]?.id || 'cal_'+Date.now()) : 'cal_'+Date.now(), date, type: _calSelectedType, note, time };
 
     if (_calSelectedType === 'workout') {
-        const workoutSel = document.getElementById('cal-event-workout-select')?.value;
-        const customLbl  = document.getElementById('cal-event-custom-label')?.value?.trim();
-        ev.label = workoutSel || customLbl || 'Séance';
-        ev.workoutName = workoutSel || '';
+        const sel  = document.getElementById('cal-event-workout-select')?.value || '';
+        const free = document.getElementById('cal-event-custom-label')?.value?.trim() || '';
+
+        if (sel.startsWith('cw::')) {
+            // Séance personnalisée
+            const wName   = sel.slice(4);
+            const workout = (typeof customWorkouts!=='undefined') ? customWorkouts.find(w=>w.name===wName) : null;
+            ev.label          = wName;
+            ev.customWorkoutId = workout?.id || '';
+            ev.planExercises  = workout?.exercises || [];
+            ev.detail         = (workout?.exercises?.length||0) + ' exercices';
+        } else if (sel.startsWith('ai::')) {
+            // Séance du plan IA
+            const day    = sel.slice(4);
+            const pd     = _weekPlanData?.[day];
+            ev.label         = pd?.type || day;
+            ev.planDay       = day;
+            ev.planExercises = pd?.exercises || [];
+            ev.detail        = (pd?.exercises?.length||0) + ' exercices · Plan IA';
+        } else if (sel.startsWith('hist::')) {
+            // Depuis l'historique
+            const wId = sel.slice(6);
+            const wh  = (typeof workoutHistory!=='undefined') ? workoutHistory.find(w=>w.id===wId) : null;
+            ev.label         = wh?.name || 'Séance';
+            ev.histWorkoutId = wId;
+            ev.planExercises = (wh?.exercises||[]).map(e => ({name:e.name, sets:e.sets?.length||3, reps:e.sets?.[0]?.reps||'10', weight:e.sets?.[0]?.weight||''}));
+            ev.detail        = (wh?.exercises?.length||0) + ' exercices';
+        } else {
+            ev.label = free || 'Séance';
+        }
+        ev.recurrence = document.getElementById('cal-event-recurrence')?.value || 'none';
+
     } else if (_calSelectedType === 'meal') {
-        ev.label  = document.getElementById('cal-event-meal-label')?.value?.trim() || 'Repas';
-        ev.detail = document.getElementById('cal-event-meal-kcal')?.value?.trim() || '';
+        const mSel  = document.getElementById('cal-event-meal-select')?.value || '';
+        const mFree = document.getElementById('cal-event-meal-label')?.value?.trim() || '';
+
+        if (mSel.startsWith('np::')) {
+            // Repas du plan nutrition IA
+            const [,di,mi] = mSel.split('::');
+            const meal = _nutriPlan?.days?.[+di]?.meals?.[+mi];
+            ev.label           = meal?.name || 'Repas';
+            ev.detail          = (meal?.kcal||'?') + 'kcal';
+            ev.nutritionPlanDay = +di;
+            ev.nutritionPlanMeal= meal ? {...meal} : null;
+        } else if (mSel.startsWith('nh::')) {
+            // Depuis l'historique nutrition
+            const mId   = mSel.slice(4);
+            const meal  = (typeof nutritionHistory!=='undefined') ? nutritionHistory.find(m=>m.id===mId) : null;
+            ev.label    = meal?.name || 'Repas';
+            ev.detail   = meal?.calories ? meal.calories+'kcal' : '';
+            ev.histMealId = mId;
+        } else {
+            ev.label  = mFree || 'Repas';
+            ev.detail = document.getElementById('cal-event-meal-kcal')?.value?.trim() || '';
+        }
+        ev.recurrence = document.getElementById('cal-event-recurrence')?.value || 'none';
     } else {
         ev.label = 'Repos';
     }
@@ -32082,7 +32447,7 @@ function saveCalEvent() {
     _calSave();
     hideModal('cal-event-modal');
     _calRenderWeek();
-    showNotification('Événement sauvegardé', 'success');
+    showNotification('Événement sauvegardé ✓', 'success');
 }
 
 // ── Génération IA calendrier ─────────────────────────────────────
@@ -32413,48 +32778,100 @@ function _calOpenNutritionDay(calIdx) {
     const evDate = ev.date
         ? new Date(ev.date + 'T12:00:00').toLocaleDateString('fr', {weekday:'long', day:'numeric', month:'long'})
         : ev.label;
-    const today = new Date().toISOString().slice(0,10);
+    const today   = new Date().toISOString().slice(0,10);
     const isToday = ev.date === today;
 
-    // Collecter les repas de ce jour depuis nutritionHistory ou dailyNutrition
-    let mealsOfDay = [];
-    if (isToday && typeof dailyNutrition !== 'undefined' && dailyNutrition.meals?.length) {
-        mealsOfDay = dailyNutrition.meals.map(m => {
-            const kcal = (m.foods||[]).reduce((s, f) => {
-                const food = (typeof customFoods!=='undefined'?customFoods:[])
-                    .concat(typeof foods!=='undefined'?foods:[])
-                    .find(fd => fd.id === f.foodId);
-                return s + (food ? Math.round(food.calories * f.quantity / 100) : 0);
-            }, 0);
-            return { name: m.name||'Repas', kcal, type: m.type||'' };
-        });
-    } else if (typeof nutritionHistory !== 'undefined') {
-        mealsOfDay = nutritionHistory
-            .filter(m => (m.date||'').slice(0,10) === ev.date)
-            .map(m => ({ name: m.name||'Repas', kcal: m.calories||0, type: m.type||'' }));
-    }
+    // ── Source des données : plan IA en priorité, puis historique ──
+    const planMeal = ev.nutritionPlanMeal || null;
 
-    // Données du plan IA si disponibles dans l'événement
-    if (!mealsOfDay.length && ev.mealData) {
-        mealsOfDay = [{ name: ev.mealData.name || ev.label, kcal: ev.mealData.calories||0, type:'planifié' }];
-    }
+    // Infos nutritionnelles du repas
+    let mainContent = '';
 
-    const totalKcal = mealsOfDay.reduce((s, m) => s + (m.kcal||0), 0);
+    if (planMeal) {
+        // Repas du plan IA — afficher toutes les infos
+        const mealTypeLabels = {
+            breakfast:'🌅 Petit-déjeuner', lunch:'☀️ Déjeuner', dinner:'🌙 Dîner',
+            snack:'🍎 Collation', pre_workout:'💪 Pré-entraînement', post_workout:'🔄 Post-entraînement'
+        };
+        const typeLabel = mealTypeLabels[planMeal.type] || planMeal.type || 'Repas';
 
-    const mealRows = mealsOfDay.length
-        ? mealsOfDay.map(m => `
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--card-bg-alt);border-radius:10px;border:1px solid var(--border);">
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <i class="fas fa-utensils" style="font-size:10px;color:#0FA86A;"></i>
-                    <span style="font-size:12px;font-weight:600;color:var(--text-primary);">${m.name}</span>
-                    ${m.type?`<span style="font-size:9px;color:var(--text-tertiary);">${m.type}</span>`:''}
+        // Macros pills
+        const macroPills = `
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+                ${planMeal.kcal ? `<div style="background:linear-gradient(135deg,rgba(239,159,39,.15),rgba(239,159,39,.05));border:1px solid rgba(239,159,39,.3);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:800;color:#EF9F27;">${planMeal.kcal} kcal</div>` : ''}
+                ${planMeal.protein ? `<div style="background:linear-gradient(135deg,rgba(224,62,62,.1),rgba(224,62,62,.03));border:1px solid rgba(224,62,62,.25);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:800;color:var(--danger);">${planMeal.protein}g prot.</div>` : ''}
+                ${planMeal.carbs ? `<div style="background:linear-gradient(135deg,rgba(15,168,106,.1),rgba(15,168,106,.03));border:1px solid rgba(15,168,106,.25);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:800;color:#0FA86A;">${planMeal.carbs}g gluc.</div>` : ''}
+                ${planMeal.fat ? `<div style="background:linear-gradient(135deg,rgba(79,110,247,.1),rgba(79,110,247,.03));border:1px solid rgba(79,110,247,.25);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:800;color:var(--primary);">${planMeal.fat}g lip.</div>` : ''}
+            </div>`;
+
+        // Description ingrédients
+        const descBlock = planMeal.short_desc ? `
+            <div style="background:var(--card-bg-alt);border-radius:12px;padding:12px 14px;margin-bottom:12px;border:1px solid var(--border);">
+                <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:6px;display:flex;align-items:center;gap:5px;">
+                    <i class="fas fa-list-ul" style="color:var(--primary);"></i> Ingrédients
                 </div>
-                <span style="font-size:12px;font-weight:800;color:var(--success);">${m.kcal||'—'} kcal</span>
-            </div>`)
-            .join('')
-        : `<div style="font-size:11px;color:var(--text-tertiary);padding:12px;text-align:center;">
-            ${isToday ? 'Aucun repas enregistré aujourd\'hui' : 'Pas de repas dans l\'historique pour ce jour'}
-           </div>`;
+                <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">${planMeal.short_desc}</div>
+            </div>` : '';
+
+        // Infos pratiques
+        const practicalBlock = (planMeal.prep_time || planMeal.needs_cooking !== undefined) ? `
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+                ${planMeal.prep_time ? `<div style="display:flex;align-items:center;gap:5px;background:var(--card-bg-alt);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:600;color:var(--text-secondary);">
+                    <i class="fas fa-clock" style="color:var(--primary);font-size:10px;"></i> ${planMeal.prep_time} min
+                </div>` : ''}
+                <div style="display:flex;align-items:center;gap:5px;background:var(--card-bg-alt);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:600;color:var(--text-secondary);">
+                    <i class="fas fa-fire" style="color:${planMeal.needs_cooking?'#EA580C':'#94A3B8'};font-size:10px;"></i> ${planMeal.needs_cooking ? 'Cuisson requise' : 'Sans cuisson'}
+                </div>
+            </div>` : '';
+
+        // Heure recommandée
+        const timeBlock = planMeal.time ? `
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;background:rgba(79,110,247,.06);border:1px solid rgba(79,110,247,.15);border-radius:10px;padding:8px 12px;font-size:11px;color:var(--primary);font-weight:700;">
+                <i class="fas fa-clock"></i> Heure recommandée : ${planMeal.time}
+            </div>` : '';
+
+        mainContent = `
+            <div style="font-size:10px;font-weight:700;color:var(--text-tertiary);margin-bottom:8px;">${typeLabel}</div>
+            ${macroPills}
+            ${timeBlock}
+            ${descBlock}
+            ${practicalBlock}`;
+
+    } else {
+        // Pas de plan IA — chercher dans l'historique
+        let mealsOfDay = [];
+        if (isToday && typeof dailyNutrition !== 'undefined' && dailyNutrition.meals?.length) {
+            mealsOfDay = dailyNutrition.meals.filter(m =>
+                !ev.mealId || m.id === ev.mealId
+            ).map(m => {
+                const kcal = (m.foods||[]).reduce((s,f) => {
+                    const food = (typeof customFoods!=='undefined'?customFoods:[]).concat(typeof foods!=='undefined'?foods:[]).find(fd=>fd.id===f.foodId);
+                    return s + (food ? Math.round(food.calories*f.quantity/100) : 0);
+                }, 0);
+                return { name:m.name||'Repas', kcal, type:m.type||'' };
+            });
+        } else if (typeof nutritionHistory !== 'undefined') {
+            mealsOfDay = nutritionHistory
+                .filter(m => (m.date||'').slice(0,10) === ev.date && (!ev.histMealId || m.id === ev.histMealId))
+                .map(m => ({name:m.name||'Repas', kcal:m.calories||0, type:m.type||''}));
+        }
+
+        if (mealsOfDay.length) {
+            mainContent = mealsOfDay.map(m => `
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:var(--card-bg-alt);border-radius:10px;border:1px solid var(--border);margin-bottom:6px;">
+                    <div>
+                        <div style="font-size:12px;font-weight:700;color:var(--text-primary);">${m.name}</div>
+                        ${m.type?`<div style="font-size:10px;color:var(--text-tertiary);">${m.type}</div>`:''}
+                    </div>
+                    <span style="font-size:14px;font-weight:900;color:#0FA86A;">${m.kcal||'—'} kcal</span>
+                </div>`).join('');
+        } else {
+            mainContent = `<div style="font-size:11px;color:var(--text-tertiary);padding:16px;text-align:center;background:var(--card-bg-alt);border-radius:12px;border:1px solid var(--border);">
+                <i class="fas fa-calendar-times" style="font-size:24px;opacity:.3;display:block;margin-bottom:8px;"></i>
+                ${isToday ? 'Aucun repas enregistré aujourd\'hui' : 'Repas planifié — non encore consommé'}
+            </div>`;
+        }
+    }
 
     const existing = document.getElementById('cal-meal-modal');
     if (existing) existing.remove();
@@ -32464,44 +32881,44 @@ function _calOpenNutritionDay(calIdx) {
     modal.className = 'modal';
     modal.style.cssText = 'z-index:9999;display:flex!important;';
 
+    // Badge état
+    const statusBadge = ev.done
+        ? `<span style="font-size:9px;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.4);padding:2px 8px;border-radius:10px;color:white;font-weight:700;margin-left:6px;">✓ Consommé</span>`
+        : `<span style="font-size:9px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);padding:2px 8px;border-radius:10px;color:rgba(255,255,255,.9);font-weight:700;margin-left:6px;">Planifié</span>`;
+
+    // Heure + type
+    const timeInfo = ev.time ? ` · ${ev.time}` : '';
+    const typeInfo = ev.nutritionPlanMeal?.type ? ` · ${ev.nutritionPlanMeal.type}` : '';
+
     modal.innerHTML = `
-    <div class="modal-content" style="max-height:90vh;overflow-y:auto;">
+    <div class="modal-content" style="max-height:92vh;overflow-y:auto;">
         <div class="modal-header" style="background:linear-gradient(135deg,#0FA86A,#059669);border-radius:18px 18px 0 0;">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;">
-                    <i class="fas fa-utensils" style="color:white;font-size:14px;"></i>
-                </div>
-                <div>
+            <div style="flex:1;min-width:0;">
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
                     <div class="modal-title" style="color:white;font-size:14px;">${ev.label||'Repas'}</div>
-                    <div style="font-size:10px;color:rgba(255,255,255,.75);">${evDate}</div>
+                    ${statusBadge}
                 </div>
+                <div style="font-size:10px;color:rgba(255,255,255,.8);margin-top:2px;">${evDate}${timeInfo}${typeInfo}</div>
             </div>
             <button class="modal-close" onclick="document.getElementById('cal-meal-modal').remove()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
         </div>
         <div class="modal-body" style="padding:16px;">
-            ${totalKcal > 0 ? `
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;">
-                <div style="background:rgba(15,168,106,.08);border:1px solid rgba(15,168,106,.2);border-radius:12px;padding:10px;text-align:center;">
-                    <div style="font-size:18px;font-weight:900;color:#0FA86A;">${totalKcal}</div>
-                    <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);">kcal total</div>
-                </div>
-                <div style="background:var(--card-bg-alt);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;">
-                    <div style="font-size:18px;font-weight:900;color:var(--text-primary);">${mealsOfDay.length}</div>
-                    <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary);">repas</div>
-                </div>
-            </div>` : ''}
-            <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:8px;">Détail</div>
-            <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:16px;">${mealRows}</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            ${mainContent}
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;">
                 <button onclick="document.getElementById('cal-meal-modal').remove();calEditEvent(${calIdx});"
                     style="padding:12px;background:var(--card-bg-alt);color:var(--text-secondary);border:1.5px solid var(--border);border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;">
                     <i class="fas fa-pencil-alt"></i> Modifier
                 </button>
                 <button onclick="document.getElementById('cal-meal-modal').remove();showScreen('nutrition-screen');"
                     style="padding:12px;background:linear-gradient(135deg,#0FA86A,#059669);color:white;border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(15,168,106,.35);">
-                    <i class="fas fa-arrow-right"></i> Aller à Nutrition
+                    <i class="fas fa-arrow-right"></i> Nutrition
                 </button>
             </div>
+            ${planMeal && !ev.done ? `
+            <button onclick="document.getElementById('cal-meal-modal').remove();_calImportMealToNutrition(${calIdx});"
+                style="width:100%;margin-top:8px;padding:12px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 3px 10px rgba(79,110,247,.3);">
+                <i class="fas fa-plus-circle"></i> Ajouter au journal d'aujourd'hui ✓
+            </button>` : ''}
         </div>
     </div>`;
 
@@ -37088,6 +37505,15 @@ function _renderNutritionPlan(plan, container) {
     });
 
     container.innerHTML = html;
+
+    // Bouton export vers planning
+    container.innerHTML += `
+    <div style="margin-top:14px;padding:12px;background:linear-gradient(135deg,rgba(15,168,106,.08),rgba(5,150,105,.05));border:1.5px solid rgba(15,168,106,.25);border-radius:14px;text-align:center;">
+        <div style="font-size:11px;color:var(--text-secondary);margin-bottom:8px;">Planifier tous ces repas dans votre calendrier</div>
+        <button onclick="calExportNutritionPlanToCalendar()" style="padding:10px 20px;background:linear-gradient(135deg,#0FA86A,#059669);color:white;border:none;border-radius:10px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 3px 10px rgba(15,168,106,.3);">
+            <i class="fas fa-calendar-plus"></i> → Exporter vers Planning
+        </button>
+    </div>`;
 }
 
 function _macroPill(label, val, color) {
@@ -37859,6 +38285,318 @@ function _getExerciseSVGTemplate(name, muscleGroup) {
 }
 
 
+
+// ════════════════════════════════════════════════════════════════
+// PLANNING — Système complet : prévisualisation, récurrence, export
+// ════════════════════════════════════════════════════════════════
+
+/** Aperçu exercices quand l'utilisateur choisit une séance */
+function calWorkoutSelectChanged(sel) {
+    const preview = document.getElementById('cal-workout-preview');
+    const freeInput = document.getElementById('cal-event-custom-label');
+    if (!preview) return;
+    const val = sel.value;
+
+    if (!val) { preview.style.display='none'; return; }
+
+    let exercises = [];
+    let name = '';
+
+    if (val.startsWith('cw::')) {
+        const wName   = val.slice(4);
+        const workout = (typeof customWorkouts!=='undefined') ? customWorkouts.find(w=>w.name===wName) : null;
+        exercises     = workout?.exercises || [];
+        name          = wName;
+    } else if (val.startsWith('ai::')) {
+        const day = val.slice(4);
+        const pd  = _weekPlanData?.[day];
+        exercises = pd?.exercises || [];
+        name      = pd?.type || day;
+    } else if (val.startsWith('hist::')) {
+        const wId = val.slice(6);
+        const wh  = (typeof workoutHistory!=='undefined') ? workoutHistory.find(w=>w.id===wId) : null;
+        exercises = wh?.exercises || [];
+        name      = wh?.name || '';
+    }
+
+    if (freeInput) freeInput.value = name;
+
+    if (exercises.length) {
+        preview.style.display = 'block';
+        preview.innerHTML = exercises.slice(0,6).map(ex => {
+            const n = ex.name || ex.exerciseId || '';
+            const d = ex.sets ? `${Array.isArray(ex.sets)?ex.sets.length:ex.sets}×${ex.reps||'?'}${ex.weight?' · '+ex.weight:''}` : '';
+            return `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border);">
+                <span style="font-weight:600;color:var(--text-primary);">${n}</span>
+                <span style="color:var(--text-tertiary);font-size:10px;">${d}</span>
+            </div>`;
+        }).join('') + (exercises.length > 6 ? `<div style="text-align:center;padding:4px;color:var(--text-tertiary);">+ ${exercises.length-6} autres</div>` : '');
+    } else {
+        preview.style.display = 'none';
+    }
+}
+
+/** Aperçu repas quand l'utilisateur choisit dans le plan */
+function calMealSelectChanged(sel) {
+    const preview = document.getElementById('cal-meal-preview');
+    const lblInput  = document.getElementById('cal-event-meal-label');
+    const kcalInput = document.getElementById('cal-event-meal-kcal');
+    if (!preview) return;
+    const val = sel.value;
+
+    if (!val) { preview.style.display='none'; return; }
+
+    if (val.startsWith('np::')) {
+        const [,di,mi] = val.split('::');
+        const meal = _nutriPlan?.days?.[+di]?.meals?.[+mi];
+        if (meal) {
+            if (lblInput)  lblInput.value  = meal.name || '';
+            if (kcalInput) kcalInput.value = meal.kcal || '';
+            preview.style.display = 'block';
+            preview.innerHTML = `
+                <div style="font-weight:700;color:var(--text-primary);margin-bottom:4px;">${meal.name}</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+                    <span style="background:rgba(239,159,39,.1);color:#EF9F27;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:700;">${meal.kcal||'?'} kcal</span>
+                    ${meal.protein?`<span style="background:rgba(224,62,62,.08);color:var(--danger);padding:2px 7px;border-radius:8px;font-size:10px;font-weight:700;">${meal.protein}g prot.</span>`:''}
+                    ${meal.carbs?`<span style="background:rgba(15,168,106,.08);color:var(--success);padding:2px 7px;border-radius:8px;font-size:10px;font-weight:700;">${meal.carbs}g gluc.</span>`:''}
+                    ${meal.fat?`<span style="background:rgba(79,110,247,.08);color:var(--primary);padding:2px 7px;border-radius:8px;font-size:10px;font-weight:700;">${meal.fat}g lip.</span>`:''}
+                </div>
+                ${meal.short_desc?`<div style="font-size:10px;color:var(--text-tertiary);font-style:italic;">${meal.short_desc}</div>`:''}
+                ${meal.prep_time?`<div style="font-size:10px;color:var(--text-tertiary);margin-top:3px;"><i class="fas fa-clock"></i> ${meal.prep_time} min${meal.needs_cooking?' · cuisson':'· sans cuisson'}</div>`:''}`;
+        }
+    } else if (val.startsWith('nh::')) {
+        const mId  = val.slice(4);
+        const meal = (typeof nutritionHistory!=='undefined') ? nutritionHistory.find(m=>m.id===mId) : null;
+        if (meal) {
+            if (lblInput)  lblInput.value  = meal.name || '';
+            if (kcalInput) kcalInput.value = meal.calories || '';
+            preview.style.display = 'block';
+            preview.innerHTML = `<div style="font-weight:700;color:var(--text-primary);">${meal.name}</div>
+                <div style="font-size:10px;color:var(--text-tertiary);">${meal.calories||'?'} kcal — ${new Date(meal.date||'').toLocaleDateString('fr',{day:'numeric',month:'short'})}</div>`;
+        }
+    }
+}
+
+/**
+ * Hook appelé après saveWorkoutData → crée automatiquement un calEvent
+ * récurrent pour la même séance la semaine suivante
+ */
+function _calAutoScheduleNextSession(historyEntry) {
+    if (!historyEntry?.date || !historyEntry?.name) return;
+
+    const doneDateObj = new Date(historyEntry.date);
+    const weekday     = doneDateObj.getDay(); // 0=dim…6=sam
+    const dowFR       = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'][weekday];
+
+    // Calculer la date de la semaine suivante (même weekday)
+    const nextDate = new Date(doneDateObj);
+    nextDate.setDate(doneDateObj.getDate() + 7);
+    const nextDateStr = nextDate.toISOString().slice(0, 10);
+
+    // Vérifier si un événement existe déjà pour ce jour/séance
+    const exists = _calEvents.find(e =>
+        e.date === nextDateStr &&
+        e.type === 'workout' &&
+        (e.label === historyEntry.name || e.recurrenceSource === 'history')
+    );
+    if (exists) return;
+
+    // Créer l'événement planifié
+    const planExercises = (historyEntry.exercises || []).map(ex => ({
+        name: ex.name,
+        sets: ex.sets?.length || 3,
+        reps: ex.sets?.[0]?.reps || '10',
+        weight: ex.sets?.[0]?.weight || ''
+    }));
+
+    _calEvents.push({
+        id: 'cal_auto_' + Date.now(),
+        date: nextDateStr,
+        type: 'workout',
+        label: historyEntry.name,
+        detail: `${planExercises.length} ex. · récurrence ${dowFR}`,
+        planExercises,
+        histWorkoutId: historyEntry.id,
+        recurrence: 'weekly',
+        recurrenceSource: 'history',
+        done: false
+    });
+    _calSave();
+}
+
+/**
+ * Quand une séance planifiée est démarrée depuis le Planning et terminée,
+ * on marque l'événement comme done. Appelé par saveWorkoutData.
+ */
+function _calMarkEventDone(historyEntry) {
+    if (!historyEntry?.date) return;
+    const ds = historyEntry.date.slice(0, 10);
+
+    // Trouver l'événement planifié correspondant (même jour, même nom, pas encore fait)
+    const ev = _calEvents.find(e =>
+        e.date === ds &&
+        e.type === 'workout' &&
+        !e.done &&
+        (e.label === historyEntry.name || e.planExercises?.length)
+    );
+    if (ev) {
+        ev.done = true;
+        ev.workoutId = historyEntry.id;
+        _calSave();
+    }
+}
+
+/**
+ * Exporte le plan IA séances (_weekPlanData) vers le planning
+ * pour la semaine à partir d'une date de départ (lundi)
+ */
+function calExportWorkoutPlanToCalendar(startMondayStr) {
+    if (!_weekPlanData) { showNotification('Générez d\'abord le plan IA', 'warning'); return; }
+
+    const DAYS   = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
+    const monday = startMondayStr ? new Date(startMondayStr + 'T12:00:00') : _calGetMondayOfCurrentWeek();
+
+    let added = 0;
+    DAYS.forEach((dn, i) => {
+        const d  = _weekPlanData[dn];
+        if (!d) return;
+        const dt = new Date(monday);
+        dt.setDate(monday.getDate() + i);
+        const ds = dt.toISOString().slice(0, 10);
+
+        const isRest = !d.exercises?.length || (d.type||'').toLowerCase().includes('repos');
+
+        const exists = _calEvents.find(e => e.date === ds && e.fromPlan && e.planDay === dn);
+        if (exists) return;
+
+        if (isRest) {
+            _calEvents.push({ id:'cal_exp_'+Date.now()+'_'+i, date:ds, type:'rest', label:'Repos', detail:d.type||'', fromPlan:true, planDay:dn });
+        } else {
+            _calEvents.push({
+                id: 'cal_exp_' + Date.now() + '_' + i,
+                date: ds, type: 'workout',
+                label: d.type || 'Séance',
+                detail: (d.exercises||[]).length + ' exercices',
+                fromPlan: true, planDay: dn,
+                planExercises: d.exercises || [],
+                recurrence: 'none'
+            });
+        }
+        added++;
+    });
+
+    _calSave();
+    showNotification(`✓ ${added} jours exportés vers le Planning`, 'success');
+    setTimeout(() => { showScreen('calendar-screen'); initCalendarScreen(); }, 800);
+}
+
+/**
+ * Exporte le plan nutrition (_nutriPlan) vers le planning
+ */
+function calExportNutritionPlanToCalendar(startMondayStr) {
+    if (!_nutriPlan?.days?.length) { showNotification('Générez d\'abord le plan nutrition', 'warning'); return; }
+
+    const monday = startMondayStr ? new Date(startMondayStr + 'T12:00:00') : _calGetMondayOfCurrentWeek();
+    let added = 0;
+
+    _nutriPlan.days.forEach((day, i) => {
+        if (!day.meals?.length) return;
+        const dt = new Date(monday);
+        dt.setDate(monday.getDate() + i);
+        const ds = dt.toISOString().slice(0, 10);
+
+        day.meals.forEach((meal, mi) => {
+            const exists = _calEvents.find(e =>
+                e.date === ds && e.type === 'meal' &&
+                e.nutritionPlanDay === i && e.nutritionPlanMealIdx === mi
+            );
+            if (exists) return;
+            // Heure : utiliser l'heure du repas si disponible, sinon ordre chronologique
+            const mealTime = meal.time || null;
+            _calEvents.push({
+                id: 'cal_nutr_' + Date.now() + '_' + i + '_' + mi,
+                date: ds, type: 'meal',
+                label: meal.name,
+                detail: (meal.kcal||'?') + 'kcal',
+                time: mealTime,
+                fromPlan: true,
+                nutritionPlanDay: i,
+                nutritionPlanMealIdx: mi,
+                nutritionPlanMeal: {...meal},
+                recurrence: 'none'
+            });
+            added++;
+        });
+    });
+
+    _calSave();
+    showNotification(`✓ ${added} repas exportés vers le Planning`, 'success');
+    setTimeout(() => { showScreen('calendar-screen'); initCalendarScreen(); }, 800);
+}
+
+/** Obtenir le lundi de la semaine affichée dans le calendrier */
+function _calGetMondayOfCurrentWeek() {
+    return _calGetWeekDates(_calWeekOffset)[0];
+}
+
+/**
+ * Quand on clique sur un repas planifié → propose de l'importer dans
+ * dailyNutrition du jour sélectionné
+ */
+function _calImportMealToNutrition(calIdx) {
+    const ev = _calEvents[calIdx];
+    if (!ev || ev.type !== 'meal') return;
+
+    const meal = ev.nutritionPlanMeal;
+    if (!meal) {
+        showNotification('Repas sans données nutritionnelles — impossible d\'importer', 'warning');
+        return;
+    }
+
+    // Créer un food custom temporaire
+    const foodId = 'plan_meal_' + Date.now();
+    const newFood = {
+        id: foodId,
+        name: meal.name,
+        quantity: 100,
+        calories: meal.kcal || 0,
+        protein:  meal.protein || 0,
+        carbs:    meal.carbs || 0,
+        fat:      meal.fat || 0,
+        category: meal.type || 'planifié',
+        custom: true,
+        source: 'nutrition_plan'
+    };
+    if (typeof customFoods !== 'undefined') customFoods.push(newFood);
+
+    // Ajouter le repas à dailyNutrition
+    const mealEntry = {
+        id:    'plan_meal_entry_' + Date.now(),
+        name:  meal.name,
+        type:  meal.type || 'meal',
+        date:  new Date().toISOString(),
+        notes: meal.short_desc || '',
+        foods: [{ foodId, quantity: 100 }]
+    };
+    if (typeof dailyNutrition !== 'undefined') {
+        if (!dailyNutrition.meals) dailyNutrition.meals = [];
+        dailyNutrition.meals.push(mealEntry);
+    }
+    if (typeof nutritionHistory !== 'undefined') nutritionHistory.push({...mealEntry, calories: meal.kcal||0});
+
+    // Marquer l'événement comme fait
+    ev.done = true;
+    _calSave();
+    _calRenderWeek();
+
+    if (typeof calculateDailyNutritionFromMeals === 'function') calculateDailyNutritionFromMeals();
+    if (typeof saveToLocalStorage === 'function') saveToLocalStorage();
+    if (typeof updateDailyNutritionDisplay === 'function') updateDailyNutritionDisplay();
+    if (typeof updateMealsList === 'function') updateMealsList();
+
+    showNotification(`"${meal.name}" ajouté à la nutrition du jour ✓`, 'success');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialiser le système i18n
     window._i18nEnabled = localStorage.getItem('ironplate_i18n') !== 'off';
@@ -38313,49 +39051,97 @@ window.addEventListener('beforeunload', function(e) {
      MODAL AJOUT / DÉTAIL ÉVÉNEMENT CALENDRIER
      ═══════════════════════════════════════════════════════════ -->
 <div class="modal" id="cal-event-modal">
-    <div class="modal-content" style="max-height:88vh;overflow-y:auto;">
-        <div class="modal-header">
-            <h3 class="modal-title" id="cal-event-modal-title">Ajouter un événement</h3>
+    <div class="modal-content" style="max-height:94vh;overflow-y:auto;">
+        <div class="modal-header" style="border-radius:18px 18px 0 0;">
+            <div>
+                <h3 class="modal-title" id="cal-event-modal-title">Ajouter un événement</h3>
+                <div style="font-size:10px;color:var(--text-tertiary);margin-top:2px;">Planning hebdomadaire</div>
+            </div>
             <button class="modal-close" onclick="hideModal('cal-event-modal')">×</button>
         </div>
         <div class="modal-body" style="padding:16px;">
-            <div style="margin-bottom:12px;">
-                <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:6px;">Type</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
-                    <button id="cal-type-workout" onclick="calSelectEventType('workout')" style="padding:8px;border-radius:10px;border:1.5px solid #4F6EF7;background:rgba(79,110,247,.1);color:#4F6EF7;font-size:11px;font-weight:700;cursor:pointer;">
-                        <i class="fas fa-dumbbell"></i><br>Séance
+
+            <!-- Type d'événement -->
+            <div style="margin-bottom:16px;">
+                <div class="cal-field-lbl">Type</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                    <button id="cal-type-workout" class="cal-type-btn active-workout" onclick="calSelectEventType('workout')">
+                        <div class="cbt-icon"><i class="fas fa-dumbbell"></i></div>
+                        Séance
                     </button>
-                    <button id="cal-type-meal" onclick="calSelectEventType('meal')" style="padding:8px;border-radius:10px;border:1.5px solid var(--border);background:var(--card-bg-alt);color:var(--text-secondary);font-size:11px;font-weight:700;cursor:pointer;">
-                        <i class="fas fa-utensils"></i><br>Repas
+                    <button id="cal-type-meal" class="cal-type-btn" onclick="calSelectEventType('meal')">
+                        <div class="cbt-icon"><i class="fas fa-utensils"></i></div>
+                        Repas
                     </button>
-                    <button id="cal-type-rest" onclick="calSelectEventType('rest')" style="padding:8px;border-radius:10px;border:1.5px solid var(--border);background:var(--card-bg-alt);color:var(--text-secondary);font-size:11px;font-weight:700;cursor:pointer;">
-                        <i class="fas fa-bed"></i><br>Repos
+                    <button id="cal-type-rest" class="cal-type-btn" onclick="calSelectEventType('rest')">
+                        <div class="cbt-icon"><i class="fas fa-moon"></i></div>
+                        Repos
                     </button>
                 </div>
             </div>
-            <div style="margin-bottom:12px;">
-                <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:6px;">Date</div>
-                <input type="date" id="cal-event-date" class="number-input" style="width:100%;font-size:13px;">
+
+            <!-- Date + Heure -->
+            <div style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:16px;">
+                <div>
+                    <div class="cal-field-lbl">Date</div>
+                    <input type="date" id="cal-event-date" class="cal-input-p" style="width:100%;">
+                </div>
+                <div>
+                    <div class="cal-field-lbl">Heure</div>
+                    <input type="time" id="cal-event-time" class="cal-input-p" style="width:90px;" placeholder="--:--">
+                </div>
             </div>
-            <div id="cal-event-workout-fields" style="margin-bottom:12px;">
-                <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:6px;">Séance</div>
-                <select id="cal-event-workout-select" class="filter-select" style="width:100%;font-size:13px;margin-bottom:8px;">
-                    <option value="">— Choisir une séance —</option>
+
+            <!-- SÉANCE FIELDS -->
+            <div id="cal-event-workout-fields" style="margin-bottom:16px;">
+                <div class="cal-field-lbl">Séance</div>
+                <select id="cal-event-workout-select" class="cal-select-p" onchange="calWorkoutSelectChanged(this)">
+                    <option value="">Choisir dans mes séances ou le plan IA…</option>
                 </select>
-                <input type="text" id="cal-event-custom-label" class="number-input" placeholder="Ou saisir un intitulé libre…" style="width:100%;font-size:13px;">
+                <div id="cal-workout-preview" class="cal-preview-box" style="display:none;"></div>
+                <div style="font-size:10px;color:var(--text-tertiary);margin:8px 0 5px;">Ou intitulé libre</div>
+                <input type="text" id="cal-event-custom-label" class="cal-input-p" placeholder="Ex : Full body, Cardio, HIIT…">
             </div>
-            <div id="cal-event-meal-fields" style="margin-bottom:12px;display:none;">
-                <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:6px;">Recette / repas planifié</div>
-                <input type="text" id="cal-event-meal-label" class="number-input" placeholder="Ex : Poulet riz légumes…" style="width:100%;font-size:13px;margin-bottom:6px;">
-                <input type="text" id="cal-event-meal-kcal" class="number-input" placeholder="Calories estimées (optionnel)" style="width:100%;font-size:13px;">
+
+            <!-- REPAS FIELDS -->
+            <div id="cal-event-meal-fields" style="margin-bottom:16px;display:none;">
+                <div class="cal-field-lbl">Repas</div>
+                <select id="cal-event-meal-select" class="cal-select-p" onchange="calMealSelectChanged(this)">
+                    <option value="">Choisir dans le plan nutrition ou l'historique…</option>
+                </select>
+                <div id="cal-meal-preview" class="cal-preview-box" style="display:none;"></div>
+                <div style="font-size:10px;color:var(--text-tertiary);margin:8px 0 5px;">Ou saisie libre</div>
+                <div style="display:grid;grid-template-columns:1fr 80px;gap:8px;">
+                    <input type="text" id="cal-event-meal-label" class="cal-input-p" placeholder="Nom du repas…">
+                    <input type="number" id="cal-event-meal-kcal" class="cal-input-p" placeholder="kcal" style="text-align:center;">
+                </div>
             </div>
-            <div style="margin-bottom:14px;">
-                <div style="font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:6px;">Note (optionnel)</div>
-                <textarea id="cal-event-note" class="number-input" rows="2" placeholder="Note…" style="width:100%;font-size:12px;resize:none;font-family:inherit;"></textarea>
+
+            <!-- Récurrence -->
+            <div id="cal-event-recurrence-row" style="margin-bottom:16px;">
+                <div class="cal-field-lbl">Récurrence</div>
+                <select id="cal-event-recurrence" class="cal-select-p">
+                    <option value="none">Ponctuel — une seule fois</option>
+                    <option value="weekly">Toutes les semaines — même jour</option>
+                </select>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                <button onclick="hideModal('cal-event-modal')" style="padding:11px;background:var(--card-bg-alt);color:var(--text-secondary);border:1.5px solid var(--border);border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;">Annuler</button>
-                <button onclick="saveCalEvent()" style="padding:11px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer;"><i class="fas fa-check"></i> Sauvegarder</button>
+
+            <!-- Note -->
+            <div style="margin-bottom:18px;">
+                <div class="cal-field-lbl">Note</div>
+                <textarea id="cal-event-note" class="cal-input-p" rows="2" placeholder="Objectif, remarques…" style="resize:none;font-family:inherit;"></textarea>
+            </div>
+
+            <!-- Actions -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <button onclick="hideModal('cal-event-modal')"
+                    style="padding:13px;background:var(--card-bg-alt);color:var(--text-secondary);border:1.5px solid var(--border);border-radius:14px;font-size:13px;font-weight:700;cursor:pointer;">
+                    Annuler
+                </button>
+                <button onclick="saveCalEvent()"
+                    style="padding:13px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:14px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(79,110,247,.3);">
+                    <i class="fas fa-check"></i> Enregistrer
+                </button>
             </div>
         </div>
     </div>
