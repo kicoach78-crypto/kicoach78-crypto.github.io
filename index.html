@@ -3047,6 +3047,28 @@ body, html {
     height: 0;
 }
 
+/* toggle-slider — variante nommée du slider standard */
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #CBD5E1;
+    transition: .3s;
+    border-radius: 34px;
+}
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px; width: 18px;
+    left: 4px; bottom: 4px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+input:checked + .toggle-slider { background-color: var(--success); }
+input:checked + .toggle-slider:before { transform: translateX(26px); }
+
 .slider {
     position: absolute;
     cursor: pointer;
@@ -12950,6 +12972,7 @@ input:checked + .slider:before {
                 <option value="Endurance musculaire">Endurance musculaire</option>
                 <option value="Cardio">Cardio</option>
                 <option value="Perte de poids">Perte de poids</option>
+                <option value="Sèche">Sèche (cutting)</option>
                 <option value="Maintien" selected>Maintien</option>
                 <option value="Récupération">Récupération</option>
                 <option value="Préparation physique">Préparation physique</option>
@@ -13573,8 +13596,9 @@ input:checked + .slider:before {
                 <div style="grid-column:1/-1;">
                     <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px;">Objectif nutritionnel</div>
                     <select id="nutri-goal-specific" class="filter-select" style="width:100%;font-size:13px;">
-                        <option value="auto">Automatique (basé sur mon profil)</option>
+                        <option value="auto" selected>Automatique (basé sur mon profil)</option>
                         <option value="perte de gras">Perte de gras prioritaire</option>
+                        <option value="sèche">Sèche / Cutting</option>
                         <option value="prise de masse">Prise de masse musculaire</option>
                         <option value="performance">Performance sportive</option>
                         <option value="énergie">Énergie et vitalité</option>
@@ -13659,7 +13683,7 @@ input:checked + .slider:before {
                                 <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
                                     <input type="number" id="supp-qty-whey" value="30" min="1" max="100" style="width:52px;padding:4px 6px;border:1.5px solid var(--border);border-radius:8px;background:var(--card-bg);color:var(--text-primary);font-size:11px;font-weight:700;text-align:center;" title="Quantité en g">
                                     <span style="font-size:10px;color:var(--text-tertiary);">g</span>
-                                    <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-whey" checked><span class="toggle-slider"></span></label>
+                                    <label class="toggle-switch" style="flex-shrink:0;"><input type="checkbox" id="supp-whey"><span class="toggle-slider"></span></label>
                                 </div>
                             </div>
                             <!-- Créatine -->
@@ -17356,6 +17380,27 @@ function calculateNutritionNeeds() {
             }
             calorieTarget = Math.round(maintenanceCalories * (1 + deficitSurplus));
             break;
+
+        case 'Sèche':
+            // Sèche = déficit précis selon BF% pour préserver le muscle
+            if (bodyFat > 20) {
+                deficitSurplus = -0.25;
+                phase = 'Sèche — déficit modéré';
+            } else if (bodyFat > 15) {
+                deficitSurplus = -0.20;
+                phase = 'Sèche — déficit standard';
+            } else if (bodyFat > 12) {
+                deficitSurplus = -0.15;
+                phase = 'Sèche — déficit conservateur';
+            } else if (bodyFat > 10) {
+                deficitSurplus = -0.10;
+                phase = 'Sèche avancée — mini déficit';
+            } else {
+                deficitSurplus = -0.05;
+                phase = 'Sèche extreme — déficit minimal';
+            }
+            calorieTarget = Math.round(maintenanceCalories * (1 + deficitSurplus));
+            break;
             
         case 'Force pure':
         case 'Force':
@@ -17446,6 +17491,11 @@ function calculateNutritionNeeds() {
         if (bodyFat > 25) proteinFactor = 2.4;
         else if (bodyFat > 20) proteinFactor = 2.6;
         else proteinFactor = 2.8;
+    } else if (trainingType === 'Sèche') {
+        // Sèche = protéines très élevées pour préserver la masse maigre
+        if (bodyFat > 15) proteinFactor = 2.8;
+        else if (bodyFat > 12) proteinFactor = 3.0;
+        else proteinFactor = 3.2; // sèche avancée : max protéines
     } else if (trainingType === 'Hypertrophie' || trainingType === 'Volume musculaire') {
         proteinFactor = 2.0;
     } else if (trainingType === 'Force pure' || trainingType === 'Force') {
@@ -17476,6 +17526,9 @@ function calculateNutritionNeeds() {
     
     if (trainingType === 'Perte de poids') {
         fatPerKg = 0.8;
+    } else if (trainingType === 'Sèche') {
+        // Sèche : lipides bas mais minimum pour les hormones
+        fatPerKg = gender === 'female' ? 0.8 : 0.7;
     } else if (trainingType === 'Hypertrophie') {
         fatPerKg = 0.9;
     }
@@ -17514,6 +17567,16 @@ function calculateNutritionNeeds() {
             recommendations.push('• Pause diète recommandée après 8-10 semaines');
         }
         recommendations.push('• Répartition des glucides autour des entraînements');
+    }
+
+    if (trainingType === 'Sèche') {
+        recommendations.push('• Protéines maximales : ' + proteinGrams + 'g/j pour préserver le muscle');
+        recommendations.push('• Glucides autour des séances uniquement (carb cycling conseillé)');
+        recommendations.push('• Lipides au minimum hormonal — surveiller la fatigue et la libido');
+        if (bodyFat <= 12) {
+            recommendations.push('⚠️ BF très bas : sèche extreme, durée max 4-6 semaines');
+        }
+        recommendations.push('• Pause diète recommandée toutes les 6-8 semaines (diet break)');
     }
     
     if (trainingType === 'Hypertrophie' || trainingType === 'Volume musculaire') {
@@ -24434,6 +24497,10 @@ async function saveMealToStorage(mealData) {
             
             // Ajouter à l'historique AVEC LE MÊME ID
             nutritionHistory.push({...newMeal});
+            
+            // ── Intégration Planning : marquer le repas planifié comme fait ──
+            if (typeof _calMarkMealDone === 'function') _calMarkMealDone(newMeal);
+            // ─────────────────────────────────────────────────────────────────
             
             // Recalculer les totaux
             calculateDailyNutritionFromMeals();
@@ -32162,46 +32229,6 @@ function _calInitTouchScroll() {
 }
 
 // ── Sync depuis l'historique réel ─────────────────────────────────
-function _calSyncFromHistory() {
-    if (typeof workoutHistory === 'undefined' && typeof nutritionHistory === 'undefined') {
-        showNotification('Aucun historique disponible', 'warning');
-        return;
-    }
-    let added = 0;
-    const dates = _calGetWeekDates(_calWeekOffset);
-    const weekStrs = dates.map(d => d.toISOString().slice(0,10));
-
-    // Séances réelles
-    if (typeof workoutHistory !== 'undefined') {
-        workoutHistory.filter(w => weekStrs.includes((w.date||'').slice(0,10))).forEach(w => {
-            const ds = (w.date||'').slice(0,10);
-            const exists = _calEvents.find(e => e.date===ds && e.type==='workout' && e.workoutId===w.id);
-            if (!exists) {
-                _calEvents.push({ date:ds, type:'workout', label:w.name||'Séance', detail:`${w.duration?Math.round(w.duration/60)+'min':''}`, done:true, workoutId:w.id });
-                added++;
-            }
-        });
-    }
-    // Repas réels
-    if (typeof nutritionHistory !== 'undefined') {
-        const byDate = {};
-        nutritionHistory.forEach(m => {
-            const ds = (m.date||'').slice(0,10);
-            if (weekStrs.includes(ds)) { if (!byDate[ds]) byDate[ds]=0; byDate[ds]++; }
-        });
-        Object.entries(byDate).forEach(([ds, cnt]) => {
-            const exists = _calEvents.find(e => e.date===ds && e.type==='meal' && e.synced);
-            if (!exists) {
-                _calEvents.push({ date:ds, type:'meal', label:`${cnt} repas`, detail:'', done:true, synced:true });
-                added++;
-            }
-        });
-    }
-    _calSave();
-    _calRenderWeek();
-    showNotification(added > 0 ? `${added} événements importés depuis l'historique` : 'Historique déjà synchronisé', 'success');
-}
-
 function _calGetWeekNumber(date) {
     const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
     d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
@@ -32520,119 +32547,83 @@ function openCalAIGenerate() { showModal('cal-ai-modal'); }
  * Sync global : importe le plan IA de la semaine (_weekPlanData)
  * ET les séances/repas réels de l'historique pour la semaine affichée.
  */
+/**
+ * Synchro planning ← historique réel
+ * Importe TOUTES les séances et TOUS les repas de l'historique
+ * qui ne sont pas encore présents dans le planning.
+ * Ne touche PAS au plan IA, ne crée PAS d'événements planifiés fictifs.
+ */
 function _calSyncFromHistory() {
-    let added = 0;
-    const dates    = _calGetWeekDates(_calWeekOffset);
-    const weekStrs = dates.map(d => d.toISOString().slice(0, 10));
-    const DAY_NAMES = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
+    let addedWorkouts = 0;
+    let addedMeals    = 0;
 
-    // ── 1. Plan IA de la semaine (_weekPlanData) ─────────────────
-    if (_weekPlanData) {
-        DAY_NAMES.forEach((dn, i) => {
-            const d   = _weekPlanData[dn];
-            const ds  = weekStrs[i];
-            if (!d || !ds) return;
-
-            const isRest = !d.exercises?.length || (d.type||'').toLowerCase().includes('repos');
-
-            if (isRest) {
-                // Jour de repos
-                const exists = _calEvents.find(e => e.date === ds && e.type === 'rest' && e.fromPlan);
-                if (!exists) {
-                    _calEvents.push({ date:ds, type:'rest', label:'Repos', detail:d.type||'', fromPlan:true });
-                    added++;
-                }
-            } else {
-                // Séance planifiée
-                const exists = _calEvents.find(e => e.date === ds && e.type === 'workout' && e.fromPlan && e.planDay === dn);
-                if (!exists) {
-                    _calEvents.push({
-                        date: ds, type:'workout',
-                        label: d.type || 'Séance',
-                        detail: (d.exercises||[]).slice(0,2).map(ex => ex.name||'').join(', '),
-                        fromPlan: true,
-                        planDay: dn,
-                        planExercises: d.exercises || []
-                    });
-                    added++;
-                }
-            }
-
-            // Repas / nutrition du plan IA
-            if (d.meals?.length) {
-                d.meals.forEach(m => {
-                    const exists = _calEvents.find(e => e.date === ds && e.type === 'meal' && e.fromPlan && e.mealLabel === (m.name||m));
-                    if (!exists) {
-                        _calEvents.push({
-                            date: ds, type:'meal',
-                            label: m.name || m,
-                            detail: m.calories ? m.calories+'kcal' : (m.macros || ''),
-                            fromPlan: true,
-                            mealLabel: m.name || m,
-                            mealData: m
-                        });
-                        added++;
-                    }
-                });
-            }
-        });
-    }
-
-    // ── 2. Séances réellement effectuées (workoutHistory) ────────
+    // ── 1. Séances de l'historique ───────────────────────────────
     if (typeof workoutHistory !== 'undefined') {
         workoutHistory
-            .filter(w => weekStrs.includes((w.date||'').slice(0,10)))
+            .filter(w => !w.isAutoSave && w.date && w.name)
             .forEach(w => {
-                const ds = (w.date||'').slice(0,10);
-                const exists = _calEvents.find(e => e.date === ds && e.type === 'workout' && e.workoutId === w.id);
-                if (!exists) {
-                    const dur = w.duration ? Math.round(w.duration/60)+'min' : '';
-                    const vol = w.totalWeight ? Math.round(w.totalWeight)+'kg' : '';
-                    _calEvents.push({
-                        date: ds, type:'workout',
-                        label: w.name || 'Séance',
-                        detail: [dur, vol].filter(Boolean).join(' · '),
-                        done: true, workoutId: w.id
-                    });
-                    added++;
-                }
+                const ds = w.date.slice(0, 10);
+                // Déjà présente avec cet ID → skip
+                if (_calEvents.find(e => e.workoutId === w.id)) return;
+                const dur  = w.duration ? Math.round(w.duration / 60) + 'min' : '';
+                const vol  = (w.stats?.totalWeight || w.totalWeight)
+                    ? Math.round(w.stats?.totalWeight || w.totalWeight) + 'kg' : '';
+                const exNb = (w.exercises||[]).length;
+                _calEvents.push({
+                    id:        'cal_sync_w_' + w.id,
+                    date:      ds,
+                    type:      'workout',
+                    label:     w.name,
+                    detail:    [dur, vol, exNb ? exNb + ' ex.' : ''].filter(Boolean).join(' · '),
+                    done:      true,
+                    workoutId: w.id,
+                    recurrenceSource: 'history'
+                });
+                addedWorkouts++;
             });
     }
 
-    // ── 3. Repas enregistrés (dailyNutrition + nutritionHistory) ─
-    if (typeof dailyNutrition !== 'undefined' && dailyNutrition.meals?.length) {
-        const todayStr = new Date().toISOString().slice(0,10);
-        if (weekStrs.includes(todayStr)) {
-            const exists = _calEvents.find(e => e.date === todayStr && e.type === 'meal' && e.syncedToday);
-            if (!exists) {
-                const kcal = Math.round(dailyNutrition.calories || 0);
-                const meals = dailyNutrition.meals;
-                meals.forEach(m => {
-                    const mExists = _calEvents.find(e => e.date===todayStr && e.type==='meal' && e.mealId===m.id);
-                    if (!mExists) {
-                        const mKcal = (m.foods||[]).reduce((s,f) => {
-                            const food = (typeof customFoods!=='undefined'?customFoods:[]).concat(typeof foods!=='undefined'?foods:[]).find(fd=>fd.id===f.foodId);
-                            return s + (food ? Math.round(food.calories * f.quantity / 100) : 0);
-                        }, 0);
-                        _calEvents.push({
-                            date: todayStr, type:'meal',
-                            label: m.name || 'Repas',
-                            detail: mKcal ? mKcal+'kcal' : '',
-                            done: true, syncedToday: true, mealId: m.id
-                        });
-                        added++;
-                    }
+    // ── 2. Repas de l'historique nutritionnel ────────────────────
+    if (typeof nutritionHistory !== 'undefined') {
+        nutritionHistory
+            .filter(m => m.date && m.name && !m.isAutoSave)
+            .forEach(m => {
+                const ds = m.date.slice(0, 10);
+                // Déjà présent avec cet ID → skip
+                if (m.id && _calEvents.find(e => e.mealId === m.id)) return;
+                // Déjà présent même nom même jour → skip
+                if (_calEvents.find(e =>
+                    e.date === ds && e.type === 'meal' && e.done &&
+                    e.label?.toLowerCase() === (m.name||'').toLowerCase()
+                )) return;
+
+                const kcal = m.calories || 0;
+                _calEvents.push({
+                    id:     'cal_sync_m_' + (m.id || Date.now() + Math.random()),
+                    date:   ds,
+                    type:   'meal',
+                    label:  m.name,
+                    detail: kcal ? Math.round(kcal) + 'kcal' : '',
+                    done:   true,
+                    mealId: m.id || null,
+                    recurrenceSource: 'history'
                 });
-            }
-        }
+                addedMeals++;
+            });
     }
 
     _calSave();
     _calRenderWeek();
-    const msg = added > 0
-        ? `${added} événement${added>1?'s':''} synchronisé${added>1?'s':''}`
-        : 'Planning déjà à jour';
-    showNotification(msg, 'success');
+
+    const total = addedWorkouts + addedMeals;
+    if (total === 0) {
+        showNotification('Planning déjà à jour avec l\'historique', 'info');
+    } else {
+        const parts = [];
+        if (addedWorkouts) parts.push(addedWorkouts + ' séance' + (addedWorkouts > 1 ? 's' : ''));
+        if (addedMeals)    parts.push(addedMeals    + ' repas');
+        showNotification('Synchronisé : ' + parts.join(' + ') + ' importé' + (total > 1 ? 's' : '') + ' depuis l\'historique', 'success');
+    }
 }
 
 /**
@@ -32681,15 +32672,32 @@ function _calOpenPlannedWorkout(calIdx) {
     let exerciseItems = '';
     if (workout?.exercises?.length) {
         exerciseItems = workout.exercises.slice(0, 5).map(ex => {
-            const name = typeof ex === 'string' ? ex : (ex.name || ex.exerciseId || '');
-            return `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--card-bg-alt);border-radius:10px;border:1px solid var(--border);">
-                <i class="fas fa-dumbbell" style="font-size:10px;color:var(--primary);flex-shrink:0;"></i>
-                <span style="font-size:12px;font-weight:600;color:var(--text-primary);flex:1;">${name}</span>
+            // Ex peut être un string ID ou un objet {name, ...} ou {exerciseId, ...}
+            let name = '';
+            if (typeof ex === 'string') {
+                const found = (typeof getAllExercises === 'function' ? getAllExercises() : []).find(e => e.id === ex);
+                name = found?.name || ex;
+            } else {
+                name = ex.name || ex.exerciseId || '';
+                if (!name && ex.id) {
+                    const found = (typeof getAllExercises === 'function' ? getAllExercises() : []).find(e => e.id === ex.id);
+                    name = found?.name || ex.id;
+                }
+            }
+            const sets  = ex.sets ? (Array.isArray(ex.sets) ? ex.sets.length : ex.sets) : (ex.programmedData?.sets || '');
+            const reps  = ex.reps || (ex.programmedData?.reps || '');
+            const detail = sets && reps ? `${sets}×${reps}` : (sets ? `${sets} séries` : '');
+            return `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;background:var(--card-bg-alt);border-radius:10px;border:1px solid var(--border);">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <i class="fas fa-dumbbell" style="font-size:10px;color:var(--primary);flex-shrink:0;"></i>
+                    <span style="font-size:12px;font-weight:600;color:var(--text-primary);">${name}</span>
+                </div>
+                ${detail ? `<span style="font-size:10px;color:var(--text-tertiary);flex-shrink:0;">${detail}</span>` : ''}
             </div>`;
         }).join('') + (workout.exercises.length > 5 ? `<div style="font-size:10px;color:var(--text-tertiary);text-align:center;padding:4px;">+ ${workout.exercises.length - 5} autres</div>` : '');
     } else if (planExercises.length) {
         exerciseItems = planExercises.slice(0, 5).map(ex => {
-            const name = ex.name || '';
+            const name   = ex.name || (typeof ex === 'string' ? ex : '');
             const detail = ex.sets ? `${ex.sets}×${ex.reps||'?'}${ex.weight?' · '+ex.weight:''}` : '';
             return `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;background:var(--card-bg-alt);border-radius:10px;border:1px solid var(--border);">
                 <div style="display:flex;align-items:center;gap:8px;">
@@ -32719,13 +32727,18 @@ function _calOpenPlannedWorkout(calIdx) {
     if (workout) {
         primaryAction = `
             document.getElementById('cal-launch-modal').remove();
-            startCustomWorkout(customWorkouts.find(function(w){return w.name==='${(ev.label||'').replace(/'/g,"\\'")}'}));
-            _calEvents[${calIdx}].done=true; _calSave(); _calRenderWeek();`;
+            (function(){ var w=customWorkouts.find(function(w){return w.name==='${(ev.label||'').replace(/'/g,"\\'")}'}); if(w){ window._calPendingIdx=${calIdx}; startCustomWorkout(w); } })();`;
     } else if (planExercises.length && ev.planDay) {
         primaryAction = `
             document.getElementById('cal-launch-modal').remove();
+            window._calPendingIdx=${calIdx};
             if(_weekPlanData&&_weekPlanData['${ev.planDay||''}']){_showImportChoiceModal('${ev.planDay||''}');}
             else{showScreen('workouts-screen');}`;
+    } else if (ev.histWorkoutId) {
+        primaryAction = `
+            document.getElementById('cal-launch-modal').remove();
+            window._calPendingIdx=${calIdx};
+            (function(){ var wh=(typeof workoutHistory!=='undefined')?workoutHistory.find(function(w){return w.id==='${ev.histWorkoutId}'}):null; if(wh){ startWorkoutFromHistory(wh); } else { showScreen('workouts-screen'); } })();`;
     } else {
         primaryAction = `
             document.getElementById('cal-launch-modal').remove();
@@ -32914,6 +32927,11 @@ function _calOpenNutritionDay(calIdx) {
                     <i class="fas fa-arrow-right"></i> Nutrition
                 </button>
             </div>
+            ${planMeal ? `
+            <button onclick="_calShowMealRecipe(${calIdx});"
+                style="width:100%;margin-top:8px;padding:12px;background:linear-gradient(135deg,rgba(239,159,39,.15),rgba(239,159,39,.25));border:1px solid rgba(239,159,39,.4);border-radius:12px;font-size:12px;font-weight:800;cursor:pointer;color:#BA7517;">
+                <i class="fas fa-book-open"></i> Voir la recette complète
+            </button>` : ''}
             ${planMeal && !ev.done ? `
             <button onclick="document.getElementById('cal-meal-modal').remove();_calImportMealToNutrition(${calIdx});"
                 style="width:100%;margin-top:8px;padding:12px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:12px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 3px 10px rgba(79,110,247,.3);">
@@ -38432,7 +38450,19 @@ function _calMarkEventDone(historyEntry) {
     if (!historyEntry?.date) return;
     const ds = historyEntry.date.slice(0, 10);
 
-    // Trouver l'événement planifié correspondant (même jour, même nom, pas encore fait)
+    // Priorité : index calendrier mémorisé au lancement
+    if (window._calPendingIdx !== undefined && window._calPendingIdx !== null) {
+        const ev = _calEvents[window._calPendingIdx];
+        if (ev && ev.type === 'workout' && !ev.done) {
+            ev.done = true;
+            ev.workoutId = historyEntry.id;
+            _calSave();
+        }
+        window._calPendingIdx = null;
+        return;
+    }
+
+    // Chercher un événement planifié ce jour
     const ev = _calEvents.find(e =>
         e.date === ds &&
         e.type === 'workout' &&
@@ -38443,7 +38473,68 @@ function _calMarkEventDone(historyEntry) {
         ev.done = true;
         ev.workoutId = historyEntry.id;
         _calSave();
+        return;
     }
+
+    // Aucun événement planifié → créer automatiquement "fait"
+    const dur  = historyEntry.duration ? Math.round(historyEntry.duration / 60) + 'min' : '';
+    const vol  = historyEntry.stats?.totalWeight ? Math.round(historyEntry.stats.totalWeight) + 'kg' : '';
+    const exNb = (historyEntry.exercises||[]).length;
+    _calEvents.push({
+        id:        'cal_hist_' + Date.now(),
+        date:      ds,
+        type:      'workout',
+        label:     historyEntry.name || 'Séance',
+        detail:    [dur, vol, exNb ? exNb + ' ex.' : ''].filter(Boolean).join(' · '),
+        done:      true,
+        workoutId: historyEntry.id,
+        recurrenceSource: 'history'
+    });
+    _calSave();
+}
+
+/**
+ * Marque un repas planifié comme fait quand il est enregistré dans la nutrition
+ * Appelé par saveMealToStorage
+ */
+function _calMarkMealDone(mealEntry) {
+    if (!mealEntry) return;
+    const ds    = (mealEntry.date || new Date().toISOString()).slice(0, 10);
+    const name  = (mealEntry.name || '').toLowerCase();
+
+    // Chercher événement repas planifié non encore fait ce jour-là
+    const ev = _calEvents.find(e =>
+        e.date === ds &&
+        e.type === 'meal' &&
+        !e.done &&
+        (e.label?.toLowerCase() === name ||
+         e.nutritionPlanMeal?.name?.toLowerCase() === name)
+    );
+    if (ev) {
+        ev.done = true;
+        ev.mealId = mealEntry.id;
+        _calSave();
+        return;
+    }
+
+    // Pas d'événement planifié pour ce repas → en créer un (état fait)
+    const kcal = mealEntry.calories ||
+        (mealEntry.foods||[]).reduce((s,f) => {
+            const food = (typeof customFoods!=='undefined'?customFoods:[])
+                .concat(typeof foods!=='undefined'?foods:[])
+                .find(fd=>fd.id===f.foodId);
+            return s + (food ? Math.round(food.calories*f.quantity/100) : 0);
+        }, 0);
+    _calEvents.push({
+        id:    'cal_meal_' + Date.now(),
+        date:  ds,
+        type:  'meal',
+        label: mealEntry.name || 'Repas',
+        detail: kcal ? kcal + 'kcal' : '',
+        done:  true,
+        mealId: mealEntry.id
+    });
+    _calSave();
 }
 
 /**
@@ -38595,6 +38686,134 @@ function _calImportMealToNutrition(calIdx) {
     if (typeof updateMealsList === 'function') updateMealsList();
 
     showNotification(`"${meal.name}" ajouté à la nutrition du jour ✓`, 'success');
+}
+
+
+/**
+ * Affiche la recette complète d'un repas planifié depuis le calendrier.
+ * Si _nutriPlan est disponible → utilise _showRecipe directement.
+ * Sinon → génère depuis les données stockées dans l'événement.
+ */
+async function _calShowMealRecipe(calIdx) {
+    const ev = _calEvents[calIdx];
+    if (!ev) return;
+    const meal = ev.nutritionPlanMeal;
+    if (!meal) { showNotification('Aucune donnée recette disponible', 'warning'); return; }
+
+    // Si le plan IA est en mémoire et qu'on a l'index → utiliser _showRecipe
+    if (_nutriPlan?.days && ev.nutritionPlanDay !== undefined && ev.nutritionPlanMealIdx !== undefined) {
+        document.getElementById('cal-meal-modal')?.remove();
+        showScreen('ai-screen');
+        // Activer l'onglet nutrition
+        setTimeout(() => {
+            const tab = document.querySelector('[onclick*="ai-tab-nutrition"]') ||
+                        document.querySelector('[data-tab="nutrition"]');
+            if (tab) tab.click();
+            setTimeout(() => _showRecipe(ev.nutritionPlanDay, ev.nutritionPlanMealIdx), 300);
+        }, 400);
+        return;
+    }
+
+    // Sinon : générer la recette directement dans un modal
+    const modal = document.getElementById('cal-meal-modal');
+    const body  = modal?.querySelector('.modal-body');
+    if (!body) return;
+
+    // Ajouter une zone recette dans le modal existant
+    let recipeZone = document.getElementById('cal-recipe-zone');
+    if (!recipeZone) {
+        recipeZone = document.createElement('div');
+        recipeZone.id = 'cal-recipe-zone';
+        recipeZone.style.cssText = 'margin-top:12px;';
+        body.appendChild(recipeZone);
+    }
+
+    // Si recette déjà générée dans meal
+    if (meal.ingredients && meal.instructions) {
+        _calRenderRecipe(meal, recipeZone);
+        recipeZone.scrollIntoView({ behavior:'smooth', block:'start' });
+        return;
+    }
+
+    if (!_hasAnyKey()) {
+        recipeZone.innerHTML = '<div style="padding:12px;background:var(--card-bg-alt);border-radius:10px;font-size:12px;color:var(--text-secondary);">Configurez une clé IA pour voir les recettes.</div>';
+        return;
+    }
+
+    recipeZone.innerHTML = '<div style="text-align:center;padding:16px;"><span class="ai-spinner"></span><br><span style="font-size:11px;color:var(--text-tertiary);">Génération de la recette…</span></div>';
+    recipeZone.scrollIntoView({ behavior:'smooth', block:'start' });
+
+    const up     = typeof userProfile !== 'undefined' ? userProfile : {};
+    const params = _nutriPlan?._params || {};
+
+    const prompt = `Génère la recette détaillée pour: "${meal.name}" (${meal.kcal||'?'} kcal, P:${meal.protein||'?'}g G:${meal.carbs||'?'}g L:${meal.fat||'?'}g, ${meal.prep_time||'?'}min).
+Régime: ${params.dietType||'omnivore'}. Allergies: ${params.allergies||'aucune'}.
+${meal.short_desc ? 'Ingrédients de base: ' + meal.short_desc : ''}
+
+Réponds UNIQUEMENT en JSON:
+{"ingredients":[{"name":"...","qty":100,"unit":"g","kcal":0,"protein":0,"carbs":0,"fat":0}],"instructions":["Étape 1","Étape 2"],"tips":"...","prep_time":5,"cook_time":10}`;
+
+    try {
+        const cfg   = _selectProvider('fast');
+        const reply = await _callAI([{role:'user',content:prompt}], cfg, 'Réponds UNIQUEMENT avec du JSON valide.', 600);
+        if (!reply || reply.startsWith('__ERROR__')) throw new Error('AI error');
+        const clean = reply.replace(/```json|```/g,'').trim();
+        const data  = JSON.parse(clean);
+        // Stocker dans l'event pour éviter de re-générer
+        _calEvents[calIdx].nutritionPlanMeal = {...meal, ...data};
+        _calSave();
+        _calRenderRecipe(data, recipeZone);
+    } catch(e) {
+        recipeZone.innerHTML = '<div style="padding:10px;color:var(--danger);font-size:11px;text-align:center;">Impossible de générer la recette. <button onclick="_calShowMealRecipe('+calIdx+')" style="background:var(--primary);color:white;border:none;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;margin-left:6px;">Réessayer</button></div>';
+    }
+}
+
+function _calRenderRecipe(data, container) {
+    const ingredRows = (data.ingredients||[]).map(ing =>
+        `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);">
+            <div>
+                <span style="font-size:12px;font-weight:600;color:var(--text-primary);">${ing.name}</span>
+                <span style="font-size:10px;color:var(--text-tertiary);margin-left:6px;">${ing.qty}${ing.unit||'g'}</span>
+            </div>
+            <span style="font-size:10px;color:var(--text-tertiary);">${ing.kcal||0} kcal</span>
+        </div>`).join('');
+
+    const stepRows = (data.instructions||[]).map((step,i) =>
+        `<div style="display:flex;gap:10px;padding:6px 0;">
+            <div style="width:20px;height:20px;border-radius:50%;background:var(--primary);color:white;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">${i+1}</div>
+            <div style="font-size:12px;color:var(--text-primary);line-height:1.5;">${step}</div>
+        </div>`).join('');
+
+    container.innerHTML = `
+        <div style="background:var(--card-bg-alt);border:1px solid var(--border);border-radius:14px;padding:14px;margin-top:4px;">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+                <i class="fas fa-list-ul" style="color:var(--primary);"></i> Ingrédients
+            </div>
+            <div style="margin-bottom:12px;">${ingredRows}</div>
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+                <i class="fas fa-utensils" style="color:#0FA86A;"></i> Préparation
+            </div>
+            <div style="margin-bottom:10px;">${stepRows}</div>
+            ${data.tips ? `<div style="background:rgba(239,159,39,.08);border:1px solid rgba(239,159,39,.25);border-radius:10px;padding:8px 12px;font-size:11px;color:#BA7517;"><i class="fas fa-lightbulb" style="margin-right:5px;"></i>${data.tips}</div>` : ''}
+            ${(data.prep_time||data.cook_time) ? `<div style="margin-top:8px;font-size:10px;color:var(--text-tertiary);"><i class="fas fa-clock" style="margin-right:4px;"></i>Préparation : ${data.prep_time||0}min${data.cook_time?' · Cuisson : '+data.cook_time+'min':''}</div>` : ''}
+        </div>`;
+}
+
+/**
+ * Démarre une séance depuis l'historique (re-faire une séance passée)
+ */
+function startWorkoutFromHistory(histEntry) {
+    if (!histEntry?.exercises?.length) { showScreen('workouts-screen'); return; }
+    const exercises = histEntry.exercises.map(ex => ({
+        ...ex,
+        sets: (ex.sets||[]).map((s,i) => ({
+            number: i+1,
+            reps: s.reps || userProfile.defaultReps,
+            weight: s.weight || userProfile.defaultWeight,
+            completed: false
+        }))
+    }));
+    startWorkoutWithExercises(histEntry.name || 'Séance', exercises);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
