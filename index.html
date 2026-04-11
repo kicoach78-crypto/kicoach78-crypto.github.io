@@ -4188,7 +4188,7 @@ input:checked + .slider:before {
     border-radius: var(--radius-sm);
     padding: 16px;
     margin-bottom: 16px;
-    border: 1px solid var(--border);
+    border: 1.5px solid rgba(79, 110, 247, 0.25);
     transition: var(--transition);
 }
 
@@ -13075,7 +13075,7 @@ input:checked + .slider:before {
                     <div class="filter-pills" style="margin-bottom:10px;">
                         <div class="filter-pill active" onclick="showWorkoutHistoryView('list'); setHistoryPill(this)"><i class="fas fa-list"></i> Liste</div>
                         <div class="filter-pill" onclick="showWorkoutHistoryView('evolution'); setHistoryPill(this)"><i class="fas fa-chart-line"></i> Graphique</div>
-                        <div class="filter-pill" onclick="showWorkoutHistoryView('exercises'); setHistoryPill(this)"><i class="fas fa-dumbbell"></i> Exercices</div>
+                        <div class="filter-pill" onclick="showWorkoutHistoryView('exercises'); setHistoryPill(this)"><i class="fas fa-chart-bar"></i> Performances</div>
                     </div>
 
                     <!-- VUE LISTE -->
@@ -13098,6 +13098,23 @@ input:checked + .slider:before {
                         <div class="chart-container-premium">
                             <div class="chart-title-premium">Évolution des performances</div>
                             <div id="evolution-chart" class="chart-wrapper"></div>
+                        </div>
+                        <!-- Nouveau graphique : volume d'une séance spécifique sur une période -->
+                        <div class="chart-container-premium" style="margin-top:12px;">
+                            <div class="chart-title-premium" style="display:flex;align-items:center;justify-content:space-between;">
+                                <span>Volume d'une séance sur la durée</span>
+                                <button onclick="loadWorkoutVolumeChart()" title="Rafraîchir"
+                                    style="background:var(--card-bg-alt);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--text-secondary);cursor:pointer;">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                            <div style="padding:0 0 10px;">
+                                <select id="workout-volume-select" class="filter-select" style="width:100%;font-size:12px;"
+                                    onchange="loadWorkoutVolumeChart()">
+                                    <option value="">— Choisir une séance —</option>
+                                </select>
+                            </div>
+                            <div id="workout-volume-chart" class="chart-wrapper"></div>
                         </div>
                     </div>
 
@@ -13980,18 +13997,19 @@ input:checked + .slider:before {
                 <!-- ── CHRONO COLLAPSIBLE ─────────────────────────────── -->
                 <div id="workout-chrono-wrap" style="margin:2px 14px 6px;">
                     <div onclick="_toggleChronoCollapse()" style="display:flex;align-items:center;justify-content:space-between;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:8px 14px;cursor:pointer;">
-                        <div style="display:flex;align-items:center;gap:12px;">
-                            <div class="chrono-stat" style="display:flex;flex-direction:column;align-items:center;">
-                                <div id="completed-sets" style="font-size:16px;font-weight:900;color:var(--primary);">0</div>
-                                <div style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Séries</div>
-                            </div>
-                            <div id="workout-timer" style="font-size:22px;font-weight:900;letter-spacing:-.03em;color:var(--text-primary);font-variant-numeric:tabular-nums;">00:00:00</div>
-                            <div class="chrono-stat" style="display:flex;flex-direction:column;align-items:center;">
-                                <div id="total-weight" style="font-size:16px;font-weight:900;color:var(--success);">0kg</div>
-                                <div style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Volume</div>
-                            </div>
+                        <!-- Séries — gauche -->
+                        <div class="chrono-stat" style="display:flex;flex-direction:column;align-items:center;min-width:44px;">
+                            <div id="completed-sets" style="font-size:16px;font-weight:900;color:var(--primary);">0</div>
+                            <div style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Séries</div>
                         </div>
-                        <i id="chrono-chevron" class="fas fa-chevron-up" style="font-size:11px;color:var(--text-tertiary);transition:transform .2s;"></i>
+                        <!-- Timer — centré -->
+                        <div id="workout-timer" style="font-size:22px;font-weight:900;letter-spacing:-.03em;color:var(--text-primary);font-variant-numeric:tabular-nums;text-align:center;flex:1;">00:00:00</div>
+                        <!-- Volume — droite -->
+                        <div class="chrono-stat" style="display:flex;flex-direction:column;align-items:center;min-width:44px;">
+                            <div id="total-weight" style="font-size:16px;font-weight:900;color:var(--success);">0kg</div>
+                            <div style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;">Volume</div>
+                        </div>
+                        <i id="chrono-chevron" class="fas fa-chevron-up" style="font-size:11px;color:var(--text-tertiary);transition:transform .2s;margin-left:8px;"></i>
                     </div>
                 </div>
 
@@ -14000,18 +14018,28 @@ input:checked + .slider:before {
                 </div>
                 
                 <!-- ── BOUTONS ACTION — UNE SEULE LIGNE ───────────────── -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 14px 90px;">
+                <div style="display:flex;gap:8px;justify-content:center;padding:10px 14px 90px;">
                     <button id="add-exercise-workout-btn" onclick="addExerciseToWorkout()"
-                        style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 10px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:14px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(79,110,247,.3);letter-spacing:-.01em;">
-                        <i class="fas fa-plus-circle" style="font-size:16px;"></i>
-                        <span>Ajouter exercice</span>
+                        title="Ajouter un exercice"
+                        style="display:flex;align-items:center;justify-content:center;padding:10px 18px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:14px;cursor:pointer;box-shadow:0 3px 12px rgba(79,110,247,.3);transition:transform .1s;"
+                        onmousedown="this.style.transform='scale(.96)'" onmouseup="this.style.transform=''" ontouchstart="this.style.transform='scale(.96)'" ontouchend="this.style.transform=''">
+                        <svg width="26" height="16" viewBox="0 0 32 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="12" y="7" width="8" height="6" rx="1.5"/>
+                            <rect x="0" y="4" width="4" height="12" rx="2"/>
+                            <rect x="4" y="6" width="8" height="8" rx="1.5"/>
+                            <rect x="28" y="4" width="4" height="12" rx="2"/>
+                            <rect x="20" y="6" width="8" height="8" rx="1.5"/>
+                            <rect x="14" y="9" width="4" height="2" rx="1" fill="rgba(255,255,255,.4)"/>
+                        </svg>
                     </button>
                     <button id="finish-workout-btn" onclick="showSaveDataModal()"
-                        style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 10px;background:linear-gradient(135deg,#0FA86A,#059669);color:white;border:none;border-radius:14px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(15,168,106,.3);letter-spacing:-.01em;">
-                        <i class="fas fa-flag-checkered" style="font-size:16px;"></i>
-                        <span>Terminer</span>
+                        title="Terminer la séance"
+                        style="display:flex;align-items:center;justify-content:center;padding:10px 18px;background:linear-gradient(135deg,#0FA86A,#059669);color:white;border:none;border-radius:14px;cursor:pointer;box-shadow:0 3px 12px rgba(15,168,106,.3);transition:transform .1s;"
+                        onmousedown="this.style.transform='scale(.96)'" onmouseup="this.style.transform=''" ontouchstart="this.style.transform='scale(.96)'" ontouchend="this.style.transform=''">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
                     </button>
-
                 </div>
 
             </div>
@@ -22027,28 +22055,94 @@ function _updateDumbbellViz(exerciseIndex, setIndex, weightVal) {
     const w = parseFloat(weightVal) || 0;
     const exName = activeWorkout?.exercises[exerciseIndex]?.name || '';
     const hasBar = _rm1RMHasBarbell(exName);
+    // Initialiser explicitement à 1 côté si pas encore défini (évite double-clic)
+    const key = `${exerciseIndex}_${setIndex}`;
+    if (!hasBar && _rmVizSides[key] === undefined) _rmVizSides[key] = 1;
     container.innerHTML = w > 0 ? _rmWeightVizSVG(exerciseIndex, setIndex, w, hasBar) : '';
     container.style.display = '';
 }
 
 
-/**
- * SVG inline charge — empilement HORIZONTAL.
- * weight = poids des DISQUES seulement (sans barre si barre).
- * hasBarbell : true → barre centrale + disques 2 côtés
- *              false → disques 1 ou 2 côtés selon _rmVizSides[uid]
- * Affiche ×N par type de plaque pour éviter de compter.
- */
 
-// Mémoire du choix 1/2 côtés par exercice+série (pour sans-barre)
-var _rmVizSides = {}; // key = "exIdx_setIdx" → 1 or 2
+var _rmVizSides = {};
 
 function _toggleVizSides(exerciseIndex, setIndex) {
     const key = `${exerciseIndex}_${setIndex}`;
-    _rmVizSides[key] = (_rmVizSides[key] === 1) ? 2 : 1;
-    // Redessiner
+    const current = _rmVizSides[key] !== undefined ? _rmVizSides[key] : 1;
+    _rmVizSides[key] = (current === 1) ? 2 : 1;
     const inp = document.getElementById(`weight-input-${exerciseIndex}-${setIndex}`);
     if (inp) _updateDumbbellViz(exerciseIndex, setIndex, inp.value);
+}
+
+// Toggle côtés pour le modal 1RM (sans-barre)
+var _rm1RMVizSides = 1;
+function _toggle1RMVizSides() {
+    _rm1RMVizSides = (_rm1RMVizSides === 1) ? 2 : 1;
+    const gymEl = document.getElementById('rm-calc-gym');
+    const platesEl = document.getElementById('rm-plates-detail');
+    if (!gymEl || !platesEl) return;
+    const gymW = parseFloat(gymEl.textContent) || 0;
+    if (gymW > 0) {
+        platesEl.innerHTML = _rm1RMWeightViz(gymW) +
+            `<div style="font-size:10px;color:var(--text-tertiary);text-align:center;margin-top:4px;">${gymW}kg total</div>`;
+    }
+}
+
+// Viz sans-barre dans le modal 1RM (utilise _rm1RMVizSides)
+function _rm1RMWeightViz(gymW) {
+    const PC = {
+        20:{bg:'#3A86FF',border:'#1D5FC9',label:'#fff'},
+        10:{bg:'#2DC653',border:'#1A8C37',label:'#fff'},
+        5:{bg:'#F4F4F4',border:'#9CA3AF',label:'#222'},
+        2.5:{bg:'#F97316',border:'#C05621',label:'#fff'},
+        1.25:{bg:'#A78BFA',border:'#7C3AED',label:'#fff'},
+    };
+    const getC = kg => PC[kg] || {bg:'#6B7280',border:'#4B5563',label:'#fff'};
+    const plates = [...(typeof userPlates!=='undefined'?userPlates:[20,10,5,2.5,1.25])].sort((a,b)=>b-a);
+    const sides = _rm1RMVizSides;
+    const perSide = sides === 2 ? gymW / 2 : gymW;
+    let rem = Math.round(perSide/1.25)*1.25; const used = [];
+    plates.forEach(p=>{while(rem>=p-0.001){used.push(p);rem=Math.round((rem-p)*1000)/1000;}});
+
+    const dH=28, dW=p=>p>=20?13:p>=10?10:p>=5?8:p>=2.5?6:5;
+    const sideW=used.reduce((a,p)=>a+dW(p)+1,0);
+    const barW=40, barH=6, colW=0;
+    const svgH=44, cy=svgH/2;
+    const labelW=50;
+    const svgW=Math.max((sides===2?2*sideW:sideW)+barW+labelW+16,160);
+    const cx=(svgW-labelW)/2;
+    const uid='rm1rm';
+
+    let p2=[];
+    p2.push(`<defs><linearGradient id="bg_${uid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ccc"/><stop offset="100%" stop-color="#888"/></linearGradient><filter id="sf_${uid}"><feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="rgba(0,0,0,.25)"/></filter></defs>`);
+    p2.push(`<rect x="${cx-barW/2}" y="${cy-barH/2}" width="${barW}" height="${barH}" rx="2" fill="url(#bg_${uid})" stroke="#555" stroke-width="0.5"/>`);
+
+    const drawSide=(side)=>{
+        const arr=side==='R'?[...used]:[...used].reverse();
+        let curX=side==='R'?cx+barW/2+2:cx-barW/2-2;
+        arr.forEach((p,i)=>{
+            const w_=dW(p),h_=dH,c=getC(p),x=side==='R'?curX:curX-w_;
+            const gid=`p_${uid}_${side}${i}`;
+            p2.push(`<defs><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="${c.border}"/><stop offset="40%" stop-color="${c.bg}"/><stop offset="60%" stop-color="${c.bg}"/><stop offset="100%" stop-color="${c.border}"/></linearGradient></defs>`);
+            p2.push(`<rect x="${x}" y="${cy-h_/2}" width="${w_}" height="${h_}" rx="2" fill="url(#${gid})" stroke="${c.border}" stroke-width="0.8" filter="url(#sf_${uid})"/>`);
+            if(h_>=18&&w_>=6)p2.push(`<text x="${x+w_/2}" y="${cy}" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90,${x+w_/2},${cy})" font-size="${w_>=10?7:5}" font-weight="900" font-family="system-ui,sans-serif" fill="${c.label}">${p}</text>`);
+            if(side==='R')curX+=w_+1;else curX-=w_+1;
+        });
+    };
+    if(used.length){drawSide('R');if(sides===2)drawSide('L');}
+
+    // Label + toggle
+    const lx=cx+barW/2+sideW+6;
+    const groups=[];
+    used.forEach(p=>{const g=groups.find(x=>x.p===p);g?g.n++:groups.push({p,n:1});});
+    groups.forEach(({p,n},i)=>{
+        const c=getC(p);
+        p2.push(`<text x="${lx}" y="${cy-5+(i*8)}" text-anchor="start" font-size="7" font-weight="800" font-family="system-ui,sans-serif" fill="${c.bg}" stroke="${c.border}" stroke-width="0.3" paint-order="stroke">${n>1?n+'×':''}${p}</text>`);
+    });
+    const btnLabel=sides===2?'2 côtés':'1 côté';
+    p2.push(`<g onclick="_toggle1RMVizSides()" style="cursor:pointer;"><rect x="${lx}" y="${cy+8}" width="34" height="11" rx="4" fill="var(--card-bg-alt)" stroke="var(--border)" stroke-width="0.8"/><text x="${lx+17}" y="${cy+14}" text-anchor="middle" dominant-baseline="middle" font-size="7" font-weight="700" font-family="system-ui,sans-serif" fill="var(--text-secondary)">${btnLabel}</text></g>`);
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${svgW} ${svgH}" style="width:100%;max-width:${svgW}px;height:${svgH}px;display:block;overflow:visible;">${p2.join('')}</svg>`;
 }
 
 function _rmWeightVizSVG(exerciseIndex, setIndex, weight, hasBarbell) {
@@ -22057,7 +22151,6 @@ function _rmWeightVizSVG(exerciseIndex, setIndex, weight, hasBarbell) {
 
     const PC = {
         20:   { bg:'#3A86FF', border:'#1D5FC9', label:'#fff' },
-        15:   { bg:'#FFBE0B', border:'#C68B00', label:'#222' },
         10:   { bg:'#2DC653', border:'#1A8C37', label:'#fff' },
         5:    { bg:'#F4F4F4', border:'#9CA3AF', label:'#222' },
         2.5:  { bg:'#F97316', border:'#C05621', label:'#fff' },
@@ -22065,35 +22158,36 @@ function _rmWeightVizSVG(exerciseIndex, setIndex, weight, hasBarbell) {
     };
     const getC = kg => PC[kg] || { bg:'#6B7280', border:'#4B5563', label:'#fff' };
 
+    const plates = [...(typeof userPlates !== 'undefined' ? userPlates : [20,10,5,2.5,1.25])].sort((a,b)=>b-a);
+
     function decompose(kg) {
-        const order = [...(typeof userPlates !== 'undefined' ? userPlates : [20, 10, 5, 2.5, 1.25])].sort((a,b) => b-a);
         const g = Math.round(kg / 1.25) * 1.25;
         let rem = g; const used = [];
-        order.forEach(p => { while (rem >= p - 0.001) { used.push(p); rem = Math.round((rem - p) * 1000) / 1000; } });
-        return used;
+        plates.forEach(p => { while (rem >= p - 0.001) { used.push(p); rem = Math.round((rem-p)*1000)/1000; } });
+        return used; // array of individual plates, heaviest first
     }
 
-    // Regrouper et compter les plaques : [{plate, count}]
+    // Group for summary label: [{plate, count}]
     function groupPlates(arr) {
         const map = new Map();
-        arr.forEach(p => map.set(p, (map.get(p) || 0) + 1));
-        // Retourner dans l'ordre décroissant
-        return [...map.entries()].sort((a, b) => b[0] - a[0]).map(([plate, count]) => ({ plate, count }));
+        arr.forEach(p => map.set(p,(map.get(p)||0)+1));
+        return [...map.entries()].sort((a,b)=>b[0]-a[0]).map(([plate,count])=>({plate,count}));
     }
 
-    const uid  = `wv_${exerciseIndex}_${setIndex}`;
-    const key  = `${exerciseIndex}_${setIndex}`;
-    const sides = hasBarbell ? 2 : (_rmVizSides[key] || 2);
+    const uid   = `wv_${exerciseIndex}_${setIndex}`;
+    const key   = `${exerciseIndex}_${setIndex}`;
+    const sides = hasBarbell ? 2 : (_rmVizSides[key] || 1);
 
     const perSide = sides === 2 ? w / 2 : w;
-    const used    = decompose(perSide);
-    const groups  = groupPlates(used);  // [{plate, count}, ...]
+    const used    = decompose(perSide);   // individual plates
+    const groups  = groupPlates(used);    // for label
 
-    // Dimensions disques
+    // Dimensions per plate
     const dH = 32;
-    const dW = p => p >= 20 ? 14 : p >= 15 ? 12 : p >= 10 ? 10 : p >= 5 ? 8 : p >= 2.5 ? 6 : 5;
-    // Largeur totale d'un côté (groupes, chaque groupe affiché une fois avec ×N)
-    const sideW = groups.reduce((a, {plate}) => a + dW(plate) + 1, 0);
+    const dW = p => p >= 20 ? 13 : p >= 10 ? 10 : p >= 5 ? 8 : p >= 2.5 ? 6 : 5;
+
+    // Total width of one side (each plate individually)
+    const sideW = used.reduce((a,p) => a + dW(p) + 1, 0);
 
     const svgH = 48;
     const cy   = svgH / 2;
@@ -22101,11 +22195,21 @@ function _rmWeightVizSVG(exerciseIndex, setIndex, weight, hasBarbell) {
     const barW = hasBarbell ? 50 : 24;
     const colW = hasBarbell ? 7 : 0;
 
-    // Estimation svgW
-    const labelArea = 50;
-    const bothSidesW = sides === 2 ? 2 * (sideW + colW) : sideW + colW;
-    const svgW = Math.max(bothSidesW + barW + labelArea + 20, 180);
-    const cx   = (svgW - labelArea) / 2;
+    // Build summary label string
+    const summaryParts = groups.map(({plate, count}) => {
+        const c = getC(plate);
+        return `<tspan fill="${c.bg}" stroke="${c.border}" stroke-width="0.2" paint-order="stroke">${count > 1 ? count+'×' : ''}${plate}kg</tspan>`;
+    });
+
+    // Estimate label width (approx 7px per char)
+    const summaryStr = groups.map(({plate,count}) => `${count>1?count+'×':''}${plate}kg`).join(' ');
+    const labelW = Math.max(summaryStr.length * 6.5 + 8, 40);
+
+    const totalSvgW = sides === 2
+        ? 2*(sideW + colW) + barW + labelW + 20
+        : sideW + colW + barW/2 + labelW + 20;
+    const svgW = Math.max(totalSvgW, 160);
+    const cx   = (svgW - labelW) / 2;
 
     let parts = [`<defs>
         <linearGradient id="barg_${uid}" x1="0" y1="0" x2="0" y2="1">
@@ -22132,17 +22236,14 @@ function _rmWeightVizSVG(exerciseIndex, setIndex, weight, hasBarbell) {
             rx="2" fill="url(#barg_${uid})" stroke="#555" stroke-width="0.5"/>`);
     }
 
-    // ── Fonction dessiner un côté ────────────────────────────────
+    // ── Disques individuels des deux côtés ───────────────────────
     const drawSide = (side) => {
-        const startX = side === 'R'
+        const arr = side === 'R' ? [...used] : [...used].reverse();
+        let curX = side === 'R'
             ? cx + barW/2 + colW + (hasBarbell ? 8 : 2)
             : cx - barW/2 - colW - (hasBarbell ? 8 : 2);
-        let curX = startX;
 
-        // Ordre : lourd vers léger (droite : vers ext, gauche : vers ext)
-        const arr = side === 'R' ? [...groups] : [...groups].reverse();
-
-        arr.forEach(({ plate: p, count }, i) => {
+        arr.forEach((p, i) => {
             const w_ = dW(p), h_ = dH;
             const x  = side === 'R' ? curX : curX - w_;
             const c  = getC(p);
@@ -22156,48 +22257,53 @@ function _rmWeightVizSVG(exerciseIndex, setIndex, weight, hasBarbell) {
             parts.push(`<rect x="${x}" y="${cy-h_/2}" width="${w_}" height="${h_}" rx="2"
                 fill="url(#${gid})" stroke="${c.border}" stroke-width="0.8" filter="url(#sf_${uid})"/>`);
             parts.push(`<rect x="${x+1}" y="${cy-h_/2+2}" width="${Math.max(w_-2,1)}" height="${h_*0.3}" rx="1" fill="rgba(255,255,255,.22)"/>`);
-            // Label poids (vertical)
+            // Label poids vertical si assez large
             if (h_ >= 20 && w_ >= 6) {
                 parts.push(`<text x="${x+w_/2}" y="${cy}" text-anchor="middle" dominant-baseline="middle"
                     transform="rotate(-90,${x+w_/2},${cy})"
                     font-size="${w_>=10?7:5}" font-weight="900" font-family="system-ui,sans-serif"
                     fill="${c.label}">${p}</text>`);
             }
-            // Compteur ×N au-dessus du disque
-            if (count > 1) {
-                const badgeX = side === 'R' ? x + w_/2 : x + w_/2;
-                parts.push(`<text x="${badgeX}" y="${cy - h_/2 - 2}" text-anchor="middle"
-                    font-size="7.5" font-weight="900" font-family="system-ui,sans-serif"
-                    fill="${c.bg}" stroke="var(--text-primary)" stroke-width="0.3">×${count}</text>`);
-            }
-            if (side === 'R') curX += w_ + (count > 1 ? 3 : 1);
-            else curX -= w_ + (count > 1 ? 3 : 1);
+            if (side === 'R') curX += w_ + 1;
+            else curX -= w_ + 1;
         });
     };
 
-    if (groups.length) {
+    if (used.length) {
         drawSide('R');
         if (sides === 2) drawSide('L');
     }
 
-    // ── Label charge + toggle 1/2 côtés (sans barre) ────────────
-    const totalKg = hasBarbell ? w + 20 : w;
-    const labelX  = cx + barW/2 + colW + sideW + (hasBarbell ? 12 : 6);
-    parts.push(`<text x="${labelX}" y="${cy - 5}" text-anchor="start"
-        font-size="10" font-weight="900" font-family="system-ui,sans-serif"
+    // ── Label résumé à droite ────────────────────────────────────
+    const totalKg  = hasBarbell ? w + 20 : w;
+    const labelX   = cx + barW/2 + colW + sideW + (hasBarbell ? 12 : 6);
+    // Poids disques
+    parts.push(`<text x="${labelX}" y="${cy - 7}" text-anchor="start"
+        font-size="9" font-weight="900" font-family="system-ui,sans-serif"
         fill="var(--text-primary)">${w}kg</text>`);
+    // Détail par type (couleur du disque)
+    if (groups.length) {
+        let tx = labelX;
+        groups.forEach(({plate, count}, i) => {
+            const c = getC(plate);
+            const txt = `${count>1?count+'×':''}${plate}`;
+            parts.push(`<text x="${tx}" y="${cy + 5}" text-anchor="start"
+                font-size="7.5" font-weight="800" font-family="system-ui,sans-serif"
+                fill="${c.bg}" stroke="${c.border}" stroke-width="0.3" paint-order="stroke">${txt}</text>`);
+            tx += txt.length * 5.5 + 3;
+        });
+    }
     if (hasBarbell) {
-        parts.push(`<text x="${labelX}" y="${cy + 8}" text-anchor="start"
-            font-size="7" font-weight="700" font-family="system-ui,sans-serif"
+        parts.push(`<text x="${labelX}" y="${cy + 16}" text-anchor="start"
+            font-size="7" font-weight="600" font-family="system-ui,sans-serif"
             fill="var(--text-tertiary)">+barre=${totalKg}kg</text>`);
     } else {
-        // Bouton 1/2 côtés cliquable
+        // Toggle 1/2 côtés
         const btnLabel = sides === 2 ? '2 côtés' : '1 côté';
-        const btnY = cy + 6;
         parts.push(`<g onclick="_toggleVizSides(${exerciseIndex},${setIndex})" style="cursor:pointer;">
-            <rect x="${labelX}" y="${btnY - 6}" width="34" height="12" rx="4"
+            <rect x="${labelX}" y="${cy+10}" width="34" height="11" rx="4"
                 fill="var(--card-bg-alt)" stroke="var(--border)" stroke-width="0.8"/>
-            <text x="${labelX + 17}" y="${btnY + 1}" text-anchor="middle" dominant-baseline="middle"
+            <text x="${labelX+17}" y="${cy+16}" text-anchor="middle" dominant-baseline="middle"
                 font-size="7" font-weight="700" font-family="system-ui,sans-serif"
                 fill="var(--text-secondary)">${btnLabel}</text>
         </g>`);
@@ -22425,7 +22531,7 @@ function show1RMModal(exerciseIndex) {
                     <span id="rm-calc-gym" style="font-size:22px;font-weight:800;color:#E07B1A;">—</span>
                     <span style="font-size:11px;color:var(--text-tertiary);">kg (poids salle les plus proches)</span>
                 </div>
-                <div id="rm-plates-detail" style="font-size:11px;color:var(--text-tertiary);margin-top:6px;"></div>
+                <div id="rm-plates-detail" style="font-size:11px;color:var(--text-tertiary);margin-top:6px;min-height:0;overflow:visible;"></div>
             </div>
 
             <!-- Sélection des séries — toggles -->
@@ -22453,6 +22559,7 @@ function show1RMModal(exerciseIndex) {
         modal.classList.add('active');
         _rm1RMSetMode(savedMode, exerciseIndex, true);
         _rmKnobInit(savedPct);
+        _rm1RMVizSides = 1;
         _rm1RMUpdate(hasBarbell);
         _rm1RMRenderSetToggles(exerciseIndex);
     });
@@ -22535,7 +22642,7 @@ function _rmKnobStart(e, hasBarbell) {
         const y    = ev.touches ? ev.touches[0].clientY : ev.clientY;
         const diff = _rmKnobLastY - y;
         _rmKnobLastY = y;
-        _rmKnobPct = Math.min(100, Math.max(1, _rmKnobPct + diff * 0.5));
+        _rmKnobPct = Math.min(100, Math.max(1, _rmKnobPct + diff * 0.18));
         _rmKnobDraw(_rmKnobPct);
         document.getElementById('rm-pct-display').textContent = Math.round(_rmKnobPct) + '%';
         _rm1RMUpdate(hasBarbell);
@@ -22755,9 +22862,12 @@ function _rm1RMUpdate(hasBarbell) {
                 platesEl.innerHTML = '';
             }
         } else {
-            platesEl.innerHTML = gymW > 0
-                ? `<div style="font-size:11px;color:var(--text-tertiary);text-align:center;padding:4px 0;">${gymW}kg par côté / charge totale</div>`
-                : '';
+            if (gymW > 0) {
+                platesEl.innerHTML = _rm1RMWeightViz(gymW) +
+                    `<div style="font-size:10px;color:var(--text-tertiary);text-align:center;margin-top:4px;">${gymW}kg total</div>`;
+            } else {
+                platesEl.innerHTML = '';
+            }
         }
     }
 }
@@ -26755,6 +26865,8 @@ function showWorkoutHistoryView(view) {
     
     if (view === 'evolution') {
         loadEvolutionChart();
+        _initWorkoutVolumeSelect();
+        loadWorkoutVolumeChart();
     } else if (view === 'exercises') {
         loadExercisesChart();
     }
@@ -26884,6 +26996,136 @@ function loadEvolutionChart() {
 }
 
 
+// ── Volume d'une séance spécifique sur une période ───────────────
+function _initWorkoutVolumeSelect() {
+    const sel = document.getElementById('workout-volume-select');
+    if (!sel || !workoutHistory || workoutHistory.length === 0) return;
+    // Collecter les noms de séances uniques
+    const names = [...new Set(workoutHistory.map(w => w.name).filter(Boolean))].sort();
+    const current = sel.value;
+    sel.innerHTML = '<option value="">— Choisir une séance —</option>' +
+        names.map(n => `<option value="${n.replace(/"/g,'&quot;')}"${current===n?' selected':''}>${n}</option>`).join('');
+}
+
+function loadWorkoutVolumeChart() {
+    const sel = document.getElementById('workout-volume-select');
+    const container = document.getElementById('workout-volume-chart');
+    if (!sel || !container) return;
+
+    // Peupler le select si vide
+    if (sel.options.length <= 1) _initWorkoutVolumeSelect();
+
+    const name = sel.value;
+    if (!name) {
+        container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-tertiary);font-size:12px;">Sélectionnez une séance pour voir sa courbe de volume</div>';
+        return;
+    }
+
+    // Filtrer et trier les occurrences de cette séance
+    const sessions = [...workoutHistory]
+        .filter(w => w.name === name)
+        .sort((a,b) => new Date(a.date) - new Date(b.date));
+
+    if (sessions.length < 2) {
+        container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-tertiary);font-size:12px;">Pas assez de données (minimum 2 séances)</div>';
+        return;
+    }
+
+    const labels = sessions.map(w => new Date(w.date).toLocaleDateString(_localeMeta?_localeMeta.dateLocale:'fr-FR', {day:'2-digit',month:'short'}));
+    const values = sessions.map(w => {
+        if (w.stats && w.stats.totalWeight) return w.stats.totalWeight;
+        // Recalculer si stats absentes
+        let vol = 0;
+        (w.exercises||[]).forEach(ex => { (ex.sets||[]).forEach(s => { vol += (parseFloat(s.weight)||0) * (parseInt(s.reps)||0); }); });
+        return vol;
+    });
+
+    const maxVal = Math.max(...values, 1);
+    const minVal = 0;
+    const range  = maxVal - minVal || 1;
+    const n = values.length;
+
+    const W=340, H=160, padL=48, padR=16, padT=20, padB=32;
+    const chartW=W-padL-padR, chartH=H-padT-padB;
+    const step = chartW / Math.max(n-1, 1);
+
+    const pts = values.map((v,i) => ({
+        x: padL + i*step,
+        y: padT + chartH - ((v-minVal)/range)*chartH
+    }));
+
+    let pathD = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+    for (let i=1; i<pts.length; i++) {
+        const cp1x = pts[i-1].x + step*0.4;
+        const cp2x = pts[i].x   - step*0.4;
+        pathD += ` C ${cp1x.toFixed(1)},${pts[i-1].y.toFixed(1)} ${cp2x.toFixed(1)},${pts[i].y.toFixed(1)} ${pts[i].x.toFixed(1)},${pts[i].y.toFixed(1)}`;
+    }
+    let areaD = pathD + ` L ${pts[pts.length-1].x.toFixed(1)},${(padT+chartH).toFixed(1)} L ${pts[0].x.toFixed(1)},${(padT+chartH).toFixed(1)} Z`;
+
+    const yTicks = [0,0.25,0.5,0.75,1].map(t=>({
+        y: padT+chartH-t*chartH,
+        label: Math.round(minVal+t*range)
+    }));
+    const gridLines = yTicks.map(t =>
+        `<line x1="${padL}" y1="${t.y.toFixed(1)}" x2="${W-padR}" y2="${t.y.toFixed(1)}" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 3"/>
+         <text x="${(padL-6).toFixed(1)}" y="${(t.y+4).toFixed(1)}" text-anchor="end" font-size="9" fill="var(--text-tertiary)" font-family="Inter,sans-serif">${t.label}</text>`
+    ).join('');
+
+    const xStep = Math.ceil(n/6);
+    const xLabels = pts.filter((_,i)=>i%xStep===0||i===n-1).map(p=>{
+        const i=pts.indexOf(p);
+        return `<text x="${p.x.toFixed(1)}" y="${(padT+chartH+14).toFixed(1)}" text-anchor="middle" font-size="9" fill="var(--text-tertiary)" font-family="Inter,sans-serif">${labels[i]}</text>`;
+    }).join('');
+
+    const circles = pts.map((p,i) =>
+        `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4" fill="var(--success)" stroke="var(--card-bg)" stroke-width="2">
+            <title>${labels[i]} · ${values[i]} kg</title>
+         </circle>`
+    ).join('');
+
+    const prog = n>1 ? ((values[n-1]-values[0])/Math.max(values[0],1)*100).toFixed(1) : 0;
+    const progColor = prog>=0 ? 'var(--success)' : 'var(--danger)';
+    const progArrow = prog>=0 ? '↑' : '↓';
+
+    container.innerHTML = `
+        <div class="pro-chart-wrap">
+            <div class="pro-chart-header">
+                <div>
+                    <div class="pro-chart-title" style="font-size:12px;">${name}</div>
+                    <div class="pro-chart-sub">${n} occurrences</div>
+                </div>
+                <div class="pro-chart-badge" style="color:${progColor}">${progArrow} ${Math.abs(prog)}%</div>
+            </div>
+            <svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block;overflow:visible">
+                <defs>
+                    <linearGradient id="wvAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="var(--success)" stop-opacity="0.2"/>
+                        <stop offset="100%" stop-color="var(--success)" stop-opacity="0.01"/>
+                    </linearGradient>
+                </defs>
+                ${gridLines}
+                <path d="${areaD}" fill="url(#wvAreaGrad)"/>
+                <path d="${pathD}" fill="none" stroke="var(--success)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                ${xLabels}
+                ${circles}
+            </svg>
+            <div class="pro-chart-stats">
+                <div class="pro-chart-stat">
+                    <span class="pro-chart-stat-val">${Math.max(...values)} kg</span>
+                    <span class="pro-chart-stat-lbl">Maximum</span>
+                </div>
+                <div class="pro-chart-stat">
+                    <span class="pro-chart-stat-val">${Math.round(values.reduce((a,b)=>a+b,0)/n)} kg</span>
+                    <span class="pro-chart-stat-lbl">Moyenne</span>
+                </div>
+                <div class="pro-chart-stat">
+                    <span class="pro-chart-stat-val">${values[n-1]} kg</span>
+                    <span class="pro-chart-stat-lbl">Dernière</span>
+                </div>
+            </div>
+        </div>`;
+}
+
 function loadExercisesChart() {
     const container = document.getElementById('exercises-chart');
     const listContainer = document.getElementById('exercises-detailed-list');
@@ -26932,15 +27174,9 @@ function loadExercisesChart() {
                 };
             }
 
-            // Compter tous les sets : cochés ET non-cochés (séances importées n'ont pas completed=true)
-            const allSets   = exercise.sets || [];
-            const hasSets   = Array.isArray(allSets) && allSets.length > 0;
-            // Sets avec données réelles (completed ou avec poids/reps)
-            const usableSets = hasSets
-                ? allSets.filter(set => set && (set.completed === true || (set.weight > 0 && (parseInt(set.reps)||0) > 0)))
-                : [];
-            // Si aucun set utilisable mais l'exercice est dans l'historique → le compter quand même
-            const countThisSession = usableSets.length > 0 || (hasSets && allSets.length > 0) || (!hasSets);
+            // Compter tous les exercices de l'historique — pas de condition sur completed
+            const allSets = exercise.sets || [];
+            const countThisSession = true; // Toujours compter si l'exercice est dans l'historique
 
             if (countThisSession) {
                 exerciseStats[exercise.name].sessions.add(session.id);
@@ -26948,8 +27184,7 @@ function loadExercisesChart() {
                 let bestOneRM = 0;
                 let bestSet = null;
                 
-                const setsToAnalyze = usableSets.length > 0 ? usableSets : allSets;
-                setsToAnalyze.forEach(set => {
+                allSets.forEach(set => {
                     if (!set) return;
                     const weight = parseFloat(set.weight) || 0;
                     const reps   = parseInt(set.reps) || 0;
@@ -38220,6 +38455,168 @@ function _applyI18nDOM() {
 
   // ── Mettre à jour les boutons de langue dans Settings ───────────────
   _updateLangButtons();
+
+  // ── Extension : couvrir tous les textes UI identifiés ───────────────
+  _applyI18nExtended();
+}
+
+function _applyI18nExtended() {
+  if (!window._i18nEnabled) return;
+  const d = document;
+  const L = _locale;
+
+  // Traductions étendues par locale
+  const EXT = {
+    fr: {
+      performances: 'Performances', planning_history: 'Planning',
+      last_session: 'Dernière performance', prev_series: 'Série précédente',
+      rest: 'Repos', rest_seconds: 's repos',
+      add_to_workout: 'Ajouter à une séance',
+      all_muscles: 'Tous les groupes', my_workouts: 'Mes séances',
+      predefined: 'Prédéfinies', free_session: 'Séance libre IA',
+      chart_evolution: 'Évolution des performances',
+      chart_volume: 'Volume total par séance',
+      chart_workout_volume: 'Volume d\'une séance sur la durée',
+      history_list: 'Liste', history_graph: 'Graphique',
+      history_exercises: 'Performances',
+      refreshing: 'Rafraîchir', filter_all: 'Toutes',
+      planning_week: 'Planning hebdomadaire',
+      add_event: 'Ajouter un événement',
+      session_planned: 'Séance planifiée', meal_planned: 'Repas planifié',
+      done_check: 'Fait ✓', rest_day: 'Repos',
+      max_label: 'Maximum', avg_label: 'Moyenne', last_label: 'Dernière',
+      occurrences: 'occurrences',
+    },
+    en: {
+      performances: 'Performances', planning_history: 'Planning',
+      last_session: 'Last performance', prev_series: 'Previous set',
+      rest: 'Rest', rest_seconds: 's rest',
+      add_to_workout: 'Add to workout',
+      all_muscles: 'All muscles', my_workouts: 'My workouts',
+      predefined: 'Predefined', free_session: 'Free AI session',
+      chart_evolution: 'Performance evolution',
+      chart_volume: 'Total volume per session',
+      chart_workout_volume: 'Workout volume over time',
+      history_list: 'List', history_graph: 'Chart',
+      history_exercises: 'Performances',
+      refreshing: 'Refresh', filter_all: 'All',
+      planning_week: 'Weekly planning',
+      add_event: 'Add event',
+      session_planned: 'Planned session', meal_planned: 'Planned meal',
+      done_check: 'Done ✓', rest_day: 'Rest',
+      max_label: 'Maximum', avg_label: 'Average', last_label: 'Latest',
+      occurrences: 'occurrences',
+    },
+    es: {
+      performances: 'Rendimientos', planning_history: 'Planificación',
+      last_session: 'Último rendimiento', prev_series: 'Serie anterior',
+      rest: 'Descanso', rest_seconds: 's descanso',
+      add_to_workout: 'Añadir al entrenamiento',
+      all_muscles: 'Todos', my_workouts: 'Mis entrenamientos',
+      predefined: 'Predefinidos', free_session: 'Sesión libre IA',
+      chart_evolution: 'Evolución del rendimiento',
+      chart_volume: 'Volumen total por sesión',
+      chart_workout_volume: 'Volumen de un entrenamiento en el tiempo',
+      history_list: 'Lista', history_graph: 'Gráfico',
+      history_exercises: 'Rendimientos',
+      refreshing: 'Actualizar', filter_all: 'Todas',
+      planning_week: 'Planificación semanal',
+      add_event: 'Añadir evento',
+      session_planned: 'Sesión planificada', meal_planned: 'Comida planificada',
+      done_check: 'Hecho ✓', rest_day: 'Descanso',
+      max_label: 'Máximo', avg_label: 'Media', last_label: 'Última',
+      occurrences: 'ocurrencias',
+    },
+    de: {
+      performances: 'Leistungen', planning_history: 'Planung',
+      last_session: 'Letzte Leistung', prev_series: 'Vorheriger Satz',
+      rest: 'Pause', rest_seconds: 's Pause',
+      add_to_workout: 'Zum Training hinzufügen',
+      all_muscles: 'Alle', my_workouts: 'Meine Trainings',
+      predefined: 'Vordefiniert', free_session: 'Freies KI-Training',
+      chart_evolution: 'Leistungsentwicklung',
+      chart_volume: 'Gesamtvolumen pro Einheit',
+      chart_workout_volume: 'Trainingsvolumen über die Zeit',
+      history_list: 'Liste', history_graph: 'Diagramm',
+      history_exercises: 'Leistungen',
+      refreshing: 'Aktualisieren', filter_all: 'Alle',
+      planning_week: 'Wochenplanung',
+      add_event: 'Ereignis hinzufügen',
+      session_planned: 'Geplante Einheit', meal_planned: 'Geplante Mahlzeit',
+      done_check: 'Erledigt ✓', rest_day: 'Ruhetag',
+      max_label: 'Maximum', avg_label: 'Durchschnitt', last_label: 'Letzter',
+      occurrences: 'Vorkommen',
+    },
+    ar: {
+      performances: 'الأداء', planning_history: 'التخطيط',
+      last_session: 'آخر أداء', prev_series: 'المجموعة السابقة',
+      rest: 'استراحة', rest_seconds: 'ث راحة',
+      add_to_workout: 'إضافة للتمرين',
+      all_muscles: 'الكل', my_workouts: 'تمريناتي',
+      predefined: 'محدد مسبقاً', free_session: 'جلسة AI حرة',
+      chart_evolution: 'تطور الأداء',
+      chart_volume: 'إجمالي الحجم لكل جلسة',
+      chart_workout_volume: 'حجم التمرين عبر الزمن',
+      history_list: 'قائمة', history_graph: 'رسم بياني',
+      history_exercises: 'الأداء',
+      refreshing: 'تحديث', filter_all: 'الكل',
+      planning_week: 'التخطيط الأسبوعي',
+      add_event: 'إضافة حدث',
+      session_planned: 'جلسة مخططة', meal_planned: 'وجبة مخططة',
+      done_check: 'تم ✓', rest_day: 'راحة',
+      max_label: 'أقصى', avg_label: 'متوسط', last_label: 'الأخير',
+      occurrences: 'مرات',
+    },
+  };
+
+  const ex = EXT[L] || EXT['fr'];
+
+  // Filter pills historique
+  d.querySelectorAll('.filter-pill').forEach(pill => {
+    const txt = pill.textContent.trim();
+    if (txt.includes('Liste'))        pill.innerHTML = pill.innerHTML.replace(/Liste/g, ex.history_list);
+    if (txt.includes('Graphique') || txt.includes('Chart') || txt.includes('Diagramm'))
+      pill.innerHTML = pill.innerHTML.replace(/Graphique|Chart|Diagramm|Gráfico|رسم بياني/g, ex.history_graph);
+    if (txt.includes('Performances') || txt.includes('Exercices'))
+      pill.innerHTML = `<i class="fas fa-chart-bar"></i> ${ex.history_exercises}`;
+    if (txt.includes('Toutes') || txt.includes('All') || txt.includes('Todas') || txt.includes('Alle') || txt.includes('الكل'))
+      pill.innerHTML = pill.innerHTML.replace(/Toutes|All|Todas|Alle|الكل/g, ex.filter_all);
+  });
+
+  // Titres des graphiques
+  d.querySelectorAll('.pro-chart-title, .chart-title-premium').forEach(el => {
+    const txt = el.textContent.trim();
+    if (txt.includes('Évolution') || txt.includes('Evolution') || txt.includes('Evolución') || txt.includes('Entwicklung') || txt.includes('تطور'))
+      el.textContent = ex.chart_evolution;
+    if (txt.includes('Volume total') || txt.includes('Total volume') || txt.includes('Volumen total') || txt.includes('Gesamtvolumen') || txt.includes('إجمالي'))
+      el.textContent = ex.chart_volume;
+    if (txt.includes("séance sur") || txt.includes("over time") || txt.includes("über die") || txt.includes("عبر"))
+      el.textContent = ex.chart_workout_volume;
+    if (txt.includes('Performances par exercice') || txt.includes('Performance'))
+      el.textContent = ex.performances + ' par exercice';
+  });
+
+  // Stats graphiques
+  d.querySelectorAll('.pro-chart-stat-lbl').forEach(el => {
+    const txt = el.textContent.trim();
+    if (txt === 'Maximum') el.textContent = ex.max_label;
+    else if (txt === 'Moyenne' || txt === 'Average' || txt === 'Media' || txt === 'Durchschnitt' || txt === 'متوسط') el.textContent = ex.avg_label;
+    else if (txt === 'Dernière' || txt === 'Latest' || txt === 'Última' || txt === 'Letzter' || txt === 'الأخير') el.textContent = ex.last_label;
+  });
+
+  // Bouton Rafraîchir
+  d.querySelectorAll('button').forEach(btn => {
+    const ic = btn.querySelector('i.fa-sync-alt');
+    if (ic && btn.textContent.trim().match(/Rafraîchir|Refresh|Actualizar|Aktualisieren|تحديث/))
+      btn.innerHTML = `<i class="fas fa-sync-alt"></i> ${ex.refreshing}`;
+  });
+
+  // Titre modal Planning
+  d.querySelectorAll('.modal-content').forEach(mc => {
+    const title = mc.querySelector('.modal-title');
+    const sub   = mc.querySelector('[style*="Planning hebdomadaire"]') || [...mc.querySelectorAll('div')].find(el => el.textContent.trim() === 'Planning hebdomadaire');
+    if (sub) sub.textContent = ex.planning_week;
+  });
 }
 
 // ── Salutation dynamique selon l'heure ────────────────────────────────
