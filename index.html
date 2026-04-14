@@ -22107,8 +22107,8 @@ function _rm1RMWeightViz(gymW) {
     const dH=28, dW=p=>p>=20?13:p>=10?10:p>=5?8:p>=2.5?6:5;
     const sideW=used.reduce((a,p)=>a+dW(p)+1,0);
     const barW=40, barH=6, colW=0;
-    const svgH=44, cy=svgH/2;
-    const labelW=50;
+    const svgH=56, cy=svgH/2;
+    const labelW=70;
     const svgW=Math.max((sides===2?2*sideW:sideW)+barW+labelW+16,160);
     const cx=(svgW-labelW)/2;
     const uid='rm1rm';
@@ -22137,7 +22137,7 @@ function _rm1RMWeightViz(gymW) {
     used.forEach(p=>{const g=groups.find(x=>x.p===p);g?g.n++:groups.push({p,n:1});});
     groups.forEach(({p,n},i)=>{
         const c=getC(p);
-        p2.push(`<text x="${lx}" y="${cy-5+(i*8)}" text-anchor="start" font-size="7" font-weight="800" font-family="system-ui,sans-serif" fill="${c.bg}" stroke="${c.border}" stroke-width="0.3" paint-order="stroke">${n>1?n+'×':''}${p}</text>`);
+        p2.push(`<text x="${lx}" y="${cy-4+(i*15)}" text-anchor="start" font-size="13" font-weight="900" font-family="system-ui,sans-serif" fill="${c.bg}" stroke="${c.border}" stroke-width="0.5" paint-order="stroke">${n>1?n+'×':''}${p}</text>`);
     });
     const btnLabel=sides===2?'2 côtés':'1 côté';
     p2.push(`<g onclick="_toggle1RMVizSides()" style="cursor:pointer;"><rect x="${lx}" y="${cy+8}" width="34" height="11" rx="4" fill="var(--card-bg-alt)" stroke="var(--border)" stroke-width="0.8"/><text x="${lx+17}" y="${cy+14}" text-anchor="middle" dominant-baseline="middle" font-size="7" font-weight="700" font-family="system-ui,sans-serif" fill="var(--text-secondary)">${btnLabel}</text></g>`);
@@ -22189,7 +22189,7 @@ function _rmWeightVizSVG(exerciseIndex, setIndex, weight, hasBarbell) {
     // Total width of one side (each plate individually)
     const sideW = used.reduce((a,p) => a + dW(p) + 1, 0);
 
-    const svgH = 48;
+    const svgH = 56;
     const cy   = svgH / 2;
     const barH = hasBarbell ? 8 : 4;
     const barW = hasBarbell ? 50 : 24;
@@ -22203,7 +22203,7 @@ function _rmWeightVizSVG(exerciseIndex, setIndex, weight, hasBarbell) {
 
     // Estimate label width (approx 7px per char)
     const summaryStr = groups.map(({plate,count}) => `${count>1?count+'×':''}${plate}kg`).join(' ');
-    const labelW = Math.max(summaryStr.length * 6.5 + 8, 40);
+    const labelW = Math.max(summaryStr.length * 9 + 10, 60);
 
     const totalSvgW = sides === 2
         ? 2*(sideW + colW) + barW + labelW + 20
@@ -22287,10 +22287,10 @@ function _rmWeightVizSVG(exerciseIndex, setIndex, weight, hasBarbell) {
         groups.forEach(({plate, count}, i) => {
             const c = getC(plate);
             const txt = `${count>1?count+'×':''}${plate}`;
-            parts.push(`<text x="${tx}" y="${cy + 5}" text-anchor="start"
-                font-size="7.5" font-weight="800" font-family="system-ui,sans-serif"
-                fill="${c.bg}" stroke="${c.border}" stroke-width="0.3" paint-order="stroke">${txt}</text>`);
-            tx += txt.length * 5.5 + 3;
+            parts.push(`<text x="${tx}" y="${cy + 6}" text-anchor="start"
+                font-size="13" font-weight="900" font-family="system-ui,sans-serif"
+                fill="${c.bg}" stroke="${c.border}" stroke-width="0.5" paint-order="stroke">${txt}</text>`);
+            tx += txt.length * 8.5 + 4;
         });
     }
     if (hasBarbell) {
