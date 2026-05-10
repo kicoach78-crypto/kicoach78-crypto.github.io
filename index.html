@@ -11644,6 +11644,36 @@ input:checked + .slider:before {
 #_motivation_banner:hover { opacity:.9; }
 #_motivation_banner:active { transform: scale(.99); }
 
+/* ── Hover global fix ───────────────────────────────────────────────
+   SVGs dans les boutons ne doivent pas capturer les événements souris */
+button svg, a svg, .action-btn svg, .btn svg,
+.filter-pill svg, .nav-item svg, .workout-card svg {
+    pointer-events: none;
+}
+
+/* Cursor pointer sur tous les éléments interactifs */
+button, .btn, .action-btn, .filter-pill, .nav-item,
+.workout-card, .exercise-item, .history-item,
+.settings-item, .theme-option, .card[onclick],
+.cal-type-btn, [onclick] { cursor: pointer; }
+
+/* Transitions sur les cartes et items sans transition explicite */
+.settings-item, .theme-option, .filter-pill,
+.exercise-item, .history-item, .food-search-simple-item {
+    transition: background .15s, border-color .15s, transform .15s, box-shadow .15s;
+}
+
+/* Hover explicite sur items qui pourraient l'avoir perdu */
+.settings-item:hover { background: var(--card-bg-alt) !important; }
+.filter-pill:hover:not(.active):not(.active-workout):not(.active-meal):not(.active-rest) {
+    background: var(--card-bg-alt);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+.exercise-item:hover { background: var(--card-bg-alt) !important; }
+.history-item:hover { background: var(--card-bg-alt) !important; }
+.food-search-simple-item:hover { background: var(--card-bg-alt) !important; }
+
 
 /* ════════════════════════════════════════════════
    INTELLIGENCE ARTIFICIELLE — CSS
@@ -34845,11 +34875,19 @@ function deleteSilhouettePhoto() {
 // 3. PODOMÈTRE & MARCHE IA — Compteur temps réel
 // ════════════════════════════════════════════════════════════════
 
+let _walkActive      = false;
+let _walkSteps       = 0;
+let _walkTimer       = null;
+let _walkStartTime   = null;
+let _walkPauseOffset = 0;
+let _walkPausedAt    = null;
 let _walkGoalKcal    = 320;
+let _walkGoalSteps   = 8000;
+let _walkAICfg       = null;
 let _walkLastAccel   = null;
 let _walkAccelBuf    = [];
-let _walkWakeLock    = null;   // WakeLock API pour empêcher la veille
-let _walkVisHideTime = null;   // heure où l'écran s'est éteint
+let _walkWakeLock    = null;
+let _walkVisHideTime = null;
 const _WALK_STEP_THRESHOLD = 0.5; // abaissé pour capturer les pas légers
 
 function initWalkModal() {
