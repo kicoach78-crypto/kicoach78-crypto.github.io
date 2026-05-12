@@ -41994,5 +41994,987 @@ window.addEventListener('beforeunload', function(e) {
 
 </script>
 
+
+
+
+<!-- ════════════════════════════════════════════════════════════════
+
+<!-- ════════════════════════════════════════════════════════════════
+
+<!-- ════════════════════════════════════════════════════════════════
+     MODULE TABATA v5 — IronPlate ULTIMATE
+     ════════════════════════════════════════════════════════════════ -->
+<style>
+/* ── Shell ───────────────────────────────────────────────────── */
+#tb-overlay{position:fixed;inset:0;z-index:20000;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(8px)}
+#tb-overlay.tb-open{display:flex}
+.tb-shell{width:100%;max-width:480px;height:100%;display:flex;flex-direction:column;position:relative;overflow:hidden;box-shadow:0 0 80px rgba(0,0,0,.6);background:var(--bg,#f0f2f7)}
+.dark-mode .tb-shell{background:#0a0c16}
+@media(min-width:520px){.tb-shell{border-left:1px solid rgba(0,0,0,.07);border-right:1px solid rgba(0,0,0,.07)}}
+.dark-mode .tb-shell{border-color:rgba(255,255,255,.04)!important}
+.tb-scr{display:none;flex-direction:column;height:100%}
+.tb-scr.on{display:flex}
+#tb-player.on{overflow:hidden}
+.tb-scroll{flex:1;overflow-y:auto}
+/* Tokens */
+.tb-shell{--t1:#111827;--t2:#374151;--t3:#9CA3AF;--card:#fff;--card2:#f4f6fb;--bdr:rgba(0,0,0,.08);--inp:#fff;--sh:0 2px 12px rgba(0,0,0,.07)}
+.dark-mode .tb-shell{--t1:#EEF0F8;--t2:#9AA0B8;--t3:rgba(140,140,180,.6);--card:#151826;--card2:#1a1e2e;--bdr:rgba(255,255,255,.07);--inp:#151826;--sh:0 2px 12px rgba(0,0,0,.3)}
+
+/* ── Header ───────────────────────────────────────────────────── */
+.tb-hdr{display:flex;align-items:center;justify-content:space-between;padding:13px 15px 11px;background:var(--card);border-bottom:1px solid var(--bdr);flex-shrink:0;box-shadow:var(--sh)}
+.tb-hdr-l{display:flex;align-items:center;gap:10px}
+.tb-logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#FF3B3B,#FF7A00);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 14px rgba(255,60,60,.4);flex-shrink:0}
+.tb-hdr-title{font-size:16px;font-weight:900;color:var(--t1)}
+.tb-hdr-sub{font-size:10px;color:var(--t3);font-weight:700;letter-spacing:.5px}
+.tb-icon-btn{width:32px;height:32px;border-radius:8px;background:var(--card2);border:1px solid var(--bdr);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s}
+.tb-icon-btn:hover{background:rgba(255,60,60,.1);color:#FF3B3B;border-color:rgba(255,60,60,.3)}
+.tb-back:hover{background:var(--card2);color:var(--t1);border-color:var(--bdr)}
+.tb-slbl{font-size:10px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--t3);padding:14px 15px 8px}
+
+/* ── Mode cards ───────────────────────────────────────────────── */
+.tb-modes{padding:12px 15px 0;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.tb-mc{border-radius:15px;padding:15px 13px 13px;cursor:pointer;border:1.5px solid var(--bdr);background:var(--card);transition:all .22s;position:relative;overflow:hidden;box-shadow:var(--sh)}
+.tb-mc::after{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent)}
+.tb-mc:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.13)}
+.tb-mc:hover::after{opacity:1}
+.tb-mc:active{transform:scale(.97)}
+.tb-mc-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:10px;transition:transform .2s}
+.tb-mc:hover .tb-mc-ico{transform:scale(1.12) rotate(-5deg)}
+.tb-mc-tag{position:absolute;top:9px;right:9px;font-size:8px;font-weight:800;letter-spacing:.6px;padding:2px 7px;border-radius:20px}
+.tb-mc-lbl{font-size:12px;font-weight:800;color:var(--t1)}
+.tb-mc-desc{font-size:10px;color:var(--t3);margin-top:3px;line-height:1.4}
+.tb-mc-cl{background:linear-gradient(135deg,rgba(255,60,60,.06),rgba(255,120,0,.04));border-color:rgba(255,60,60,.18)}
+.tb-mc-cl .tb-mc-ico{background:rgba(255,60,60,.12);color:#FF3B3B}
+.tb-mc-cl .tb-mc-tag{background:rgba(255,60,60,.12);color:#FF3B3B}
+.tb-mc-cl:hover{border-color:rgba(255,60,60,.5);box-shadow:0 8px 28px rgba(255,60,60,.18)!important}
+.tb-mc-cu{background:linear-gradient(135deg,rgba(79,110,247,.06),rgba(124,58,237,.04));border-color:rgba(79,110,247,.18)}
+.tb-mc-cu .tb-mc-ico{background:rgba(79,110,247,.12);color:#4F6EF7}
+.tb-mc-cu:hover{border-color:rgba(79,110,247,.5);box-shadow:0 8px 28px rgba(79,110,247,.15)!important}
+.tb-mc-ai{grid-column:1/-1;background:linear-gradient(135deg,rgba(15,168,106,.06),rgba(79,110,247,.04));border-color:rgba(15,168,106,.18);padding:13px}
+.tb-mc-ai .tb-mc-ico{background:rgba(15,168,106,.12);color:#0FA86A;margin:0}
+.tb-mc-ai .tb-mc-tag{background:rgba(15,168,106,.12);color:#0FA86A}
+.tb-mc-ai:hover{border-color:rgba(15,168,106,.5);box-shadow:0 8px 28px rgba(15,168,106,.12)!important}
+.tb-mc-ai-inner{display:flex;align-items:center;gap:12px}
+.tb-mc-ai-text .tb-mc-lbl{font-size:13px}
+
+/* ── History ──────────────────────────────────────────────────── */
+.tb-hi{display:flex;align-items:center;gap:11px;padding:11px 15px;cursor:pointer;border-bottom:1px solid var(--bdr);transition:background .15s}
+.tb-hi:hover{background:rgba(255,60,60,.04)}
+.tb-hi-ico{width:38px;height:38px;border-radius:10px;flex-shrink:0;background:rgba(255,60,60,.1);border:1px solid rgba(255,60,60,.18);display:flex;align-items:center;justify-content:center;color:#FF3B3B;font-size:14px}
+.tb-hi-name{font-size:12px;font-weight:700;color:var(--t1)}
+.tb-hi-meta{font-size:10px;color:var(--t3);margin-top:2px}
+.tb-hi-r{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.tb-hi-kcal{font-size:12px;font-weight:800;color:#FF3B3B}
+.tb-hi-del{width:22px;height:22px;border-radius:5px;background:rgba(255,60,60,.08);border:1px solid rgba(255,60,60,.15);color:#FF3B3B;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .15s}
+.tb-hi-del:hover{background:rgba(255,60,60,.2)}
+.tb-empty{text-align:center;padding:26px 20px;color:var(--t3);font-size:11px;line-height:1.9}
+.tb-chart-bars{display:flex;align-items:flex-end;gap:5px;height:42px;padding:0 15px 12px}
+.tb-cb{flex:1;border-radius:3px 3px 0 0;min-height:3px;background:rgba(255,60,60,.2);transition:all .2s;cursor:pointer}
+.tb-cb:last-child{background:rgba(255,60,60,.65)}
+.tb-cb:hover{background:#FF3B3B;transform:scaleY(1.06);transform-origin:bottom}
+
+/* ── Builder ──────────────────────────────────────────────────── */
+.tb-bld-hdr{display:flex;align-items:center;gap:10px;padding:11px 15px;background:var(--card);border-bottom:1px solid var(--bdr);flex-shrink:0;box-shadow:var(--sh)}
+.tb-bld-name{font-size:14px;font-weight:800;color:var(--t1);flex:1}
+.tb-dur-tag{padding:4px 11px;border-radius:20px;background:rgba(255,60,60,.1);border:1px solid rgba(255,60,60,.22);font-size:11px;font-weight:800;color:#FF3B3B;white-space:nowrap}
+.tb-body{padding:13px 15px}
+.tb-f{margin-bottom:13px}
+.tb-lbl{font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--t3);display:block;margin-bottom:6px}
+.tb-inp{width:100%;padding:9px 12px;border-radius:10px;box-sizing:border-box;background:var(--inp);border:1.5px solid var(--bdr);color:var(--t1);font-size:13px;font-weight:600;outline:none;transition:all .15s;font-family:inherit}
+.tb-inp:focus{border-color:#FF3B3B;box-shadow:0 0 0 3px rgba(255,60,60,.1)}
+.tb-inp::placeholder{color:var(--t3)}
+.tb-inp option{background:var(--inp);color:var(--t1)}
+.tb-g2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.tb-g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+
+/* ── Stepper premium — chiffres gros et alignés ─────────────── */
+.tb-stp{display:flex;align-items:center;background:var(--inp);border:1.5px solid var(--bdr);border-radius:12px;overflow:hidden;height:56px;transition:border-color .15s}
+.tb-stp:focus-within{border-color:#FF3B3B}
+.tb-sb{width:44px;height:100%;background:none;border:none;color:var(--t2);cursor:pointer;font-size:20px;font-weight:700;transition:all .15s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.tb-sb:hover{background:rgba(255,60,60,.08);color:#FF3B3B}
+.tb-sb:active{transform:scale(.88)}
+.tb-sm{flex:1;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.tb-sv{font-size:22px;font-weight:900;color:var(--t1);line-height:1;font-variant-numeric:tabular-nums}
+.tb-su{font-size:9px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+
+/* ── Pills ────────────────────────────────────────────────────── */
+.tb-pills{display:flex;flex-wrap:wrap;gap:6px}
+.tb-pill{padding:5px 12px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;transition:all .16s;border:1.5px solid var(--bdr);background:var(--card2);color:var(--t2)}
+.tb-pill:hover{border-color:rgba(255,60,60,.35);color:#FF3B3B;transform:translateY(-1px)}
+.tb-pill.on{background:rgba(255,60,60,.1);border-color:rgba(255,60,60,.4);color:#FF3B3B}
+
+/* Exercices liste — intégrés + custom séparés */
+.tb-exlist{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.tb-exrow{display:flex;align-items:center;gap:8px;background:var(--inp);border:1.5px solid var(--bdr);border-radius:10px;padding:9px 11px}
+.tb-exrow.custom-ex{border-color:rgba(79,110,247,.25);background:rgba(79,110,247,.04)}
+.tb-exn{width:20px;height:20px;border-radius:5px;flex-shrink:0;background:rgba(255,60,60,.1);color:#FF3B3B;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.tb-exrow.custom-ex .tb-exn{background:rgba(79,110,247,.15);color:#4F6EF7}
+.tb-exlbl{flex:1;font-size:11px;font-weight:700;color:var(--t1)}
+.tb-extm{font-size:9px;color:var(--t3)}
+.tb-exdel{width:24px;height:24px;border-radius:6px;flex-shrink:0;background:rgba(255,60,60,.07);border:1px solid rgba(255,60,60,.15);color:#FF3B3B;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .15s}
+.tb-exdel:hover{background:rgba(255,60,60,.2)}
+.tb-addrow{display:flex;gap:7px;margin-top:9px}
+.tb-addico{padding:9px 15px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,#FF3B3B,#FF7A00);color:#fff;font-size:11px;font-weight:800;flex-shrink:0;display:flex;align-items:center;gap:5px;transition:all .15s;box-shadow:0 3px 10px rgba(255,60,60,.25)}
+.tb-addico:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(255,60,60,.35)}
+.tb-trow{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:10px;margin-bottom:7px;background:var(--card2);border:1px solid var(--bdr)}
+.tb-tlbl{font-size:11px;font-weight:700;color:var(--t2);display:flex;align-items:center;gap:7px}
+.tb-tlbl i{color:var(--t3);font-size:12px}
+.tb-sw{width:40px;height:21px;border-radius:11px;background:rgba(0,0,0,.12);position:relative;cursor:pointer;border:none;transition:background .2s;flex-shrink:0}
+.dark-mode .tb-sw{background:rgba(255,255,255,.1)}
+.tb-sw.on{background:#0FA86A}
+.tb-sw::after{content:'';position:absolute;width:15px;height:15px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.tb-sw.on::after{transform:translateX(19px)}
+.tb-start-wrap{padding:11px 15px 18px;flex-shrink:0;background:var(--card);border-top:1px solid var(--bdr)}
+.tb-startbtn{width:100%;padding:14px;border-radius:13px;border:none;background:linear-gradient(135deg,#FF3B3B,#FF7A00);color:#fff;font-size:14px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 5px 20px rgba(255,60,60,.35);transition:all .2s;letter-spacing:.2px;position:relative;overflow:hidden}
+.tb-startbtn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);pointer-events:none}
+.tb-startbtn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 26px rgba(255,60,60,.48)}
+.tb-startbtn:active:not(:disabled){transform:scale(.97)}
+.tb-startbtn:disabled{opacity:.28;cursor:not-allowed}
+
+/* ══════════════════════════════════════════
+   PLAYER ULTIMATE v5
+   ══════════════════════════════════════════ */
+#tb-player{background:#040610;justify-content:space-between;overflow:hidden;color:#fff}
+
+/* Fond */
+.tb-pb{position:absolute;inset:0;z-index:0;transition:all .8s cubic-bezier(.4,0,.2,1);pointer-events:none}
+.tb-pb.work{background:radial-gradient(ellipse 120% 80% at 50% -10%,rgba(255,30,30,.6) 0%,rgba(255,80,0,.25) 30%,transparent 65%),radial-gradient(ellipse 50% 30% at 85% 15%,rgba(255,80,0,.2) 0%,transparent 50%)}
+.tb-pb.rest{background:radial-gradient(ellipse 120% 80% at 50% -10%,rgba(30,80,255,.48) 0%,rgba(80,30,200,.18) 30%,transparent 65%)}
+.tb-pb.ready{background:radial-gradient(ellipse 120% 75% at 50% -10%,rgba(255,170,0,.42) 0%,rgba(255,100,0,.18) 35%,transparent 65%)}
+.tb-pb.done{background:radial-gradient(ellipse 120% 80% at 50% -10%,rgba(15,168,106,.52) 0%,rgba(0,200,100,.18) 35%,transparent 65%)}
+.tb-pb::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.008) 2px,rgba(255,255,255,.008) 3px);pointer-events:none;z-index:1}
+.tb-pb::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,rgba(4,6,16,1) 0%,rgba(4,6,16,.75) 38%,rgba(4,6,16,.15) 65%,transparent 100%);pointer-events:none}
+.tb-pfl{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .05s}
+.tb-pfl.go{opacity:.3;transition:none}
+
+/* Top bar */
+.tb-ptop{position:relative;z-index:5;display:flex;align-items:center;gap:9px;padding:12px 13px 4px}
+.tb-stopbtn{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;background:rgba(255,255,255,.07);color:rgba(255,255,255,.35);font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.tb-stopbtn:hover{background:rgba(255,60,60,.2);color:#FF6060}
+.tb-prog-wrap{flex:1}
+
+/* Barre segmentée — plus haute et visible */
+.tb-prog-segs{display:flex;gap:2px;height:7px;border-radius:4px;overflow:hidden}
+.tb-prog-seg{flex:1;border-radius:3px;background:rgba(255,255,255,.1);transition:background .4s}
+.tb-prog-seg.done{background:linear-gradient(90deg,#FF3B3B,#FF7A00)}
+.tb-prog-seg.active{background:rgba(255,120,0,.7);animation:tbSegPulse 1s ease infinite}
+@keyframes tbSegPulse{0%,100%{opacity:.7}50%{opacity:1;background:rgba(255,60,60,.9)}}
+.tb-prog-lbl{font-size:10px;color:rgba(255,255,255,.35);text-align:center;margin-top:4px;font-weight:800;letter-spacing:.3px}
+.tb-vbtn{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;background:rgba(255,255,255,.06);color:rgba(255,255,255,.28);font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.tb-vbtn.on{background:rgba(15,168,106,.18);color:#0FA86A;box-shadow:0 0 8px rgba(15,168,106,.2)}
+
+/* Phase pill */
+.tb-pphase-wrap{position:relative;z-index:5;display:flex;justify-content:center;margin-top:4px}
+.tb-pphase{display:inline-flex;align-items:center;gap:6px;padding:5px 18px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;transition:all .5s;backdrop-filter:blur(6px)}
+.tb-pphase.work{background:rgba(255,44,44,.22);color:#FF6060;border:1px solid rgba(255,44,44,.4);box-shadow:0 0 20px rgba(255,44,44,.2)}
+.tb-pphase.rest{background:rgba(40,100,255,.2);color:#6090FF;border:1px solid rgba(40,100,255,.35);box-shadow:0 0 20px rgba(40,100,255,.15)}
+.tb-pphase.ready{background:rgba(255,175,0,.2);color:#FFB800;border:1px solid rgba(255,175,0,.35)}
+.tb-pphase.done{background:rgba(15,168,106,.2);color:#0FA86A;border:1px solid rgba(15,168,106,.35)}
+
+/* Exercise name */
+.tb-pex-wrap{position:relative;z-index:5;text-align:center;padding:4px 16px 0;min-height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.tb-pex{font-size:30px;font-weight:900;color:#fff;line-height:1.15;text-shadow:0 2px 30px rgba(0,0,0,.9);letter-spacing:-.4px;transition:all .35s}
+.tb-pex-next-lbl{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.22);margin-top:5px;display:none}
+.tb-pex-next{font-size:14px;font-weight:700;color:rgba(255,200,100,.75);margin-top:2px;display:none;letter-spacing:.2px}
+.tb-pex-next.zoom{animation:tbZoom 1s ease infinite}
+@keyframes tbZoom{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.08);opacity:1;color:rgba(255,220,100,.95)}}
+
+/* ── Ring ULTIMATE ────────────────────────────────────────────── */
+.tb-ring-wrap{position:relative;z-index:5;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tb-ring-svg{transform:rotate(-90deg);overflow:visible;transition:filter .6s}
+.tb-ring-svg.work-glow{filter:drop-shadow(0 0 32px rgba(255,50,50,.7)) drop-shadow(0 0 10px rgba(255,100,0,.5))}
+.tb-ring-svg.rest-glow{filter:drop-shadow(0 0 28px rgba(40,100,255,.6)) drop-shadow(0 0 8px rgba(80,60,255,.35))}
+.tb-ring-svg.ready-glow{filter:drop-shadow(0 0 24px rgba(255,175,0,.5))}
+.tb-ring-svg.done-glow{filter:drop-shadow(0 0 28px rgba(15,168,106,.65)) drop-shadow(0 0 8px rgba(0,220,120,.35))}
+.tb-rtrack{stroke:rgba(255,255,255,.04)}
+.tb-rtrack-dec{stroke-linecap:round;animation:tbDec 18s linear infinite}
+@keyframes tbDec{to{stroke-dashoffset:-800}}
+.tb-rarc{stroke-linecap:round;transition:stroke-dashoffset .12s linear,stroke .6s ease}
+.tb-rarc-glow{stroke-linecap:round;stroke-opacity:.35;filter:blur(4px);transition:stroke-dashoffset .12s linear,stroke .6s ease}
+.tb-rtick{stroke:rgba(255,255,255,.18);stroke-linecap:round}
+.tb-rtick-lg{stroke:rgba(255,255,255,.4);stroke-linecap:round}
+
+/* Centre ring — GROS */
+.tb-rcenter{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.tb-rnum{font-size:96px;font-weight:900;color:#fff;line-height:.9;font-variant-numeric:tabular-nums;text-shadow:0 4px 40px rgba(0,0,0,.9);letter-spacing:-5px;transition:color .5s}
+.tb-rnum.work{text-shadow:0 4px 40px rgba(0,0,0,.9),0 0 40px rgba(255,60,60,.3)}
+.tb-rnum.rest{text-shadow:0 4px 40px rgba(0,0,0,.9),0 0 40px rgba(40,100,255,.25)}
+.tb-runit{font-size:11px;color:rgba(255,255,255,.28);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+/* Chrono total */
+.tb-rtotal{font-size:16px;font-weight:800;color:rgba(255,255,255,.6);letter-spacing:1px;font-variant-numeric:tabular-nums;margin-top:5px;text-shadow:0 0 14px rgba(255,255,255,.1)}
+
+/* ── Stats LARGE ──────────────────────────────────────────────── */
+.tb-pstats{position:relative;z-index:5;display:flex;justify-content:center;align-items:stretch;background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);backdrop-filter:blur(8px)}
+.tb-pstat{flex:1;text-align:center;padding:10px 4px}
+.tb-pstat+.tb-pstat{border-left:1px solid rgba(255,255,255,.06)}
+/* Round — le plus grand */
+.tb-pstat:first-child .tb-psval{font-size:36px;color:#FF6060}
+/* Total — moyen */
+.tb-pstat:nth-child(3) .tb-psval{font-size:28px;color:rgba(255,255,255,.5)}
+/* Exercice — coloré différemment */
+.tb-pstat:last-child .tb-psval{font-size:28px;color:#60B0FF}
+.tb-psval{font-size:30px;font-weight:900;color:#fff;line-height:1;transition:transform .2s}
+.tb-pslbl{font-size:9px;color:rgba(255,255,255,.3);font-weight:800;text-transform:uppercase;letter-spacing:.7px;margin-top:3px}
+
+/* Next */
+.tb-pnext{position:relative;z-index:5;text-align:center;padding:4px 16px;font-size:10px;color:rgba(255,255,255,.22);font-weight:600}
+.tb-pnext span{color:rgba(255,255,255,.5);font-weight:700}
+
+/* ── Controls ─────────────────────────────────────────────────── */
+.tb-pctrls{position:relative;z-index:5;display:flex;align-items:center;justify-content:center;gap:16px;padding:6px 16px 20px}
+.tb-ctrl{border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .16s}
+.tb-ctrl-main{width:68px;height:68px;font-size:22px;color:#fff;background:linear-gradient(145deg,#FF4444,#FF7A00);box-shadow:0 4px 24px rgba(255,60,60,.5),0 0 0 0 rgba(255,60,60,.4);animation:tbPR 2.5s ease infinite}
+@keyframes tbPR{0%{box-shadow:0 4px 24px rgba(255,60,60,.5),0 0 0 0 rgba(255,60,60,.4)}60%{box-shadow:0 4px 24px rgba(255,60,60,.5),0 0 0 16px rgba(255,60,60,0)}100%{box-shadow:0 4px 24px rgba(255,60,60,.5),0 0 0 0 rgba(255,60,60,0)}}
+.tb-ctrl-main:hover{transform:scale(1.1);animation:none;box-shadow:0 6px 28px rgba(255,60,60,.6)}
+.tb-ctrl-main:active{transform:scale(.91);animation:none}
+.tb-ctrl-sec{width:46px;height:46px;font-size:15px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1.5px solid rgba(255,255,255,.1)}
+.tb-ctrl-sec:hover{background:rgba(255,255,255,.14);transform:scale(1.07)}
+.tb-ctrl-sec:active{transform:scale(.93)}
+#tb-player.paused .tb-ring-svg{filter:saturate(.35) brightness(.7)!important}
+#tb-player.paused .tb-pex{opacity:.5}
+
+/* ═══════════════════════════════
+   SUMMARY
+   ═══════════════════════════════ */
+.tb-sum-hero{padding:26px 18px 18px;text-align:center;background:linear-gradient(180deg,rgba(15,168,106,.08) 0%,transparent 100%)}
+.tb-sum-icon{width:66px;height:66px;border-radius:18px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:26px}
+.tb-sum-ttl{font-size:19px;font-weight:900;color:var(--t1);margin-bottom:4px}
+.tb-sum-sub{font-size:11px;color:var(--t3);line-height:1.5}
+.tb-sum-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:0 15px 13px}
+.tb-ss{background:var(--card);border:1px solid var(--bdr);border-radius:11px;padding:11px 7px;text-align:center;box-shadow:var(--sh)}
+.tb-ss-v{font-size:18px;font-weight:900;color:var(--t1)}
+.tb-ss-l{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--t3);margin-top:3px}
+.tb-sum-acts{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 15px 13px}
+.tb-sbtn{padding:12px;border-radius:11px;border:none;cursor:pointer;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.tb-sbtn-p{background:linear-gradient(135deg,#FF3B3B,#FF7A00);color:#fff;box-shadow:0 4px 14px rgba(255,60,60,.28)}
+.tb-sbtn-s{background:var(--card2);color:var(--t2);border:1.5px solid var(--bdr)!important}
+.tb-sbtn:hover{transform:translateY(-1px)}
+.tb-ai-box{margin:0 15px 13px;padding:12px;background:rgba(15,168,106,.06);border:1px solid rgba(15,168,106,.18);border-radius:11px;font-size:10px;color:var(--t2);line-height:1.7}
+.tb-ai-box-ttl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#0FA86A;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+
+/* AI MODAL */
+.tb-aim{position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.8);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;padding:18px}
+.tb-aim.open{display:flex}
+.tb-aimbox{background:var(--card);border:1.5px solid var(--bdr);border-radius:17px;padding:18px;width:100%;animation:tbUp .22s ease;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+@keyframes tbUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.tb-aimhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.tb-aimttl{font-size:14px;font-weight:900;color:var(--t1)}
+.tb-airres{background:rgba(15,168,106,.06);border:1px solid rgba(15,168,106,.15);border-radius:9px;padding:10px;font-size:10px;color:var(--t2);line-height:1.6;max-height:140px;overflow-y:auto;margin-bottom:11px;display:none}
+.tb-aiload{display:none;text-align:center;padding:14px;color:var(--t3);font-size:11px}
+.tb-aiload i{font-size:16px;color:#0FA86A;display:block;margin-bottom:5px}
+.tb-aiacl{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:4px}
+
+@keyframes tbBounce{0%,100%{transform:scale(1)}35%{transform:scale(1.1)}65%{transform:scale(.96)}}
+.tb-bounce{animation:tbBounce .38s ease}
+@media(max-width:380px){.tb-rnum{font-size:72px}.tb-pex{font-size:22px}.tb-modes{grid-template-columns:1fr}.tb-mc-ai{grid-column:1}}
+</style>
+
+<!-- ══ HTML ════════════════════════════════════════════════════════ -->
+<div id="tb-overlay">
+<div class="tb-shell">
+
+  <!-- AI MODAL -->
+  <div class="tb-aim" id="tb-aim">
+    <div class="tb-aimbox">
+      <div class="tb-aimhdr">
+        <div class="tb-aimttl"><i class="fas fa-robot" style="color:#0FA86A;margin-right:7px"></i>Programme IA</div>
+        <button class="tb-icon-btn" onclick="tbCloseAIM()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="tb-f"><label class="tb-lbl">Objectif</label>
+        <select class="tb-inp" id="tb-aig" style="cursor:pointer">
+          <option value="full_body">Full body</option><option value="perte_gras">Perte de gras</option>
+          <option value="cardio">Cardio</option><option value="force">Force explosive</option>
+          <option value="debutant">Débutant</option>
+        </select></div>
+      <div class="tb-f"><label class="tb-lbl">Durée cible</label>
+        <select class="tb-inp" id="tb-aid" style="cursor:pointer">
+          <option value="4">4 min</option><option value="8">8 min</option>
+          <option value="16" selected>16 min</option><option value="20">20 min</option>
+        </select></div>
+      <div class="tb-aiload" id="tb-aiload"><i class="fas fa-spinner fa-spin"></i>Génération…</div>
+      <div class="tb-airres" id="tb-aires"></div>
+      <div id="tb-aiapply" style="display:none;margin-bottom:9px">
+        <button class="tb-startbtn" onclick="tbApplyAI()" style="padding:11px;font-size:12px"><i class="fas fa-check"></i> Utiliser</button>
+      </div>
+      <div class="tb-aiacl">
+        <button class="tb-sbtn tb-sbtn-s" onclick="tbCloseAIM()">Annuler</button>
+        <button class="tb-sbtn tb-sbtn-p" onclick="tbGenAI()" id="tb-aibtn"><i class="fas fa-magic"></i> Générer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="tb-scr on" id="tb-home">
+    <div class="tb-hdr">
+      <div class="tb-hdr-l">
+        <div class="tb-logo"><i class="fas fa-stopwatch" style="color:#fff;font-size:15px"></i></div>
+        <div><div class="tb-hdr-title">Tabata</div><div class="tb-hdr-sub">HIIT · HAUTE INTENSITÉ</div></div>
+      </div>
+      <button class="tb-icon-btn" onclick="tbClose()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="tb-scroll">
+      <div class="tb-modes">
+        <div class="tb-mc tb-mc-cl" onclick="tbBuild('classic')">
+          <div class="tb-mc-ico"><i class="fas fa-fire-flame-curved"></i></div>
+          <div class="tb-mc-tag">NORME</div>
+          <div class="tb-mc-lbl">Classique</div>
+          <div class="tb-mc-desc">8 × 20s/10s · 4 min exactes</div>
+        </div>
+        <div class="tb-mc tb-mc-cu" onclick="tbBuild('custom')">
+          <div class="tb-mc-ico"><i class="fas fa-sliders"></i></div>
+          <div class="tb-mc-lbl">Personnalisé</div>
+          <div class="tb-mc-desc">N rounds par exercice avant le suivant</div>
+        </div>
+        <div class="tb-mc tb-mc-ai" onclick="tbOpenAIM()">
+          <div class="tb-mc-ai-inner">
+            <div class="tb-mc-ico"><i class="fas fa-robot"></i></div>
+            <div class="tb-mc-ai-text">
+              <div class="tb-mc-tag" style="position:static;display:inline-block;margin-bottom:4px">IA</div>
+              <div class="tb-mc-lbl">Programme IA</div>
+              <div class="tb-mc-desc">Généré selon votre profil et objectif</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tb-slbl">Historique</div>
+      <div id="tb-histlist"></div>
+      <div id="tb-chartzone" style="display:none">
+        <div class="tb-slbl" style="padding-top:6px">Fréquence — 7 jours</div>
+        <div class="tb-chart-bars" id="tb-chartbars"></div>
+      </div>
+      <div style="height:18px"></div>
+    </div>
+  </div>
+
+  <!-- BUILDER -->
+  <div class="tb-scr" id="tb-builder">
+    <div class="tb-bld-hdr">
+      <button class="tb-icon-btn tb-back" onclick="tbGoHome()"><i class="fas fa-chevron-left"></i></button>
+      <div class="tb-bld-name" id="tb-bname">Tabata Classique</div>
+      <div class="tb-dur-tag" id="tb-durtag">4:00</div>
+    </div>
+    <div class="tb-scroll"><div class="tb-body">
+      <div class="tb-f"><label class="tb-lbl">Nom</label>
+        <input class="tb-inp" id="tb-sname" type="text" placeholder="Mon Tabata…" maxlength="40"></div>
+
+      <!-- Classique : Rounds / Effort / Repos -->
+      <div id="tb-params-cl">
+        <div class="tb-g3">
+          <div class="tb-f"><label class="tb-lbl">Rounds</label>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('rounds',-1,1,30)">−</button>
+              <div class="tb-sm"><span class="tb-sv" id="tbv-rounds">8</span><span class="tb-su">rounds</span></div>
+              <button class="tb-sb" onclick="tbS('rounds',1,1,30)">+</button></div></div>
+          <div class="tb-f"><label class="tb-lbl">Effort</label>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('work',-5,5,120)">−</button>
+              <div class="tb-sm"><span class="tb-sv" id="tbv-work">20</span><span class="tb-su">sec</span></div>
+              <button class="tb-sb" onclick="tbS('work',5,5,120)">+</button></div></div>
+          <div class="tb-f"><label class="tb-lbl">Repos</label>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('rest',-5,5,120)">−</button>
+              <div class="tb-sm"><span class="tb-sv" id="tbv-rest">10</span><span class="tb-su">sec</span></div>
+              <button class="tb-sb" onclick="tbS('rest',5,5,120)">+</button></div></div>
+        </div>
+      </div>
+
+      <!-- Personnalisé : Rounds / Effort / Repos entre rounds / Repos entre exercices (pas de "Repos") -->
+      <div id="tb-params-cu" style="display:none">
+        <div class="tb-g2" style="margin-bottom:9px">
+          <div class="tb-f"><label class="tb-lbl">Rounds</label>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('rounds',-1,1,30)">−</button>
+              <div class="tb-sm"><span class="tb-sv" id="tbv-rounds-cu">8</span><span class="tb-su">rounds</span></div>
+              <button class="tb-sb" onclick="tbS('rounds',1,1,30)">+</button></div></div>
+          <div class="tb-f"><label class="tb-lbl">Effort</label>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('work',-5,5,120)">−</button>
+              <div class="tb-sm"><span class="tb-sv" id="tbv-work-cu">20</span><span class="tb-su">sec</span></div>
+              <button class="tb-sb" onclick="tbS('work',5,5,120)">+</button></div></div>
+        </div>
+        <div class="tb-g2">
+          <div class="tb-f"><label class="tb-lbl">Repos entre rounds</label>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('restser',-5,0,60)">−</button>
+              <div class="tb-sm"><span class="tb-sv" id="tbv-restser">10</span><span class="tb-su">sec</span></div>
+              <button class="tb-sb" onclick="tbS('restser',5,0,60)">+</button></div></div>
+          <div class="tb-f"><label class="tb-lbl">Repos entre exercices</label>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('restex',-5,0,120)">−</button>
+              <div class="tb-sm"><span class="tb-sv" id="tbv-restex">30</span><span class="tb-su">sec</span></div>
+              <button class="tb-sb" onclick="tbS('restex',5,0,120)">+</button></div></div>
+        </div>
+        <div style="background:rgba(79,110,247,.06);border:1px solid rgba(79,110,247,.18);border-radius:10px;padding:10px 12px;margin-bottom:13px;font-size:10px;color:var(--t3);line-height:1.5">
+          <i class="fas fa-info-circle" style="color:#4F6EF7;margin-right:5px"></i>
+          Chaque exercice complète ses N rounds avant de passer au suivant.
+        </div>
+      </div>
+
+      <!-- Exercices -->
+      <div class="tb-f">
+        <label class="tb-lbl">Exercices <span id="tb-excnt" style="color:var(--t3)">(0)</span></label>
+        <div class="tb-pills" id="tb-pills"></div>
+        <div class="tb-addrow" style="margin-top:9px">
+          <input class="tb-inp" id="tb-free" type="text" placeholder="Exercice libre…" style="flex:1" onkeydown="if(event.key==='Enter')tbAddFree()">
+          <button class="tb-addico" onclick="tbAddFree()"><i class="fas fa-plus"></i></button>
+        </div>
+      </div>
+      <div id="tb-exwrap" style="display:none;margin-bottom:13px">
+        <label class="tb-lbl">Programme</label>
+        <div class="tb-exlist" id="tb-exlist"></div>
+      </div>
+
+      <div class="tb-trow"><span class="tb-tlbl"><i class="fas fa-floppy-disk"></i>Enregistrer</span><button class="tb-sw on" id="tb-sw-save" onclick="tbSw('save')"></button></div>
+      <div class="tb-trow"><span class="tb-tlbl"><i class="fas fa-microphone"></i>Coach vocal</span><button class="tb-sw on" id="tb-sw-voice" onclick="tbSw('voice')"></button></div>
+    </div></div>
+    <div class="tb-start-wrap"><button class="tb-startbtn" id="tb-sbtn" onclick="tbLaunch()" disabled><i class="fas fa-play"></i> Démarrer</button></div>
+  </div>
+
+  <!-- PLAYER -->
+  <div class="tb-scr" id="tb-player">
+    <div class="tb-pb ready" id="tb-pb"></div>
+    <div class="tb-pfl" id="tb-pfl"></div>
+    <div class="tb-ptop">
+      <button class="tb-stopbtn" onclick="tbAskStop()"><i class="fas fa-stop"></i></button>
+      <div class="tb-prog-wrap">
+        <div class="tb-prog-segs" id="tb-segs"></div>
+        <div class="tb-prog-lbl" id="tb-progl">—</div>
+      </div>
+      <button class="tb-vbtn on" id="tb-vbtn" onclick="tbTogVoice()"><i class="fas fa-microphone"></i></button>
+    </div>
+    <div class="tb-pphase-wrap">
+      <div class="tb-pphase ready" id="tb-pphase"><i class="fas fa-stopwatch" style="margin-right:5px"></i>PRÊT</div>
+    </div>
+    <div class="tb-pex-wrap">
+      <div class="tb-pex" id="tb-pex">Préparez-vous</div>
+      <div class="tb-pex-next-lbl" id="tb-pex-nl">SUIVANT</div>
+      <div class="tb-pex-next" id="tb-pex-next">—</div>
+    </div>
+    <div class="tb-ring-wrap">
+      <svg class="tb-ring-svg ready-glow" id="tb-rsvg" width="256" height="256" viewBox="0 0 256 256">
+        <circle cx="128" cy="128" r="118" fill="none" stroke="rgba(255,255,255,.025)" stroke-width="22"/>
+        <circle class="tb-rtrack" cx="128" cy="128" r="106" fill="none" stroke-width="13"/>
+        <circle class="tb-rtrack-dec" cx="128" cy="128" r="106" fill="none" stroke="rgba(255,255,255,.04)" stroke-width="1.5" stroke-dasharray="5 22" stroke-linecap="round"/>
+        <line class="tb-rtick-lg" x1="128" y1="16" x2="128" y2="30" stroke-width="3"/>
+        <line class="tb-rtick" x1="240" y1="128" x2="226" y2="128" stroke-width="1.8"/>
+        <line class="tb-rtick" x1="128" y1="240" x2="128" y2="226" stroke-width="1.8"/>
+        <line class="tb-rtick" x1="16" y1="128" x2="30" y2="128" stroke-width="1.8"/>
+        <circle class="tb-rarc-glow" id="tb-rarc-glow" cx="128" cy="128" r="106" fill="none" stroke-width="18" stroke="#FF3B3B" stroke-dasharray="665.8" stroke-dashoffset="0"/>
+        <circle class="tb-rarc" id="tb-rarc" cx="128" cy="128" r="106" fill="none" stroke-width="13" stroke="#FF3B3B" stroke-dasharray="665.8" stroke-dashoffset="0"/>
+      </svg>
+      <div class="tb-rcenter">
+        <div class="tb-rnum work" id="tb-rnum">10</div>
+        <div class="tb-runit">sec</div>
+        <div class="tb-rtotal" id="tb-rtotal">00:00</div>
+      </div>
+    </div>
+    <div class="tb-pstats" id="tb-pstats">
+      <div class="tb-pstat"><div class="tb-psval" id="tb-sround">1</div><div class="tb-pslbl">Round</div></div>
+      <div class="tb-pstat"><div class="tb-psval" id="tb-stotal">8</div><div class="tb-pslbl">Total</div></div>
+      <div class="tb-pstat"><div class="tb-psval" id="tb-sex">1</div><div class="tb-pslbl">Exercice</div></div>
+    </div>
+    <div class="tb-pnext">Suivant : <span id="tb-pnext">—</span></div>
+    <div class="tb-pctrls">
+      <button class="tb-ctrl tb-ctrl-sec" onclick="tbPlus10()" title="+10s"><i class="fas fa-plus"></i></button>
+      <button class="tb-ctrl tb-ctrl-main" id="tb-pausebtn" onclick="tbPause()"><i class="fas fa-pause" id="tb-pauseico"></i></button>
+      <button class="tb-ctrl tb-ctrl-sec" onclick="tbSkip()" title="Passer"><i class="fas fa-forward-step"></i></button>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="tb-scr" id="tb-summary">
+    <div class="tb-hdr">
+      <div class="tb-hdr-l">
+        <div class="tb-logo" style="background:linear-gradient(135deg,#0FA86A,#059669)"><i class="fas fa-check" style="color:#fff;font-size:14px"></i></div>
+        <div><div class="tb-hdr-title">Terminé !</div><div class="tb-hdr-sub">RÉSUMÉ</div></div>
+      </div>
+      <button class="tb-icon-btn" onclick="tbClose()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="tb-scroll">
+      <div class="tb-sum-hero">
+        <div class="tb-sum-icon" id="tb-sumico"></div>
+        <div class="tb-sum-ttl" id="tb-sumttl">Excellent travail !</div>
+        <div class="tb-sum-sub" id="tb-sumsub">Session complétée</div>
+      </div>
+      <div class="tb-sum-stats">
+        <div class="tb-ss"><div class="tb-ss-v" id="tb-stime">4:00</div><div class="tb-ss-l">Durée</div></div>
+        <div class="tb-ss"><div class="tb-ss-v" id="tb-srounds">8</div><div class="tb-ss-l">Rounds</div></div>
+        <div class="tb-ss"><div class="tb-ss-v" id="tb-skcal" style="color:#FF3B3B">~80</div><div class="tb-ss-l">kcal</div></div>
+      </div>
+      <div class="tb-trow" style="margin:0 15px 11px"><span class="tb-tlbl"><i class="fas fa-floppy-disk"></i>Sauvegarder</span><button class="tb-sw on" id="tb-sumsw" onclick="tbSw('sumsave')"></button></div>
+      <div class="tb-sum-acts">
+        <button class="tb-sbtn tb-sbtn-p" onclick="tbRestart()"><i class="fas fa-rotate-right"></i> Rejouer</button>
+        <button class="tb-sbtn tb-sbtn-s" onclick="tbGoHome()"><i class="fas fa-house"></i> Accueil</button>
+      </div>
+      <div id="tb-aianalysis" style="display:none" class="tb-ai-box">
+        <div class="tb-ai-box-ttl"><i class="fas fa-robot"></i> Analyse IA</div>
+        <div id="tb-aiatxt"></div>
+      </div>
+      <div style="height:16px"></div>
+    </div>
+  </div>
+
+</div></div>
+
+<script>
+(function(){
+'use strict';
+
+const TB_EX=['Burpees','Jump Squats','Mountain Climbers','High Knees','Push-ups',
+ 'Box Jumps','Jumping Jacks','Sprints sur place','Planche dynamique','V-ups',
+ 'Fentes sautées','Squat Thrusters','Corde à sauter','Triceps Dips','Bear Crawl',
+ 'Tuck Jumps','Skater Jumps','Speed Bag','Plank to Downdog','Lateral Shuffles'];
+
+/* ── Config ─────────────────────────────────────────────────── */
+const C={rounds:8,work:20,rest:10,restser:10,restex:30};
+let _mode='classic';
+let _builtinExs=[]; // exercices sélectionnés depuis la liste
+let _customExs=[];  // exercices libres ajoutés par l'utilisateur
+let _swSave=true,_swVoice=true,_aiProg=null;
+function _allExs(){return[..._builtinExs,..._customExs];}
+
+/* ── Player state ───────────────────────────────────────────── */
+let _run=false,_paus=false;
+let _deadline=0,_pauseRem=0;
+let _raf=null,_chronoRef=null;
+let _phase='ready';
+let _round=0,_exIdx=0,_done=0;
+let _sessionStart=null; // null = pas démarré, Date.now() au lancement
+let _lastSpokenSec=-1,_zoomActive=false;
+// Circumference for r=106 → 2π×106 ≈ 665.8
+const CIRC=665.8;
+
+/* ── Voice ──────────────────────────────────────────────────── */
+const _syn=window.speechSynthesis;
+function _say(t){
+  if(!_swVoice||!_syn)return;_syn.cancel();
+  const u=new SpeechSynthesisUtterance(t);u.lang='fr-FR';u.rate=1.1;u.pitch=1.05;
+  const go=()=>{const vv=_syn.getVoices();const fr=vv.find(v=>v.lang.startsWith('fr-'))||vv.find(v=>v.lang.startsWith('fr'))||vv[0];if(fr)u.voice=fr;_syn.speak(u);};
+  _syn.getVoices().length>0?go():(_syn.onvoiceschanged=go);
+}
+function _cd(sec){
+  if(!_swVoice||!_syn||sec>3||sec<=0||sec===_lastSpokenSec)return;
+  _lastSpokenSec=sec;_syn.cancel();
+  const u=new SpeechSynthesisUtterance(String(sec));u.lang='fr-FR';u.rate=1.35;u.pitch=1.15;
+  const vv=_syn.getVoices();const fr=vv.find(v=>v.lang.startsWith('fr'))||vv[0];if(fr)u.voice=fr;_syn.speak(u);
+}
+
+/* ── DOM ────────────────────────────────────────────────────── */
+const $=id=>document.getElementById(id);
+const txt=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
+const fmt=s=>{const m=Math.floor(s/60),x=s%60;return m+':'+String(x).padStart(2,'0');};
+const fmtH=s=>{const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),x=s%60;return h>0?h+':'+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0'):String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');};
+
+/* ── Navigation ─────────────────────────────────────────────── */
+function _show(id){['tb-home','tb-builder','tb-player','tb-summary'].forEach(s=>{const e=$(s);if(e)e.classList.toggle('on',s===id);});}
+window.tbGoHome=function(){if(_run){tbAskStop();return;}_show('tb-home');_renderHist();};
+window.tbClose=function(){
+  if(_run){tbAskStop();return;}
+  _doSave();$('tb-overlay').classList.remove('tb-open');document.body.style.overflow='';
+  if(_syn)_syn.cancel();cancelAnimationFrame(_raf);clearInterval(_chronoRef);
+};
+window.tbOpen=function(){
+  $('tb-overlay').classList.add('tb-open');document.body.style.overflow='hidden';
+  _show('tb-home');_renderHist();_renderPills();
+};
+
+/* ── Builder ────────────────────────────────────────────────── */
+window.tbBuild=function(mode){
+  _mode=mode;_builtinExs=[];_customExs=[];
+  $('tb-bname').textContent=mode==='classic'?'Tabata Classique':'Tabata Personnalisé';
+  $('tb-params-cl').style.display=mode==='classic'?'block':'none';
+  $('tb-params-cu').style.display=mode==='custom'?'block':'none';
+  $('tb-sname').value=mode==='classic'?'Tabata Classique':'Mon Tabata Perso';
+  if(mode==='classic'){C.rounds=8;C.work=20;C.rest=10;_syncC();}
+  $('tb-exwrap').style.display='none';$('tb-sbtn').disabled=true;
+  txt('tb-excnt','(0)');_renderPills();_calcDur();_show('tb-builder');
+};
+function _syncC(){
+  txt('tbv-rounds',C.rounds);txt('tbv-work',C.work);txt('tbv-rest',C.rest);
+  txt('tbv-rounds-cu',C.rounds);txt('tbv-work-cu',C.work);
+  txt('tbv-restser',C.restser);txt('tbv-restex',C.restex);
+}
+window.tbS=function(k,d,mn,mx){
+  C[k]=Math.max(mn,Math.min(mx,C[k]+d));
+  txt('tbv-'+k,C[k]);
+  // Sync les deux affichages rounds/work
+  if(k==='rounds'){txt('tbv-rounds-cu',C[k]);}
+  if(k==='work'){txt('tbv-work-cu',C[k]);}
+  _calcDur();_renderExlist();
+}
+
+/* Durée :
+   Classique : rounds × exs × (work+rest)
+   Perso : perEx = rounds×(work+restser) + restser est en trop sur le dernier → rounds×work + (rounds-1)×restser
+           total = n×perEx + (n-1)×restex */
+function _calcDur(){
+  const exs=_allExs();const n=exs.length||1;
+  let t=0;
+  if(_mode==='classic'){
+    t=C.rounds*n*(C.work+C.rest);
+  } else {
+    const perEx=C.rounds*C.work+Math.max(0,C.rounds-1)*C.restser;
+    t=n*perEx+Math.max(0,n-1)*C.restex;
+  }
+  txt('tb-durtag',fmt(Math.max(0,t)));
+}
+
+/* ── Pills ──────────────────────────────────────────────────── */
+function _renderPills(){
+  const g=$('tb-pills');if(!g)return;
+  g.innerHTML=TB_EX.map(ex=>`<div class="tb-pill${_builtinExs.includes(ex)?' on':''}" onclick="tbTogEx('${ex.replace(/'/g,"\\'")}')"> ${ex}</div>`).join('');
+}
+window.tbTogEx=function(name){
+  const i=_builtinExs.indexOf(name);if(i>=0)_builtinExs.splice(i,1);else _builtinExs.push(name);
+  _renderPills();_renderExlist();_calcDur();
+  $('tb-sbtn').disabled=!_allExs().length;txt('tb-excnt','('+_allExs().length+')');
+};
+window.tbAddFree=function(){
+  const inp=$('tb-free'),v=inp.value.trim();if(!v)return;
+  if(!_customExs.includes(v)&&!_builtinExs.includes(v))_customExs.push(v);
+  inp.value='';_renderPills();_renderExlist();_calcDur();
+  $('tb-sbtn').disabled=false;txt('tb-excnt','('+_allExs().length+')');
+};
+function _renderExlist(){
+  const wrap=$('tb-exwrap'),list=$('tb-exlist');if(!wrap||!list)return;
+  const all=_allExs();if(!all.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  // Exercices intégrés en premier, puis custom en bas avec classe différente
+  const builtRows=_builtinExs.map((ex,i)=>`
+    <div class="tb-exrow">
+      <div class="tb-exn">${i+1}</div>
+      <span class="tb-exlbl">${ex}</span>
+      <span class="tb-extm">${_mode==='classic'?C.rounds+'×'+C.work+'s':C.rounds+'r·'+C.work+'s'}</span>
+      <button class="tb-exdel" onclick="tbRmBuiltin(${i})"><i class="fas fa-xmark"></i></button>
+    </div>`).join('');
+  const custRows=_customExs.map((ex,i)=>`
+    <div class="tb-exrow custom-ex">
+      <div class="tb-exn">${_builtinExs.length+i+1}</div>
+      <span class="tb-exlbl">${ex} <span style="font-size:9px;color:#4F6EF7;font-weight:800;margin-left:3px">LIBRE</span></span>
+      <span class="tb-extm">${_mode==='classic'?C.rounds+'×'+C.work+'s':C.rounds+'r·'+C.work+'s'}</span>
+      <button class="tb-exdel" onclick="tbRmCustom(${i})"><i class="fas fa-xmark"></i></button>
+    </div>`).join('');
+  list.innerHTML=builtRows+custRows;
+}
+window.tbRmBuiltin=function(i){_builtinExs.splice(i,1);_renderPills();_renderExlist();_calcDur();if(!_allExs().length)$('tb-sbtn').disabled=true;txt('tb-excnt','('+_allExs().length+')');};
+window.tbRmCustom=function(i){_customExs.splice(i,1);_renderExlist();_calcDur();if(!_allExs().length)$('tb-sbtn').disabled=true;txt('tb-excnt','('+_allExs().length+')');};
+
+/* ── Toggles ────────────────────────────────────────────────── */
+window.tbSw=function(k){
+  const map={save:'tb-sw-save',voice:'tb-sw-voice',sumsave:'tb-sumsw'};
+  const el=$(map[k]);if(!el)return;el.classList.toggle('on');
+  if(k==='save')_swSave=el.classList.contains('on');
+  if(k==='voice'){_swVoice=el.classList.contains('on');if(!_swVoice&&_syn)_syn.cancel();}
+};
+window.tbTogVoice=function(){_swVoice=!_swVoice;$('tb-vbtn').classList.toggle('on',_swVoice);if(!_swVoice&&_syn)_syn.cancel();};
+
+/* ── Launch — reset total ───────────────────────────────────── */
+window.tbLaunch=function(){
+  const exs=_allExs();if(!exs.length)return;
+  _round=0;_exIdx=0;_done=0;
+  _run=true;_paus=false;
+  _lastSpokenSec=-1;_zoomActive=false;
+  _sessionStart=Date.now(); // RESET ICI — jamais null après ça
+  cancelAnimationFrame(_raf);clearInterval(_chronoRef);
+  _buildSegs();_startChrono();
+  _show('tb-player');
+  $('tb-vbtn').classList.toggle('on',_swVoice);
+  $('tb-player').classList.remove('paused');
+  $('tb-pstats').classList.remove('paused');
+  _hideNext();
+  txt('tb-rtotal','00:00');
+  _say('Préparez-vous');
+  _startPhase('ready',3);
+};
+
+/* ── Barre segmentée ────────────────────────────────────────── */
+function _buildSegs(){
+  const segs=$('tb-segs');if(!segs)return;
+  const exs=_allExs();
+  const total=C.rounds*exs.length;
+  segs.innerHTML=Array.from({length:Math.min(total,32)},(_,i)=>`<div class="tb-prog-seg" id="tb-seg-${i}"></div>`).join('');
+}
+function _updateSegs(){
+  const exs=_allExs();
+  const total=C.rounds*exs.length;
+  const globalDone=_exIdx*C.rounds+_round;
+  for(let i=0;i<Math.min(total,32);i++){
+    const seg=$('tb-seg-'+i);if(!seg)continue;
+    if(i<globalDone)seg.className='tb-prog-seg done';
+    else if(i===globalDone&&_phase==='work')seg.className='tb-prog-seg active';
+    else seg.className='tb-prog-seg';
+  }
+  const exs2=_allExs();
+  txt('tb-progl',`Exo ${_exIdx+1}/${exs2.length} · Round ${_round+1}/${C.rounds}`);
+}
+
+/* ── Chrono ─────────────────────────────────────────────────── */
+function _startChrono(){
+  clearInterval(_chronoRef);
+  _chronoRef=setInterval(()=>{
+    if(!_run||_paus||_sessionStart===null)return;
+    txt('tb-rtotal',fmtH(Math.floor((Date.now()-_sessionStart)/1000)));
+  },400);
+}
+
+/* ── Moteur phase (Date.now) ────────────────────────────────── */
+function _startPhase(phase,sec){
+  _phase=phase;_lastSpokenSec=-1;
+  _deadline=Date.now()+sec*1000;
+  _updateUI(phase,sec);
+  cancelAnimationFrame(_raf);_tick();
+}
+function _pDur(p){return{work:C.work,rest:C.rest,restser:C.restser,restex:C.restex,ready:3,done:1}[p]||1;}
+function _tick(){
+  if(!_run)return;
+  if(_paus){_raf=requestAnimationFrame(_tick);return;}
+  const rem=Math.max(0,Math.ceil((_deadline-Date.now())/1000));
+  _updateTimer(rem,_pDur(_phase));
+  _cd(rem);
+  if((_phase==='rest'||_phase==='restex')&&rem<=3&&rem>0)_showNext();
+  else if((_phase==='work'||_phase==='ready')&&_zoomActive)_hideNext();
+  if(rem<=0){_next();return;}
+  _raf=requestAnimationFrame(_tick);
+}
+function _updateTimer(rem,total){
+  txt('tb-rnum',rem);
+  const arc=$('tb-rarc'),arcG=$('tb-rarc-glow');
+  if(arc||arcG){const off=CIRC*(1-(total>0?rem/total:0));if(arc)arc.style.strokeDashoffset=off;if(arcG)arcG.style.strokeDashoffset=off;}
+  if(rem<=3&&rem>0){const el=$('tb-rnum');if(el){el.classList.remove('tb-bounce');void el.offsetWidth;el.classList.add('tb-bounce');}}
+  _updateSegs();
+}
+
+/* ── UI phase ───────────────────────────────────────────────── */
+function _updateUI(phase,sec){
+  const cols={work:'#FF3B3B',rest:'#3060FF',restser:'#8B5CF6',restex:'#3060FF',ready:'#FFB800',done:'#0FA86A'};
+  const cls={work:'work',rest:'rest',restser:'rest',restex:'rest',ready:'ready',done:'done'};
+  const labels={work:'EFFORT',rest:'REPOS',restser:'REPOS ROUND',restex:'REPOS EXERCICE',ready:'PRÊT',done:'TERMINÉ'};
+  const icons={work:'fa-bolt',rest:'fa-moon',restser:'fa-pause',restex:'fa-arrow-right-arrow-left',ready:'fa-stopwatch',done:'fa-check'};
+  const exs=_allExs();
+  const col=cols[phase]||'#FF3B3B';const c=cls[phase]||'ready';
+  const pb=$('tb-pb'),ph=$('tb-pphase'),arc=$('tb-rarc'),arcG=$('tb-rarc-glow'),fl=$('tb-pfl'),rsvg=$('tb-rsvg'),rnum=$('tb-rnum');
+  if(pb)pb.className='tb-pb '+c;
+  if(ph){ph.innerHTML=`<i class="fas ${icons[phase]||'fa-stopwatch'}" style="margin-right:5px"></i>${labels[phase]||phase.toUpperCase()}`;ph.className='tb-pphase '+c;}
+  if(arc){arc.style.stroke=col;arc.style.strokeDashoffset='0';}
+  if(arcG){arcG.style.stroke=col;arcG.style.strokeDashoffset='0';}
+  if(rsvg)rsvg.setAttribute('class','tb-ring-svg '+c+'-glow');
+  if(rnum)rnum.className='tb-rnum '+c;
+  if(fl&&phase!=='ready'&&phase!=='done'){fl.style.background=col;fl.classList.add('go');setTimeout(()=>fl.classList.remove('go'),160);}
+  if(navigator.vibrate){if(phase==='work')navigator.vibrate([80,35,80]);else if(phase==='rest'||phase==='restex')navigator.vibrate(160);}
+  const exname={work:exs[_exIdx]||'GO',rest:'Repos',restser:'Repos entre rounds',restex:'Repos — exercice suivant',ready:'Préparez-vous',done:'Bravo !'}[phase]||'—';
+  txt('tb-pex',exname);
+  txt('tb-sround',_round+1);txt('tb-stotal',C.rounds);txt('tb-sex',_exIdx+1);
+  // Next bas
+  const ni=(_exIdx+1)%exs.length;
+  const isAbsLast=(_round+1>=C.rounds&&_exIdx+1>=exs.length);
+  txt('tb-pnext',isAbsLast?'FIN !':(exs[ni]||'—'));
+  _updateSegs();
+}
+
+/* ── Zoom next ──────────────────────────────────────────────── */
+function _showNext(){
+  if(_zoomActive)return;_zoomActive=true;
+  const exs=_allExs();
+  let nextName='';
+  if(_mode==='classic'){nextName=exs[(_exIdx+1)%exs.length]||'FIN';}
+  else{if(_round+1<C.rounds)nextName=exs[_exIdx]+' (round '+(_round+2)+')';else if(_exIdx+1<exs.length)nextName=exs[_exIdx+1];else nextName='Terminé !';}
+  const lbl=$('tb-pex-nl'),el=$('tb-pex-next');
+  if(lbl)lbl.style.display='block';
+  if(el){el.style.display='block';el.textContent=nextName;el.classList.add('zoom');}
+}
+function _hideNext(){
+  _zoomActive=false;
+  const lbl=$('tb-pex-nl'),el=$('tb-pex-next');
+  if(lbl)lbl.style.display='none';
+  if(el){el.style.display='none';el.classList.remove('zoom');}
+}
+
+/* ── Logique phases ─────────────────────────────────────────── */
+function _next(){
+  const exs=_allExs();
+  if(_phase==='ready'){_say(_mW());_startPhase('work',C.work);return;}
+  if(_phase==='work'){
+    _done++;_hideNext();
+    const lastRnd=_round+1>=C.rounds,lastEx=_exIdx+1>=exs.length;
+    if(_mode==='classic'){
+      // Classique : alterne exercices dans un round, puis repos entre rounds
+      const lastExInRnd=(_exIdx+1)>=exs.length;
+      if(lastExInRnd){
+        if(_round+1>=C.rounds){_phaseDone();return;}
+        _round++;_exIdx=0;_say(_mR());_startPhase('rest',C.rest);
+      } else {
+        _exIdx++;_say(_mR());_startPhase('rest',C.rest);
+      }
+    } else {
+      // Perso : finir tous les rounds d'un exo avant de passer au suivant
+      if(!lastRnd){
+        _round++;
+        if(C.restser>0){_say('Série '+(_round+1)+'.');_startPhase('restser',C.restser);}
+        else{_say(_mW());_startPhase('work',C.work);}
+      } else {
+        if(!lastEx){
+          _exIdx++;_round=0;_say('Exercice suivant : '+exs[_exIdx]);
+          if(C.restex>0)_startPhase('restex',C.restex);
+          else{_say(_mW());_startPhase('work',C.work);}
+        } else {_phaseDone();}
+      }
+    }
+    return;
+  }
+  if(['rest','restser','restex'].includes(_phase)){_hideNext();_say(_mW());_startPhase('work',C.work);}
+}
+function _phaseDone(){
+  _run=false;cancelAnimationFrame(_raf);clearInterval(_chronoRef);
+  // Tous les segments en done
+  const total=C.rounds*_allExs().length;
+  for(let i=0;i<Math.min(total,32);i++){const s=$('tb-seg-'+i);if(s)s.className='tb-prog-seg done';}
+  const pb=$('tb-pb');if(pb)pb.className='tb-pb done';
+  const ph=$('tb-pphase');if(ph){ph.innerHTML='<i class="fas fa-check" style="margin-right:5px"></i>TERMINÉ';ph.className='tb-pphase done';}
+  txt('tb-pex','Bravo !');
+  if(navigator.vibrate)navigator.vibrate([200,80,200,80,400]);
+  _say('Tabata terminé ! Excellent travail !');
+  setTimeout(_showSum,1300);
+}
+
+/* ── Controls ───────────────────────────────────────────────── */
+window.tbPause=function(){
+  _paus=!_paus;
+  if(_paus){_pauseRem=Math.max(0,Math.ceil((_deadline-Date.now())/1000));if(_syn)_syn.cancel();$('tb-player').classList.add('paused');}
+  else{_deadline=Date.now()+_pauseRem*1000;_lastSpokenSec=-1;_say('Reprise !');$('tb-player').classList.remove('paused');}
+  const ico=$('tb-pauseico');if(ico)ico.className=_paus?'fas fa-play':'fas fa-pause';
+};
+window.tbPlus10=function(){if(_run)_deadline+=10000;};
+window.tbSkip=function(){if(_run){cancelAnimationFrame(_raf);_deadline=Date.now()-100;_next();}};
+window.tbAskStop=function(){
+  if(!_run&&!$('tb-player').classList.contains('on'))return;
+  if(confirm('Arrêter la session ?')){
+    _run=false;_paus=false;cancelAnimationFrame(_raf);clearInterval(_chronoRef);
+    if(_syn)_syn.cancel();_hideNext();_show('tb-home');
+  }
+};
+function _mW(){const r=_round+1,t=C.rounds;const a=['C\'est parti !','Explosez !','Tout donner !',r===t?'Dernier round !':'Round '+r+' sur '+t,'Poussez !'];return a[Math.floor(Math.random()*a.length)];}
+function _mR(){const a=['Repos !','Soufflez !','Récupérez !','Bien joué !','Respirez !'];return a[Math.floor(Math.random()*a.length)];}
+
+/* ── Summary ────────────────────────────────────────────────── */
+function _showSum(){
+  const el=_sessionStart?Math.round((Date.now()-_sessionStart)/1000):0;
+  const w=(typeof userProfile!=='undefined'&&userProfile.weight)||75;
+  const kcal=Math.round(_done*(C.work+(C.rest||C.restser||0))*w*0.0175/60);
+  const exs=_allExs();
+  const maxR=C.rounds*exs.length;
+  const ratio=maxR>0?_done/maxR:0;
+  const tier=ratio>=1?'perf':ratio>=.75?'great':ratio>=.5?'good':'ok';
+  const ico={perf:'fa-trophy',great:'fa-fire-flame-curved',good:'fa-thumbs-up',ok:'fa-circle-check'};
+  const col={perf:'#FFB800',great:'#FF3B3B',good:'#4F6EF7',ok:'#6B7280'};
+  const ttl={perf:'Performance parfaite !',great:'Excellent travail !',good:'Bien joué !',ok:'Bonne session !'};
+  const si=$('tb-sumico');if(si)si.innerHTML=`<i class="fas ${ico[tier]}" style="font-size:28px;color:${col[tier]}"></i>`;
+  txt('tb-sumttl',ttl[tier]);txt('tb-sumsub',fmtH(el)+' · '+exs.slice(0,3).join(', ')+(exs.length>3?'…':''));
+  txt('tb-stime',fmtH(el));txt('tb-srounds',_done);txt('tb-skcal','~'+kcal);
+  const sw=$('tb-sumsw');if(sw)sw.classList.toggle('on',_swSave);
+  _show('tb-summary');_aiSum(el,kcal);
+}
+async function _aiSum(el,kcal){
+  if(typeof _callAI!=='function')return;
+  try{
+    const w=(typeof userProfile!=='undefined'&&userProfile.weight)||75;
+    const p=`Coach Tabata. 2 phrases max, feedback enthousiaste + conseil. Session: ${fmtH(el)}, ${_done} rounds, ${_allExs().join(', ')}, ~${kcal}kcal, ${w}kg. Français.`;
+    const r=await _callAI([{role:'user',content:p}],null,'Expert HIIT. 2 phrases max en français.');
+    if(r&&!r.startsWith('__ERROR__')){$('tb-aianalysis').style.display='block';txt('tb-aiatxt',r);}
+  }catch(e){}
+}
+window.tbRestart=function(){_doSave();tbLaunch();};
+
+/* ── History ────────────────────────────────────────────────── */
+function _loadH(){try{return JSON.parse(localStorage.getItem('ironplate_tabata_history')||'[]');}catch(e){return[];}}
+function _doSave(){
+  const sw=$('tb-sumsw');if(!sw||!sw.classList.contains('on')||!_sessionStart)return;
+  const el=Math.round((Date.now()-_sessionStart)/1000);
+  const w=(typeof userProfile!=='undefined'&&userProfile.weight)||75;
+  const kcal=Math.round(_done*(C.work+(C.rest||C.restser||0))*w*0.0175/60);
+  const h=_loadH();
+  h.unshift({id:Date.now(),date:new Date().toISOString(),name:$('tb-sname')?.value||'Tabata',mode:_mode,exercises:_allExs(),rounds:_done,totalRounds:C.rounds*_allExs().length,work:C.work,rest:_mode==='classic'?C.rest:C.restser,elapsed:el,kcal});
+  if(h.length>50)h.pop();localStorage.setItem('ironplate_tabata_history',JSON.stringify(h));
+  _sessionStart=null;
+}
+function _renderHist(){
+  const h=_loadH(),list=$('tb-histlist'),zone=$('tb-chartzone');if(!list)return;
+  if(!h.length){list.innerHTML='<div class="tb-empty"><i class="fas fa-stopwatch" style="font-size:24px;opacity:.2;display:block;margin-bottom:8px"></i>Aucune session.<br>Lancez votre premier Tabata !</div>';if(zone)zone.style.display='none';return;}
+  list.innerHTML=h.slice(0,6).map((s,i)=>{
+    const d=new Date(s.date);const ds=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    return`<div class="tb-hi" onclick="tbReplay(${i})">
+      <div class="tb-hi-ico"><i class="fas fa-stopwatch"></i></div>
+      <div style="flex:1;min-width:0"><div class="tb-hi-name">${s.name||'Tabata'}</div><div class="tb-hi-meta">${ds} · ${fmtH(s.elapsed||0)} · ${(s.exercises||[]).slice(0,2).join(', ')}</div></div>
+      <div class="tb-hi-r"><div class="tb-hi-kcal">~${s.kcal||0} kcal</div><button class="tb-hi-del" onclick="event.stopPropagation();tbDel(${i})"><i class="fas fa-trash-can"></i></button></div>
+    </div>`;
+  }).join('');
+  if(zone){zone.style.display='block';_renderChart(h);}
+}
+window.tbReplay=function(i){
+  const h=_loadH(),s=h[i];if(!s)return;
+  _mode=s.mode||'classic';
+  const exs=s.exercises||[];
+  _builtinExs=exs.filter(e=>TB_EX.includes(e));
+  _customExs=exs.filter(e=>!TB_EX.includes(e));
+  const n=exs.length||1;C.rounds=s.totalRounds?Math.round(s.totalRounds/n):s.rounds||8;
+  C.work=s.work||20;C.rest=s.rest||10;C.restser=s.rest||10;
+  $('tb-bname').textContent=s.name||'Tabata';$('tb-sname').value=s.name||'Tabata';
+  $('tb-params-cl').style.display=_mode==='classic'?'block':'none';
+  $('tb-params-cu').style.display=_mode==='custom'?'block':'none';
+  _syncC();_renderPills();_renderExlist();_calcDur();
+  $('tb-sbtn').disabled=false;txt('tb-excnt','('+_allExs().length+')');_show('tb-builder');
+};
+window.tbDel=function(i){const h=_loadH();if(!confirm('Supprimer ?'))return;h.splice(i,1);localStorage.setItem('ironplate_tabata_history',JSON.stringify(h));_renderHist();};
+function _renderChart(h){
+  const bars=$('tb-chartbars');if(!bars)return;
+  const days=7,cnts=new Array(days).fill(0);const now=new Date();now.setHours(0,0,0,0);
+  h.forEach(s=>{const d=new Date(s.date);d.setHours(0,0,0,0);const df=Math.floor((now-d)/86400000);if(df>=0&&df<days)cnts[days-1-df]++;});
+  const mx=Math.max(...cnts,1);
+  bars.innerHTML=cnts.map(c=>`<div class="tb-cb" style="height:${Math.max(3,Math.round(c/mx*38))}px"></div>`).join('');
+}
+
+/* ── AI ─────────────────────────────────────────────────────── */
+window.tbOpenAIM=function(){$('tb-aim').classList.add('open');$('tb-aires').style.display='none';$('tb-aiapply').style.display='none';$('tb-aiload').style.display='none';_aiProg=null;};
+window.tbCloseAIM=function(){$('tb-aim').classList.remove('open');};
+window.tbGenAI=async function(){
+  if(typeof _callAI!=='function'){alert('Configurez une clé IA dans les Paramètres.');return;}
+  const goal=$('tb-aig').value,dur=parseInt($('tb-aid').value);
+  const btn=$('tb-aibtn'),load=$('tb-aiload'),res=$('tb-aires');
+  btn.disabled=true;load.style.display='block';res.style.display='none';$('tb-aiapply').style.display='none';
+  const gmap={full_body:'full body',perte_gras:'perte de gras',cardio:'cardio',force:'force explosive',debutant:'débutant'};
+  const w=(typeof userProfile!=='undefined'&&userProfile.weight)||75;const lvl=(typeof userProfile!=='undefined'&&userProfile.level)||'Intermédiaire';
+  const prompt=`Expert Tabata. Programme JSON: objectif=${gmap[goal]}, durée≈${dur}min, ${w}kg, ${lvl}.\nJSON uniquement:\n{"name":"Nom","exercises":["ex1","ex2"],"rounds":8,"workSec":20,"restSec":10,"restBetweenSets":10,"restBetweenEx":30,"description":"1 phrase"}\nExercices: ${TB_EX.join(', ')}`;
+  try{
+    const r=await _callAI([{role:'user',content:prompt}],null,'Expert Tabata. JSON valide uniquement.');
+    let t=(r||'').replace(/```json|```/g,'').trim();const m=t.match(/\{[\s\S]*\}/);if(m)t=m[0];
+    const p=JSON.parse(t);_aiProg=p;
+    res.style.display='block';
+    res.innerHTML=`<strong style="color:var(--t1,#111)">${p.name}</strong><br>${p.description||''}<br><br><i class="fas fa-dumbbell" style="color:#FF3B3B;margin-right:4px"></i><strong>${(p.exercises||[]).join(' · ')}</strong><br><i class="fas fa-stopwatch" style="color:#FFB800;margin-right:4px"></i>${p.workSec||20}s / ${p.restSec||10}s · ${p.rounds||8} rounds`;
+    $('tb-aiapply').style.display='block';
+  }catch(e){res.style.display='block';res.textContent='Erreur. Réessayez.';}
+  load.style.display='none';btn.disabled=false;
+};
+window.tbApplyAI=function(){
+  const p=_aiProg;if(!p)return;tbCloseAIM();
+  _mode='custom';
+  const exsList=p.exercises||[];
+  _builtinExs=exsList.filter(e=>TB_EX.includes(e));
+  _customExs=exsList.filter(e=>!TB_EX.includes(e));
+  C.rounds=p.rounds||8;C.work=p.workSec||20;C.restser=p.restBetweenSets||10;C.restex=p.restBetweenEx||30;
+  $('tb-bname').textContent=p.name||'Programme IA';$('tb-sname').value=p.name||'Programme IA';
+  $('tb-params-cl').style.display='none';$('tb-params-cu').style.display='block';
+  _syncC();_renderPills();_renderExlist();_calcDur();
+  $('tb-sbtn').disabled=false;txt('tb-excnt','('+_allExs().length+')');_show('tb-builder');
+};
+
+/* ── Inject header button ───────────────────────────────────── */
+function _inject(){
+  if($('tb-hdr-btn'))return;
+  const s=document.querySelector('button[onclick*="showSettingsModal"]');if(!s)return;
+  const btn=document.createElement('button');
+  btn.id='tb-hdr-btn';btn.title='Tabata HIIT';btn.onclick=tbOpen;
+  btn.style.cssText='width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,rgba(255,60,60,.12),rgba(255,120,0,.08));border:1px solid rgba(255,60,60,.25);color:#FF3B3B;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;flex-shrink:0';
+  btn.innerHTML='<i class="fas fa-stopwatch"></i>';
+  btn.onmouseenter=()=>{btn.style.background='linear-gradient(135deg,rgba(255,60,60,.22),rgba(255,120,0,.16))';btn.style.borderColor='rgba(255,60,60,.5)';btn.style.transform='scale(1.06)';};
+  btn.onmouseleave=()=>{btn.style.background='linear-gradient(135deg,rgba(255,60,60,.12),rgba(255,120,0,.08))';btn.style.borderColor='rgba(255,60,60,.25)';btn.style.transform='';};
+  s.parentNode.insertBefore(btn,s);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(_inject,600));
+else setTimeout(_inject,600);
+setTimeout(_renderPills,100);
+
+})();
+</script>
 </body>
-</html>
