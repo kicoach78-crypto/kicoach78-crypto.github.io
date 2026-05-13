@@ -37057,16 +37057,52 @@ function _agStatus(msg) {
 }
 
 // ── Synthèse vocale ──────────────────────────────────────────────────
+// Cache voix + polling iOS (même logique que module Tabata)
+let _agVoiceCache = null;
+function _agFindVoice(lang) {
+    if (_agVoiceCache) return _agVoiceCache;
+    const vv = window.speechSynthesis.getVoices();
+    if (!vv || !vv.length) return null;
+    const lc = (lang || 'fr-FR').toLowerCase();
+    const base = lc.split('-')[0].split('_')[0]; // ex: 'fr'
+    const v = vv.find(v => v.lang === lang)
+        || vv.find(v => v.lang === lang.replace('-','_'))
+        || vv.find(v => v.lang.toLowerCase().startsWith(base+'-'))
+        || vv.find(v => v.lang.toLowerCase().startsWith(base+'_'))
+        || vv.find(v => v.lang.toLowerCase().startsWith(base))
+        || vv[0];
+    if (v) _agVoiceCache = v;
+    return v;
+}
+(function _agPreloadVoices() {
+    if (window.speechSynthesis && window.speechSynthesis.getVoices().length === 0) {
+        let tries = 0;
+        const poll = setInterval(() => {
+            tries++;
+            if (window.speechSynthesis.getVoices().length > 0) { _agFindVoice('fr-FR'); clearInterval(poll); }
+            if (tries >= 20) clearInterval(poll);
+        }, 150);
+        if ('onvoiceschanged' in window.speechSynthesis) {
+            window.speechSynthesis.onvoiceschanged = () => { _agFindVoice('fr-FR'); window.speechSynthesis.onvoiceschanged = null; };
+        }
+    }
+})();
+
 function _agSpeak(text) {
     if (!AG.speechEnabled) return;
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
-    const utt    = new SpeechSynthesisUtterance(text);
-    utt.lang = (_localeMeta ? _localeMeta.speechCode : 'fr-FR');
-    utt.rate     = 1.05;
-    utt.pitch    = 1.0;
-    utt.volume   = 0.9;
-    window.speechSynthesis.speak(utt);
+    const lang = (_localeMeta ? _localeMeta.speechCode : 'fr-FR');
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang    = lang;
+    utt.rate    = 1.05;
+    utt.pitch   = 1.0;
+    utt.volume  = 0.9;
+    const v = _agFindVoice(lang);
+    if (v) utt.voice = v;
+    const speak = () => window.speechSynthesis.speak(utt);
+    if (!v && window.speechSynthesis.getVoices().length === 0) setTimeout(speak, 200);
+    else speak();
 }
 
 // ── Simulation (desktop / pas de capteur) ───────────────────────────
@@ -41998,10 +42034,6 @@ window.addEventListener('beforeunload', function(e) {
 
 
 <!-- ════════════════════════════════════════════════════════════════
-
-<!-- ════════════════════════════════════════════════════════════════
-
-<!-- ════════════════════════════════════════════════════════════════
      MODULE TABATA v5 — IronPlate ULTIMATE
      ════════════════════════════════════════════════════════════════ -->
 <style>
@@ -42072,6 +42104,8 @@ window.addEventListener('beforeunload', function(e) {
 .tb-cb{flex:1;border-radius:3px 3px 0 0;min-height:3px;background:rgba(255,60,60,.2);transition:all .2s;cursor:pointer}
 .tb-cb:last-child{background:rgba(255,60,60,.65)}
 .tb-cb:hover{background:#FF3B3B;transform:scaleY(1.06);transform-origin:bottom}
+/* Canvas feu d'artifice */
+#tb-fw-canvas{position:absolute;inset:0;z-index:20;pointer-events:none}
 
 /* ── Builder ──────────────────────────────────────────────────── */
 .tb-bld-hdr{display:flex;align-items:center;gap:10px;padding:11px 15px;background:var(--card);border-bottom:1px solid var(--bdr);flex-shrink:0;box-shadow:var(--sh)}
@@ -42539,17 +42573,61 @@ const CIRC=665.8;
 
 /* ── Voice ──────────────────────────────────────────────────── */
 const _syn=window.speechSynthesis;
+let _cachedVoice=null; // cache de la voix FR pour éviter de chercher à chaque fois
+
+/* Cherche la meilleure voix française disponible
+   Gère : fr-FR (tiret), fr_FR (underscore iOS), fr (générique) */
+function _findFrVoice(){
+  if(_cachedVoice)return _cachedVoice;
+  const vv=_syn.getVoices();
+  if(!vv||!vv.length)return null;
+  // Ordre de priorité : fr-FR exact > fr_FR > fr- > fr > défaut
+  const v=vv.find(v=>v.lang==='fr-FR')
+    ||vv.find(v=>v.lang==='fr_FR')
+    ||vv.find(v=>v.lang.toLowerCase().startsWith('fr-'))
+    ||vv.find(v=>v.lang.toLowerCase().startsWith('fr_'))
+    ||vv.find(v=>v.lang.toLowerCase().startsWith('fr'))
+    ||vv[0];
+  if(v)_cachedVoice=v;
+  return v;
+}
+
+/* Pré-charger les voix dès que possible (critique sur iOS) */
+function _preloadVoices(){
+  if(_syn.getVoices().length>0){_findFrVoice();return;}
+  // iOS : onvoiceschanged peut ne pas se déclencher → polling
+  const maxTries=20;let tries=0;
+  const poll=setInterval(()=>{
+    tries++;
+    if(_syn.getVoices().length>0){_findFrVoice();clearInterval(poll);return;}
+    if(tries>=maxTries)clearInterval(poll);
+  },150);
+  // Double sécurité : event standard
+  if('onvoiceschanged' in _syn){
+    _syn.onvoiceschanged=()=>{_findFrVoice();_syn.onvoiceschanged=null;};
+  }
+}
+_preloadVoices();
+
+function _makeUtterance(t,rate,pitch){
+  const u=new SpeechSynthesisUtterance(t);
+  u.lang='fr-FR';u.rate=rate||1.1;u.pitch=pitch||1.05;
+  const v=_findFrVoice();if(v)u.voice=v;
+  return u;
+}
+
 function _say(t){
-  if(!_swVoice||!_syn)return;_syn.cancel();
-  const u=new SpeechSynthesisUtterance(t);u.lang='fr-FR';u.rate=1.1;u.pitch=1.05;
-  const go=()=>{const vv=_syn.getVoices();const fr=vv.find(v=>v.lang.startsWith('fr-'))||vv.find(v=>v.lang.startsWith('fr'))||vv[0];if(fr)u.voice=fr;_syn.speak(u);};
-  _syn.getVoices().length>0?go():(_syn.onvoiceschanged=go);
+  if(!_swVoice||!_syn)return;
+  _syn.cancel();
+  const speak=()=>{_syn.speak(_makeUtterance(t,1.1,1.05));};
+  // Si voix pas encore chargée, attendre un tick (iOS)
+  if(!_findFrVoice()&&_syn.getVoices().length===0){setTimeout(speak,200);}
+  else speak();
 }
 function _cd(sec){
   if(!_swVoice||!_syn||sec>3||sec<=0||sec===_lastSpokenSec)return;
   _lastSpokenSec=sec;_syn.cancel();
-  const u=new SpeechSynthesisUtterance(String(sec));u.lang='fr-FR';u.rate=1.35;u.pitch=1.15;
-  const vv=_syn.getVoices();const fr=vv.find(v=>v.lang.startsWith('fr'))||vv[0];if(fr)u.voice=fr;_syn.speak(u);
+  _syn.speak(_makeUtterance(String(sec),1.35,1.15));
 }
 
 /* ── DOM ────────────────────────────────────────────────────── */
@@ -42818,7 +42896,6 @@ function _next(){
 }
 function _phaseDone(){
   _run=false;cancelAnimationFrame(_raf);clearInterval(_chronoRef);
-  // Tous les segments en done
   const total=C.rounds*_allExs().length;
   for(let i=0;i<Math.min(total,32);i++){const s=$('tb-seg-'+i);if(s)s.className='tb-prog-seg done';}
   const pb=$('tb-pb');if(pb)pb.className='tb-pb done';
@@ -42826,7 +42903,91 @@ function _phaseDone(){
   txt('tb-pex','Bravo !');
   if(navigator.vibrate)navigator.vibrate([200,80,200,80,400]);
   _say('Tabata terminé ! Excellent travail !');
-  setTimeout(_showSum,1300);
+  _tbFireworks();
+  setTimeout(_showSum,2800);
+}
+
+/* ── Feu d'artifice canvas ──────────────────────────────────── */
+function _tbFireworks(){
+  const player=$('tb-player');if(!player)return;
+  const cv=document.createElement('canvas');
+  cv.id='tb-fw-canvas';
+  cv.style.cssText='position:absolute;inset:0;z-index:20;pointer-events:none;width:100%;height:100%';
+  cv.width=player.offsetWidth||360;cv.height=player.offsetHeight||640;
+  player.appendChild(cv);
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height;
+  // Particules
+  const particles=[];
+  const colors=['#FF3B3B','#FF7A00','#FFB800','#0FA86A','#4F6EF7','#FF60A0','#fff','#60D8FF'];
+  function spawnBurst(x,y,n){
+    const c=colors[Math.floor(Math.random()*colors.length)];
+    for(let i=0;i<n;i++){
+      const angle=Math.random()*Math.PI*2;
+      const speed=2+Math.random()*6;
+      particles.push({
+        x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,
+        alpha:1,color:c,size:2+Math.random()*3,
+        gravity:.08+Math.random()*.06,decay:.012+Math.random()*.01,
+        trail:[],sparkle:Math.random()>.5
+      });
+    }
+  }
+  // Lancer plusieurs rafales
+  const bursts=[
+    {x:W*.25,y:H*.25,t:0},{x:W*.75,y:H*.2,t:200},
+    {x:W*.5,y:H*.15,t:400},{x:W*.15,y:H*.4,t:600},
+    {x:W*.85,y:H*.35,t:800},{x:W*.4,y:H*.1,t:1000},
+    {x:W*.6,y:H*.2,t:1200},{x:W*.5,y:H*.3,t:1500},
+    {x:W*.3,y:H*.15,t:1700},{x:W*.7,y:H*.1,t:1900},
+  ];
+  bursts.forEach(b=>setTimeout(()=>spawnBurst(b.x,b.y,55+Math.floor(Math.random()*30)),b.t));
+  // Étoiles scintillantes en fond
+  const stars=Array.from({length:22},()=>({
+    x:Math.random()*W,y:Math.random()*H*.6,
+    size:.5+Math.random()*2,alpha:Math.random(),
+    speed:.02+Math.random()*.04,phase:Math.random()*Math.PI*2
+  }));
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    frame++;
+    // Étoiles
+    stars.forEach(s=>{
+      s.alpha=.4+.6*Math.abs(Math.sin(s.phase+frame*s.speed));
+      ctx.beginPath();ctx.arc(s.x,s.y,s.size,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,255,255,${s.alpha*0.7})`;ctx.fill();
+    });
+    // Particules
+    for(let i=particles.length-1;i>=0;i--){
+      const p=particles[i];
+      p.trail.push({x:p.x,y:p.y,a:p.alpha});
+      if(p.trail.length>6)p.trail.shift();
+      // Trail
+      p.trail.forEach((t,ti)=>{
+        ctx.beginPath();ctx.arc(t.x,t.y,p.size*.4,0,Math.PI*2);
+        ctx.fillStyle=p.color.replace(')',`,${t.a*(ti/p.trail.length)*.5})`).replace('rgb','rgba').replace('##','#');
+        try{ctx.globalAlpha=t.a*(ti/p.trail.length)*.4;ctx.fillStyle=p.color;ctx.fill();}catch(e){}
+      });
+      ctx.globalAlpha=p.alpha;
+      if(p.sparkle&&frame%3===0){
+        // Étoile 4 branches
+        ctx.save();ctx.translate(p.x,p.y);ctx.rotate(frame*.1);
+        ctx.beginPath();
+        for(let k=0;k<4;k++){ctx.lineTo(Math.cos(k*Math.PI/2)*p.size*1.8,Math.sin(k*Math.PI/2)*p.size*1.8);ctx.lineTo(Math.cos((k+.5)*Math.PI/2)*p.size*.6,Math.sin((k+.5)*Math.PI/2)*p.size*.6);}
+        ctx.closePath();ctx.fillStyle=p.color;ctx.fill();ctx.restore();
+      } else {
+        ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+        ctx.fillStyle=p.color;ctx.fill();
+      }
+      ctx.globalAlpha=1;
+      p.x+=p.vx;p.y+=p.vy;p.vy+=p.gravity;p.vx*=.98;p.alpha-=p.decay;
+      if(p.alpha<=0)particles.splice(i,1);
+    }
+    if(frame<200||particles.length>0)requestAnimationFrame(draw);
+    else{cv.remove();}
+  }
+  requestAnimationFrame(draw);
 }
 
 /* ── Controls ───────────────────────────────────────────────── */
@@ -42918,11 +43079,41 @@ window.tbReplay=function(i){
 };
 window.tbDel=function(i){const h=_loadH();if(!confirm('Supprimer ?'))return;h.splice(i,1);localStorage.setItem('ironplate_tabata_history',JSON.stringify(h));_renderHist();};
 function _renderChart(h){
-  const bars=$('tb-chartbars');if(!bars)return;
-  const days=7,cnts=new Array(days).fill(0);const now=new Date();now.setHours(0,0,0,0);
-  h.forEach(s=>{const d=new Date(s.date);d.setHours(0,0,0,0);const df=Math.floor((now-d)/86400000);if(df>=0&&df<days)cnts[days-1-df]++;});
-  const mx=Math.max(...cnts,1);
-  bars.innerHTML=cnts.map(c=>`<div class="tb-cb" style="height:${Math.max(3,Math.round(c/mx*38))}px"></div>`).join('');
+  const wrap=$('tb-chartzone');if(!wrap)return;
+  const days=7;
+  const nowClean=new Date();nowClean.setHours(0,0,0,0);
+  // Compter par jour
+  const cnts=new Array(days).fill(0);
+  h.forEach(function(s){
+    const d=new Date(s.date);d.setHours(0,0,0,0);
+    const df=Math.floor((nowClean-d)/86400000);
+    if(df>=0&&df<days)cnts[days-1-df]++;
+  });
+  const mx=Math.max.apply(null,cnts.concat([1]));
+  // Labels des 7 jours
+  const DAYS=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  let bars='';
+  for(let i=0;i<days;i++){
+    const d=new Date(nowClean);d.setDate(nowClean.getDate()-(days-1-i));
+    const isToday=(i===days-1);
+    const c=cnts[i];
+    const barH=c>0?Math.max(16,Math.round(c/mx*64)):4;
+    const dayLbl=DAYS[d.getDay()];
+    const dateLbl=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');
+    const barBg=isToday&&c>0?'linear-gradient(180deg,#FF3B3B,#FF7A00)':c>0?'rgba(255,60,60,.5)':'rgba(255,255,255,.07)';
+    const dayCol=isToday?'#FF3B3B':'var(--t3)';
+    const dayW=isToday?'900':'700';
+    const countHtml=c>0?('<div style="font-size:10px;font-weight:800;color:#FF3B3B;margin-bottom:2px">'+c+'</div>'):'<div style="height:14px"></div>';
+    bars+='<div style="flex:1;display:flex;flex-direction:column;align-items:center">'
+      +countHtml
+      +'<div style="width:100%;height:'+barH+'px;border-radius:4px 4px 0 0;background:'+barBg+';transition:height .4s,background .3s'+(isToday?';box-shadow:0 0 10px rgba(255,60,60,.3)':'')+'"></div>'
+      +'<div style="font-size:9px;font-weight:'+dayW+';color:'+dayCol+';margin-top:4px">'+dayLbl+'</div>'
+      +'<div style="font-size:8px;color:var(--t3);opacity:.55">'+dateLbl+'</div>'
+      +'</div>';
+  }
+  wrap.innerHTML='<div class="tb-slbl" style="padding-top:6px">Activité — 7 derniers jours</div>'
+    +'<div style="padding:0 15px 8px"><div style="display:flex;align-items:flex-end;gap:4px;height:96px">'
+    +bars+'</div></div>';
 }
 
 /* ── AI ─────────────────────────────────────────────────────── */
