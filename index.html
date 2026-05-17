@@ -13250,13 +13250,16 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <span id="fat-remaining" class="macro-remaining positive">+70g restants</span>
     </div>
 
-    <!-- SCAN + MARCHE shortcuts -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 16px 14px;">
-        <button onclick="showModal('ai-scan-modal');initScanModal();" style="padding:11px 12px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:14px;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 4px 14px rgba(79,110,247,.28);">
-            <i class="fas fa-camera"></i> Scanner l'assiette
+    <!-- SCAN + FRIGO + MARCHE shortcuts -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:0 16px 14px;">
+        <button onclick="showModal('ai-scan-modal');initScanModal();" style="padding:10px 8px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:14px;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:0 4px 14px rgba(79,110,247,.28);">
+            <i class="fas fa-camera"></i> Scanner assiette
         </button>
-        <button onclick="showModal('ai-walk-modal');initWalkModal();" style="padding:11px 12px;background:linear-gradient(135deg,#0FA86A,#059669);color:white;border:none;border-radius:14px;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 4px 14px rgba(15,168,106,.28);">
-            <i class="fas fa-walking"></i> Démarrer marche
+        <button onclick="frOpen()" style="padding:10px 8px;background:linear-gradient(135deg,rgba(255,140,0,.18),rgba(255,80,0,.13));color:#FF8C00;border:1.5px solid rgba(255,140,0,.32);border-radius:14px;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s;">
+            <i class="fas fa-refrigerator"></i> Scanner frigo
+        </button>
+        <button onclick="showModal('ai-walk-modal');initWalkModal();" style="padding:10px 8px;background:linear-gradient(135deg,#0FA86A,#059669);color:white;border:none;border-radius:14px;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:0 4px 14px rgba(15,168,106,.28);">
+            <i class="fas fa-walking"></i> Marche rapide
         </button>
     </div>
 
@@ -31007,15 +31010,13 @@ const AI_PROVIDERS = {
         name: 'Gemini',
         label: 'Google Gemini',
         endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent',
-        models: ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gemini-1.5-pro'],
+        models: ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-2.5-flash-preview-04-17'],
         modelLabels: {
             'gemini-2.0-flash':      'Gemini 2.0 Flash — Vision ✓ (recommandé)',
             'gemini-2.0-flash-lite': 'Gemini 2.0 Flash Lite — Vision ✓',
-            'gemini-1.5-flash':      'Gemini 1.5 Flash — Vision ✓',
-            'gemini-1.5-flash-8b':   'Gemini 1.5 Flash 8B — Vision ✓ (rapide)',
-            'gemini-1.5-pro':        'Gemini 1.5 Pro — Vision ✓ (puissant)'
+            'gemini-2.5-flash-preview-04-17': 'Gemini 2.5 Flash — Vision ✓ (puissant)'
         },
-        visionModels: ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gemini-1.5-pro'],
+        visionModels: ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-2.5-flash-preview-04-17'],
         defaultModel: 'gemini-2.0-flash',
         keyPrefix: 'AIza',
         info: 'Gemini 2.0 Flash est gratuit (15 req/min) et supporte la vision (analyse de photos). Après avoir créé la clé sur AI Studio, vérifiez que l\'API "Generative Language API" est activée dans votre projet Google Cloud.',
@@ -31661,7 +31662,7 @@ function _geminiErrorMsg(status, err) {
     const msg = err?.error?.message || '';
     if (status === 400) return 'Requête invalide. Vérifiez le modèle sélectionné. Détails : ' + msg.slice(0, 120);
     if (status === 401 || status === 403) return 'Clé API invalide ou API non activée. Allez sur console.cloud.google.com → activer "Generative Language API".';
-    if (status === 404) return 'Modèle introuvable. Essayez gemini-1.5-flash.';
+    if (status === 404) return 'Modèle introuvable. Essayez gemini-2.0-flash.';
     if (status === 429) return 'Quota dépassé. Attendez 1 minute ou activez la facturation Google Cloud.';
     return `Erreur ${status} : ${msg.slice(0, 150)}`;
 }
@@ -37056,53 +37057,80 @@ function _agStatus(msg) {
     if (el) el.textContent = msg;
 }
 
-// ── Synthèse vocale ──────────────────────────────────────────────────
-// Cache voix + polling iOS (même logique que module Tabata)
+// ── Synthèse vocale — Groq TTS + fallback Web Speech ─────────────────
+let _agAudioCtx = null;
+let _agCurrentSource = null;
+
+async function _agSpeakGroq(text, apiKey) {
+    try {
+        const resp = await fetch('https://api.groq.com/openai/v1/audio/speech', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model: 'playai-tts', voice: 'Celeste-PlayAI', input: text, response_format: 'mp3' })
+        });
+        if (!resp.ok) throw new Error('Groq TTS ' + resp.status);
+        const buf = await resp.arrayBuffer();
+        if (!_agAudioCtx) _agAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (_agAudioCtx.state === 'suspended') await _agAudioCtx.resume();
+        const decoded = await _agAudioCtx.decodeAudioData(buf);
+        if (_agCurrentSource) { try { _agCurrentSource.stop(); } catch(e) {} }
+        const src = _agAudioCtx.createBufferSource();
+        src.buffer = decoded;
+        src.connect(_agAudioCtx.destination);
+        src.start(0);
+        _agCurrentSource = src;
+        return true;
+    } catch(e) {
+        console.warn('Groq TTS error, fallback WebSpeech:', e.message);
+        return false;
+    }
+}
+
+// Fallback Web Speech avec meilleure détection voix FR
 let _agVoiceCache = null;
 function _agFindVoice(lang) {
     if (_agVoiceCache) return _agVoiceCache;
-    const vv = window.speechSynthesis.getVoices();
+    const vv = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
     if (!vv || !vv.length) return null;
-    const lc = (lang || 'fr-FR').toLowerCase();
-    const base = lc.split('-')[0].split('_')[0]; // ex: 'fr'
-    const v = vv.find(v => v.lang === lang)
-        || vv.find(v => v.lang === lang.replace('-','_'))
-        || vv.find(v => v.lang.toLowerCase().startsWith(base+'-'))
-        || vv.find(v => v.lang.toLowerCase().startsWith(base+'_'))
-        || vv.find(v => v.lang.toLowerCase().startsWith(base))
-        || vv[0];
-    if (v) _agVoiceCache = v;
+    const base = (lang||'fr-FR').toLowerCase().split(/[-_]/)[0];
+    const v = vv.find(v=>v.lang===lang)
+        ||vv.find(v=>v.lang===lang.replace('-','_'))
+        ||vv.find(v=>v.lang.toLowerCase().startsWith(base+'-'))
+        ||vv.find(v=>v.lang.toLowerCase().startsWith(base+'_'))
+        ||vv.find(v=>v.lang.toLowerCase().startsWith(base))
+        ||vv[0];
+    if(v) _agVoiceCache=v;
     return v;
 }
-(function _agPreloadVoices() {
-    if (window.speechSynthesis && window.speechSynthesis.getVoices().length === 0) {
-        let tries = 0;
-        const poll = setInterval(() => {
-            tries++;
-            if (window.speechSynthesis.getVoices().length > 0) { _agFindVoice('fr-FR'); clearInterval(poll); }
-            if (tries >= 20) clearInterval(poll);
-        }, 150);
-        if ('onvoiceschanged' in window.speechSynthesis) {
-            window.speechSynthesis.onvoiceschanged = () => { _agFindVoice('fr-FR'); window.speechSynthesis.onvoiceschanged = null; };
-        }
+(function(){
+    if(!window.speechSynthesis)return;
+    if(window.speechSynthesis.getVoices().length===0){
+        let tries=0;
+        const poll=setInterval(()=>{tries++;if(window.speechSynthesis.getVoices().length>0){_agFindVoice('fr-FR');clearInterval(poll);}if(tries>=20)clearInterval(poll);},150);
+        if('onvoiceschanged' in window.speechSynthesis) window.speechSynthesis.onvoiceschanged=()=>{_agFindVoice('fr-FR');window.speechSynthesis.onvoiceschanged=null;};
     }
 })();
 
-function _agSpeak(text) {
-    if (!AG.speechEnabled) return;
+function _agSpeakWS(text) {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
     const lang = (_localeMeta ? _localeMeta.speechCode : 'fr-FR');
     const utt = new SpeechSynthesisUtterance(text);
-    utt.lang    = lang;
-    utt.rate    = 1.05;
-    utt.pitch   = 1.0;
-    utt.volume  = 0.9;
-    const v = _agFindVoice(lang);
-    if (v) utt.voice = v;
-    const speak = () => window.speechSynthesis.speak(utt);
-    if (!v && window.speechSynthesis.getVoices().length === 0) setTimeout(speak, 200);
-    else speak();
+    utt.lang=lang; utt.rate=1.05; utt.pitch=1.0; utt.volume=0.9;
+    const v=_agFindVoice(lang); if(v) utt.voice=v;
+    const go=()=>window.speechSynthesis.speak(utt);
+    if(!v&&window.speechSynthesis.getVoices().length===0) setTimeout(go,200); else go();
+}
+
+function _agSpeak(text) {
+    if (!AG.speechEnabled) return;
+    // Essayer Groq TTS si clé disponible
+    const groqKey = _aiKeys && _aiKeys.grok && _aiKeys.grok.apiKey;
+    if (groqKey) {
+        _agSpeakGroq(text, groqKey).then(ok => { if (!ok) _agSpeakWS(text); });
+    } else {
+        _agSpeakWS(text);
+    }
 }
 
 // ── Simulation (desktop / pas de capteur) ───────────────────────────
@@ -42030,14 +42058,10 @@ window.addEventListener('beforeunload', function(e) {
 
 </script>
 
-
-
-
 <!-- ════════════════════════════════════════════════════════════════
-     MODULE TABATA v5 — IronPlate ULTIMATE
+     MODULE TABATA v6 — IronPlate ULTIMATE
      ════════════════════════════════════════════════════════════════ -->
 <style>
-/* ── Shell ───────────────────────────────────────────────────── */
 #tb-overlay{position:fixed;inset:0;z-index:20000;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(8px)}
 #tb-overlay.tb-open{display:flex}
 .tb-shell{width:100%;max-width:480px;height:100%;display:flex;flex-direction:column;position:relative;overflow:hidden;box-shadow:0 0 80px rgba(0,0,0,.6);background:var(--bg,#f0f2f7)}
@@ -42048,7 +42072,6 @@ window.addEventListener('beforeunload', function(e) {
 .tb-scr.on{display:flex}
 #tb-player.on{overflow:hidden}
 .tb-scroll{flex:1;overflow-y:auto}
-/* Tokens */
 .tb-shell{--t1:#111827;--t2:#374151;--t3:#9CA3AF;--card:#fff;--card2:#f4f6fb;--bdr:rgba(0,0,0,.08);--inp:#fff;--sh:0 2px 12px rgba(0,0,0,.07)}
 .dark-mode .tb-shell{--t1:#EEF0F8;--t2:#9AA0B8;--t3:rgba(140,140,180,.6);--card:#151826;--card2:#1a1e2e;--bdr:rgba(255,255,255,.07);--inp:#151826;--sh:0 2px 12px rgba(0,0,0,.3)}
 
@@ -42063,12 +42086,25 @@ window.addEventListener('beforeunload', function(e) {
 .tb-back:hover{background:var(--card2);color:var(--t1);border-color:var(--bdr)}
 .tb-slbl{font-size:10px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--t3);padding:14px 15px 8px}
 
+/* ── Streak banner ────────────────────────────────────────────── */
+.tb-streak{display:flex;align-items:center;gap:10px;margin:12px 15px 0;padding:10px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(255,180,0,.1),rgba(255,100,0,.07));border:1px solid rgba(255,180,0,.22)}
+.tb-streak-fire{font-size:22px;line-height:1}
+.tb-streak-val{font-size:20px;font-weight:900;color:#FFB800}
+.tb-streak-lbl{font-size:10px;color:var(--t3);font-weight:700}
+.tb-streak-best{margin-left:auto;text-align:right}
+.tb-streak-best-v{font-size:13px;font-weight:800;color:var(--t2)}
+.tb-streak-best-l{font-size:9px;color:var(--t3)}
+
+/* ── Records ──────────────────────────────────────────────────── */
+.tb-records{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:0 15px}
+.tb-rec{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:9px 7px;text-align:center;box-shadow:var(--sh)}
+.tb-rec-v{font-size:14px;font-weight:900;color:var(--t1)}
+.tb-rec-l{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--t3);margin-top:2px}
+
 /* ── Mode cards ───────────────────────────────────────────────── */
 .tb-modes{padding:12px 15px 0;display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .tb-mc{border-radius:15px;padding:15px 13px 13px;cursor:pointer;border:1.5px solid var(--bdr);background:var(--card);transition:all .22s;position:relative;overflow:hidden;box-shadow:var(--sh)}
-.tb-mc::after{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent)}
 .tb-mc:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.13)}
-.tb-mc:hover::after{opacity:1}
 .tb-mc:active{transform:scale(.97)}
 .tb-mc-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:10px;transition:transform .2s}
 .tb-mc:hover .tb-mc-ico{transform:scale(1.12) rotate(-5deg)}
@@ -42089,6 +42125,15 @@ window.addEventListener('beforeunload', function(e) {
 .tb-mc-ai-inner{display:flex;align-items:center;gap:12px}
 .tb-mc-ai-text .tb-mc-lbl{font-size:13px}
 
+/* ── Saved programs ───────────────────────────────────────────── */
+.tb-saved-item{display:flex;align-items:center;gap:10px;padding:9px 15px;cursor:pointer;border-bottom:1px solid var(--bdr);transition:background .15s}
+.tb-saved-item:hover{background:rgba(79,110,247,.04)}
+.tb-saved-ico{width:32px;height:32px;border-radius:8px;background:rgba(79,110,247,.1);border:1px solid rgba(79,110,247,.18);display:flex;align-items:center;justify-content:center;color:#4F6EF7;font-size:12px;flex-shrink:0}
+.tb-saved-name{font-size:12px;font-weight:700;color:var(--t1)}
+.tb-saved-meta{font-size:10px;color:var(--t3);margin-top:1px}
+.tb-saved-del{width:20px;height:20px;border-radius:5px;background:rgba(255,60,60,.08);border:1px solid rgba(255,60,60,.15);color:#FF3B3B;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;margin-left:auto;flex-shrink:0;transition:all .15s}
+.tb-saved-del:hover{background:rgba(255,60,60,.2)}
+
 /* ── History ──────────────────────────────────────────────────── */
 .tb-hi{display:flex;align-items:center;gap:11px;padding:11px 15px;cursor:pointer;border-bottom:1px solid var(--bdr);transition:background .15s}
 .tb-hi:hover{background:rgba(255,60,60,.04)}
@@ -42100,12 +42145,6 @@ window.addEventListener('beforeunload', function(e) {
 .tb-hi-del{width:22px;height:22px;border-radius:5px;background:rgba(255,60,60,.08);border:1px solid rgba(255,60,60,.15);color:#FF3B3B;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .15s}
 .tb-hi-del:hover{background:rgba(255,60,60,.2)}
 .tb-empty{text-align:center;padding:26px 20px;color:var(--t3);font-size:11px;line-height:1.9}
-.tb-chart-bars{display:flex;align-items:flex-end;gap:5px;height:42px;padding:0 15px 12px}
-.tb-cb{flex:1;border-radius:3px 3px 0 0;min-height:3px;background:rgba(255,60,60,.2);transition:all .2s;cursor:pointer}
-.tb-cb:last-child{background:rgba(255,60,60,.65)}
-.tb-cb:hover{background:#FF3B3B;transform:scaleY(1.06);transform-origin:bottom}
-/* Canvas feu d'artifice */
-#tb-fw-canvas{position:absolute;inset:0;z-index:20;pointer-events:none}
 
 /* ── Builder ──────────────────────────────────────────────────── */
 .tb-bld-hdr{display:flex;align-items:center;gap:10px;padding:11px 15px;background:var(--card);border-bottom:1px solid var(--bdr);flex-shrink:0;box-shadow:var(--sh)}
@@ -42120,8 +42159,6 @@ window.addEventListener('beforeunload', function(e) {
 .tb-inp option{background:var(--inp);color:var(--t1)}
 .tb-g2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .tb-g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
-
-/* ── Stepper premium — chiffres gros et alignés ─────────────── */
 .tb-stp{display:flex;align-items:center;background:var(--inp);border:1.5px solid var(--bdr);border-radius:12px;overflow:hidden;height:56px;transition:border-color .15s}
 .tb-stp:focus-within{border-color:#FF3B3B}
 .tb-sb{width:44px;height:100%;background:none;border:none;color:var(--t2);cursor:pointer;font-size:20px;font-weight:700;transition:all .15s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
@@ -42130,14 +42167,15 @@ window.addEventListener('beforeunload', function(e) {
 .tb-sm{flex:1;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
 .tb-sv{font-size:22px;font-weight:900;color:var(--t1);line-height:1;font-variant-numeric:tabular-nums}
 .tb-su{font-size:9px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-
-/* ── Pills ────────────────────────────────────────────────────── */
+/* Estimation calories dans builder */
+.tb-kcal-est{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 12px;border-radius:10px;background:rgba(255,60,60,.06);border:1px solid rgba(255,60,60,.15);margin-bottom:13px}
+.tb-kcal-est-v{font-size:16px;font-weight:900;color:#FF3B3B}
+.tb-kcal-est-l{font-size:10px;color:var(--t3);font-weight:700}
+/* Pills */
 .tb-pills{display:flex;flex-wrap:wrap;gap:6px}
 .tb-pill{padding:5px 12px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;transition:all .16s;border:1.5px solid var(--bdr);background:var(--card2);color:var(--t2)}
 .tb-pill:hover{border-color:rgba(255,60,60,.35);color:#FF3B3B;transform:translateY(-1px)}
 .tb-pill.on{background:rgba(255,60,60,.1);border-color:rgba(255,60,60,.4);color:#FF3B3B}
-
-/* Exercices liste — intégrés + custom séparés */
 .tb-exlist{display:flex;flex-direction:column;gap:6px;margin-top:8px}
 .tb-exrow{display:flex;align-items:center;gap:8px;background:var(--inp);border:1.5px solid var(--bdr);border-radius:10px;padding:9px 11px}
 .tb-exrow.custom-ex{border-color:rgba(79,110,247,.25);background:rgba(79,110,247,.04)}
@@ -42158,19 +42196,25 @@ window.addEventListener('beforeunload', function(e) {
 .tb-sw.on{background:#0FA86A}
 .tb-sw::after{content:'';position:absolute;width:15px;height:15px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
 .tb-sw.on::after{transform:translateX(19px)}
+/* Timeline preview */
+.tb-timeline{display:flex;gap:2px;height:18px;border-radius:6px;overflow:hidden;margin-bottom:13px}
+.tb-tl-seg{flex:1;border-radius:2px;min-width:3px}
+.tb-tl-work{background:#FF3B3B}
+.tb-tl-rest{background:rgba(50,120,255,.5)}
+.tb-tl-restex{background:rgba(140,80,220,.4)}
 .tb-start-wrap{padding:11px 15px 18px;flex-shrink:0;background:var(--card);border-top:1px solid var(--bdr)}
-.tb-startbtn{width:100%;padding:14px;border-radius:13px;border:none;background:linear-gradient(135deg,#FF3B3B,#FF7A00);color:#fff;font-size:14px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 5px 20px rgba(255,60,60,.35);transition:all .2s;letter-spacing:.2px;position:relative;overflow:hidden}
-.tb-startbtn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);pointer-events:none}
+.tb-start-row{display:flex;gap:8px}
+.tb-saveprog-btn{padding:14px 12px;border-radius:13px;border:1.5px solid var(--bdr);background:var(--card2);color:var(--t2);font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
+.tb-saveprog-btn:hover{border-color:rgba(79,110,247,.4);color:#4F6EF7;background:rgba(79,110,247,.06)}
+.tb-startbtn{flex:1;padding:14px;border-radius:13px;border:none;background:linear-gradient(135deg,#FF3B3B,#FF7A00);color:#fff;font-size:14px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 5px 20px rgba(255,60,60,.35);transition:all .2s;letter-spacing:.2px}
 .tb-startbtn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 26px rgba(255,60,60,.48)}
 .tb-startbtn:active:not(:disabled){transform:scale(.97)}
 .tb-startbtn:disabled{opacity:.28;cursor:not-allowed}
 
 /* ══════════════════════════════════════════
-   PLAYER ULTIMATE v5
+   PLAYER ULTIMATE v6
    ══════════════════════════════════════════ */
 #tb-player{background:#040610;justify-content:space-between;overflow:hidden;color:#fff}
-
-/* Fond */
 .tb-pb{position:absolute;inset:0;z-index:0;transition:all .8s cubic-bezier(.4,0,.2,1);pointer-events:none}
 .tb-pb.work{background:radial-gradient(ellipse 120% 80% at 50% -10%,rgba(255,30,30,.6) 0%,rgba(255,80,0,.25) 30%,transparent 65%),radial-gradient(ellipse 50% 30% at 85% 15%,rgba(255,80,0,.2) 0%,transparent 50%)}
 .tb-pb.rest{background:radial-gradient(ellipse 120% 80% at 50% -10%,rgba(30,80,255,.48) 0%,rgba(80,30,200,.18) 30%,transparent 65%)}
@@ -42180,23 +42224,23 @@ window.addEventListener('beforeunload', function(e) {
 .tb-pb::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,rgba(4,6,16,1) 0%,rgba(4,6,16,.75) 38%,rgba(4,6,16,.15) 65%,transparent 100%);pointer-events:none}
 .tb-pfl{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .05s}
 .tb-pfl.go{opacity:.3;transition:none}
-
+/* BPM badge */
+.tb-bpm{position:absolute;top:60px;right:14px;z-index:6;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:4px 9px;backdrop-filter:blur(4px)}
+.tb-bpm-val{font-size:14px;font-weight:900;color:#FF6060}
+.tb-bpm-lbl{font-size:8px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.5px}
 /* Top bar */
 .tb-ptop{position:relative;z-index:5;display:flex;align-items:center;gap:9px;padding:12px 13px 4px}
 .tb-stopbtn{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;background:rgba(255,255,255,.07);color:rgba(255,255,255,.35);font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
 .tb-stopbtn:hover{background:rgba(255,60,60,.2);color:#FF6060}
 .tb-prog-wrap{flex:1}
-
-/* Barre segmentée — plus haute et visible */
 .tb-prog-segs{display:flex;gap:2px;height:7px;border-radius:4px;overflow:hidden}
 .tb-prog-seg{flex:1;border-radius:3px;background:rgba(255,255,255,.1);transition:background .4s}
 .tb-prog-seg.done{background:linear-gradient(90deg,#FF3B3B,#FF7A00)}
-.tb-prog-seg.active{background:rgba(255,120,0,.7);animation:tbSegPulse 1s ease infinite}
-@keyframes tbSegPulse{0%,100%{opacity:.7}50%{opacity:1;background:rgba(255,60,60,.9)}}
+.tb-prog-seg.active{background:rgba(255,120,0,.7);animation:tbSP 1s ease infinite}
+@keyframes tbSP{0%,100%{opacity:.7}50%{opacity:1;background:rgba(255,60,60,.9)}}
 .tb-prog-lbl{font-size:10px;color:rgba(255,255,255,.35);text-align:center;margin-top:4px;font-weight:800;letter-spacing:.3px}
 .tb-vbtn{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;background:rgba(255,255,255,.06);color:rgba(255,255,255,.28);font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
 .tb-vbtn.on{background:rgba(15,168,106,.18);color:#0FA86A;box-shadow:0 0 8px rgba(15,168,106,.2)}
-
 /* Phase pill */
 .tb-pphase-wrap{position:relative;z-index:5;display:flex;justify-content:center;margin-top:4px}
 .tb-pphase{display:inline-flex;align-items:center;gap:6px;padding:5px 18px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;transition:all .5s;backdrop-filter:blur(6px)}
@@ -42204,16 +42248,16 @@ window.addEventListener('beforeunload', function(e) {
 .tb-pphase.rest{background:rgba(40,100,255,.2);color:#6090FF;border:1px solid rgba(40,100,255,.35);box-shadow:0 0 20px rgba(40,100,255,.15)}
 .tb-pphase.ready{background:rgba(255,175,0,.2);color:#FFB800;border:1px solid rgba(255,175,0,.35)}
 .tb-pphase.done{background:rgba(15,168,106,.2);color:#0FA86A;border:1px solid rgba(15,168,106,.35)}
-
-/* Exercise name */
+/* Exercise — avec slide animation */
 .tb-pex-wrap{position:relative;z-index:5;text-align:center;padding:4px 16px 0;min-height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.tb-pex{font-size:30px;font-weight:900;color:#fff;line-height:1.15;text-shadow:0 2px 30px rgba(0,0,0,.9);letter-spacing:-.4px;transition:all .35s}
+.tb-pex{font-size:30px;font-weight:900;color:#fff;line-height:1.15;text-shadow:0 2px 30px rgba(0,0,0,.9);letter-spacing:-.4px}
+@keyframes tbSlideIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.tb-pex.slide{animation:tbSlideIn .35s cubic-bezier(.32,.72,0,1)}
 .tb-pex-next-lbl{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.22);margin-top:5px;display:none}
 .tb-pex-next{font-size:14px;font-weight:700;color:rgba(255,200,100,.75);margin-top:2px;display:none;letter-spacing:.2px}
 .tb-pex-next.zoom{animation:tbZoom 1s ease infinite}
 @keyframes tbZoom{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.08);opacity:1;color:rgba(255,220,100,.95)}}
-
-/* ── Ring ULTIMATE ────────────────────────────────────────────── */
+/* Ring */
 .tb-ring-wrap{position:relative;z-index:5;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .tb-ring-svg{transform:rotate(-90deg);overflow:visible;transition:filter .6s}
 .tb-ring-svg.work-glow{filter:drop-shadow(0 0 32px rgba(255,50,50,.7)) drop-shadow(0 0 10px rgba(255,100,0,.5))}
@@ -42227,34 +42271,24 @@ window.addEventListener('beforeunload', function(e) {
 .tb-rarc-glow{stroke-linecap:round;stroke-opacity:.35;filter:blur(4px);transition:stroke-dashoffset .12s linear,stroke .6s ease}
 .tb-rtick{stroke:rgba(255,255,255,.18);stroke-linecap:round}
 .tb-rtick-lg{stroke:rgba(255,255,255,.4);stroke-linecap:round}
-
-/* Centre ring — GROS */
 .tb-rcenter{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .tb-rnum{font-size:96px;font-weight:900;color:#fff;line-height:.9;font-variant-numeric:tabular-nums;text-shadow:0 4px 40px rgba(0,0,0,.9);letter-spacing:-5px;transition:color .5s}
 .tb-rnum.work{text-shadow:0 4px 40px rgba(0,0,0,.9),0 0 40px rgba(255,60,60,.3)}
 .tb-rnum.rest{text-shadow:0 4px 40px rgba(0,0,0,.9),0 0 40px rgba(40,100,255,.25)}
 .tb-runit{font-size:11px;color:rgba(255,255,255,.28);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
-/* Chrono total */
-.tb-rtotal{font-size:16px;font-weight:800;color:rgba(255,255,255,.6);letter-spacing:1px;font-variant-numeric:tabular-nums;margin-top:5px;text-shadow:0 0 14px rgba(255,255,255,.1)}
-
-/* ── Stats LARGE ──────────────────────────────────────────────── */
+.tb-rtotal{font-size:16px;font-weight:800;color:rgba(255,255,255,.6);letter-spacing:1px;font-variant-numeric:tabular-nums;margin-top:5px}
+/* Stats */
 .tb-pstats{position:relative;z-index:5;display:flex;justify-content:center;align-items:stretch;background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);backdrop-filter:blur(8px)}
 .tb-pstat{flex:1;text-align:center;padding:10px 4px}
 .tb-pstat+.tb-pstat{border-left:1px solid rgba(255,255,255,.06)}
-/* Round — le plus grand */
 .tb-pstat:first-child .tb-psval{font-size:36px;color:#FF6060}
-/* Total — moyen */
 .tb-pstat:nth-child(3) .tb-psval{font-size:28px;color:rgba(255,255,255,.5)}
-/* Exercice — coloré différemment */
 .tb-pstat:last-child .tb-psval{font-size:28px;color:#60B0FF}
-.tb-psval{font-size:30px;font-weight:900;color:#fff;line-height:1;transition:transform .2s}
+.tb-psval{font-size:30px;font-weight:900;color:#fff;line-height:1}
 .tb-pslbl{font-size:9px;color:rgba(255,255,255,.3);font-weight:800;text-transform:uppercase;letter-spacing:.7px;margin-top:3px}
-
-/* Next */
 .tb-pnext{position:relative;z-index:5;text-align:center;padding:4px 16px;font-size:10px;color:rgba(255,255,255,.22);font-weight:600}
 .tb-pnext span{color:rgba(255,255,255,.5);font-weight:700}
-
-/* ── Controls ─────────────────────────────────────────────────── */
+/* Controls */
 .tb-pctrls{position:relative;z-index:5;display:flex;align-items:center;justify-content:center;gap:16px;padding:6px 16px 20px}
 .tb-ctrl{border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .16s}
 .tb-ctrl-main{width:68px;height:68px;font-size:22px;color:#fff;background:linear-gradient(145deg,#FF4444,#FF7A00);box-shadow:0 4px 24px rgba(255,60,60,.5),0 0 0 0 rgba(255,60,60,.4);animation:tbPR 2.5s ease infinite}
@@ -42263,13 +42297,14 @@ window.addEventListener('beforeunload', function(e) {
 .tb-ctrl-main:active{transform:scale(.91);animation:none}
 .tb-ctrl-sec{width:46px;height:46px;font-size:15px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1.5px solid rgba(255,255,255,.1)}
 .tb-ctrl-sec:hover{background:rgba(255,255,255,.14);transform:scale(1.07)}
-.tb-ctrl-sec:active{transform:scale(.93)}
 #tb-player.paused .tb-ring-svg{filter:saturate(.35) brightness(.7)!important}
 #tb-player.paused .tb-pex{opacity:.5}
+/* Canvas feu d'artifice */
+#tb-fw-canvas{position:absolute;inset:0;z-index:20;pointer-events:none}
 
-/* ═══════════════════════════════
-   SUMMARY
-   ═══════════════════════════════ */
+/* ══════════════════════════════════
+   SUMMARY v6
+   ══════════════════════════════════ */
 .tb-sum-hero{padding:26px 18px 18px;text-align:center;background:linear-gradient(180deg,rgba(15,168,106,.08) 0%,transparent 100%)}
 .tb-sum-icon{width:66px;height:66px;border-radius:18px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:26px}
 .tb-sum-ttl{font-size:19px;font-weight:900;color:var(--t1);margin-bottom:4px}
@@ -42278,6 +42313,24 @@ window.addEventListener('beforeunload', function(e) {
 .tb-ss{background:var(--card);border:1px solid var(--bdr);border-radius:11px;padding:11px 7px;text-align:center;box-shadow:var(--sh)}
 .tb-ss-v{font-size:18px;font-weight:900;color:var(--t1)}
 .tb-ss-l{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--t3);margin-top:3px}
+/* Achievement */
+.tb-achievement{display:none;margin:0 15px 13px;padding:12px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(255,180,0,.12),rgba(255,100,0,.08));border:1.5px solid rgba(255,180,0,.3);text-align:center;animation:tbUp .4s ease}
+@keyframes tbUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.tb-ach-icon{font-size:28px;display:block;margin-bottom:5px}
+.tb-ach-title{font-size:13px;font-weight:900;color:#FFB800;margin-bottom:2px}
+.tb-ach-desc{font-size:10px;color:var(--t3)}
+/* Compare */
+.tb-compare{margin:0 15px 13px;padding:11px 13px;background:var(--card2);border:1px solid var(--bdr);border-radius:11px}
+.tb-compare-title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--t3);margin-bottom:8px}
+.tb-compare-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.tb-compare-lbl{font-size:10px;color:var(--t3);width:60px;flex-shrink:0}
+.tb-compare-bar-wrap{flex:1;height:6px;background:rgba(0,0,0,.08);border-radius:3px;overflow:hidden}
+.dark-mode .tb-compare-bar-wrap{background:rgba(255,255,255,.07)}
+.tb-compare-bar{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.32,.72,0,1)}
+.tb-compare-val{font-size:10px;font-weight:800;color:var(--t1);width:36px;text-align:right;flex-shrink:0}
+/* Export */
+.tb-export-btn{display:flex;align-items:center;justify-content:center;gap:7px;margin:0 15px 13px;padding:11px;background:var(--card2);border:1.5px solid var(--bdr);border-radius:11px;cursor:pointer;font-size:12px;font-weight:800;color:var(--t2);transition:all .15s;width:calc(100% - 30px);box-sizing:border-box}
+.tb-export-btn:hover{border-color:rgba(79,110,247,.4);color:#4F6EF7;background:rgba(79,110,247,.06)}
 .tb-sum-acts{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 15px 13px}
 .tb-sbtn{padding:12px;border-radius:11px;border:none;cursor:pointer;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
 .tb-sbtn-p{background:linear-gradient(135deg,#FF3B3B,#FF7A00);color:#fff;box-shadow:0 4px 14px rgba(255,60,60,.28)}
@@ -42285,25 +42338,26 @@ window.addEventListener('beforeunload', function(e) {
 .tb-sbtn:hover{transform:translateY(-1px)}
 .tb-ai-box{margin:0 15px 13px;padding:12px;background:rgba(15,168,106,.06);border:1px solid rgba(15,168,106,.18);border-radius:11px;font-size:10px;color:var(--t2);line-height:1.7}
 .tb-ai-box-ttl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#0FA86A;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.tb-trow{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:10px;margin-bottom:7px;background:var(--card2);border:1px solid var(--bdr)}
+.tb-tlbl{font-size:11px;font-weight:700;color:var(--t2);display:flex;align-items:center;gap:7px}
+.tb-tlbl i{color:var(--t3);font-size:12px}
 
 /* AI MODAL */
 .tb-aim{position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.8);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;padding:18px}
 .tb-aim.open{display:flex}
-.tb-aimbox{background:var(--card);border:1.5px solid var(--bdr);border-radius:17px;padding:18px;width:100%;animation:tbUp .22s ease;box-shadow:0 20px 60px rgba(0,0,0,.35)}
-@keyframes tbUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.tb-aimbox{background:var(--card);border:1.5px solid var(--bdr);border-radius:17px;padding:18px;width:100%;animation:tbUpA .22s ease;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+@keyframes tbUpA{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 .tb-aimhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
 .tb-aimttl{font-size:14px;font-weight:900;color:var(--t1)}
 .tb-airres{background:rgba(15,168,106,.06);border:1px solid rgba(15,168,106,.15);border-radius:9px;padding:10px;font-size:10px;color:var(--t2);line-height:1.6;max-height:140px;overflow-y:auto;margin-bottom:11px;display:none}
 .tb-aiload{display:none;text-align:center;padding:14px;color:var(--t3);font-size:11px}
 .tb-aiload i{font-size:16px;color:#0FA86A;display:block;margin-bottom:5px}
 .tb-aiacl{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:4px}
-
 @keyframes tbBounce{0%,100%{transform:scale(1)}35%{transform:scale(1.1)}65%{transform:scale(.96)}}
 .tb-bounce{animation:tbBounce .38s ease}
 @media(max-width:380px){.tb-rnum{font-size:72px}.tb-pex{font-size:22px}.tb-modes{grid-template-columns:1fr}.tb-mc-ai{grid-column:1}}
 </style>
 
-<!-- ══ HTML ════════════════════════════════════════════════════════ -->
 <div id="tb-overlay">
 <div class="tb-shell">
 
@@ -42328,7 +42382,7 @@ window.addEventListener('beforeunload', function(e) {
       <div class="tb-aiload" id="tb-aiload"><i class="fas fa-spinner fa-spin"></i>Génération…</div>
       <div class="tb-airres" id="tb-aires"></div>
       <div id="tb-aiapply" style="display:none;margin-bottom:9px">
-        <button class="tb-startbtn" onclick="tbApplyAI()" style="padding:11px;font-size:12px"><i class="fas fa-check"></i> Utiliser</button>
+        <button class="tb-startbtn" onclick="tbApplyAI()" style="padding:11px;font-size:12px;border-radius:11px"><i class="fas fa-check"></i> Utiliser</button>
       </div>
       <div class="tb-aiacl">
         <button class="tb-sbtn tb-sbtn-s" onclick="tbCloseAIM()">Annuler</button>
@@ -42347,6 +42401,25 @@ window.addEventListener('beforeunload', function(e) {
       <button class="tb-icon-btn" onclick="tbClose()"><i class="fas fa-times"></i></button>
     </div>
     <div class="tb-scroll">
+      <!-- Streak -->
+      <div class="tb-streak" id="tb-streak-bar">
+        <div class="tb-streak-fire">🔥</div>
+        <div>
+          <div class="tb-streak-val" id="tb-streak-val">0</div>
+          <div class="tb-streak-lbl">jours consécutifs</div>
+        </div>
+        <div class="tb-streak-best">
+          <div class="tb-streak-best-v" id="tb-streak-best">0</div>
+          <div class="tb-streak-best-l">record</div>
+        </div>
+      </div>
+      <!-- Records -->
+      <div class="tb-records" id="tb-records-row" style="margin-top:10px">
+        <div class="tb-rec"><div class="tb-rec-v" id="tb-rec-sessions">0</div><div class="tb-rec-l">Sessions</div></div>
+        <div class="tb-rec"><div class="tb-rec-v" id="tb-rec-kcal">0</div><div class="tb-rec-l">kcal total</div></div>
+        <div class="tb-rec"><div class="tb-rec-v" id="tb-rec-rounds">0</div><div class="tb-rec-l">Rounds total</div></div>
+      </div>
+      <!-- Modes -->
       <div class="tb-modes">
         <div class="tb-mc tb-mc-cl" onclick="tbBuild('classic')">
           <div class="tb-mc-ico"><i class="fas fa-fire-flame-curved"></i></div>
@@ -42370,12 +42443,14 @@ window.addEventListener('beforeunload', function(e) {
           </div>
         </div>
       </div>
+      <!-- Programmes sauvegardés -->
+      <div class="tb-slbl" id="tb-saved-lbl" style="display:none">Programmes sauvegardés</div>
+      <div id="tb-saved-list"></div>
+      <!-- Historique -->
       <div class="tb-slbl">Historique</div>
       <div id="tb-histlist"></div>
-      <div id="tb-chartzone" style="display:none">
-        <div class="tb-slbl" style="padding-top:6px">Fréquence — 7 jours</div>
-        <div class="tb-chart-bars" id="tb-chartbars"></div>
-      </div>
+      <!-- Chart -->
+      <div id="tb-chartzone" style="display:none"></div>
       <div style="height:18px"></div>
     </div>
   </div>
@@ -42390,8 +42465,6 @@ window.addEventListener('beforeunload', function(e) {
     <div class="tb-scroll"><div class="tb-body">
       <div class="tb-f"><label class="tb-lbl">Nom</label>
         <input class="tb-inp" id="tb-sname" type="text" placeholder="Mon Tabata…" maxlength="40"></div>
-
-      <!-- Classique : Rounds / Effort / Repos -->
       <div id="tb-params-cl">
         <div class="tb-g3">
           <div class="tb-f"><label class="tb-lbl">Rounds</label>
@@ -42408,8 +42481,6 @@ window.addEventListener('beforeunload', function(e) {
               <button class="tb-sb" onclick="tbS('rest',5,5,120)">+</button></div></div>
         </div>
       </div>
-
-      <!-- Personnalisé : Rounds / Effort / Repos entre rounds / Repos entre exercices (pas de "Repos") -->
       <div id="tb-params-cu" style="display:none">
         <div class="tb-g2" style="margin-bottom:9px">
           <div class="tb-f"><label class="tb-lbl">Rounds</label>
@@ -42432,11 +42503,18 @@ window.addEventListener('beforeunload', function(e) {
               <button class="tb-sb" onclick="tbS('restex',5,0,120)">+</button></div></div>
         </div>
         <div style="background:rgba(79,110,247,.06);border:1px solid rgba(79,110,247,.18);border-radius:10px;padding:10px 12px;margin-bottom:13px;font-size:10px;color:var(--t3);line-height:1.5">
-          <i class="fas fa-info-circle" style="color:#4F6EF7;margin-right:5px"></i>
-          Chaque exercice complète ses N rounds avant de passer au suivant.
+          <i class="fas fa-info-circle" style="color:#4F6EF7;margin-right:5px"></i>Chaque exercice complète ses N rounds avant de passer au suivant.
         </div>
       </div>
-
+      <!-- Estimation kcal -->
+      <div class="tb-kcal-est" id="tb-kcal-est">
+        <i class="fas fa-fire" style="color:#FF3B3B;font-size:14px"></i>
+        <span class="tb-kcal-est-v" id="tb-kcal-est-v">~0</span>
+        <span class="tb-kcal-est-l">kcal estimées</span>
+        <span style="margin-left:auto;font-size:10px;color:var(--t3)" id="tb-bpm-est"></span>
+      </div>
+      <!-- Timeline preview -->
+      <div id="tb-timeline-preview" class="tb-timeline"></div>
       <!-- Exercices -->
       <div class="tb-f">
         <label class="tb-lbl">Exercices <span id="tb-excnt" style="color:var(--t3)">(0)</span></label>
@@ -42450,17 +42528,25 @@ window.addEventListener('beforeunload', function(e) {
         <label class="tb-lbl">Programme</label>
         <div class="tb-exlist" id="tb-exlist"></div>
       </div>
-
       <div class="tb-trow"><span class="tb-tlbl"><i class="fas fa-floppy-disk"></i>Enregistrer</span><button class="tb-sw on" id="tb-sw-save" onclick="tbSw('save')"></button></div>
       <div class="tb-trow"><span class="tb-tlbl"><i class="fas fa-microphone"></i>Coach vocal</span><button class="tb-sw on" id="tb-sw-voice" onclick="tbSw('voice')"></button></div>
     </div></div>
-    <div class="tb-start-wrap"><button class="tb-startbtn" id="tb-sbtn" onclick="tbLaunch()" disabled><i class="fas fa-play"></i> Démarrer</button></div>
+    <div class="tb-start-wrap">
+      <div class="tb-start-row">
+        <button class="tb-saveprog-btn" onclick="tbSaveProgram()" title="Sauvegarder ce programme"><i class="fas fa-bookmark"></i></button>
+        <button class="tb-startbtn" id="tb-sbtn" onclick="tbLaunch()" disabled><i class="fas fa-play"></i> Démarrer</button>
+      </div>
+    </div>
   </div>
 
   <!-- PLAYER -->
   <div class="tb-scr" id="tb-player">
     <div class="tb-pb ready" id="tb-pb"></div>
     <div class="tb-pfl" id="tb-pfl"></div>
+    <div class="tb-bpm" id="tb-bpm-badge" style="display:none">
+      <div class="tb-bpm-val" id="tb-bpm-live">—</div>
+      <div class="tb-bpm-lbl">BPM est.</div>
+    </div>
     <div class="tb-ptop">
       <button class="tb-stopbtn" onclick="tbAskStop()"><i class="fas fa-stop"></i></button>
       <div class="tb-prog-wrap">
@@ -42528,11 +42614,37 @@ window.addEventListener('beforeunload', function(e) {
         <div class="tb-ss"><div class="tb-ss-v" id="tb-srounds">8</div><div class="tb-ss-l">Rounds</div></div>
         <div class="tb-ss"><div class="tb-ss-v" id="tb-skcal" style="color:#FF3B3B">~80</div><div class="tb-ss-l">kcal</div></div>
       </div>
+      <!-- Achievement -->
+      <div class="tb-achievement" id="tb-achievement">
+        <span class="tb-ach-icon" id="tb-ach-icon">🏆</span>
+        <div class="tb-ach-title" id="tb-ach-title">Achievement débloqué !</div>
+        <div class="tb-ach-desc" id="tb-ach-desc"></div>
+      </div>
+      <!-- Comparaison session précédente -->
+      <div class="tb-compare" id="tb-compare" style="display:none">
+        <div class="tb-compare-title">VS session précédente</div>
+        <div class="tb-compare-row">
+          <span class="tb-compare-lbl">Durée</span>
+          <div class="tb-compare-bar-wrap"><div class="tb-compare-bar" id="tb-cmp-time-bar" style="background:#FF3B3B;width:0%"></div></div>
+          <span class="tb-compare-val" id="tb-cmp-time">—</span>
+        </div>
+        <div class="tb-compare-row">
+          <span class="tb-compare-lbl">Rounds</span>
+          <div class="tb-compare-bar-wrap"><div class="tb-compare-bar" id="tb-cmp-rounds-bar" style="background:#4F6EF7;width:0%"></div></div>
+          <span class="tb-compare-val" id="tb-cmp-rounds">—</span>
+        </div>
+        <div class="tb-compare-row">
+          <span class="tb-compare-lbl">kcal</span>
+          <div class="tb-compare-bar-wrap"><div class="tb-compare-bar" id="tb-cmp-kcal-bar" style="background:#0FA86A;width:0%"></div></div>
+          <span class="tb-compare-val" id="tb-cmp-kcal">—</span>
+        </div>
+      </div>
       <div class="tb-trow" style="margin:0 15px 11px"><span class="tb-tlbl"><i class="fas fa-floppy-disk"></i>Sauvegarder</span><button class="tb-sw on" id="tb-sumsw" onclick="tbSw('sumsave')"></button></div>
       <div class="tb-sum-acts">
         <button class="tb-sbtn tb-sbtn-p" onclick="tbRestart()"><i class="fas fa-rotate-right"></i> Rejouer</button>
         <button class="tb-sbtn tb-sbtn-s" onclick="tbGoHome()"><i class="fas fa-house"></i> Accueil</button>
       </div>
+      <button class="tb-export-btn" onclick="tbExportCard()"><i class="fas fa-share-nodes"></i> Partager ma session</button>
       <div id="tb-aianalysis" style="display:none" class="tb-ai-box">
         <div class="tb-ai-box-ttl"><i class="fas fa-robot"></i> Analyse IA</div>
         <div id="tb-aiatxt"></div>
@@ -42552,93 +42664,127 @@ const TB_EX=['Burpees','Jump Squats','Mountain Climbers','High Knees','Push-ups'
  'Fentes sautées','Squat Thrusters','Corde à sauter','Triceps Dips','Bear Crawl',
  'Tuck Jumps','Skater Jumps','Speed Bag','Plank to Downdog','Lateral Shuffles'];
 
-/* ── Config ─────────────────────────────────────────────────── */
 const C={rounds:8,work:20,rest:10,restser:10,restex:30};
-let _mode='classic';
-let _builtinExs=[]; // exercices sélectionnés depuis la liste
-let _customExs=[];  // exercices libres ajoutés par l'utilisateur
+let _mode='classic',_builtinExs=[],_customExs=[];
 let _swSave=true,_swVoice=true,_aiProg=null;
 function _allExs(){return[..._builtinExs,..._customExs];}
 
-/* ── Player state ───────────────────────────────────────────── */
-let _run=false,_paus=false;
-let _deadline=0,_pauseRem=0;
+// Player state
+let _run=false,_paus=false,_deadline=0,_pauseRem=0;
 let _raf=null,_chronoRef=null;
-let _phase='ready';
-let _round=0,_exIdx=0,_done=0;
-let _sessionStart=null; // null = pas démarré, Date.now() au lancement
-let _lastSpokenSec=-1,_zoomActive=false;
-// Circumference for r=106 → 2π×106 ≈ 665.8
+let _phase='ready',_round=0,_exIdx=0,_done=0;
+let _sessionStart=null,_lastSpokenSec=-1,_zoomActive=false;
 const CIRC=665.8;
 
-/* ── Voice ──────────────────────────────────────────────────── */
+/* ══════════════════════════════════════
+   VOICE — Groq TTS + Web Speech fallback
+   + voix iOS plausible
+   ══════════════════════════════════════ */
 const _syn=window.speechSynthesis;
-let _cachedVoice=null; // cache de la voix FR pour éviter de chercher à chaque fois
+let _tbAudioCtx=null,_tbCurrentSrc=null,_tbVoiceCache=null;
+// Sons de transition (Web Audio API)
+let _sfxCtx=null;
+function _sfx(type){
+  try{
+    if(!_sfxCtx)_sfxCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(_sfxCtx.state==='suspended')_sfxCtx.resume();
+    const o=_sfxCtx.createOscillator(),g=_sfxCtx.createGain();
+    o.connect(g);g.connect(_sfxCtx.destination);
+    if(type==='work'){o.frequency.value=880;g.gain.setValueAtTime(.3,_sfxCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,_sfxCtx.currentTime+.12);}
+    else if(type==='rest'){o.frequency.value=440;g.gain.setValueAtTime(.2,_sfxCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,_sfxCtx.currentTime+.2);}
+    else if(type==='done'){
+      o.frequency.setValueAtTime(523,_sfxCtx.currentTime);
+      o.frequency.setValueAtTime(659,_sfxCtx.currentTime+.1);
+      o.frequency.setValueAtTime(784,_sfxCtx.currentTime+.2);
+      g.gain.setValueAtTime(.3,_sfxCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,_sfxCtx.currentTime+.5);
+    }
+    o.start(_sfxCtx.currentTime);o.stop(_sfxCtx.currentTime+.5);
+  }catch(e){}
+}
 
-/* Cherche la meilleure voix française disponible
-   Gère : fr-FR (tiret), fr_FR (underscore iOS), fr (générique) */
+async function _sayGroq(text){
+  try{
+    const key=typeof _aiKeys!=='undefined'&&_aiKeys&&_aiKeys.grok&&_aiKeys.grok.apiKey;
+    if(!key)return false;
+    const resp=await fetch('https://api.groq.com/openai/v1/audio/speech',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},
+      body:JSON.stringify({model:'playai-tts',voice:'Fritz-PlayAI',input:text,response_format:'mp3'})
+    });
+    if(!resp.ok)return false;
+    const buf=await resp.arrayBuffer();
+    if(!_tbAudioCtx)_tbAudioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(_tbAudioCtx.state==='suspended')await _tbAudioCtx.resume();
+    const decoded=await _tbAudioCtx.decodeAudioData(buf.slice(0));
+    if(_tbCurrentSrc){try{_tbCurrentSrc.stop();}catch(e){}}
+    const src=_tbAudioCtx.createBufferSource();
+    src.buffer=decoded;src.connect(_tbAudioCtx.destination);src.start(0);
+    _tbCurrentSrc=src;return true;
+  }catch(e){return false;}
+}
+
 function _findFrVoice(){
-  if(_cachedVoice)return _cachedVoice;
-  const vv=_syn.getVoices();
-  if(!vv||!vv.length)return null;
-  // Ordre de priorité : fr-FR exact > fr_FR > fr- > fr > défaut
-  const v=vv.find(v=>v.lang==='fr-FR')
-    ||vv.find(v=>v.lang==='fr_FR')
-    ||vv.find(v=>v.lang.toLowerCase().startsWith('fr-'))
-    ||vv.find(v=>v.lang.toLowerCase().startsWith('fr_'))
+  if(_tbVoiceCache)return _tbVoiceCache;
+  const vv=_syn?_syn.getVoices():[];if(!vv.length)return null;
+  // iOS utilise fr-FR ou fr_FR — on prend la PREMIÈRE voix fr disponible sans filtrer
+  const v=vv.find(v=>v.lang==='fr-FR')||vv.find(v=>v.lang==='fr_FR')
     ||vv.find(v=>v.lang.toLowerCase().startsWith('fr'))
     ||vv[0];
-  if(v)_cachedVoice=v;
-  return v;
+  if(v)_tbVoiceCache=v;return v;
 }
+// Préchargement
+(function(){
+  if(!_syn)return;
+  const tryLoad=()=>{if(_syn.getVoices().length>0)_findFrVoice();};
+  tryLoad();
+  let t=0;const p=setInterval(()=>{t++;tryLoad();if(t>=30||_tbVoiceCache)clearInterval(p);},100);
+  if('onvoiceschanged' in _syn)_syn.onvoiceschanged=()=>{_findFrVoice();};
+})();
 
-/* Pré-charger les voix dès que possible (critique sur iOS) */
-function _preloadVoices(){
-  if(_syn.getVoices().length>0){_findFrVoice();return;}
-  // iOS : onvoiceschanged peut ne pas se déclencher → polling
-  const maxTries=20;let tries=0;
-  const poll=setInterval(()=>{
-    tries++;
-    if(_syn.getVoices().length>0){_findFrVoice();clearInterval(poll);return;}
-    if(tries>=maxTries)clearInterval(poll);
-  },150);
-  // Double sécurité : event standard
-  if('onvoiceschanged' in _syn){
-    _syn.onvoiceschanged=()=>{_findFrVoice();_syn.onvoiceschanged=null;};
-  }
-}
-_preloadVoices();
-
-function _makeUtterance(t,rate,pitch){
-  const u=new SpeechSynthesisUtterance(t);
-  u.lang='fr-FR';u.rate=rate||1.1;u.pitch=pitch||1.05;
+function _speakWS(text,rate,pitch){
+  if(!_syn)return;
+  // iOS : on NE cancel PAS avant le premier speak — ça bloque parfois
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='fr-FR';u.rate=rate||1.0;u.pitch=pitch||1.0;u.volume=1;
   const v=_findFrVoice();if(v)u.voice=v;
-  return u;
+  // iOS nécessite un geste utilisateur — on essaie, si échec on réessaie après 100ms
+  try{
+    if(_syn.speaking)_syn.cancel();
+    _syn.speak(u);
+  }catch(e){setTimeout(()=>{try{_syn.speak(u);}catch(e2){}},100);}
 }
 
 function _say(t){
-  if(!_swVoice||!_syn)return;
-  _syn.cancel();
-  const speak=()=>{_syn.speak(_makeUtterance(t,1.1,1.05));};
-  // Si voix pas encore chargée, attendre un tick (iOS)
-  if(!_findFrVoice()&&_syn.getVoices().length===0){setTimeout(speak,200);}
-  else speak();
+  if(!_swVoice)return;
+  const key=typeof _aiKeys!=='undefined'&&_aiKeys&&_aiKeys.grok&&_aiKeys.grok.apiKey;
+  if(key){_sayGroq(t).then(ok=>{if(!ok)_speakWS(t,1.0,1.0);});}
+  else _speakWS(t,1.0,1.0);
 }
+// Décompte = toujours Web Speech (latence minimale requise)
 function _cd(sec){
   if(!_swVoice||!_syn||sec>3||sec<=0||sec===_lastSpokenSec)return;
-  _lastSpokenSec=sec;_syn.cancel();
-  _syn.speak(_makeUtterance(String(sec),1.35,1.15));
+  _lastSpokenSec=sec;
+  if(_syn.speaking)_syn.cancel();
+  const u=new SpeechSynthesisUtterance(String(sec));
+  u.lang='fr-FR';u.rate=1.2;u.pitch=1.1;u.volume=1;
+  const v=_findFrVoice();if(v)u.voice=v;
+  try{_syn.speak(u);}catch(e){}
 }
 
-/* ── DOM ────────────────────────────────────────────────────── */
+/* ══════════════════════════
+   DOM helpers
+   ══════════════════════════ */
 const $=id=>document.getElementById(id);
 const txt=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
 const fmt=s=>{const m=Math.floor(s/60),x=s%60;return m+':'+String(x).padStart(2,'0');};
 const fmtH=s=>{const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),x=s%60;return h>0?h+':'+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0'):String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');};
 
-/* ── Navigation ─────────────────────────────────────────────── */
+/* ══════════════════════════
+   Navigation
+   ══════════════════════════ */
 function _show(id){['tb-home','tb-builder','tb-player','tb-summary'].forEach(s=>{const e=$(s);if(e)e.classList.toggle('on',s===id);});}
-window.tbGoHome=function(){if(_run){tbAskStop();return;}_show('tb-home');_renderHist();};
+window.tbGoHome=function(){if(_run){tbAskStop();return;}_show('tb-home');_renderHome();};
 window.tbClose=function(){
   if(_run){tbAskStop();return;}
   _doSave();$('tb-overlay').classList.remove('tb-open');document.body.style.overflow='';
@@ -42646,10 +42792,19 @@ window.tbClose=function(){
 };
 window.tbOpen=function(){
   $('tb-overlay').classList.add('tb-open');document.body.style.overflow='hidden';
-  _show('tb-home');_renderHist();_renderPills();
+  _show('tb-home');_renderHome();_renderPills();
 };
 
-/* ── Builder ────────────────────────────────────────────────── */
+/* ══════════════════════════
+   Home render
+   ══════════════════════════ */
+function _renderHome(){
+  _renderStreak();_renderRecords();_renderSaved();_renderHist();
+}
+
+/* ══════════════════════════
+   Builder
+   ══════════════════════════ */
 window.tbBuild=function(mode){
   _mode=mode;_builtinExs=[];_customExs=[];
   $('tb-bname').textContent=mode==='classic'?'Tabata Classique':'Tabata Personnalisé';
@@ -42658,7 +42813,7 @@ window.tbBuild=function(mode){
   $('tb-sname').value=mode==='classic'?'Tabata Classique':'Mon Tabata Perso';
   if(mode==='classic'){C.rounds=8;C.work=20;C.rest=10;_syncC();}
   $('tb-exwrap').style.display='none';$('tb-sbtn').disabled=true;
-  txt('tb-excnt','(0)');_renderPills();_calcDur();_show('tb-builder');
+  txt('tb-excnt','(0)');_renderPills();_calcDur();_renderTimeline();_show('tb-builder');
 };
 function _syncC(){
   txt('tbv-rounds',C.rounds);txt('tbv-work',C.work);txt('tbv-rest',C.rest);
@@ -42666,71 +42821,78 @@ function _syncC(){
   txt('tbv-restser',C.restser);txt('tbv-restex',C.restex);
 }
 window.tbS=function(k,d,mn,mx){
-  C[k]=Math.max(mn,Math.min(mx,C[k]+d));
-  txt('tbv-'+k,C[k]);
-  // Sync les deux affichages rounds/work
-  if(k==='rounds'){txt('tbv-rounds-cu',C[k]);}
-  if(k==='work'){txt('tbv-work-cu',C[k]);}
-  _calcDur();_renderExlist();
+  C[k]=Math.max(mn,Math.min(mx,C[k]+d));txt('tbv-'+k,C[k]);
+  if(k==='rounds')txt('tbv-rounds-cu',C[k]);
+  if(k==='work')txt('tbv-work-cu',C[k]);
+  _calcDur();_renderExlist();_renderTimeline();
 }
 
-/* Durée :
-   Classique : rounds × exs × (work+rest)
-   Perso : perEx = rounds×(work+restser) + restser est en trop sur le dernier → rounds×work + (rounds-1)×restser
-           total = n×perEx + (n-1)×restex */
 function _calcDur(){
   const exs=_allExs();const n=exs.length||1;
   let t=0;
-  if(_mode==='classic'){
-    t=C.rounds*n*(C.work+C.rest);
-  } else {
-    const perEx=C.rounds*C.work+Math.max(0,C.rounds-1)*C.restser;
-    t=n*perEx+Math.max(0,n-1)*C.restex;
-  }
+  if(_mode==='classic')t=C.rounds*n*(C.work+C.rest);
+  else{const perEx=C.rounds*C.work+Math.max(0,C.rounds-1)*C.restser;t=n*perEx+Math.max(0,n-1)*C.restex;}
   txt('tb-durtag',fmt(Math.max(0,t)));
+  // Estimation kcal
+  const w=(typeof userProfile!=='undefined'&&userProfile.weight)||75;
+  const kcal=Math.round(Math.max(0,t)*w*0.0175/60);
+  txt('tb-kcal-est-v','~'+kcal);
+  // BPM estimé selon intensité
+  const bpm=Math.round(130+C.work/3);
+  txt('tb-bpm-est','~'+bpm+' BPM');
 }
 
-/* ── Pills ──────────────────────────────────────────────────── */
+// Timeline preview
+function _renderTimeline(){
+  const tl=$('tb-timeline-preview');if(!tl)return;
+  const exs=_allExs();const n=exs.length||1;
+  const segs=[];
+  if(_mode==='classic'){
+    for(let r=0;r<Math.min(C.rounds,16);r++){
+      for(let e=0;e<n;e++){
+        segs.push('work');if(r<C.rounds-1||e<n-1)segs.push('rest');
+      }
+    }
+  } else {
+    for(let e=0;e<n;e++){
+      for(let r=0;r<Math.min(C.rounds,8);r++){
+        segs.push('work');if(r<C.rounds-1)segs.push('restser');
+      }
+      if(e<n-1)segs.push('restex');
+    }
+  }
+  const max=40;
+  tl.innerHTML=segs.slice(0,max).map(s=>`<div class="tb-tl-seg tb-tl-${s==='restser'||s==='restex'?'restex':s}" style="flex:${s==='work'?C.work:s==='restser'?C.restser:C.rest}"></div>`).join('');
+}
+
+/* Exercices */
 function _renderPills(){
   const g=$('tb-pills');if(!g)return;
   g.innerHTML=TB_EX.map(ex=>`<div class="tb-pill${_builtinExs.includes(ex)?' on':''}" onclick="tbTogEx('${ex.replace(/'/g,"\\'")}')"> ${ex}</div>`).join('');
 }
 window.tbTogEx=function(name){
   const i=_builtinExs.indexOf(name);if(i>=0)_builtinExs.splice(i,1);else _builtinExs.push(name);
-  _renderPills();_renderExlist();_calcDur();
+  _renderPills();_renderExlist();_calcDur();_renderTimeline();
   $('tb-sbtn').disabled=!_allExs().length;txt('tb-excnt','('+_allExs().length+')');
 };
 window.tbAddFree=function(){
   const inp=$('tb-free'),v=inp.value.trim();if(!v)return;
   if(!_customExs.includes(v)&&!_builtinExs.includes(v))_customExs.push(v);
-  inp.value='';_renderPills();_renderExlist();_calcDur();
+  inp.value='';_renderPills();_renderExlist();_calcDur();_renderTimeline();
   $('tb-sbtn').disabled=false;txt('tb-excnt','('+_allExs().length+')');
 };
 function _renderExlist(){
   const wrap=$('tb-exwrap'),list=$('tb-exlist');if(!wrap||!list)return;
   const all=_allExs();if(!all.length){wrap.style.display='none';return;}
   wrap.style.display='block';
-  // Exercices intégrés en premier, puis custom en bas avec classe différente
-  const builtRows=_builtinExs.map((ex,i)=>`
-    <div class="tb-exrow">
-      <div class="tb-exn">${i+1}</div>
-      <span class="tb-exlbl">${ex}</span>
-      <span class="tb-extm">${_mode==='classic'?C.rounds+'×'+C.work+'s':C.rounds+'r·'+C.work+'s'}</span>
-      <button class="tb-exdel" onclick="tbRmBuiltin(${i})"><i class="fas fa-xmark"></i></button>
-    </div>`).join('');
-  const custRows=_customExs.map((ex,i)=>`
-    <div class="tb-exrow custom-ex">
-      <div class="tb-exn">${_builtinExs.length+i+1}</div>
-      <span class="tb-exlbl">${ex} <span style="font-size:9px;color:#4F6EF7;font-weight:800;margin-left:3px">LIBRE</span></span>
-      <span class="tb-extm">${_mode==='classic'?C.rounds+'×'+C.work+'s':C.rounds+'r·'+C.work+'s'}</span>
-      <button class="tb-exdel" onclick="tbRmCustom(${i})"><i class="fas fa-xmark"></i></button>
-    </div>`).join('');
-  list.innerHTML=builtRows+custRows;
+  const bRows=_builtinExs.map((ex,i)=>`<div class="tb-exrow"><div class="tb-exn">${i+1}</div><span class="tb-exlbl">${ex}</span><span class="tb-extm">${C.rounds}r·${C.work}s</span><button class="tb-exdel" onclick="tbRmBuiltin(${i})"><i class="fas fa-xmark"></i></button></div>`).join('');
+  const cRows=_customExs.map((ex,i)=>`<div class="tb-exrow custom-ex"><div class="tb-exn">${_builtinExs.length+i+1}</div><span class="tb-exlbl">${ex} <span style="font-size:9px;color:#4F6EF7;font-weight:800">LIBRE</span></span><span class="tb-extm">${C.rounds}r·${C.work}s</span><button class="tb-exdel" onclick="tbRmCustom(${i})"><i class="fas fa-xmark"></i></button></div>`).join('');
+  list.innerHTML=bRows+cRows;
 }
-window.tbRmBuiltin=function(i){_builtinExs.splice(i,1);_renderPills();_renderExlist();_calcDur();if(!_allExs().length)$('tb-sbtn').disabled=true;txt('tb-excnt','('+_allExs().length+')');};
-window.tbRmCustom=function(i){_customExs.splice(i,1);_renderExlist();_calcDur();if(!_allExs().length)$('tb-sbtn').disabled=true;txt('tb-excnt','('+_allExs().length+')');};
+window.tbRmBuiltin=function(i){_builtinExs.splice(i,1);_renderPills();_renderExlist();_calcDur();_renderTimeline();if(!_allExs().length)$('tb-sbtn').disabled=true;txt('tb-excnt','('+_allExs().length+')');};
+window.tbRmCustom=function(i){_customExs.splice(i,1);_renderExlist();_calcDur();_renderTimeline();if(!_allExs().length)$('tb-sbtn').disabled=true;txt('tb-excnt','('+_allExs().length+')');};
 
-/* ── Toggles ────────────────────────────────────────────────── */
+/* Toggles */
 window.tbSw=function(k){
   const map={save:'tb-sw-save',voice:'tb-sw-voice',sumsave:'tb-sumsw'};
   const el=$(map[k]);if(!el)return;el.classList.toggle('on');
@@ -42739,47 +42901,94 @@ window.tbSw=function(k){
 };
 window.tbTogVoice=function(){_swVoice=!_swVoice;$('tb-vbtn').classList.toggle('on',_swVoice);if(!_swVoice&&_syn)_syn.cancel();};
 
-/* ── Launch — reset total ───────────────────────────────────── */
+/* Saved programs */
+window.tbSaveProgram=function(){
+  const name=$('tb-sname')?.value||'Programme';
+  const exs=_allExs();if(!exs.length){alert('Ajoutez des exercices d\'abord.');return;}
+  const progs=_loadProgs();
+  progs.unshift({id:Date.now(),name,mode:_mode,builtin:[..._builtinExs],custom:[..._customExs],rounds:C.rounds,work:C.work,rest:C.rest,restser:C.restser,restex:C.restex});
+  if(progs.length>20)progs.pop();
+  localStorage.setItem('ironplate_tabata_progs',JSON.stringify(progs));
+  // Feedback
+  const btn=$('tb-sbtn').parentElement.querySelector('.tb-saveprog-btn');
+  if(btn){const orig=btn.innerHTML;btn.innerHTML='<i class="fas fa-check"></i>';btn.style.color='#0FA86A';btn.style.borderColor='rgba(15,168,106,.4)';setTimeout(()=>{btn.innerHTML=orig;btn.style.color='';btn.style.borderColor='';},1500);}
+};
+function _loadProgs(){try{return JSON.parse(localStorage.getItem('ironplate_tabata_progs')||'[]');}catch(e){return[];}}
+function _renderSaved(){
+  const progs=_loadProgs();
+  const lbl=$('tb-saved-lbl'),list=$('tb-saved-list');
+  if(!list)return;
+  if(!progs.length){if(lbl)lbl.style.display='none';list.innerHTML='';return;}
+  if(lbl)lbl.style.display='block';
+  list.innerHTML=progs.slice(0,5).map((p,i)=>{
+    const n=([...(p.builtin||[]),...(p.custom||[])]).length;
+    const dur=p.mode==='classic'?p.rounds*n*(p.work+p.rest):p.rounds*p.work*n;
+    return`<div class="tb-saved-item" onclick="tbLoadProg(${i})">
+      <div class="tb-saved-ico"><i class="fas fa-bookmark"></i></div>
+      <div style="flex:1;min-width:0"><div class="tb-saved-name">${p.name}</div><div class="tb-saved-meta">${p.mode==='classic'?'Classique':'Perso'} · ${n} exo · ${fmt(dur)}</div></div>
+      <button class="tb-saved-del" onclick="event.stopPropagation();tbDelProg(${i})"><i class="fas fa-xmark"></i></button>
+    </div>`;
+  }).join('');
+}
+window.tbLoadProg=function(i){
+  const p=_loadProgs()[i];if(!p)return;
+  _mode=p.mode||'classic';_builtinExs=[...(p.builtin||[])];_customExs=[...(p.custom||[])];
+  C.rounds=p.rounds||8;C.work=p.work||20;C.rest=p.rest||10;C.restser=p.restser||10;C.restex=p.restex||30;
+  $('tb-bname').textContent=p.name||'Programme';$('tb-sname').value=p.name||'Programme';
+  $('tb-params-cl').style.display=_mode==='classic'?'block':'none';
+  $('tb-params-cu').style.display=_mode==='custom'?'block':'none';
+  _syncC();_renderPills();_renderExlist();_calcDur();_renderTimeline();
+  $('tb-sbtn').disabled=false;txt('tb-excnt','('+_allExs().length+')');_show('tb-builder');
+};
+window.tbDelProg=function(i){
+  const p=_loadProgs();if(!confirm('Supprimer ce programme ?'))return;
+  p.splice(i,1);localStorage.setItem('ironplate_tabata_progs',JSON.stringify(p));_renderSaved();
+};
+
+/* ══════════════════════════
+   Launch
+   ══════════════════════════ */
 window.tbLaunch=function(){
   const exs=_allExs();if(!exs.length)return;
-  _round=0;_exIdx=0;_done=0;
-  _run=true;_paus=false;
+  _round=0;_exIdx=0;_done=0;_run=true;_paus=false;
   _lastSpokenSec=-1;_zoomActive=false;
-  _sessionStart=Date.now(); // RESET ICI — jamais null après ça
+  _sessionStart=Date.now();
   cancelAnimationFrame(_raf);clearInterval(_chronoRef);
   _buildSegs();_startChrono();
   _show('tb-player');
   $('tb-vbtn').classList.toggle('on',_swVoice);
   $('tb-player').classList.remove('paused');
-  $('tb-pstats').classList.remove('paused');
-  _hideNext();
   txt('tb-rtotal','00:00');
+  // BPM badge
+  const bpmBadge=$('tb-bpm-badge');if(bpmBadge)bpmBadge.style.display='block';
+  const bpmVal=Math.round(130+C.work/3);txt('tb-bpm-live',bpmVal);
+  _hideNext();
+  // Débloquer AudioContext sur iOS (nécessite interaction utilisateur)
+  if(_tbAudioCtx&&_tbAudioCtx.state==='suspended')_tbAudioCtx.resume();
+  if(_sfxCtx&&_sfxCtx.state==='suspended')_sfxCtx.resume();
   _say('Préparez-vous');
   _startPhase('ready',3);
 };
 
-/* ── Barre segmentée ────────────────────────────────────────── */
+/* Segments */
 function _buildSegs(){
   const segs=$('tb-segs');if(!segs)return;
-  const exs=_allExs();
-  const total=C.rounds*exs.length;
+  const exs=_allExs();const total=C.rounds*exs.length;
   segs.innerHTML=Array.from({length:Math.min(total,32)},(_,i)=>`<div class="tb-prog-seg" id="tb-seg-${i}"></div>`).join('');
 }
 function _updateSegs(){
-  const exs=_allExs();
-  const total=C.rounds*exs.length;
-  const globalDone=_exIdx*C.rounds+_round;
+  const exs=_allExs();const total=C.rounds*exs.length;
+  const gDone=_exIdx*C.rounds+_round;
   for(let i=0;i<Math.min(total,32);i++){
     const seg=$('tb-seg-'+i);if(!seg)continue;
-    if(i<globalDone)seg.className='tb-prog-seg done';
-    else if(i===globalDone&&_phase==='work')seg.className='tb-prog-seg active';
+    if(i<gDone)seg.className='tb-prog-seg done';
+    else if(i===gDone&&_phase==='work')seg.className='tb-prog-seg active';
     else seg.className='tb-prog-seg';
   }
-  const exs2=_allExs();
-  txt('tb-progl',`Exo ${_exIdx+1}/${exs2.length} · Round ${_round+1}/${C.rounds}`);
+  txt('tb-progl','Exo '+((_exIdx)+1)+'/'+exs.length+' · Round '+(_round+1)+'/'+C.rounds);
 }
 
-/* ── Chrono ─────────────────────────────────────────────────── */
+/* Chrono */
 function _startChrono(){
   clearInterval(_chronoRef);
   _chronoRef=setInterval(()=>{
@@ -42788,7 +42997,7 @@ function _startChrono(){
   },400);
 }
 
-/* ── Moteur phase (Date.now) ────────────────────────────────── */
+/* Phase engine */
 function _startPhase(phase,sec){
   _phase=phase;_lastSpokenSec=-1;
   _deadline=Date.now()+sec*1000;
@@ -42804,7 +43013,7 @@ function _tick(){
   _cd(rem);
   if((_phase==='rest'||_phase==='restex')&&rem<=3&&rem>0)_showNext();
   else if((_phase==='work'||_phase==='ready')&&_zoomActive)_hideNext();
-  if(rem<=0){_next();return;}
+  if(rem<=0){_nextPhase();return;}
   _raf=requestAnimationFrame(_tick);
 }
 function _updateTimer(rem,total){
@@ -42814,15 +43023,12 @@ function _updateTimer(rem,total){
   if(rem<=3&&rem>0){const el=$('tb-rnum');if(el){el.classList.remove('tb-bounce');void el.offsetWidth;el.classList.add('tb-bounce');}}
   _updateSegs();
 }
-
-/* ── UI phase ───────────────────────────────────────────────── */
 function _updateUI(phase,sec){
   const cols={work:'#FF3B3B',rest:'#3060FF',restser:'#8B5CF6',restex:'#3060FF',ready:'#FFB800',done:'#0FA86A'};
   const cls={work:'work',rest:'rest',restser:'rest',restex:'rest',ready:'ready',done:'done'};
   const labels={work:'EFFORT',rest:'REPOS',restser:'REPOS ROUND',restex:'REPOS EXERCICE',ready:'PRÊT',done:'TERMINÉ'};
   const icons={work:'fa-bolt',rest:'fa-moon',restser:'fa-pause',restex:'fa-arrow-right-arrow-left',ready:'fa-stopwatch',done:'fa-check'};
-  const exs=_allExs();
-  const col=cols[phase]||'#FF3B3B';const c=cls[phase]||'ready';
+  const exs=_allExs();const col=cols[phase]||'#FF3B3B';const c=cls[phase]||'ready';
   const pb=$('tb-pb'),ph=$('tb-pphase'),arc=$('tb-rarc'),arcG=$('tb-rarc-glow'),fl=$('tb-pfl'),rsvg=$('tb-rsvg'),rnum=$('tb-rnum');
   if(pb)pb.className='tb-pb '+c;
   if(ph){ph.innerHTML=`<i class="fas ${icons[phase]||'fa-stopwatch'}" style="margin-right:5px"></i>${labels[phase]||phase.toUpperCase()}`;ph.className='tb-pphase '+c;}
@@ -42832,26 +43038,29 @@ function _updateUI(phase,sec){
   if(rnum)rnum.className='tb-rnum '+c;
   if(fl&&phase!=='ready'&&phase!=='done'){fl.style.background=col;fl.classList.add('go');setTimeout(()=>fl.classList.remove('go'),160);}
   if(navigator.vibrate){if(phase==='work')navigator.vibrate([80,35,80]);else if(phase==='rest'||phase==='restex')navigator.vibrate(160);}
-  const exname={work:exs[_exIdx]||'GO',rest:'Repos',restser:'Repos entre rounds',restex:'Repos — exercice suivant',ready:'Préparez-vous',done:'Bravo !'}[phase]||'—';
-  txt('tb-pex',exname);
+  // Son de transition
+  if(phase==='work')_sfx('work');else if(phase==='rest'||phase==='restser'||phase==='restex')_sfx('rest');
+  // Exercice name avec animation slide
+  const exname={work:exs[_exIdx]||'GO',rest:'Repos',restser:'Repos — round suivant',restex:'Repos — exercice suivant',ready:'Préparez-vous',done:'Bravo !'}[phase]||'—';
+  const pexEl=$('tb-pex');
+  if(pexEl){pexEl.className='tb-pex';void pexEl.offsetWidth;pexEl.textContent=exname;pexEl.className='tb-pex slide';}
+  // BPM dynamique
+  const bpmVal=phase==='work'?Math.round(155+C.work/4):Math.round(100+C.rest/4);
+  txt('tb-bpm-live',bpmVal);
   txt('tb-sround',_round+1);txt('tb-stotal',C.rounds);txt('tb-sex',_exIdx+1);
-  // Next bas
   const ni=(_exIdx+1)%exs.length;
   const isAbsLast=(_round+1>=C.rounds&&_exIdx+1>=exs.length);
   txt('tb-pnext',isAbsLast?'FIN !':(exs[ni]||'—'));
   _updateSegs();
 }
-
-/* ── Zoom next ──────────────────────────────────────────────── */
 function _showNext(){
   if(_zoomActive)return;_zoomActive=true;
-  const exs=_allExs();
-  let nextName='';
-  if(_mode==='classic'){nextName=exs[(_exIdx+1)%exs.length]||'FIN';}
-  else{if(_round+1<C.rounds)nextName=exs[_exIdx]+' (round '+(_round+2)+')';else if(_exIdx+1<exs.length)nextName=exs[_exIdx+1];else nextName='Terminé !';}
+  const exs=_allExs();let n='';
+  if(_mode==='classic')n=exs[(_exIdx+1)%exs.length]||'FIN';
+  else{if(_round+1<C.rounds)n=exs[_exIdx]+' (round '+(_round+2)+')';else if(_exIdx+1<exs.length)n=exs[_exIdx+1];else n='Terminé !';}
   const lbl=$('tb-pex-nl'),el=$('tb-pex-next');
   if(lbl)lbl.style.display='block';
-  if(el){el.style.display='block';el.textContent=nextName;el.classList.add('zoom');}
+  if(el){el.style.display='block';el.textContent=n;el.classList.add('zoom');}
 }
 function _hideNext(){
   _zoomActive=false;
@@ -42860,35 +43069,20 @@ function _hideNext(){
   if(el){el.style.display='none';el.classList.remove('zoom');}
 }
 
-/* ── Logique phases ─────────────────────────────────────────── */
-function _next(){
+/* Logique phases */
+function _nextPhase(){
   const exs=_allExs();
   if(_phase==='ready'){_say(_mW());_startPhase('work',C.work);return;}
   if(_phase==='work'){
     _done++;_hideNext();
     const lastRnd=_round+1>=C.rounds,lastEx=_exIdx+1>=exs.length;
     if(_mode==='classic'){
-      // Classique : alterne exercices dans un round, puis repos entre rounds
       const lastExInRnd=(_exIdx+1)>=exs.length;
-      if(lastExInRnd){
-        if(_round+1>=C.rounds){_phaseDone();return;}
-        _round++;_exIdx=0;_say(_mR());_startPhase('rest',C.rest);
-      } else {
-        _exIdx++;_say(_mR());_startPhase('rest',C.rest);
-      }
+      if(lastExInRnd){if(_round+1>=C.rounds){_phaseDone();return;}_round++;_exIdx=0;_say(_mR());_startPhase('rest',C.rest);}
+      else{_exIdx++;_say(_mR());_startPhase('rest',C.rest);}
     } else {
-      // Perso : finir tous les rounds d'un exo avant de passer au suivant
-      if(!lastRnd){
-        _round++;
-        if(C.restser>0){_say('Série '+(_round+1)+'.');_startPhase('restser',C.restser);}
-        else{_say(_mW());_startPhase('work',C.work);}
-      } else {
-        if(!lastEx){
-          _exIdx++;_round=0;_say('Exercice suivant : '+exs[_exIdx]);
-          if(C.restex>0)_startPhase('restex',C.restex);
-          else{_say(_mW());_startPhase('work',C.work);}
-        } else {_phaseDone();}
-      }
+      if(!lastRnd){_round++;if(C.restser>0){_say('Round '+(_round+1));_startPhase('restser',C.restser);}else{_say(_mW());_startPhase('work',C.work);}}
+      else{if(!lastEx){_exIdx++;_round=0;_say('Exercice suivant : '+exs[_exIdx]);if(C.restex>0)_startPhase('restex',C.restex);else{_say(_mW());_startPhase('work',C.work);}}else{_phaseDone();}}
     }
     return;
   }
@@ -42900,97 +43094,52 @@ function _phaseDone(){
   for(let i=0;i<Math.min(total,32);i++){const s=$('tb-seg-'+i);if(s)s.className='tb-prog-seg done';}
   const pb=$('tb-pb');if(pb)pb.className='tb-pb done';
   const ph=$('tb-pphase');if(ph){ph.innerHTML='<i class="fas fa-check" style="margin-right:5px"></i>TERMINÉ';ph.className='tb-pphase done';}
-  txt('tb-pex','Bravo !');
+  const pexEl=$('tb-pex');if(pexEl){pexEl.className='tb-pex slide';pexEl.textContent='Bravo !';}
   if(navigator.vibrate)navigator.vibrate([200,80,200,80,400]);
+  _sfx('done');
   _say('Tabata terminé ! Excellent travail !');
   _tbFireworks();
   setTimeout(_showSum,2800);
 }
 
-/* ── Feu d'artifice canvas ──────────────────────────────────── */
+/* Feu d'artifice */
 function _tbFireworks(){
   const player=$('tb-player');if(!player)return;
-  const cv=document.createElement('canvas');
-  cv.id='tb-fw-canvas';
+  const cv=document.createElement('canvas');cv.id='tb-fw-canvas';
   cv.style.cssText='position:absolute;inset:0;z-index:20;pointer-events:none;width:100%;height:100%';
   cv.width=player.offsetWidth||360;cv.height=player.offsetHeight||640;
   player.appendChild(cv);
-  const ctx=cv.getContext('2d');
-  const W=cv.width,H=cv.height;
-  // Particules
+  const ctx=cv.getContext('2d');const W=cv.width,H=cv.height;
   const particles=[];
   const colors=['#FF3B3B','#FF7A00','#FFB800','#0FA86A','#4F6EF7','#FF60A0','#fff','#60D8FF'];
-  function spawnBurst(x,y,n){
+  function burst(x,y,n){
     const c=colors[Math.floor(Math.random()*colors.length)];
-    for(let i=0;i<n;i++){
-      const angle=Math.random()*Math.PI*2;
-      const speed=2+Math.random()*6;
-      particles.push({
-        x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,
-        alpha:1,color:c,size:2+Math.random()*3,
-        gravity:.08+Math.random()*.06,decay:.012+Math.random()*.01,
-        trail:[],sparkle:Math.random()>.5
-      });
-    }
+    for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=2+Math.random()*6;
+      particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,alpha:1,color:c,size:2+Math.random()*3,gravity:.08+Math.random()*.06,decay:.012+Math.random()*.01,sparkle:Math.random()>.5});}
   }
-  // Lancer plusieurs rafales
-  const bursts=[
-    {x:W*.25,y:H*.25,t:0},{x:W*.75,y:H*.2,t:200},
-    {x:W*.5,y:H*.15,t:400},{x:W*.15,y:H*.4,t:600},
-    {x:W*.85,y:H*.35,t:800},{x:W*.4,y:H*.1,t:1000},
-    {x:W*.6,y:H*.2,t:1200},{x:W*.5,y:H*.3,t:1500},
-    {x:W*.3,y:H*.15,t:1700},{x:W*.7,y:H*.1,t:1900},
-  ];
-  bursts.forEach(b=>setTimeout(()=>spawnBurst(b.x,b.y,55+Math.floor(Math.random()*30)),b.t));
-  // Étoiles scintillantes en fond
-  const stars=Array.from({length:22},()=>({
-    x:Math.random()*W,y:Math.random()*H*.6,
-    size:.5+Math.random()*2,alpha:Math.random(),
-    speed:.02+Math.random()*.04,phase:Math.random()*Math.PI*2
-  }));
+  [{x:W*.25,y:H*.25,t:0},{x:W*.75,y:H*.2,t:200},{x:W*.5,y:H*.15,t:400},{x:W*.15,y:H*.4,t:600},
+   {x:W*.85,y:H*.35,t:800},{x:W*.4,y:H*.1,t:1000},{x:W*.6,y:H*.2,t:1200},{x:W*.5,y:H*.3,t:1500},
+   {x:W*.3,y:H*.15,t:1700},{x:W*.7,y:H*.1,t:1900}].forEach(b=>setTimeout(()=>burst(b.x,b.y,55+Math.floor(Math.random()*30)),b.t));
   let frame=0;
   function draw(){
-    ctx.clearRect(0,0,W,H);
-    frame++;
-    // Étoiles
-    stars.forEach(s=>{
-      s.alpha=.4+.6*Math.abs(Math.sin(s.phase+frame*s.speed));
-      ctx.beginPath();ctx.arc(s.x,s.y,s.size,0,Math.PI*2);
-      ctx.fillStyle=`rgba(255,255,255,${s.alpha*0.7})`;ctx.fill();
-    });
-    // Particules
+    ctx.clearRect(0,0,W,H);frame++;
     for(let i=particles.length-1;i>=0;i--){
-      const p=particles[i];
-      p.trail.push({x:p.x,y:p.y,a:p.alpha});
-      if(p.trail.length>6)p.trail.shift();
-      // Trail
-      p.trail.forEach((t,ti)=>{
-        ctx.beginPath();ctx.arc(t.x,t.y,p.size*.4,0,Math.PI*2);
-        ctx.fillStyle=p.color.replace(')',`,${t.a*(ti/p.trail.length)*.5})`).replace('rgb','rgba').replace('##','#');
-        try{ctx.globalAlpha=t.a*(ti/p.trail.length)*.4;ctx.fillStyle=p.color;ctx.fill();}catch(e){}
-      });
-      ctx.globalAlpha=p.alpha;
+      const p=particles[i];ctx.globalAlpha=p.alpha;
       if(p.sparkle&&frame%3===0){
-        // Étoile 4 branches
-        ctx.save();ctx.translate(p.x,p.y);ctx.rotate(frame*.1);
-        ctx.beginPath();
+        ctx.save();ctx.translate(p.x,p.y);ctx.rotate(frame*.1);ctx.beginPath();
         for(let k=0;k<4;k++){ctx.lineTo(Math.cos(k*Math.PI/2)*p.size*1.8,Math.sin(k*Math.PI/2)*p.size*1.8);ctx.lineTo(Math.cos((k+.5)*Math.PI/2)*p.size*.6,Math.sin((k+.5)*Math.PI/2)*p.size*.6);}
         ctx.closePath();ctx.fillStyle=p.color;ctx.fill();ctx.restore();
-      } else {
-        ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
-        ctx.fillStyle=p.color;ctx.fill();
-      }
+      } else {ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fillStyle=p.color;ctx.fill();}
       ctx.globalAlpha=1;
       p.x+=p.vx;p.y+=p.vy;p.vy+=p.gravity;p.vx*=.98;p.alpha-=p.decay;
       if(p.alpha<=0)particles.splice(i,1);
     }
-    if(frame<200||particles.length>0)requestAnimationFrame(draw);
-    else{cv.remove();}
+    if(frame<220||particles.length>0)requestAnimationFrame(draw);else cv.remove();
   }
   requestAnimationFrame(draw);
 }
 
-/* ── Controls ───────────────────────────────────────────────── */
+/* Controls */
 window.tbPause=function(){
   _paus=!_paus;
   if(_paus){_pauseRem=Math.max(0,Math.ceil((_deadline-Date.now())/1000));if(_syn)_syn.cancel();$('tb-player').classList.add('paused');}
@@ -42998,7 +43147,7 @@ window.tbPause=function(){
   const ico=$('tb-pauseico');if(ico)ico.className=_paus?'fas fa-play':'fas fa-pause';
 };
 window.tbPlus10=function(){if(_run)_deadline+=10000;};
-window.tbSkip=function(){if(_run){cancelAnimationFrame(_raf);_deadline=Date.now()-100;_next();}};
+window.tbSkip=function(){if(_run){cancelAnimationFrame(_raf);_deadline=Date.now()-100;_nextPhase();}};
 window.tbAskStop=function(){
   if(!_run&&!$('tb-player').classList.contains('on'))return;
   if(confirm('Arrêter la session ?')){
@@ -43009,13 +43158,14 @@ window.tbAskStop=function(){
 function _mW(){const r=_round+1,t=C.rounds;const a=['C\'est parti !','Explosez !','Tout donner !',r===t?'Dernier round !':'Round '+r+' sur '+t,'Poussez !'];return a[Math.floor(Math.random()*a.length)];}
 function _mR(){const a=['Repos !','Soufflez !','Récupérez !','Bien joué !','Respirez !'];return a[Math.floor(Math.random()*a.length)];}
 
-/* ── Summary ────────────────────────────────────────────────── */
+/* ══════════════════════════
+   Summary + achievements
+   ══════════════════════════ */
 function _showSum(){
   const el=_sessionStart?Math.round((Date.now()-_sessionStart)/1000):0;
   const w=(typeof userProfile!=='undefined'&&userProfile.weight)||75;
   const kcal=Math.round(_done*(C.work+(C.rest||C.restser||0))*w*0.0175/60);
-  const exs=_allExs();
-  const maxR=C.rounds*exs.length;
+  const exs=_allExs();const maxR=C.rounds*exs.length;
   const ratio=maxR>0?_done/maxR:0;
   const tier=ratio>=1?'perf':ratio>=.75?'great':ratio>=.5?'good':'ok';
   const ico={perf:'fa-trophy',great:'fa-fire-flame-curved',good:'fa-thumbs-up',ok:'fa-circle-check'};
@@ -43025,8 +43175,46 @@ function _showSum(){
   txt('tb-sumttl',ttl[tier]);txt('tb-sumsub',fmtH(el)+' · '+exs.slice(0,3).join(', ')+(exs.length>3?'…':''));
   txt('tb-stime',fmtH(el));txt('tb-srounds',_done);txt('tb-skcal','~'+kcal);
   const sw=$('tb-sumsw');if(sw)sw.classList.toggle('on',_swSave);
-  _show('tb-summary');_aiSum(el,kcal);
+  _show('tb-summary');
+  // Achievements
+  _checkAchievements(kcal);
+  // Comparaison
+  _renderCompare(el,_done,kcal);
+  // IA
+  _aiSum(el,kcal);
 }
+
+function _checkAchievements(kcal){
+  const h=_loadH();const total=h.length;
+  let ach=null;
+  if(total===0)ach={icon:'⚡',title:'Premier Tabata !',desc:'Vous venez de terminer votre première session.'};
+  else if(total===9)ach={icon:'🏅',title:'10 sessions !',desc:'Vous avez complété 10 sessions Tabata.'};
+  else if(total===49)ach={icon:'🏆',title:'50 sessions !',desc:'50 sessions — vous êtes un warrior !'};
+  else if(_done>=32)ach={icon:'💪',title:'Machine !',desc:'32 rounds ou plus en une session.'};
+  else if(kcal>=200)ach={icon:'🔥',title:'Brûleur !',desc:'Plus de 200 kcal en une session.'};
+  // Streak
+  const streak=_calcStreak(h);
+  if(streak===7)ach={icon:'🗓️',title:'7 jours consécutifs !',desc:'Une semaine sans relâche.'};
+  const el=$('tb-achievement');
+  if(el&&ach){
+    txt('tb-ach-icon',ach.icon);txt('tb-ach-title',ach.title);txt('tb-ach-desc',ach.desc);
+    el.style.display='block';
+  } else if(el){el.style.display='none';}
+}
+
+function _renderCompare(el,rounds,kcal){
+  const h=_loadH();const comp=$('tb-compare');if(!comp)return;
+  if(!h.length){comp.style.display='none';return;}
+  const prev=h[0];comp.style.display='block';
+  const maxT=Math.max(el,prev.elapsed||1);
+  const maxR=Math.max(rounds,prev.rounds||1);
+  const maxK=Math.max(kcal,prev.kcal||1);
+  const bar=(id,pct,color)=>{const e=$(id);if(e){e.style.background=color;setTimeout(()=>e.style.width=Math.min(100,Math.round(pct*100))+'%',100);}};
+  bar('tb-cmp-time-bar',el/maxT,'#FF3B3B');txt('tb-cmp-time',fmtH(el));
+  bar('tb-cmp-rounds-bar',rounds/maxR,'#4F6EF7');txt('tb-cmp-rounds',rounds);
+  bar('tb-cmp-kcal-bar',kcal/maxK,'#0FA86A');txt('tb-cmp-kcal','~'+kcal);
+}
+
 async function _aiSum(el,kcal){
   if(typeof _callAI!=='function')return;
   try{
@@ -43038,7 +43226,45 @@ async function _aiSum(el,kcal){
 }
 window.tbRestart=function(){_doSave();tbLaunch();};
 
-/* ── History ────────────────────────────────────────────────── */
+/* Export carte */
+window.tbExportCard=function(){
+  const el=_sessionStart?Math.round((Date.now()-_sessionStart)/1000):0;
+  const w=(typeof userProfile!=='undefined'&&userProfile.weight)||75;
+  const kcal=Math.round(_done*(C.work+(C.rest||0))*w*0.0175/60);
+  const exs=_allExs();
+  const cv=document.createElement('canvas');cv.width=480;cv.height=240;
+  const ctx=cv.getContext('2d');
+  // Fond
+  const grad=ctx.createLinearGradient(0,0,480,240);grad.addColorStop(0,'#0a0c16');grad.addColorStop(1,'#1a1030');
+  ctx.fillStyle=grad;ctx.fillRect(0,0,480,240);
+  // Accent rouge
+  ctx.fillStyle='rgba(255,60,60,.15)';ctx.fillRect(0,0,480,80);
+  // Logo
+  ctx.fillStyle='#FF3B3B';ctx.font='bold 28px system-ui,sans-serif';ctx.fillText('⚡ TABATA',24,46);
+  // Séparateur
+  ctx.strokeStyle='rgba(255,255,255,.1)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(24,60);ctx.lineTo(456,60);ctx.stroke();
+  // Stats
+  ctx.font='bold 42px system-ui,sans-serif';ctx.fillStyle='#fff';ctx.fillText(fmtH(el),24,110);
+  ctx.font='bold 14px system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,.45)';ctx.fillText('DURÉE',24,128);
+  ctx.font='bold 42px system-ui,sans-serif';ctx.fillStyle='#FF6060';ctx.fillText(_done,180,110);
+  ctx.font='bold 14px system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,.45)';ctx.fillText('ROUNDS',180,128);
+  ctx.font='bold 42px system-ui,sans-serif';ctx.fillStyle='#FFB800';ctx.fillText('~'+kcal,320,110);
+  ctx.font='bold 14px system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,.45)';ctx.fillText('KCAL',320,128);
+  // Exercices
+  ctx.font='bold 12px system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,.5)';
+  ctx.fillText(exs.slice(0,4).join(' · ')+(exs.length>4?'…':''),24,168);
+  // Date
+  ctx.font='500 11px system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,.3)';
+  ctx.fillText(new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'}),24,200);
+  ctx.fillText('IronPlate · Tabata',330,200);
+  // Download
+  const a=document.createElement('a');a.download='tabata-'+Date.now()+'.png';a.href=cv.toDataURL('image/png');
+  a.click();
+};
+
+/* ══════════════════════════
+   History + streak + records
+   ══════════════════════════ */
 function _loadH(){try{return JSON.parse(localStorage.getItem('ironplate_tabata_history')||'[]');}catch(e){return[];}}
 function _doSave(){
   const sw=$('tb-sumsw');if(!sw||!sw.classList.contains('on')||!_sessionStart)return;
@@ -43050,10 +43276,45 @@ function _doSave(){
   if(h.length>50)h.pop();localStorage.setItem('ironplate_tabata_history',JSON.stringify(h));
   _sessionStart=null;
 }
+
+function _calcStreak(h){
+  if(!h.length)return 0;
+  const now=new Date();now.setHours(0,0,0,0);
+  let streak=0,prev=null;
+  const days=h.map(s=>{const d=new Date(s.date);d.setHours(0,0,0,0);return d.getTime();});
+  const uniq=[...new Set(days)].sort((a,b)=>b-a);
+  for(const d of uniq){
+    if(prev===null){const diff=Math.floor((now-d)/86400000);if(diff>1)break;streak=1;}
+    else{const diff=Math.floor((prev-d)/86400000);if(diff===1)streak++;else break;}
+    prev=d;
+  }
+  return streak;
+}
+
+function _renderStreak(){
+  const h=_loadH();
+  const streak=_calcStreak(h);
+  const best=h.length?Math.max(...(function(){
+    const days=h.map(s=>{const d=new Date(s.date);d.setHours(0,0,0,0);return d.getTime();});
+    const uniq=[...new Set(days)].sort((a,b)=>b-a);
+    let best=0,cur=0,prev=null;
+    for(const d of uniq){if(prev===null||Math.floor((prev-d)/86400000)===1)cur++;else cur=1;if(cur>best)best=cur;prev=d;}
+    return[best];
+  })(),0):0;
+  txt('tb-streak-val',streak);txt('tb-streak-best',best);
+}
+
+function _renderRecords(){
+  const h=_loadH();
+  txt('tb-rec-sessions',h.length);
+  txt('tb-rec-kcal',h.reduce((a,s)=>a+(s.kcal||0),0));
+  txt('tb-rec-rounds',h.reduce((a,s)=>a+(s.rounds||0),0));
+}
+
 function _renderHist(){
   const h=_loadH(),list=$('tb-histlist'),zone=$('tb-chartzone');if(!list)return;
   if(!h.length){list.innerHTML='<div class="tb-empty"><i class="fas fa-stopwatch" style="font-size:24px;opacity:.2;display:block;margin-bottom:8px"></i>Aucune session.<br>Lancez votre premier Tabata !</div>';if(zone)zone.style.display='none';return;}
-  list.innerHTML=h.slice(0,6).map((s,i)=>{
+  list.innerHTML=h.slice(0,5).map((s,i)=>{
     const d=new Date(s.date);const ds=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
     return`<div class="tb-hi" onclick="tbReplay(${i})">
       <div class="tb-hi-ico"><i class="fas fa-stopwatch"></i></div>
@@ -43065,58 +43326,45 @@ function _renderHist(){
 }
 window.tbReplay=function(i){
   const h=_loadH(),s=h[i];if(!s)return;
-  _mode=s.mode||'classic';
-  const exs=s.exercises||[];
-  _builtinExs=exs.filter(e=>TB_EX.includes(e));
-  _customExs=exs.filter(e=>!TB_EX.includes(e));
+  _mode=s.mode||'classic';const exs=s.exercises||[];
+  _builtinExs=exs.filter(e=>TB_EX.includes(e));_customExs=exs.filter(e=>!TB_EX.includes(e));
   const n=exs.length||1;C.rounds=s.totalRounds?Math.round(s.totalRounds/n):s.rounds||8;
   C.work=s.work||20;C.rest=s.rest||10;C.restser=s.rest||10;
   $('tb-bname').textContent=s.name||'Tabata';$('tb-sname').value=s.name||'Tabata';
-  $('tb-params-cl').style.display=_mode==='classic'?'block':'none';
-  $('tb-params-cu').style.display=_mode==='custom'?'block':'none';
-  _syncC();_renderPills();_renderExlist();_calcDur();
+  $('tb-params-cl').style.display=_mode==='classic'?'block':'none';$('tb-params-cu').style.display=_mode==='custom'?'block':'none';
+  _syncC();_renderPills();_renderExlist();_calcDur();_renderTimeline();
   $('tb-sbtn').disabled=false;txt('tb-excnt','('+_allExs().length+')');_show('tb-builder');
 };
 window.tbDel=function(i){const h=_loadH();if(!confirm('Supprimer ?'))return;h.splice(i,1);localStorage.setItem('ironplate_tabata_history',JSON.stringify(h));_renderHist();};
+
 function _renderChart(h){
   const wrap=$('tb-chartzone');if(!wrap)return;
-  const days=7;
-  const nowClean=new Date();nowClean.setHours(0,0,0,0);
-  // Compter par jour
+  const days=7;const nowClean=new Date();nowClean.setHours(0,0,0,0);
   const cnts=new Array(days).fill(0);
-  h.forEach(function(s){
-    const d=new Date(s.date);d.setHours(0,0,0,0);
-    const df=Math.floor((nowClean-d)/86400000);
-    if(df>=0&&df<days)cnts[days-1-df]++;
-  });
+  h.forEach(function(s){const d=new Date(s.date);d.setHours(0,0,0,0);const df=Math.floor((nowClean-d)/86400000);if(df>=0&&df<days)cnts[days-1-df]++;});
   const mx=Math.max.apply(null,cnts.concat([1]));
-  // Labels des 7 jours
   const DAYS=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
   let bars='';
   for(let i=0;i<days;i++){
     const d=new Date(nowClean);d.setDate(nowClean.getDate()-(days-1-i));
-    const isToday=(i===days-1);
-    const c=cnts[i];
+    const isToday=(i===days-1);const c=cnts[i];
     const barH=c>0?Math.max(16,Math.round(c/mx*64)):4;
     const dayLbl=DAYS[d.getDay()];
     const dateLbl=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');
     const barBg=isToday&&c>0?'linear-gradient(180deg,#FF3B3B,#FF7A00)':c>0?'rgba(255,60,60,.5)':'rgba(255,255,255,.07)';
-    const dayCol=isToday?'#FF3B3B':'var(--t3)';
-    const dayW=isToday?'900':'700';
-    const countHtml=c>0?('<div style="font-size:10px;font-weight:800;color:#FF3B3B;margin-bottom:2px">'+c+'</div>'):'<div style="height:14px"></div>';
+    const dayCol=isToday?'#FF3B3B':'var(--t3)';const dayW=isToday?'900':'700';
     bars+='<div style="flex:1;display:flex;flex-direction:column;align-items:center">'
-      +countHtml
+      +(c>0?('<div style="font-size:10px;font-weight:800;color:#FF3B3B;margin-bottom:2px">'+c+'</div>'):'<div style="height:14px"></div>')
       +'<div style="width:100%;height:'+barH+'px;border-radius:4px 4px 0 0;background:'+barBg+';transition:height .4s,background .3s'+(isToday?';box-shadow:0 0 10px rgba(255,60,60,.3)':'')+'"></div>'
       +'<div style="font-size:9px;font-weight:'+dayW+';color:'+dayCol+';margin-top:4px">'+dayLbl+'</div>'
       +'<div style="font-size:8px;color:var(--t3);opacity:.55">'+dateLbl+'</div>'
       +'</div>';
   }
   wrap.innerHTML='<div class="tb-slbl" style="padding-top:6px">Activité — 7 derniers jours</div>'
-    +'<div style="padding:0 15px 8px"><div style="display:flex;align-items:flex-end;gap:4px;height:96px">'
-    +bars+'</div></div>';
+    +'<div style="padding:0 15px 8px"><div style="display:flex;align-items:flex-end;gap:4px;height:96px">'+bars+'</div></div>';
 }
 
-/* ── AI ─────────────────────────────────────────────────────── */
+/* AI Modal */
 window.tbOpenAIM=function(){$('tb-aim').classList.add('open');$('tb-aires').style.display='none';$('tb-aiapply').style.display='none';$('tb-aiload').style.display='none';_aiProg=null;};
 window.tbCloseAIM=function(){$('tb-aim').classList.remove('open');};
 window.tbGenAI=async function(){
@@ -43139,18 +43387,16 @@ window.tbGenAI=async function(){
 };
 window.tbApplyAI=function(){
   const p=_aiProg;if(!p)return;tbCloseAIM();
-  _mode='custom';
-  const exsList=p.exercises||[];
-  _builtinExs=exsList.filter(e=>TB_EX.includes(e));
-  _customExs=exsList.filter(e=>!TB_EX.includes(e));
+  _mode='custom';const exsList=p.exercises||[];
+  _builtinExs=exsList.filter(e=>TB_EX.includes(e));_customExs=exsList.filter(e=>!TB_EX.includes(e));
   C.rounds=p.rounds||8;C.work=p.workSec||20;C.restser=p.restBetweenSets||10;C.restex=p.restBetweenEx||30;
   $('tb-bname').textContent=p.name||'Programme IA';$('tb-sname').value=p.name||'Programme IA';
   $('tb-params-cl').style.display='none';$('tb-params-cu').style.display='block';
-  _syncC();_renderPills();_renderExlist();_calcDur();
+  _syncC();_renderPills();_renderExlist();_calcDur();_renderTimeline();
   $('tb-sbtn').disabled=false;txt('tb-excnt','('+_allExs().length+')');_show('tb-builder');
 };
 
-/* ── Inject header button ───────────────────────────────────── */
+/* Inject header button */
 function _inject(){
   if($('tb-hdr-btn'))return;
   const s=document.querySelector('button[onclick*="showSettingsModal"]');if(!s)return;
@@ -43165,6 +43411,796 @@ function _inject(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(_inject,600));
 else setTimeout(_inject,600);
 setTimeout(_renderPills,100);
+
+})();
+</script>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     MODULE SCANNER FRIGO v2 — IronPlate
+     ════════════════════════════════════════════════════════════ -->
+<style>
+#fr-modal{position:fixed;inset:0;z-index:19000;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(7px)}
+#fr-modal.open{display:flex}
+.fr-sheet{width:100%;max-width:480px;max-height:94vh;display:flex;flex-direction:column;background:var(--card-bg,#151826);border-radius:20px 20px 0 0;overflow:hidden;animation:frUp .32s cubic-bezier(.32,.72,0,1)}
+@keyframes frUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.fr-hdr{display:flex;align-items:center;justify-content:space-between;padding:15px 16px 12px;border-bottom:1px solid var(--border,rgba(255,255,255,.08));flex-shrink:0;background:var(--card-bg,#151826)}
+.fr-hdr-l{display:flex;align-items:center;gap:10px}
+.fr-logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,rgba(255,140,0,.22),rgba(255,60,60,.16));border:1px solid rgba(255,140,0,.3);display:flex;align-items:center;justify-content:center;color:#FF8C00;font-size:14px}
+.fr-hdr-title{font-size:15px;font-weight:900;color:var(--text-primary,#eef0f8)}
+.fr-hdr-sub{font-size:10px;color:var(--text-tertiary,rgba(140,140,180,.6));font-weight:600}
+.fr-xbtn{width:30px;height:30px;border-radius:8px;background:var(--card-bg-alt,rgba(255,255,255,.06));border:1px solid var(--border,rgba(255,255,255,.08));color:var(--text-secondary,#9aa0b8);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s}
+.fr-xbtn:hover{background:rgba(255,60,60,.12);color:#FF4444}
+.fr-body{flex:1;overflow-y:auto;padding:14px 16px 20px}
+/* Screens */
+.fr-scr{display:none}.fr-scr.on{display:block}
+/* Step indicator */
+.fr-steps-bar{display:flex;align-items:center;gap:0;margin-bottom:16px}
+.fr-step-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;transition:all .3s;flex-shrink:0}
+.fr-step-dot.done{background:rgba(255,140,0,.2);color:#FF8C00;border:1.5px solid rgba(255,140,0,.4)}
+.fr-step-dot.active{background:linear-gradient(135deg,#FF8C00,#FF4444);color:#fff;border:none;box-shadow:0 2px 10px rgba(255,140,0,.35)}
+.fr-step-dot.todo{background:rgba(255,255,255,.05);color:var(--text-tertiary,rgba(140,140,180,.4));border:1.5px solid rgba(255,255,255,.08)}
+.fr-step-line{flex:1;height:1.5px;background:rgba(255,255,255,.07)}
+.fr-step-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;text-align:center;margin-top:3px;color:var(--text-tertiary,rgba(140,140,180,.5))}
+/* Section label */
+.fr-slbl{font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--text-tertiary,rgba(140,140,180,.55));margin-bottom:8px}
+/* Upload */
+.fr-drop{border:2px dashed rgba(255,140,0,.28);border-radius:14px;padding:26px 16px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(255,140,0,.04);margin-bottom:12px;position:relative}
+.fr-drop:hover{border-color:rgba(255,140,0,.55);background:rgba(255,140,0,.07)}
+.fr-drop-ico{font-size:32px;display:block;margin-bottom:8px}
+.fr-drop-lbl{font-size:13px;font-weight:800;color:var(--text-primary,#eef0f8);margin-bottom:3px}
+.fr-drop-sub{font-size:10px;color:var(--text-tertiary,rgba(140,140,180,.55))}
+.fr-preview{width:100%;max-height:200px;border-radius:12px;object-fit:cover;margin-bottom:12px;display:none;border:1px solid rgba(255,140,0,.2)}
+.fr-cam-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:12px}
+.fr-cam-btn{padding:9px 6px;border-radius:11px;border:1.5px solid rgba(255,140,0,.22);background:rgba(255,140,0,.06);color:#FF8C00;font-size:10px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s}
+.fr-cam-btn:hover{background:rgba(255,140,0,.13);border-color:rgba(255,140,0,.45)}
+/* Memory */
+.fr-mem{display:flex;align-items:center;gap:8px;padding:8px 11px;border-radius:10px;background:rgba(255,140,0,.06);border:1px solid rgba(255,140,0,.16);margin-bottom:12px;font-size:10px;color:var(--text-secondary,#9aa0b8)}
+.fr-mem i{color:#FF8C00;flex-shrink:0}
+.fr-mem-btn{padding:3px 8px;border-radius:6px;font-size:9px;font-weight:800;cursor:pointer;border:none;transition:all .15s}
+/* Pantry */
+.fr-pantry{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.fr-pantry-pill{padding:4px 10px;border-radius:14px;font-size:10px;font-weight:700;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--text-tertiary,rgba(140,140,180,.7));cursor:pointer;transition:all .15s}
+.fr-pantry-pill:hover{border-color:rgba(255,140,0,.3);color:#FF8C00}
+/* Ingredient pills */
+.fr-ingr-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.fr-pill{display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;font-size:11px;font-weight:700;transition:all .15s}
+.fr-pill.have{background:rgba(255,140,0,.1);border:1.5px solid rgba(255,140,0,.3);color:#FF8C00}
+.fr-pill.buy{background:rgba(79,110,247,.1);border:1.5px solid rgba(79,110,247,.3);color:#4F6EF7}
+.fr-pill-del{background:none;border:none;cursor:pointer;font-size:10px;padding:0;opacity:.6;transition:opacity .15s;display:flex;align-items:center}
+.fr-pill-del:hover{opacity:1;color:#FF4444}
+/* Add row */
+.fr-add-row{display:flex;gap:7px;margin-bottom:14px}
+.fr-inp{flex:1;padding:8px 11px;border-radius:10px;background:var(--card-bg,#151826);border:1.5px solid var(--border,rgba(255,255,255,.1));color:var(--text-primary,#eef0f8);font-size:12px;font-weight:600;outline:none;transition:border-color .15s;font-family:inherit}
+.fr-inp:focus{border-color:#FF8C00}
+.fr-inp::placeholder{color:var(--text-tertiary,rgba(140,140,180,.45))}
+.fr-add-btn{padding:8px 13px;border-radius:10px;border:none;font-size:11px;font-weight:800;cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.fr-add-have{background:rgba(255,140,0,.14);color:#FF8C00;border:1.5px solid rgba(255,140,0,.25)}
+.fr-add-have:hover{background:rgba(255,140,0,.24)}
+.fr-add-buy{background:rgba(79,110,247,.12);color:#4F6EF7;border:1.5px solid rgba(79,110,247,.22)}
+.fr-add-buy:hover{background:rgba(79,110,247,.22)}
+/* Meal type selector */
+.fr-meal-types{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.fr-mt{padding:11px 6px;border-radius:12px;border:1.5px solid var(--border,rgba(255,255,255,.08));background:var(--card-bg-alt,rgba(255,255,255,.04));cursor:pointer;text-align:center;transition:all .2s}
+.fr-mt:hover{border-color:rgba(255,140,0,.35)}
+.fr-mt.on{background:rgba(255,140,0,.12);border-color:rgba(255,140,0,.45)}
+.fr-mt-ico{font-size:22px;display:block;margin-bottom:5px}
+.fr-mt-lbl{font-size:11px;font-weight:800;color:var(--text-primary,#eef0f8)}
+.fr-mt-sub{font-size:9px;color:var(--text-tertiary,rgba(140,140,180,.55));margin-top:2px}
+/* Filters */
+.fr-filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.fr-filter{padding:5px 12px;border-radius:20px;font-size:10px;font-weight:800;cursor:pointer;border:1.5px solid var(--border,rgba(255,255,255,.08));background:rgba(255,255,255,.04);color:var(--text-secondary,#9aa0b8);transition:all .15s}
+.fr-filter:hover{border-color:rgba(255,140,0,.3);color:#FF8C00}
+.fr-filter.on{background:rgba(255,140,0,.1);border-color:rgba(255,140,0,.4);color:#FF8C00}
+/* Buy legend */
+.fr-legend{display:flex;gap:12px;margin-bottom:10px;font-size:10px;color:var(--text-tertiary,rgba(140,140,180,.6))}
+.fr-legend span{display:flex;align-items:center;gap:4px}
+/* Recipe cards */
+.fr-rc{background:var(--card-bg,#151826);border:1.5px solid var(--border,rgba(255,255,255,.08));border-radius:14px;margin-bottom:10px;overflow:hidden;cursor:pointer;transition:all .2s}
+.fr-rc:hover{border-color:rgba(255,140,0,.35);transform:translateY(-1px);box-shadow:0 4px 18px rgba(0,0,0,.2)}
+.fr-rc-top{padding:12px 13px 10px;display:flex;align-items:flex-start;gap:10px}
+.fr-rc-ico{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,rgba(255,140,0,.16),rgba(255,60,60,.1));display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.fr-rc-name{font-size:13px;font-weight:800;color:var(--text-primary,#eef0f8);margin-bottom:3px}
+.fr-rc-meta{font-size:10px;color:var(--text-tertiary,rgba(140,140,180,.55));display:flex;flex-wrap:wrap;gap:7px}
+.fr-rc-tags{display:flex;gap:5px;margin-top:4px;flex-wrap:wrap}
+.fr-rc-tag{font-size:8px;font-weight:800;padding:2px 7px;border-radius:20px;letter-spacing:.4px}
+.fr-rc-badge{margin-left:auto;flex-shrink:0;text-align:right}
+.fr-rc-score{font-size:11px;font-weight:800;color:#FF8C00}
+.fr-rc-score-lbl{font-size:8px;color:var(--text-tertiary,rgba(140,140,180,.5))}
+.fr-rc-macros{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border,rgba(255,255,255,.06))}
+.fr-mc{text-align:center;padding:8px 3px}
+.fr-mc+.fr-mc{border-left:1px solid var(--border,rgba(255,255,255,.06))}
+.fr-mc-v{font-size:13px;font-weight:800;color:var(--text-primary,#eef0f8)}
+.fr-mc-l{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--text-tertiary,rgba(140,140,180,.45));margin-top:1px}
+/* Detail */
+.fr-det-hero{text-align:center;padding:14px 0 12px}
+.fr-det-ico{font-size:46px;display:block;margin-bottom:8px}
+.fr-det-name{font-size:17px;font-weight:900;color:var(--text-primary,#eef0f8);margin-bottom:5px}
+.fr-det-meta{display:flex;justify-content:center;gap:12px;font-size:10px;color:var(--text-tertiary,rgba(140,140,180,.6))}
+.fr-det-macros{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
+.fr-dm{background:var(--card-bg-alt,rgba(255,255,255,.05));border:1px solid var(--border,rgba(255,255,255,.07));border-radius:10px;text-align:center;padding:9px 4px}
+.fr-dm-v{font-size:15px;font-weight:900;color:var(--text-primary,#eef0f8)}
+.fr-dm-l{font-size:8px;font-weight:700;text-transform:uppercase;color:var(--text-tertiary,rgba(140,140,180,.45));margin-top:2px;letter-spacing:.4px}
+/* Ingredients in detail */
+.fr-det-ingr-list{display:flex;flex-direction:column;gap:0;margin-bottom:14px;border-radius:11px;overflow:hidden;border:1px solid var(--border,rgba(255,255,255,.07))}
+.fr-det-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--border,rgba(255,255,255,.05))}
+.fr-det-row:last-child{border:none}
+.fr-det-row-nm{font-size:12px;font-weight:700;color:var(--text-primary,#eef0f8);display:flex;align-items:center;gap:6px}
+.fr-det-row-badge{font-size:8px;font-weight:800;padding:2px 6px;border-radius:8px}
+.fr-badge-have{background:rgba(255,140,0,.12);color:#FF8C00}
+.fr-badge-buy{background:rgba(79,110,247,.12);color:#4F6EF7}
+.fr-det-row-qty{font-size:11px;color:var(--text-tertiary,rgba(140,140,180,.55))}
+/* Steps */
+.fr-steps-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.fr-step{display:flex;gap:10px}
+.fr-step-num{width:22px;height:22px;border-radius:50%;background:rgba(255,140,0,.14);border:1.5px solid rgba(255,140,0,.28);color:#FF8C00;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.fr-step-txt{font-size:12px;color:var(--text-secondary,#9aa0b8);line-height:1.55}
+/* Shopping list */
+.fr-shop-list{background:rgba(79,110,247,.06);border:1px solid rgba(79,110,247,.18);border-radius:11px;padding:12px 13px;margin-bottom:12px}
+.fr-shop-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#4F6EF7;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.fr-shop-item{display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid rgba(79,110,247,.1);font-size:11px;color:var(--text-secondary,#9aa0b8)}
+.fr-shop-item:last-child{border:none}
+.fr-shop-item i{color:#4F6EF7;font-size:10px;flex-shrink:0}
+/* Buttons */
+.fr-btn-p{width:100%;padding:13px;border-radius:13px;border:none;background:linear-gradient(135deg,#FF8C00,#FF4444);color:#fff;font-size:13px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 5px 18px rgba(255,140,0,.28);transition:all .2s;margin-bottom:8px}
+.fr-btn-p:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 7px 22px rgba(255,140,0,.38)}
+.fr-btn-p:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.fr-btn-s{width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border,rgba(255,255,255,.1));background:rgba(255,255,255,.04);color:var(--text-secondary,#9aa0b8);font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;margin-bottom:8px}
+.fr-btn-s:hover{background:rgba(255,255,255,.07)}
+.fr-btn-more{width:100%;padding:12px;border-radius:12px;border:1.5px dashed rgba(255,140,0,.3);background:rgba(255,140,0,.04);color:#FF8C00;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;margin-bottom:8px}
+.fr-btn-more:hover{background:rgba(255,140,0,.09);border-color:rgba(255,140,0,.5)}
+.fr-btn-copy{width:100%;padding:11px;border-radius:12px;border:1.5px solid rgba(79,110,247,.25);background:rgba(79,110,247,.07);color:#4F6EF7;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;margin-bottom:8px}
+.fr-btn-copy:hover{background:rgba(79,110,247,.13)}
+/* Spinner */
+.fr-spin{text-align:center;padding:18px;color:var(--text-tertiary,rgba(140,140,180,.5));font-size:12px}
+.fr-spin i{font-size:20px;color:#FF8C00;display:block;margin-bottom:6px}
+/* Adapt suggestion */
+.fr-adapt{background:rgba(15,168,106,.06);border:1px solid rgba(15,168,106,.18);border-radius:10px;padding:10px 12px;font-size:10px;color:var(--text-secondary,#9aa0b8);line-height:1.6;margin-bottom:12px;display:none}
+.fr-adapt-ttl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#0FA86A;margin-bottom:4px;display:flex;align-items:center;gap:5px}
+</style>
+
+<!-- ══ MODAL ═════════════════════════════════════════════════════ -->
+<div id="fr-modal">
+<div class="fr-sheet">
+  <div class="fr-hdr">
+    <div class="fr-hdr-l">
+      <div class="fr-logo"><i class="fas fa-refrigerator"></i></div>
+      <div>
+        <div class="fr-hdr-title">Scanner mon frigo</div>
+        <div class="fr-hdr-sub" id="fr-hdr-sub">Recettes IA personnalisées</div>
+      </div>
+    </div>
+    <button class="fr-xbtn" onclick="frClose()"><i class="fas fa-times"></i></button>
+  </div>
+
+  <div class="fr-body">
+
+    <!-- ── ÉCRAN 1 : Photo ─────────────────────────────────────── -->
+    <div class="fr-scr on" id="fr-s1">
+      <!-- Steps bar -->
+      <div style="display:flex;flex-direction:column;margin-bottom:16px">
+        <div class="fr-steps-bar">
+          <div style="text-align:center;flex:1"><div class="fr-step-dot active" id="fr-dot1">1</div></div>
+          <div class="fr-step-line"></div>
+          <div style="text-align:center;flex:1"><div class="fr-step-dot todo" id="fr-dot2">2</div></div>
+          <div class="fr-step-line"></div>
+          <div style="text-align:center;flex:1"><div class="fr-step-dot todo" id="fr-dot3">3</div></div>
+          <div class="fr-step-line"></div>
+          <div style="text-align:center;flex:1"><div class="fr-step-dot todo" id="fr-dot4">4</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:4px">
+          <div class="fr-step-lbl">Photo</div>
+          <div class="fr-step-lbl">Ingrédients</div>
+          <div class="fr-step-lbl">Préférences</div>
+          <div class="fr-step-lbl">Recettes</div>
+        </div>
+      </div>
+
+      <!-- Mémoire frigo -->
+      <div class="fr-mem" id="fr-mem-row" style="display:none">
+        <i class="fas fa-database"></i>
+        <span id="fr-mem-lbl" style="flex:1;font-size:10px">Frigo mémorisé</span>
+        <button class="fr-mem-btn" style="background:rgba(255,140,0,.14);color:#FF8C00" onclick="frLoadMem()">Charger</button>
+        <button class="fr-mem-btn" style="background:rgba(255,60,60,.08);color:#FF4444;margin-left:4px" onclick="frClearMem()">✕</button>
+      </div>
+
+      <!-- Mode sans photo -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+        <div class="fr-drop" id="fr-drop" onclick="document.getElementById('fr-fi').click()">
+          <span class="fr-drop-ico">📸</span>
+          <div class="fr-drop-lbl">Scanner mon frigo</div>
+          <div class="fr-drop-sub">Tapez pour prendre une photo</div>
+        </div>
+        <div class="fr-drop" onclick="frManualMode()" style="border-color:rgba(79,110,247,.28);background:rgba(79,110,247,.04)">
+          <span class="fr-drop-ico">✏️</span>
+          <div class="fr-drop-lbl">Saisie manuelle</div>
+          <div class="fr-drop-sub">Entrer les ingrédients directement</div>
+        </div>
+      </div>
+      <input type="file" id="fr-fi" accept="image/*" capture="environment" style="display:none" onchange="frFile(this)">
+      <input type="file" id="fr-fi2" accept="image/*" style="display:none" onchange="frFile(this)">
+      <img id="fr-prev" class="fr-preview" alt="">
+      <div class="fr-cam-row" id="fr-cam-row" style="display:none">
+        <button class="fr-cam-btn" onclick="document.getElementById('fr-fi').click()"><i class="fas fa-camera"></i>Caméra</button>
+        <button class="fr-cam-btn" onclick="document.getElementById('fr-fi2').click()"><i class="fas fa-image"></i>Galerie</button>
+        <button class="fr-cam-btn" onclick="frClearPhoto()" style="color:#FF4444;border-color:rgba(255,60,60,.22);background:rgba(255,60,60,.06)"><i class="fas fa-trash"></i>Effacer</button>
+      </div>
+      <!-- Garde-manger permanent -->
+      <div style="margin-bottom:12px">
+        <div class="fr-slbl">Garde-manger permanent <span style="color:var(--text-tertiary);font-size:9px;text-transform:none;letter-spacing:0">(toujours disponible)</span></div>
+        <div class="fr-pantry" id="fr-pantry">
+          <div class="fr-pantry-pill" onclick="frTogPantry(this,'Sel')">Sel</div>
+          <div class="fr-pantry-pill" onclick="frTogPantry(this,'Poivre')">Poivre</div>
+          <div class="fr-pantry-pill" onclick="frTogPantry(this,'Huile olive')">Huile olive</div>
+          <div class="fr-pantry-pill" onclick="frTogPantry(this,'Ail')">Ail</div>
+          <div class="fr-pantry-pill" onclick="frTogPantry(this,'Oignon')">Oignon</div>
+          <div class="fr-pantry-pill" onclick="frTogPantry(this,'Beurre')">Beurre</div>
+          <div class="fr-pantry-pill" onclick="frTogPantry(this,'Farine')">Farine</div>
+          <div class="fr-pantry-pill" onclick="frTogPantry(this,'Oeuf')">Oeuf</div>
+          <div class="fr-pantry-pill" onclick="frTogPantry(this,'Pâtes')">Pâtes</div>
+          <div class="fr-pantry-pill" onclick="frTogPantry(this,'Riz')">Riz</div>
+        </div>
+      </div>
+      <button class="fr-btn-p" id="fr-analyze-btn" onclick="frAnalyze()" disabled>
+        <i class="fas fa-magic"></i> Analyser le frigo
+      </button>
+      <div class="fr-spin" id="fr-spin1" style="display:none"><i class="fas fa-spinner fa-spin"></i>Analyse en cours…</div>
+    </div>
+
+    <!-- ── ÉCRAN 2 : Ingrédients ───────────────────────────────── -->
+    <div class="fr-scr" id="fr-s2">
+      <div class="fr-slbl">🟠 Ingrédients du frigo <span id="fr-cnt-have" style="color:var(--text-tertiary)"></span></div>
+      <div class="fr-ingr-list" id="fr-list-have"></div>
+      <div class="fr-slbl">🔵 À acheter <span id="fr-cnt-buy" style="color:var(--text-tertiary)"></span></div>
+      <div class="fr-ingr-list" id="fr-list-buy"></div>
+      <!-- Ajouter -->
+      <div class="fr-slbl">Ajouter un ingrédient</div>
+      <div style="margin-bottom:8px">
+        <input class="fr-inp" id="fr-ingr-inp" type="text" placeholder="Nom de l'ingrédient…" onkeydown="if(event.key==='Enter')frAddH()">
+      </div>
+      <div class="fr-add-row" style="margin-bottom:14px">
+        <button class="fr-add-btn fr-add-have" onclick="frAddH()"><i class="fas fa-plus"></i> J'ai</button>
+        <button class="fr-add-btn fr-add-buy" onclick="frAddB()"><i class="fas fa-cart-plus"></i> À acheter</button>
+      </div>
+      <div class="fr-legend">
+        <span><i class="fas fa-circle" style="color:#FF8C00;font-size:8px"></i> Déjà dans le frigo</span>
+        <span><i class="fas fa-circle" style="color:#4F6EF7;font-size:8px"></i> À acheter</span>
+      </div>
+      <button class="fr-btn-s" onclick="frSaveMem()"><i class="fas fa-database"></i> Mémoriser ce frigo</button>
+      <button class="fr-btn-p" onclick="frGoPrefs()"><i class="fas fa-arrow-right"></i> Continuer</button>
+      <button class="fr-btn-s" onclick="frGoS(1)"><i class="fas fa-arrow-left"></i> Retour</button>
+    </div>
+
+    <!-- ── ÉCRAN 3 : Préférences ───────────────────────────────── -->
+    <div class="fr-scr" id="fr-s3">
+      <div class="fr-slbl">Type de recette</div>
+      <div class="fr-meal-types" id="fr-meal-types">
+        <div class="fr-mt on" data-mt="repas" onclick="frSelMt(this)">
+          <span class="fr-mt-ico">🍽️</span>
+          <div class="fr-mt-lbl">Repas</div>
+          <div class="fr-mt-sub">Déjeuner ou dîner</div>
+        </div>
+        <div class="fr-mt" data-mt="collation" onclick="frSelMt(this)">
+          <span class="fr-mt-ico">🥗</span>
+          <div class="fr-mt-lbl">Collation</div>
+          <div class="fr-mt-sub">Snack healthy</div>
+        </div>
+        <div class="fr-mt" data-mt="dessert" onclick="frSelMt(this)">
+          <span class="fr-mt-ico">🍮</span>
+          <div class="fr-mt-lbl">Dessert</div>
+          <div class="fr-mt-sub">Fin de repas</div>
+        </div>
+      </div>
+
+      <div class="fr-slbl">Priorité</div>
+      <div class="fr-filters" id="fr-prio-filters">
+        <div class="fr-filter on" data-f="frigo" onclick="frTogF(this)"><i class="fas fa-refrigerator" style="margin-right:4px"></i>Max frigo</div>
+        <div class="fr-filter on" data-f="rapide" onclick="frTogF(this)"><i class="fas fa-bolt" style="margin-right:4px"></i>Rapide</div>
+        <div class="fr-filter" data-f="proteine" onclick="frTogF(this)"><i class="fas fa-dumbbell" style="margin-right:4px"></i>Protéiné</div>
+        <div class="fr-filter" data-f="leger" onclick="frTogF(this)"><i class="fas fa-leaf" style="margin-right:4px"></i>Léger</div>
+        <div class="fr-filter" data-f="vegetarien" onclick="frTogF(this)"><i class="fas fa-seedling" style="margin-right:4px"></i>Végétarien</div>
+        <div class="fr-filter" data-f="vide_frigo" onclick="frTogF(this)"><i class="fas fa-recycle" style="margin-right:4px"></i>Vide-frigo</div>
+      </div>
+
+      <div class="fr-slbl">Difficulté</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:14px" id="fr-diff-sel">
+        <div class="fr-mt on" data-d="Facile" onclick="frSelDiff(this)" style="padding:9px 4px">
+          <span class="fr-mt-ico" style="font-size:16px">😊</span>
+          <div class="fr-mt-lbl" style="font-size:10px">Facile</div>
+        </div>
+        <div class="fr-mt" data-d="Moyen" onclick="frSelDiff(this)" style="padding:9px 4px">
+          <span class="fr-mt-ico" style="font-size:16px">👨‍🍳</span>
+          <div class="fr-mt-lbl" style="font-size:10px">Moyen</div>
+        </div>
+        <div class="fr-mt" data-d="Tous" onclick="frSelDiff(this)" style="padding:9px 4px">
+          <span class="fr-mt-ico" style="font-size:16px">🎯</span>
+          <div class="fr-mt-lbl" style="font-size:10px">Tous</div>
+        </div>
+      </div>
+
+      <button class="fr-btn-p" onclick="frGenRecipes()"><i class="fas fa-utensils"></i> Générer les recettes</button>
+      <div class="fr-spin" id="fr-spin3" style="display:none"><i class="fas fa-spinner fa-spin"></i>Génération des recettes…</div>
+      <button class="fr-btn-s" onclick="frGoS(2)"><i class="fas fa-arrow-left"></i> Retour</button>
+    </div>
+
+    <!-- ── ÉCRAN 4 : Recettes ──────────────────────────────────── -->
+    <div class="fr-scr" id="fr-s4">
+      <div id="fr-recipes-hdr" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="fr-slbl" style="margin:0" id="fr-recipes-count">Recettes</div>
+        <div style="font-size:10px;color:var(--text-tertiary,rgba(140,140,180,.55))">Tap pour voir la recette</div>
+      </div>
+      <div id="fr-recipes-list"></div>
+      <button class="fr-btn-more" id="fr-more-btn" onclick="frMoreRecipes()">
+        <i class="fas fa-rotate-right"></i> Proposer d'autres recettes
+      </button>
+      <div class="fr-spin" id="fr-spin4" style="display:none"><i class="fas fa-spinner fa-spin"></i>Nouvelles recettes…</div>
+      <button class="fr-btn-s" onclick="frGoS(3)"><i class="fas fa-sliders"></i> Modifier les préférences</button>
+    </div>
+
+    <!-- ── ÉCRAN 5 : Détail ────────────────────────────────────── -->
+    <div class="fr-scr" id="fr-s5">
+      <div class="fr-det-hero">
+        <span class="fr-det-ico" id="fr-d-ico">🍳</span>
+        <div class="fr-det-name" id="fr-d-name">—</div>
+        <div class="fr-det-meta">
+          <span id="fr-d-time"><i class="fas fa-clock" style="margin-right:3px"></i>—</span>
+          <span id="fr-d-diff"><i class="fas fa-signal" style="margin-right:3px"></i>—</span>
+          <span id="fr-d-pers"><i class="fas fa-user" style="margin-right:3px"></i>—</span>
+        </div>
+      </div>
+      <div class="fr-det-macros" id="fr-d-macros"></div>
+      <!-- Adaptation profil -->
+      <div class="fr-adapt" id="fr-d-adapt">
+        <div class="fr-adapt-ttl"><i class="fas fa-robot"></i> Adaptation profil</div>
+        <div id="fr-d-adapt-txt"></div>
+      </div>
+      <!-- Shopping list pour cette recette -->
+      <div class="fr-shop-list" id="fr-d-shop" style="display:none">
+        <div class="fr-shop-title"><i class="fas fa-cart-shopping"></i> À acheter pour cette recette</div>
+        <div id="fr-d-shop-items"></div>
+      </div>
+      <div class="fr-slbl">Ingrédients</div>
+      <div class="fr-det-ingr-list" id="fr-d-ingrs"></div>
+      <div class="fr-slbl">Préparation</div>
+      <div class="fr-steps-list" id="fr-d-steps"></div>
+      <button class="fr-btn-p" onclick="frAddJournal()"><i class="fas fa-plus-circle"></i> Ajouter au journal</button>
+      <button class="fr-btn-copy" onclick="frCopyShop()"><i class="fas fa-copy"></i> Copier la liste de courses</button>
+      <button class="fr-btn-s" onclick="frGoS(4)"><i class="fas fa-arrow-left"></i> Retour aux recettes</button>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+// ── State ─────────────────────────────────────────────────────────
+let _img = null;           // base64
+let _haveIngrs = [];       // {name, qty}
+let _buyIngrs = [];        // {name, qty}
+let _pantryActive = new Set(['Sel','Poivre','Huile olive']);
+let _filters = new Set(['frigo','rapide']);
+let _mealType = 'repas';
+let _difficulty = 'Facile';
+let _recipes = [];
+let _currentRecipe = null;
+let _prevRecipes = [];     // pour "d'autres recettes"
+
+// ── Open / Close ──────────────────────────────────────────────────
+window.frOpen = function(){
+  document.getElementById('fr-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  frGoS(1);
+  _frCheckMem();
+  _frLoadPantry();
+};
+window.frClose = function(){
+  document.getElementById('fr-modal').classList.remove('open');
+  document.body.style.overflow = '';
+};
+
+// ── Navigation ────────────────────────────────────────────────────
+window.frGoS = function(n){
+  for(let i=1;i<=5;i++){
+    const s = document.getElementById('fr-s'+i);
+    if(s) s.classList.toggle('on', i===n);
+  }
+  // Steps dots
+  for(let i=1;i<=4;i++){
+    const d = document.getElementById('fr-dot'+i);
+    if(!d) continue;
+    d.className = 'fr-step-dot ' + (i<n?'done':i===n?'active':'todo');
+  }
+  const sub = document.getElementById('fr-hdr-sub');
+  const subs = ['Photo du frigo','Ingrédients','Préférences','Recettes','Détail recette'];
+  if(sub) sub.textContent = subs[n-1] || '';
+};
+
+// ── Photo ─────────────────────────────────────────────────────────
+window.frFile = function(inp){
+  const f = inp.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = e => {
+    _img = e.target.result.split(',')[1];
+    const prev = document.getElementById('fr-prev');
+    prev.src = e.target.result; prev.style.display = 'block';
+    document.getElementById('fr-drop').style.display = 'none';
+    document.getElementById('fr-cam-row').style.display = 'grid';
+    document.getElementById('fr-analyze-btn').disabled = false;
+  };
+  r.readAsDataURL(f);
+};
+window.frClearPhoto = function(){
+  _img = null;
+  document.getElementById('fr-prev').style.display = 'none';
+  document.getElementById('fr-drop').style.display = 'block';
+  document.getElementById('fr-cam-row').style.display = 'none';
+  document.getElementById('fr-analyze-btn').disabled = true;
+};
+window.frManualMode = function(){
+  _img = null; _haveIngrs = []; _buyIngrs = [];
+  _frRenderIngrs(); frGoS(2);
+};
+
+// ── Pantry ────────────────────────────────────────────────────────
+window.frTogPantry = function(el, name){
+  if(_pantryActive.has(name)){_pantryActive.delete(name);el.style.background='';el.style.borderColor='';el.style.color='';}
+  else{_pantryActive.add(name);el.style.background='rgba(255,140,0,.12)';el.style.borderColor='rgba(255,140,0,.35)';el.style.color='#FF8C00';}
+  _frSavePantry();
+};
+function _frLoadPantry(){
+  try{const p=JSON.parse(localStorage.getItem('ironplate_pantry')||'[]');_pantryActive=new Set(p);}catch(e){}
+  document.querySelectorAll('.fr-pantry-pill').forEach(el=>{
+    const n=el.textContent.trim();
+    if(_pantryActive.has(n)){el.style.background='rgba(255,140,0,.12)';el.style.borderColor='rgba(255,140,0,.35)';el.style.color='#FF8C00';}
+  });
+}
+function _frSavePantry(){localStorage.setItem('ironplate_pantry',JSON.stringify([..._pantryActive]));}
+
+// ── Analyse image ─────────────────────────────────────────────────
+window.frAnalyze = async function(){
+  if(!window._hasAnyKey||!window._hasAnyKey()){alert('Configurez une clé IA dans les Paramètres.');return;}
+  const btn=document.getElementById('fr-analyze-btn'),spin=document.getElementById('fr-spin1');
+  btn.disabled=true;spin.style.display='block';
+
+  const prompt=`Nutritionniste expert. Analyse cette photo de réfrigérateur/placard.
+Identifie TOUS les aliments visibles avec quantités estimées.
+Réponds UNIQUEMENT avec du JSON valide :
+{"ingredients":[{"name":"Nom en français","quantity":"250g","category":"légume|fruit|viande|poisson|laitage|oeuf|céréale|condiment|boisson|autre"}]}
+Minimum 5 ingrédients. Sois précis sur les quantités visibles.`;
+
+  const result = await _frVision(prompt);
+  spin.style.display='none';btn.disabled=false;
+
+  if(!result||result.startsWith('__ERROR__')){alert('Erreur d\'analyse. Réessayez.');return;}
+  try{
+    let t=result.replace(/```json|```/g,'').trim();const m=t.match(/\{[\s\S]*\}/);if(m)t=m[0];
+    const d=JSON.parse(t);
+    _haveIngrs=(d.ingredients||[]).map(i=>({name:i.name,qty:i.quantity||'',category:i.category||'autre'}));
+    _buyIngrs=[];_frRenderIngrs();frGoS(2);
+  }catch(e){alert('Réponse inattendue. Réessayez.');}
+};
+
+// ── Vision providers — gratuits en priorité ───────────────────────
+async function _frVision(prompt){
+  const K=typeof _aiKeys!=='undefined'?_aiKeys:{};
+
+  // 1. Gemini (gratuit 15/min)
+  if(K.gemini?.apiKey){
+    const vM=(typeof AI_PROVIDERS!=='undefined'&&AI_PROVIDERS.gemini?.visionModels)||['gemini-2.0-flash','gemini-2.0-flash-lite'];
+    for(const model of vM){
+      try{
+        const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${K.gemini.apiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{inline_data:{mime_type:'image/jpeg',data:_img}},{text:prompt}]}]})});
+        const d=await r.json();if(r.ok)return d.candidates?.[0]?.content?.parts?.[0]?.text||null;
+        if(r.status===429)continue;
+      }catch(e){continue;}
+    }
+  }
+  // 2. OpenRouter vision gratuit
+  if(K.openrouter?.apiKey){
+    const vM=(typeof AI_PROVIDERS!=='undefined'&&AI_PROVIDERS.openrouter?.visionModels)||['google/gemma-3-27b-it:free','mistralai/mistral-small-3.1-24b-instruct:free'];
+    for(const model of vM){
+      try{
+        const body={model,max_tokens:800,messages:[{role:'user',content:[{type:'image_url',image_url:{url:`data:image/jpeg;base64,${_img}`}},{type:'text',text:prompt}]}]};
+        const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${K.openrouter.apiKey}`,'HTTP-Referer':'https://ironplate.app','X-Title':'IronPlate'},body:JSON.stringify(body)});
+        const d=await r.json();if(r.ok&&d.choices?.[0]?.message?.content)return d.choices[0].message.content;
+      }catch(e){continue;}
+    }
+  }
+  // 3. Mistral Pixtral
+  if(K.mistral?.apiKey){
+    const vM=(typeof AI_PROVIDERS!=='undefined'&&AI_PROVIDERS.mistral?.visionModels)||['pixtral-12b-latest'];
+    for(const model of vM){
+      try{
+        const body={model,max_tokens:800,messages:[{role:'user',content:[{type:'image_url',image_url:{url:`data:image/jpeg;base64,${_img}`}},{type:'text',text:prompt}]}]};
+        const r=await fetch('https://api.mistral.ai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${K.mistral.apiKey}`},body:JSON.stringify(body)});
+        const d=await r.json();if(r.ok&&d.choices?.[0]?.message?.content)return d.choices[0].message.content;
+      }catch(e){continue;}
+    }
+  }
+  // 4. Claude
+  if(K.claude?.apiKey){
+    try{
+      const body={model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:_img}},{type:'text',text:prompt}]}]};
+      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':K.claude.apiKey,'anthropic-version':'2023-06-01'},body:JSON.stringify(body)});
+      const d=await r.json();if(r.ok)return d.content?.[0]?.text||null;
+    }catch(e){}
+  }
+  return '__ERROR__Aucun provider vision disponible.';
+}
+
+// ── Text providers — gratuits en priorité ─────────────────────────
+async function _frText(prompt, maxTok){
+  const K=typeof _aiKeys!=='undefined'?_aiKeys:{};
+  // Groq > OpenRouter > Mistral > Gemini > Claude
+  const queue=[];
+  if(K.grok?.apiKey)queue.push({url:'https://api.groq.com/openai/v1/chat/completions',key:K.grok.apiKey,model:K.grok.model||'llama-3.3-70b-versatile'});
+  if(K.openrouter?.apiKey)queue.push({url:'https://openrouter.ai/api/v1/chat/completions',key:K.openrouter.apiKey,model:(typeof AI_PROVIDERS!=='undefined'&&AI_PROVIDERS.openrouter?.defaultModel)||'mistralai/mistral-small-3.1-24b-instruct:free',extra:{'HTTP-Referer':'https://ironplate.app','X-Title':'IronPlate'}});
+  if(K.mistral?.apiKey)queue.push({url:'https://api.mistral.ai/v1/chat/completions',key:K.mistral.apiKey,model:K.mistral.model||'mistral-small-latest'});
+  if(K.gemini?.apiKey){
+    try{
+      const model=K.gemini.model||'gemini-2.0-flash';
+      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${K.gemini.apiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
+      const d=await r.json();if(r.ok){const t=d.candidates?.[0]?.content?.parts?.[0]?.text;if(t)return t;}
+    }catch(e){}
+  }
+  for(const p of queue){
+    try{
+      const headers={'Content-Type':'application/json','Authorization':`Bearer ${p.key}`,...(p.extra||{})};
+      const r=await fetch(p.url,{method:'POST',headers,body:JSON.stringify({model:p.model,max_tokens:maxTok||1500,messages:[{role:'user',content:prompt}]})});
+      const d=await r.json();if(r.ok&&d.choices?.[0]?.message?.content)return d.choices[0].message.content;
+    }catch(e){continue;}
+  }
+  if(K.claude?.apiKey&&typeof _callAI==='function')return await _callAI([{role:'user',content:prompt}],null,'Chef cuisinier nutritionniste. JSON uniquement.',maxTok||1500);
+  return null;
+}
+
+// ── Render ingredients ────────────────────────────────────────────
+function _frRenderIngrs(){
+  const lh=document.getElementById('fr-list-have'),lb=document.getElementById('fr-list-buy');
+  const ch=document.getElementById('fr-cnt-have'),cb=document.getElementById('fr-cnt-buy');
+  if(lh) lh.innerHTML=_haveIngrs.map((g,i)=>`<div class="fr-pill have"><span>${g.name}${g.qty?' · '+g.qty:''}</span><button class="fr-pill-del" onclick="frRmH(${i})"><i class="fas fa-times"></i></button></div>`).join('');
+  if(lb) lb.innerHTML=_buyIngrs.map((g,i)=>`<div class="fr-pill buy"><span>${g.name}${g.qty?' · '+g.qty:''}</span><button class="fr-pill-del" onclick="frRmB(${i})"><i class="fas fa-times"></i></button></div>`).join('');
+  if(ch) ch.textContent='('+_haveIngrs.length+')';
+  if(cb) cb.textContent='('+_buyIngrs.length+')';
+}
+window.frRmH=i=>{_haveIngrs.splice(i,1);_frRenderIngrs();};
+window.frRmB=i=>{_buyIngrs.splice(i,1);_frRenderIngrs();};
+window.frAddH=function(){
+  const inp=document.getElementById('fr-ingr-inp'),v=inp.value.trim();if(!v)return;
+  _haveIngrs.push({name:v,qty:''});inp.value='';_frRenderIngrs();
+};
+window.frAddB=function(){
+  const inp=document.getElementById('fr-ingr-inp'),v=inp.value.trim();if(!v)return;
+  _buyIngrs.push({name:v,qty:''});inp.value='';_frRenderIngrs();
+};
+
+// ── Meal type / Filters / Difficulty ─────────────────────────────
+window.frSelMt=function(el){
+  document.querySelectorAll('#fr-meal-types .fr-mt').forEach(e=>e.classList.remove('on'));
+  el.classList.add('on');_mealType=el.dataset.mt;
+};
+window.frTogF=function(el){
+  const f=el.dataset.f;
+  if(_filters.has(f)){_filters.delete(f);el.classList.remove('on');}
+  else{_filters.add(f);el.classList.add('on');}
+};
+window.frSelDiff=function(el){
+  document.querySelectorAll('#fr-diff-sel .fr-mt').forEach(e=>e.classList.remove('on'));
+  el.classList.add('on');_difficulty=el.dataset.d;
+};
+window.frGoPrefs=function(){if(!_haveIngrs.length&&!_buyIngrs.length){alert('Ajoutez au moins un ingrédient.');return;}frGoS(3);};
+
+// ── Génération recettes ───────────────────────────────────────────
+window.frGenRecipes=async function(){_prevRecipes=[];await _frDoGen();};
+window.frMoreRecipes=async function(){await _frDoGen(true);};
+
+async function _frDoGen(more){
+  const btn3=document.getElementById('fr-analyze-btn')||{};
+  const spin3=document.getElementById('fr-spin3'),spin4=document.getElementById('fr-spin4');
+  const more_btn=document.getElementById('fr-more-btn');
+  if(spin3)spin3.style.display='block';
+  if(spin4)spin4.style.display='block';
+  if(more_btn)more_btn.disabled=true;
+
+  const allHave=[..._haveIngrs,...(([..._pantryActive].map(n=>({name:n,qty:''}))))];
+  const haveStr=allHave.map(i=>i.name+(i.qty?' ('+i.qty+')':'')).join(', ');
+  const buyStr=_buyIngrs.map(i=>i.name).join(', ')||'aucun';
+  const filterArr=[..._filters];
+  const filterDesc=filterArr.map(f=>({frigo:'maximiser ingrédients du frigo',rapide:'recettes rapides < 25min',proteine:'riches en protéines',leger:'légères < 500kcal',vegetarien:'végétariennes',vide_frigo:'vide-frigo zéro achat'}[f]||f)).join(', ');
+  const w=(typeof userProfile!=='undefined'&&userProfile.weight)||75;
+  const obj=(typeof userProfile!=='undefined'&&userProfile.goal)||'maintenance';
+  const kcalLeft=_frKcalLeft();
+  const prevNames=_prevRecipes.map(r=>r.name).join(', ');
+  const typeDesc={repas:'plats complets (déjeuner ou dîner)',collation:'snacks et en-cas',dessert:'desserts et goûters'}[_mealType]||'recettes';
+
+  const prompt=`Chef cuisinier et nutritionniste expert. Génère 4 ${typeDesc} différentes.
+
+INGRÉDIENTS DISPONIBLES (frigo + garde-manger) : ${haveStr||'à définir'}
+INGRÉDIENTS À ACHETER (peuvent être inclus) : ${buyStr}
+FILTRES : ${filterDesc||'aucun'}
+DIFFICULTÉ : ${_difficulty}
+PROFIL : ${w}kg, objectif ${obj}${kcalLeft?', budget restant aujourd\'hui : ~'+kcalLeft+'kcal':''}
+${prevNames?'ÉVITER CES RECETTES DÉJÀ PROPOSÉES : '+prevNames:''}
+
+Pour chaque recette, indique clairement quels ingrédients viennent du frigo vs sont à acheter.
+Si filtre vide-frigo actif, ne proposer QUE des recettes avec ingrédients disponibles.
+
+Réponds UNIQUEMENT avec du JSON valide (pas de texte avant/après) :
+{"recipes":[{"name":"Nom","emoji":"🍳","time_min":15,"difficulty":"Facile","servings":2,"meal_type":"${_mealType}","calories":450,"protein":35,"carbs":40,"fat":12,"frigo_score":80,"adapt_tip":"Conseil adapté au profil en 1 phrase","ingredients":[{"name":"Ingrédient","qty":"200g","source":"frigo|achat"}],"steps":["Étape 1...","Étape 2..."],"tags":["Rapide"]}]}
+
+frigo_score = % d'ingrédients du frigo utilisés (0-100). adapt_tip = conseil personnalisé selon objectif.`;
+
+  const result=await _frText(prompt,2000);
+  if(spin3)spin3.style.display='none';if(spin4)spin4.style.display='none';if(more_btn)more_btn.disabled=false;
+
+  if(!result){alert('Erreur génération. Réessayez.');return;}
+  try{
+    let t=result.replace(/```json|```/g,'').trim();const m=t.match(/\{[\s\S]*\}/);if(m)t=m[0];
+    const d=JSON.parse(t);
+    if(more){
+      // Ajouter à la liste existante, dédupliquer
+      const existing=new Set(_recipes.map(r=>r.name));
+      const newOnes=(d.recipes||[]).filter(r=>!existing.has(r.name));
+      _prevRecipes=[..._recipes];
+      _recipes=[..._recipes,...newOnes];
+    } else {
+      _prevRecipes=_recipes;
+      _recipes=d.recipes||[];
+    }
+    _frRenderRecipes();frGoS(4);
+  }catch(e){alert('Erreur de format. Réessayez.');}
+}
+
+function _frKcalLeft(){
+  try{
+    const today=new Date().toDateString();
+    const diary=JSON.parse(localStorage.getItem('fitfuel_diary')||'{}');
+    const dayData=Object.values(diary).find(d=>new Date(d.date||0).toDateString()===today);
+    if(!dayData)return null;
+    const eaten=(dayData.calories||0);
+    const target=(typeof userProfile!=='undefined'&&userProfile.dailyCalories)||2000;
+    return Math.max(0,target-eaten);
+  }catch(e){return null;}
+}
+
+// ── Render recettes ───────────────────────────────────────────────
+function _frRenderRecipes(){
+  const list=document.getElementById('fr-recipes-list');
+  const count=document.getElementById('fr-recipes-count');
+  if(!list)return;
+  if(count) count.textContent=_recipes.length+' recette'+(_recipes.length>1?'s':'');
+  const tagColors={'Rapide':'rgba(255,185,0,.15)','Protéiné':'rgba(79,110,247,.15)','Léger':'rgba(15,168,106,.15)','Végétarien':'rgba(15,168,106,.15)'};
+  const tagText={'Rapide':'#FFB800','Protéiné':'#4F6EF7','Léger':'#0FA86A','Végétarien':'#0FA86A'};
+  list.innerHTML=_recipes.map((r,i)=>{
+    const score=r.frigo_score||0;
+    const scoreColor=score>=80?'#0FA86A':score>=50?'#FFB800':'#4F6EF7';
+    const buyCnt=(r.ingredients||[]).filter(x=>x.source==='achat').length;
+    return`<div class="fr-rc" onclick="frShowDetail(${i})">
+      <div class="fr-rc-top">
+        <div class="fr-rc-ico">${r.emoji||'🍳'}</div>
+        <div style="flex:1;min-width:0">
+          <div class="fr-rc-name">${r.name}</div>
+          <div class="fr-rc-meta">
+            <span><i class="fas fa-clock" style="color:#FF8C00;margin-right:2px"></i>${r.time_min||'?'} min</span>
+            <span><i class="fas fa-signal" style="color:#4F6EF7;margin-right:2px"></i>${r.difficulty||'—'}</span>
+            <span><i class="fas fa-user" style="color:#0FA86A;margin-right:2px"></i>${r.servings||2} pers</span>
+          </div>
+          <div style="font-size:9px;margin-top:4px;color:var(--text-tertiary,rgba(140,140,180,.55))">
+            <span style="color:#FF8C00;font-weight:800">🟠 ${(r.ingredients||[]).filter(x=>x.source!=='achat').length} du frigo</span>
+            ${buyCnt>0?`<span style="color:#4F6EF7;font-weight:800;margin-left:8px">🔵 ${buyCnt} à acheter</span>`:'<span style="color:#0FA86A;font-weight:800;margin-left:8px">✅ Rien à acheter</span>'}
+          </div>
+        </div>
+        <div class="fr-rc-badge">
+          <div class="fr-rc-score" style="color:${scoreColor}">${score}%</div>
+          <div class="fr-rc-score-lbl">frigo</div>
+        </div>
+      </div>
+      <div class="fr-rc-macros">
+        <div class="fr-mc"><div class="fr-mc-v">${r.calories||'—'}</div><div class="fr-mc-l">kcal</div></div>
+        <div class="fr-mc"><div class="fr-mc-v" style="color:#4F6EF7">${r.protein||'—'}g</div><div class="fr-mc-l">prot</div></div>
+        <div class="fr-mc"><div class="fr-mc-v" style="color:#FFB800">${r.carbs||'—'}g</div><div class="fr-mc-l">gluc</div></div>
+        <div class="fr-mc"><div class="fr-mc-v" style="color:#0FA86A">${r.fat||'—'}g</div><div class="fr-mc-l">lip</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Détail recette ────────────────────────────────────────────────
+window.frShowDetail=function(i){
+  const r=_recipes[i];if(!r)return;
+  _currentRecipe=r;
+  document.getElementById('fr-d-ico').textContent=r.emoji||'🍳';
+  document.getElementById('fr-d-name').textContent=r.name;
+  document.getElementById('fr-d-time').innerHTML=`<i class="fas fa-clock" style="margin-right:3px"></i>${r.time_min||'?'} min`;
+  document.getElementById('fr-d-diff').innerHTML=`<i class="fas fa-signal" style="margin-right:3px"></i>${r.difficulty||'—'}`;
+  document.getElementById('fr-d-pers').innerHTML=`<i class="fas fa-user" style="margin-right:3px"></i>${r.servings||2} pers`;
+  // Macros
+  document.getElementById('fr-d-macros').innerHTML=[
+    {v:r.calories,l:'kcal',c:'#FF8C00'},{v:(r.protein||0)+'g',l:'Protéines',c:'#4F6EF7'},
+    {v:(r.carbs||0)+'g',l:'Glucides',c:'#FFB800'},{v:(r.fat||0)+'g',l:'Lipides',c:'#0FA86A'}
+  ].map(m=>`<div class="fr-dm"><div class="fr-dm-v" style="color:${m.c}">${m.v||'—'}</div><div class="fr-dm-l">${m.l}</div></div>`).join('');
+  // Adapt tip
+  const adapt=document.getElementById('fr-d-adapt');
+  if(r.adapt_tip){adapt.style.display='block';document.getElementById('fr-d-adapt-txt').textContent=r.adapt_tip;}
+  else adapt.style.display='none';
+  // Shopping list
+  const buyItems=(r.ingredients||[]).filter(x=>x.source==='achat');
+  const shopEl=document.getElementById('fr-d-shop');
+  if(buyItems.length){
+    shopEl.style.display='block';
+    document.getElementById('fr-d-shop-items').innerHTML=buyItems.map(x=>
+      `<div class="fr-shop-item"><i class="fas fa-cart-shopping"></i>${x.name}${x.qty?' — '+x.qty:''}</div>`
+    ).join('');
+  } else shopEl.style.display='none';
+  // Ingrédients avec source
+  document.getElementById('fr-d-ingrs').innerHTML=(r.ingredients||[]).map(ing=>`
+    <div class="fr-det-row">
+      <span class="fr-det-row-nm">${ing.name}
+        <span class="fr-det-row-badge ${ing.source==='achat'?'fr-badge-buy':'fr-badge-have'}">${ing.source==='achat'?'à acheter':'frigo'}</span>
+      </span>
+      <span class="fr-det-row-qty">${ing.qty||''}</span>
+    </div>`).join('');
+  // Étapes
+  document.getElementById('fr-d-steps').innerHTML=(r.steps||[]).map((s,i)=>
+    `<div class="fr-step"><div class="fr-step-num">${i+1}</div><div class="fr-step-txt">${s}</div></div>`
+  ).join('');
+  frGoS(5);
+};
+
+// ── Ajouter au journal ────────────────────────────────────────────
+window.frAddJournal=function(){
+  const r=_currentRecipe;if(!r)return;
+  if(typeof addMealFromScan==='function'){
+    addMealFromScan({meal_name:r.name,calories:r.calories||0,protein:r.protein||0,carbs:r.carbs||0,fat:r.fat||0,confidence:'high',items:(r.ingredients||[]).map(i=>({name:i.name,quantity_g:100,calories:0,protein:0,carbs:0,fat:0,category:'autre'}))});
+    frClose();
+    if(typeof showNotification==='function')showNotification('✅ "'+r.name+'" ajouté au journal !','success');
+  } else {
+    alert('Recette ajoutée : '+r.name+'\n'+r.calories+'kcal | P:'+r.protein+'g G:'+r.carbs+'g L:'+r.fat+'g');
+    frClose();
+  }
+};
+
+// ── Copier liste de courses ────────────────────────────────────────
+window.frCopyShop=function(){
+  const r=_currentRecipe;if(!r)return;
+  const items=(r.ingredients||[]).filter(x=>x.source==='achat');
+  if(!items.length){alert('Aucun ingrédient à acheter pour cette recette !');return;}
+  const txt='🛒 Liste de courses — '+r.name+'\n\n'+items.map(x=>'• '+x.name+(x.qty?' — '+x.qty:'')).join('\n');
+  if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>{if(typeof showNotification==='function')showNotification('📋 Liste copiée !','success');});
+  else alert(txt);
+};
+
+// ── Mémoire frigo ─────────────────────────────────────────────────
+window.frSaveMem=function(){
+  if(!_haveIngrs.length)return;
+  localStorage.setItem('ironplate_frigo_mem',JSON.stringify({date:new Date().toISOString(),have:_haveIngrs,buy:_buyIngrs}));
+  if(typeof showNotification==='function')showNotification('🧊 Frigo mémorisé !','success');
+  _frCheckMem();
+};
+window.frLoadMem=function(){
+  try{
+    const m=JSON.parse(localStorage.getItem('ironplate_frigo_mem')||'null');if(!m)return;
+    _haveIngrs=m.have||[];_buyIngrs=m.buy||[];_frRenderIngrs();frGoS(2);
+  }catch(e){}
+};
+window.frClearMem=function(){
+  localStorage.removeItem('ironplate_frigo_mem');
+  const r=document.getElementById('fr-mem-row');if(r)r.style.display='none';
+};
+function _frCheckMem(){
+  try{
+    const m=JSON.parse(localStorage.getItem('ironplate_frigo_mem')||'null');
+    const row=document.getElementById('fr-mem-row'),lbl=document.getElementById('fr-mem-lbl');
+    if(m&&row&&lbl){
+      const d=new Date(m.date);const ds=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+      lbl.textContent=`Frigo mémorisé le ${ds} — ${(m.have||[]).length} ingrédients`;
+      row.style.display='flex';
+    } else if(row) row.style.display='none';
+  }catch(e){}
+}
 
 })();
 </script>
