@@ -12573,6 +12573,11 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
             style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 3px 10px rgba(79,110,247,.3);transition:all .15s;">
             <i class="fas fa-dumbbell"></i>
         </button>
+        <!-- Défis -->
+        <button onclick="chalOpen()" title="Défis personnels" id="chal-hdr-btn"
+            style="width:34px;height:34px;border-radius:10px;background:rgba(255,185,0,.12);border:1px solid rgba(255,185,0,.28);color:#FFB800;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;">
+            <i class="fas fa-trophy"></i>
+        </button>
         <!-- Paramètres -->
         <button onclick="showSettingsModal()" title="Paramètres"
             style="width:34px;height:34px;border-radius:10px;background:var(--card-bg);border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;">
@@ -13248,6 +13253,42 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <span id="protein-remaining" class="macro-remaining positive">+150g restants</span>
         <span id="carbs-remaining" class="macro-remaining positive">+300g restants</span>
         <span id="fat-remaining" class="macro-remaining positive">+70g restants</span>
+    </div>
+
+    <!-- HYDRATATION WIDGET -->
+    <div id="hyd-widget" style="margin:0 16px 14px;background:var(--card-bg,#1a1d26);border-radius:16px;padding:13px 14px;border:1px solid var(--border,rgba(255,255,255,.08));box-shadow:var(--shadow-sm,0 2px 8px rgba(0,0,0,.06))">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:30px;height:30px;border-radius:8px;background:rgba(59,130,246,.14);border:1px solid rgba(59,130,246,.25);display:flex;align-items:center;justify-content:center;color:#3B82F6;font-size:14px"><i class="fas fa-droplet"></i></div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--text-primary,#eef0f8)">Hydratation</div>
+            <div style="font-size:10px;color:var(--text-tertiary,rgba(140,140,180,.6))">Objectif journalier</div>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:16px;font-weight:900;color:#3B82F6"><span id="hyd-current">0</span><span style="font-size:10px;color:var(--text-tertiary,rgba(140,140,180,.6));font-weight:700">ml</span></div>
+          <div style="font-size:10px;color:var(--text-tertiary,rgba(140,140,180,.6))">/ <span id="hyd-goal">2000</span>ml</div>
+        </div>
+      </div>
+      <div style="height:7px;background:var(--border,rgba(255,255,255,.07));border-radius:4px;overflow:hidden;margin-bottom:10px">
+        <div id="hyd-bar" style="height:100%;border-radius:4px;background:linear-gradient(90deg,#3B82F6,#60A5FA);transition:width .5s cubic-bezier(.32,.72,0,1);width:0%"></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <button onclick="hydAdd(150)" style="flex:1;padding:7px 4px;border-radius:9px;border:1px solid rgba(59,130,246,.22);background:rgba(59,130,246,.07);color:#3B82F6;font-size:10px;font-weight:800;cursor:pointer;transition:all .15s" onmouseenter="this.style.background='rgba(59,130,246,.15)'" onmouseleave="this.style.background='rgba(59,130,246,.07)'">+150ml</button>
+        <button onclick="hydAdd(250)" style="flex:1;padding:7px 4px;border-radius:9px;border:1px solid rgba(59,130,246,.25);background:rgba(59,130,246,.1);color:#3B82F6;font-size:10px;font-weight:800;cursor:pointer;transition:all .15s" onmouseenter="this.style.background='rgba(59,130,246,.18)'" onmouseleave="this.style.background='rgba(59,130,246,.1)'">+250ml</button>
+        <button onclick="hydAdd(500)" style="flex:1;padding:7px 4px;border-radius:9px;border:1px solid rgba(59,130,246,.3);background:rgba(59,130,246,.13);color:#3B82F6;font-size:10px;font-weight:800;cursor:pointer;transition:all .15s" onmouseenter="this.style.background='rgba(59,130,246,.22)'" onmouseleave="this.style.background='rgba(59,130,246,.13)'">+500ml</button>
+        <button onclick="hydAdd(-250)" style="padding:7px 9px;border-radius:9px;border:1px solid rgba(255,60,60,.18);background:rgba(255,60,60,.06);color:#FF4444;font-size:10px;font-weight:800;cursor:pointer;transition:all .15s" title="Retirer 250ml">−</button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-tertiary,rgba(140,140,180,.55))">
+          <span id="hyd-pct" style="font-weight:800;color:#3B82F6">0%</span> atteint ·
+          <span id="hyd-left">2000ml</span> restant
+        </div>
+        <div style="display:flex;gap:5px">
+          <button onclick="hydSetGoal()" style="font-size:9px;font-weight:700;color:var(--text-tertiary,rgba(140,140,180,.5));background:none;border:none;cursor:pointer;padding:2px 5px">Objectif</button>
+          <button onclick="hydReset()" style="font-size:9px;font-weight:700;color:rgba(255,60,60,.5);background:none;border:none;cursor:pointer;padding:2px 5px">Reset</button>
+        </div>
+      </div>
     </div>
 
     <!-- SCAN + FRIGO + MARCHE shortcuts -->
@@ -14076,14 +14117,6 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
                 </div>
 
             </div>
-        </div>
-
-        <!-- BANNIÈRE REPOS FLOTTANTE — z-index > navbar (1000) -->
-        <div id="rest-banner" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border-radius:14px;padding:10px 16px;z-index:9999;box-shadow:0 6px 20px rgba(79,110,247,.4);align-items:center;gap:10px;font-weight:700;font-size:14px;min-width:180px;justify-content:center;white-space:nowrap;">
-            <i class="fas fa-stopwatch"></i>
-            <span id="rest-banner-time">60s</span>
-            <span style="font-size:11px;opacity:.75;">repos</span>
-            <button onclick="_closeRestBanner()" style="background:rgba(255,255,255,.2);border:none;color:white;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">×</button>
         </div>
 
         <!-- TIMER -->
@@ -15186,6 +15219,19 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="auto-timer-toggle" checked onchange="toggleAutoTimer(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- Mode Focus -->
+                <div class="settings-item">
+                    <div class="settings-row-icon" style="background:rgba(59,130,246,0.10);color:#3B82F6;"><i class="fas fa-eye"></i></div>
+                    <div class="settings-item-info">
+                        <div class="settings-item-title"><i class="fas fa-eye"></i> Mode Focus</div>
+                        <div class="settings-item-description">Overlay plein écran pendant le repos</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="focus-mode-toggle" checked onchange="if(this.checked)focEnable();else focDisable();">
                         <span class="slider"></span>
                     </label>
                 </div>
@@ -20990,6 +21036,35 @@ function updateWorkoutDisplay() {
     // Mettre à jour la barre de progression (exercices complétés)
     if (typeof updateWorkoutProgressBar === 'function') updateWorkoutProgressBar();
 
+    // ── Flush DOM → state avant re-render ──────────────────────────
+    // Lit les valeurs actuelles de tous les inputs et les écrit dans activeWorkout
+    // Empêche la perte de saisie en cours lors d'un re-render
+    if (activeWorkout) {
+        activeWorkout.exercises.forEach((exercise, ei) => {
+            const isCardio = typeof isCardioExercise === 'function' ? isCardioExercise(exercise) : false;
+            exercise.sets.forEach((set, si) => {
+                const setEl = document.getElementById(`set-${ei}-${si}`);
+                if (!setEl) return;
+                const inputs = setEl.querySelectorAll('input.number-input, input[inputmode="decimal"], input[type="number"]');
+                // Chaque set a 2 inputs : [0]=reps/distance, [1]=weight/time
+                if (inputs.length >= 1) {
+                    const v0 = inputs[0].value;
+                    if (v0 !== '' && v0 !== undefined) {
+                        if (isCardio) { const n=parseFloat(v0); if(!isNaN(n)){set.distance=n;set._userModified=true;} }
+                        else { set.reps=v0; set._userModified=true; }
+                    }
+                }
+                if (inputs.length >= 2) {
+                    const v1 = inputs[1].value;
+                    if (v1 !== '' && v1 !== undefined) {
+                        if (isCardio) { const n=parseFloat(v1); if(!isNaN(n)){set.time=n;set._userModified=true;} }
+                        else { const n=parseFloat(v1); if(!isNaN(n)){set.weight=n;set._userModified=true;} }
+                    }
+                }
+            });
+        });
+    }
+
     const container = document.getElementById('workout-exercises-container');
     container.innerHTML = '';
     
@@ -21143,8 +21218,9 @@ function createSetElement(exerciseIndex, setIndex, set) {
     const isRedoWorkout = exercise.historicalSets && exercise.historicalSets.length > 0;
     const historicalSet = isRedoWorkout ? exercise.historicalSets[setIndex] : null;
     
-    // Si c'est une reprise avec données historiques, utiliser les valeurs historiques
-    if (isRedoWorkout && historicalSet) {
+    // Appliquer les valeurs historiques UNIQUEMENT si l'utilisateur n'a pas encore modifié ce set
+    // Le flag _userModified est posé par updateSet() dès la première modification
+    if (isRedoWorkout && historicalSet && !set._userModified) {
         if (isCardio) {
             set.distance = historicalSet.distance !== undefined ? historicalSet.distance : 5;
             set.time = historicalSet.time !== undefined ? historicalSet.time : 30;
@@ -21562,6 +21638,8 @@ function updateSet(exerciseIndex, setIndex, field, value) {
     
     // Mettre à jour la valeur
     activeWorkout.exercises[exerciseIndex].sets[setIndex][field] = cleanedValue;
+    // Marquer ce set comme modifié par l'utilisateur — empêche l'écrasement par les valeurs historiques
+    activeWorkout.exercises[exerciseIndex].sets[setIndex]._userModified = true;
     
     // Recalculer le poids total
     recalculateTotalWeight();
@@ -21585,6 +21663,28 @@ function completeSet(exerciseIndex, setIndex) {
     // S'assurer que les valeurs sont définies avant de compléter
     if (set.reps === undefined) set.reps = userProfile.defaultReps;
     if (set.weight === undefined) set.weight = userProfile.defaultWeight;
+    // Lire les valeurs actuelles du DOM avant de compléter (flush DOM → state)
+    const setEl = document.getElementById(`set-${exerciseIndex}-${setIndex}`);
+    if (setEl) {
+        const isCardio = typeof isCardioExercise === 'function' ? isCardioExercise(exercise) : false;
+        const inputs = setEl.querySelectorAll('input[inputmode="decimal"], input[type="number"]');
+        if (inputs.length >= 1) {
+            const v0 = inputs[0].value;
+            if (v0 !== '') {
+                if (isCardio) { const n=parseFloat(v0); if(!isNaN(n)){set.distance=n;} }
+                else { set.reps=v0; }
+                set._userModified = true;
+            }
+        }
+        if (inputs.length >= 2) {
+            const v1 = inputs[1].value;
+            if (v1 !== '') {
+                if (isCardio) { const n=parseFloat(v1); if(!isNaN(n)){set.time=n;} }
+                else { const n=parseFloat(v1); if(!isNaN(n)){set.weight=n;} }
+                set._userModified = true;
+            }
+        }
+    }
     
     // Vérifier si on est dans un superset
     if (exercise.supersetId) {
@@ -30152,6 +30252,9 @@ function showSettingsModal() {
     document.getElementById('vibrations-toggle').checked = settings.vibrations;
     document.getElementById('keep-screen-on-toggle').checked = settings.keepScreenOn;
     document.getElementById('auto-timer-toggle').checked = settings.autoTimer;
+    // Sync focus mode toggle
+    const focToggle = document.getElementById('focus-mode-toggle');
+    if(focToggle) try{const s=JSON.parse(localStorage.getItem('ironplate_focus_mode')||'null');focToggle.checked=(s!==false);}catch(e){focToggle.checked=true;}
     document.getElementById('dark-mode-toggle').checked = settings.darkMode;
     
     // S'assurer d'utiliser showModal pour une gestion correcte du z-index
@@ -35253,36 +35356,12 @@ function _addExerciseToWorkoutExtensions() {
 }
 
 // ════════════════════════════════════════════════════════
-// BANNIÈRE REPOS FLOTTANTE
+// BANNIÈRE REPOS FLOTTANTE — supprimée, remplacée par Mode Focus
 // ════════════════════════════════════════════════════════
 let _restBannerTimer = null, _restBannerSecs = 0;
-function _showRestBanner(seconds) {
-    const b = document.getElementById('rest-banner');
-    if (!b) return;
-    _restBannerSecs = seconds;
-    b.style.display = 'flex';
-    _updateRestBanner();
-    if (_restBannerTimer) clearInterval(_restBannerTimer);
-    _restBannerTimer = setInterval(() => {
-        _restBannerSecs--;
-        if (_restBannerSecs <= 0) { _closeRestBanner(); return; }
-        _updateRestBanner();
-    }, 1000);
-}
-function _updateRestBanner() {
-    const el = document.getElementById('rest-banner-time');
-    if (el) el.textContent = _restBannerSecs + 's';
-    const b = document.getElementById('rest-banner');
-    if (!b) return;
-    if (_restBannerSecs <= 5)       b.style.background = 'linear-gradient(135deg,#E03E3E,#C62828)';
-    else if (_restBannerSecs <= 15) b.style.background = 'linear-gradient(135deg,#E07B1A,#D97706)';
-    else                            b.style.background = 'linear-gradient(135deg,#4F6EF7,#7C3AED)';
-}
-function _closeRestBanner() {
-    const b = document.getElementById('rest-banner');
-    if (b) b.style.display = 'none';
-    if (_restBannerTimer) { clearInterval(_restBannerTimer); _restBannerTimer = null; }
-}
+function _showRestBanner(seconds) { /* désactivé — Mode Focus utilisé à la place */ }
+function _updateRestBanner() {}
+function _closeRestBanner() { if (_restBannerTimer) { clearInterval(_restBannerTimer); _restBannerTimer = null; } }
 
 // ════════════════════════════════════════════════════════
 // BADGE PR PENDANT LA SÉANCE
@@ -44202,6 +44281,637 @@ function _frCheckMem(){
   }catch(e){}
 }
 
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════
+     MODULE 1 — MODE FOCUS (Repos)
+     Overlay CSS pur, hook sur startRestTimer
+     ════════════════════════════════════════════════════════════ -->
+<style>
+#focus-overlay{position:fixed;inset:0;z-index:18000;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(4,6,16,.97);backdrop-filter:blur(16px);color:#fff;transition:opacity .3s}
+#focus-overlay.on{display:flex;animation:focIn .35s ease}
+@keyframes focIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.foc-phase{font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:8px}
+.foc-ring-wrap{position:relative;display:flex;align-items:center;justify-content:center;margin:8px 0}
+.foc-ring{transform:rotate(-90deg)}
+.foc-rt{stroke:rgba(255,255,255,.06)}
+.foc-ra{stroke-linecap:round;transition:stroke-dashoffset .9s linear,stroke .5s}
+.foc-center{position:absolute;text-align:center}
+.foc-num{font-size:88px;font-weight:900;color:#fff;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-4px;text-shadow:0 4px 40px rgba(0,0,0,.9)}
+.foc-unit{font-size:12px;color:rgba(255,255,255,.28);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.foc-next-lbl{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:4px}
+.foc-next{font-size:20px;font-weight:900;color:#fff;text-align:center;padding:0 20px;text-shadow:0 2px 20px rgba(0,0,0,.7);margin-bottom:20px}
+.foc-skip{padding:11px 28px;border-radius:30px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:rgba(255,255,255,.7);font-size:12px;font-weight:800;cursor:pointer;transition:all .2s;letter-spacing:.3px}
+.foc-skip:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.3)}
+.foc-toggle{position:absolute;bottom:24px;right:18px;background:none;border:none;color:rgba(255,255,255,.25);font-size:11px;cursor:pointer;font-weight:700}
+</style>
+
+<div id="focus-overlay">
+  <div class="foc-phase" id="foc-phase">REPOS</div>
+  <div class="foc-ring-wrap">
+    <svg class="foc-ring" width="240" height="240" viewBox="0 0 240 240">
+      <circle class="foc-rt" cx="120" cy="120" r="104" fill="none" stroke-width="11"/>
+      <circle class="foc-ra" id="foc-arc" cx="120" cy="120" r="104" fill="none"
+        stroke-width="11" stroke="#3B82F6" stroke-dasharray="653.5" stroke-dashoffset="0"/>
+    </svg>
+    <div class="foc-center">
+      <div class="foc-num" id="foc-num">60</div>
+      <div class="foc-unit">sec</div>
+    </div>
+  </div>
+  <div class="foc-next-lbl" id="foc-next-lbl">EXERCICE SUIVANT</div>
+  <div class="foc-next" id="foc-next">—</div>
+  <!-- Contrôles +/- temps -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+    <button onclick="focAdjust(-15)" style="width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:rgba(255,255,255,.8);font-size:14px;font-weight:800;cursor:pointer;transition:all .15s" onmouseenter="this.style.background='rgba(255,255,255,.14)'" onmouseleave="this.style.background='rgba(255,255,255,.07)'">−15</button>
+    <button onclick="focAdjust(-5)"  style="width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:rgba(255,255,255,.7);font-size:12px;font-weight:800;cursor:pointer;transition:all .15s" onmouseenter="this.style.background='rgba(255,255,255,.11)'" onmouseleave="this.style.background='rgba(255,255,255,.05)'">−5</button>
+    <button class="foc-skip" onclick="focSkip()" style="flex:1"><i class="fas fa-forward" style="margin-right:7px"></i>Passer</button>
+    <button onclick="focAdjust(5)"   style="width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:rgba(255,255,255,.7);font-size:12px;font-weight:800;cursor:pointer;transition:all .15s" onmouseenter="this.style.background='rgba(255,255,255,.11)'" onmouseleave="this.style.background='rgba(255,255,255,.05)'"  >+5</button>
+    <button onclick="focAdjust(15)"  style="width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:rgba(255,255,255,.8);font-size:14px;font-weight:800;cursor:pointer;transition:all .15s" onmouseenter="this.style.background='rgba(255,255,255,.14)'" onmouseleave="this.style.background='rgba(255,255,255,.07)'">+15</button>
+  </div>
+  <button class="foc-toggle" onclick="focDisable()">Désactiver le mode focus</button>
+</div>
+
+<script>
+(function(){
+'use strict';
+const CIRC=653.5;
+let _focEnabled=true;
+let _focTotal=0;
+let _focRaf=null;
+let _focDeadline=0;
+
+// Lire préférence sauvegardée
+try{const s=JSON.parse(localStorage.getItem('ironplate_focus_mode')||'null');if(s===false)_focEnabled=false;}catch(e){}
+
+// Hook via MutationObserver sur timer-container
+function _focInitObserver(){
+  const tc=document.getElementById('timer-container');
+  if(!tc){setTimeout(_focInitObserver,500);return;}
+  let _wasActive=tc.classList.contains('active');
+  const obs=new MutationObserver(()=>{
+    const isActive=tc.classList.contains('active');
+    if(isActive&&!_wasActive&&_focEnabled)_focShow();
+    if(!isActive&&_wasActive)_focHide();
+    _wasActive=isActive;
+  });
+  obs.observe(tc,{attributes:true,attributeFilter:['class']});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',_focInitObserver);
+else _focInitObserver();
+
+// Calcul "prochain" — série suivante ou exercice suivant
+function _focNextLabel(){
+  try{
+    if(typeof activeWorkout==='undefined'||!activeWorkout)return{lbl:'SUIVANT',name:'—'};
+    const exs=activeWorkout.exercises;
+    // Trouver l'exercice et la série qui viennent d'être complétés
+    // = dernier set completed dans le DOM (le plus récemment coché)
+    for(let ei=0;ei<exs.length;ei++){
+      const ex=exs[ei];
+      if(!ex.sets)continue;
+      for(let si=0;si<ex.sets.length;si++){
+        const set=ex.sets[si];
+        if(!set.completed)continue;
+        // C'est un set complété — le prochain est si+1 ou exercice suivant
+        const nextSi=si+1;
+        // Chercher le dernier set complété de cet exercice
+        const lastCompleted=ex.sets.map((s,i)=>s.completed?i:-1).filter(i=>i>=0);
+        if(!lastCompleted.length)continue;
+        const lastSi=lastCompleted[lastCompleted.length-1];
+        const nextSetExists=lastSi+1<ex.sets.length&&!ex.sets[lastSi+1].completed;
+        if(nextSetExists){
+          // Série suivante du même exercice
+          return{lbl:'SÉRIE '+(lastSi+2)+' / '+ex.sets.length,name:ex.name};
+        } else {
+          // Dernier set de cet exo → prochain exercice
+          for(let ni=ei+1;ni<exs.length;ni++){
+            const nex=exs[ni];
+            if(nex.sets&&nex.sets.some(s=>!s.completed)){
+              return{lbl:'EXERCICE SUIVANT',name:nex.name};
+            }
+          }
+          return{lbl:'DERNIÈRE SÉRIE',name:'Séance bientôt terminée'};
+        }
+      }
+    }
+    // Fallback
+    const ex=exs.find(e=>e.sets&&e.sets.some(s=>!s.completed));
+    return ex?{lbl:'EXERCICE SUIVANT',name:ex.name}:{lbl:'SUIVANT',name:'—'};
+  }catch(e){return{lbl:'SUIVANT',name:'—'};}
+}
+
+function _focShow(){
+  let secs=60;
+  try{if(typeof currentTimerSeconds!=='undefined'&&currentTimerSeconds>0)secs=currentTimerSeconds;}catch(e){}
+  _focTotal=secs;
+  _focDeadline=Date.now()+secs*1000;
+  const next=_focNextLabel();
+  document.getElementById('foc-phase').textContent='💤 REPOS';
+  document.getElementById('foc-next-lbl').textContent=next.lbl;
+  document.getElementById('foc-next').textContent=next.name;
+  document.getElementById('foc-num').textContent=secs;
+  document.getElementById('foc-arc').style.stroke='#3B82F6';
+  document.getElementById('foc-arc').style.strokeDashoffset='0';
+  document.getElementById('focus-overlay').classList.add('on');
+  cancelAnimationFrame(_focRaf);
+  _focTick();
+}
+function _focHide(){
+  document.getElementById('focus-overlay').classList.remove('on');
+  cancelAnimationFrame(_focRaf);
+}
+function _focTick(){
+  // Lire le vrai temps restant depuis le timer de l'app (source de vérité)
+  let rem;
+  try{
+    const timerEl=document.getElementById('timer-display');
+    if(timerEl&&typeof isTimerRunning!=='undefined'&&isTimerRunning){
+      const parts=timerEl.textContent.split(':');
+      if(parts.length===2) rem=parseInt(parts[0])*60+parseInt(parts[1]);
+    }
+  }catch(e){}
+  // Fallback : calcul local
+  if(rem===undefined) rem=Math.max(0,Math.ceil((_focDeadline-Date.now())/1000));
+  document.getElementById('foc-num').textContent=rem;
+  const arc=document.getElementById('foc-arc');
+  if(arc){
+    arc.style.strokeDashoffset=CIRC*(1-(_focTotal>0?rem/_focTotal:0));
+    arc.style.stroke=rem<=5?'#FF3B3B':rem<=10?'#FFB800':'#3B82F6';
+  }
+  if(rem<=0){_focHide();return;}
+  _focRaf=requestAnimationFrame(_focTick);
+}
+
+// +/- synchro avec le timer de l'app
+window.focAdjust=function(delta){
+  // Appeler adjustTimer de l'app — synchronise les deux
+  if(typeof adjustTimer==='function'){
+    adjustTimer(delta);
+    // Mettre à jour notre deadline en conséquence
+    try{
+      _focTotal=Math.max(5,_focTotal+delta);
+      _focDeadline=Date.now()+(typeof currentTimerSeconds!=='undefined'?currentTimerSeconds:_focTotal)*1000;
+    }catch(e){}
+  } else {
+    _focTotal=Math.max(5,_focTotal+delta);
+    _focDeadline=Date.now()+_focTotal*1000;
+  }
+};
+
+window.focSkip=function(){
+  _focHide();
+  // Cliquer le bouton Fermer du timer natif (closeTimerWithSupersetCheck)
+  const closeBtn=document.querySelector('#timer-container .timer-close,[onclick*="closeTimer"]');
+  if(closeBtn){closeBtn.click();return;}
+  // Fallback
+  const tc=document.getElementById('timer-container');
+  if(tc)tc.classList.remove('active');
+  if(typeof stopTimer==='function')stopTimer();
+};
+window.focDisable=function(){
+  _focEnabled=false;
+  localStorage.setItem('ironplate_focus_mode',JSON.stringify(false));
+  _focHide();
+  const t=document.getElementById('focus-mode-toggle');if(t)t.checked=false;
+  if(typeof showNotification==='function')showNotification('Mode focus désactivé','info');
+};
+window.focEnable=function(){
+  _focEnabled=true;
+  localStorage.setItem('ironplate_focus_mode',JSON.stringify(true));
+  const t=document.getElementById('focus-mode-toggle');if(t)t.checked=true;
+};
+})();
+</script>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     MODULE 2 — DÉFIS PERSONNELS
+     localStorage: ironplate_challenges
+     ════════════════════════════════════════════════════════════ -->
+<!-- ════════════════════════════════════════════════════════════
+     MODULE 2 — DÉFIS PERSONNELS
+     localStorage: ironplate_challenges
+     ════════════════════════════════════════════════════════════ -->
+<style>
+#chal-modal{position:fixed;inset:0;z-index:19500;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(7px)}
+#chal-modal.on{display:flex}
+.chal-sheet{width:100%;max-width:480px;max-height:92vh;display:flex;flex-direction:column;background:var(--card-bg,#151826);border-radius:20px 20px 0 0;overflow:hidden;animation:chalUp .3s cubic-bezier(.32,.72,0,1)}
+@keyframes chalUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.chal-hdr{display:flex;align-items:center;justify-content:space-between;padding:15px 16px 12px;border-bottom:1px solid var(--border,rgba(255,255,255,.08));flex-shrink:0}
+.chal-title{font-size:16px;font-weight:900;color:var(--text-primary,#eef0f8);display:flex;align-items:center;gap:9px}
+.chal-xbtn{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:var(--text-secondary,#9aa0b8);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s}
+.chal-xbtn:hover{background:rgba(255,60,60,.12);color:#FF4444}
+.chal-body{flex:1;overflow-y:auto;padding:14px 16px 20px}
+.chal-slbl{font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--text-tertiary,rgba(140,140,180,.55));margin-bottom:10px}
+/* Stat bar top */
+.chal-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.chal-stat{background:var(--card-bg-alt,rgba(255,255,255,.04));border:1px solid var(--border,rgba(255,255,255,.07));border-radius:11px;padding:10px 8px;text-align:center}
+.chal-stat-v{font-size:18px;font-weight:900;color:var(--text-primary,#eef0f8)}
+.chal-stat-l{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-tertiary,rgba(140,140,180,.5));margin-top:2px}
+/* Challenge card */
+.chal-card{background:var(--card-bg,#151826);border:1.5px solid var(--border,rgba(255,255,255,.08));border-radius:14px;padding:13px 14px;margin-bottom:10px;transition:all .2s}
+.chal-card.done{border-color:rgba(255,185,0,.35);background:rgba(255,185,0,.04)}
+.chal-card-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.chal-ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.chal-name{font-size:13px;font-weight:800;color:var(--text-primary,#eef0f8)}
+.chal-meta{font-size:10px;color:var(--text-tertiary,rgba(140,140,180,.55));margin-top:2px}
+.chal-badge{margin-left:auto;flex-shrink:0;font-size:9px;font-weight:800;padding:3px 8px;border-radius:20px}
+.chal-prog-wrap{margin-bottom:8px}
+.chal-prog-top{display:flex;justify-content:space-between;font-size:10px;color:var(--text-tertiary,rgba(140,140,180,.55));margin-bottom:4px}
+.chal-prog-cur{font-weight:800;color:var(--text-primary,#eef0f8)}
+.chal-prog-bg{height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
+.chal-prog-fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.32,.72,0,1)}
+.chal-actions{display:flex;gap:6px;justify-content:flex-end}
+.chal-del-btn{padding:4px 10px;border-radius:7px;background:rgba(255,60,60,.07);border:1px solid rgba(255,60,60,.15);color:#FF4444;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s}
+.chal-del-btn:hover{background:rgba(255,60,60,.16)}
+/* Create form */
+.chal-form{background:rgba(79,110,247,.06);border:1.5px solid rgba(79,110,247,.18);border-radius:14px;padding:14px;margin-bottom:14px}
+.chal-form-title{font-size:12px;font-weight:800;color:#4F6EF7;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.chal-inp{width:100%;padding:8px 11px;border-radius:9px;box-sizing:border-box;background:var(--card-bg,#151826);border:1.5px solid var(--border,rgba(255,255,255,.1));color:var(--text-primary,#eef0f8);font-size:12px;font-weight:600;outline:none;transition:border-color .15s;font-family:inherit;margin-bottom:8px}
+.chal-inp:focus{border-color:#4F6EF7}
+.chal-inp::placeholder{color:var(--text-tertiary,rgba(140,140,180,.45))}
+.chal-inp option{background:var(--card-bg,#151826);color:var(--text-primary,#eef0f8)}
+.chal-g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.chal-create-btn{width:100%;padding:11px;border-radius:11px;border:none;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:#fff;font-size:12px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 4px 14px rgba(79,110,247,.28);transition:all .2s}
+.chal-create-btn:hover{transform:translateY(-1px)}
+.chal-empty{text-align:center;padding:24px 16px;color:var(--text-tertiary,rgba(140,140,180,.45));font-size:12px;line-height:1.8}
+</style>
+
+<div id="chal-modal">
+<div class="chal-sheet">
+  <div class="chal-hdr">
+    <div class="chal-title">
+      <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,rgba(255,185,0,.2),rgba(255,120,0,.15));border:1px solid rgba(255,185,0,.3);display:flex;align-items:center;justify-content:center;color:#FFB800;font-size:14px"><i class="fas fa-trophy"></i></div>
+      Défis personnels
+    </div>
+    <button class="chal-xbtn" onclick="chalClose()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="chal-body">
+    <!-- Stats globales -->
+    <div class="chal-stats" id="chal-stats"></div>
+    <!-- Formulaire création -->
+    <div class="chal-form">
+      <div class="chal-form-title"><i class="fas fa-plus-circle"></i> Créer un défi</div>
+      <input class="chal-inp" id="chal-name-inp" type="text" placeholder="Nom du défi (ex: 50 séances en 3 mois)" maxlength="60">
+      <div class="chal-g2">
+        <select class="chal-inp" id="chal-type-sel">
+          <option value="sessions">Séances complétées</option>
+          <option value="days">Jours consécutifs</option>
+          <option value="weight">Kg soulevés total</option>
+          <option value="reps">Reps total</option>
+          <option value="duration">Minutes d'entraînement</option>
+        </select>
+        <input class="chal-inp" id="chal-goal-inp" type="number" placeholder="Objectif (ex: 50)" min="1" style="margin-bottom:0">
+      </div>
+      <input class="chal-inp" id="chal-date-inp" type="date" placeholder="Date limite (optionnel)">
+      <button class="chal-create-btn" onclick="chalCreate()"><i class="fas fa-flag"></i> Lancer le défi</button>
+    </div>
+    <!-- Liste défis -->
+    <div class="chal-slbl" id="chal-list-lbl">Mes défis</div>
+    <div id="chal-list"></div>
+  </div>
+</div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const KEY='ironplate_challenges';
+function _load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]');}catch(e){return[];}}
+function _save(d){localStorage.setItem(KEY,JSON.stringify(d));}
+
+window.chalOpen=function(){
+  document.getElementById('chal-modal').classList.add('on');
+  document.body.style.overflow='hidden';
+  _chalRender();
+};
+window.chalClose=function(){
+  document.getElementById('chal-modal').classList.remove('on');
+  document.body.style.overflow='';
+};
+
+// Calculer la valeur actuelle d'un défi depuis workoutHistory
+function _calcProgress(type){
+  let h=[];
+  try{h=typeof workoutHistory!=='undefined'?workoutHistory:[];}catch(e){}
+  switch(type){
+    case 'sessions': return h.filter(s=>!s.isAutoSave).length;
+    case 'days':{
+      // Jours consécutifs actuels
+      const dates=[...new Set(h.map(s=>{const d=new Date(s.date);d.setHours(0,0,0,0);return d.getTime();}))].sort((a,b)=>b-a);
+      if(!dates.length)return 0;
+      let streak=0;const now=new Date();now.setHours(0,0,0,0);
+      for(const d of dates){const diff=Math.floor((now-d)/86400000);if(streak===0&&diff>1)break;if(streak===0||Math.floor((dates[streak-1]-d)/86400000)===1)streak++;else break;}
+      return streak;
+    }
+    case 'weight': return Math.round(h.reduce((a,s)=>{if(s.isAutoSave)return a;const w=s.totalWeight||0;return a+w;},0));
+    case 'reps': return h.reduce((a,s)=>{if(s.isAutoSave)return a;return a+(s.totalReps||0);},0);
+    case 'duration': return Math.round(h.reduce((a,s)=>{if(s.isAutoSave)return a;return a+((s.duration||0)/60);},0));
+    default: return 0;
+  }
+}
+
+function _typeLabel(t){return{sessions:'Séances',days:'Jours consécutifs',weight:'Kg soulevés',reps:'Répétitions',duration:'Minutes'}[t]||t;}
+function _typeIcon(t){return{sessions:'fa-dumbbell',days:'fa-calendar-check',weight:'fa-weight-hanging',reps:'fa-rotate',duration:'fa-clock'}[t]||'fa-flag';}
+function _typeColor(t){return{sessions:'#FF3B3B',days:'#FFB800',weight:'#4F6EF7',reps:'#0FA86A',duration:'#8B5CF6'}[t]||'#FF3B3B';}
+
+function _chalRender(){
+  const chals=_load();
+  // Stats globales
+  const statsEl=document.getElementById('chal-stats');
+  const total=chals.length;
+  const done=chals.filter(c=>_calcProgress(c.type)>=c.goal).length;
+  const active=total-done;
+  if(statsEl) statsEl.innerHTML=[
+    {v:total,l:'Total'},{v:active,l:'En cours'},{v:done,l:'Accomplis'}
+  ].map(s=>`<div class="chal-stat"><div class="chal-stat-v">${s.v}</div><div class="chal-stat-l">${s.l}</div></div>`).join('');
+
+  const list=document.getElementById('chal-list');
+  if(!list)return;
+  if(!chals.length){list.innerHTML='<div class="chal-empty"><i class="fas fa-trophy" style="font-size:26px;opacity:.2;display:block;margin-bottom:8px"></i>Aucun défi.<br>Créez votre premier défi ci-dessus !</div>';return;}
+  list.innerHTML=chals.map((c,i)=>{
+    const cur=_calcProgress(c.type);
+    const pct=Math.min(100,Math.round(cur/c.goal*100));
+    const isDone=cur>=c.goal;
+    const col=_typeColor(c.type);
+    const ico=_typeIcon(c.type);
+    const daysLeft=c.deadline?Math.ceil((new Date(c.deadline)-new Date())/86400000):null;
+    const deadlineStr=daysLeft!==null?(daysLeft>0?daysLeft+' jours restants':isDone?'Terminé !':'Délai dépassé'):'';
+    return`<div class="chal-card${isDone?' done':''}">
+      <div class="chal-card-top">
+        <div class="chal-ico" style="background:${col}18;border:1px solid ${col}28"><i class="fas ${ico}" style="color:${col}"></i></div>
+        <div style="flex:1;min-width:0">
+          <div class="chal-name">${c.name}</div>
+          <div class="chal-meta">${_typeLabel(c.type)}${deadlineStr?' · '+deadlineStr:''}</div>
+        </div>
+        ${isDone?`<div class="chal-badge" style="background:rgba(255,185,0,.15);color:#FFB800">🏆 ACCOMPLI</div>`:`<div class="chal-badge" style="background:rgba(79,110,247,.12);color:#4F6EF7">${pct}%</div>`}
+      </div>
+      <div class="chal-prog-wrap">
+        <div class="chal-prog-top">
+          <span class="chal-prog-cur">${cur.toLocaleString()}</span>
+          <span>/ ${c.goal.toLocaleString()} ${_typeLabel(c.type).toLowerCase()}</span>
+        </div>
+        <div class="chal-prog-bg"><div class="chal-prog-fill" style="width:${pct}%;background:${isDone?'#FFB800':col}"></div></div>
+      </div>
+      <div class="chal-actions"><button class="chal-del-btn" onclick="chalDel(${i})"><i class="fas fa-trash-can"></i></button></div>
+    </div>`;
+  }).join('');
+}
+
+window.chalCreate=function(){
+  const name=document.getElementById('chal-name-inp').value.trim();
+  const type=document.getElementById('chal-type-sel').value;
+  const goal=parseInt(document.getElementById('chal-goal-inp').value);
+  const deadline=document.getElementById('chal-date-inp').value||null;
+  if(!name||!goal||goal<1){if(typeof showNotification==='function')showNotification('Remplissez le nom et l\'objectif','warning');return;}
+  const chals=_load();
+  chals.push({id:Date.now(),name,type,goal,deadline,created:new Date().toISOString()});
+  _save(chals);
+  document.getElementById('chal-name-inp').value='';
+  document.getElementById('chal-goal-inp').value='';
+  document.getElementById('chal-date-inp').value='';
+  _chalRender();
+  if(typeof showNotification==='function')showNotification('🏆 Défi lancé !','success');
+};
+window.chalDel=function(i){
+  if(!confirm('Supprimer ce défi ?'))return;
+  const c=_load();c.splice(i,1);_save(c);_chalRender();
+};
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════
+     MODULE 3 — JOURNAL DE BIEN-ÊTRE
+     localStorage: ironplate_wellbeing
+     ════════════════════════════════════════════════════════════ -->
+<style>
+#wb-modal{position:fixed;inset:0;z-index:19000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px)}
+#wb-modal.on{display:flex}
+.wb-box{width:100%;max-width:380px;background:var(--card-bg,#151826);border:1.5px solid var(--border,rgba(255,255,255,.09));border-radius:18px;padding:20px;animation:wbUp .25s ease;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+@keyframes wbUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.wb-title{font-size:15px;font-weight:900;color:var(--text-primary,#eef0f8);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.wb-sub{font-size:11px;color:var(--text-tertiary,rgba(140,140,180,.6));margin-bottom:16px}
+.wb-metric{margin-bottom:14px}
+.wb-metric-lbl{font-size:11px;font-weight:700;color:var(--text-secondary,#9aa0b8);margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.wb-stars{display:flex;gap:6px}
+.wb-star{width:36px;height:36px;border-radius:9px;border:1.5px solid var(--border,rgba(255,255,255,.1));background:rgba(255,255,255,.04);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;color:var(--text-tertiary,rgba(140,140,180,.4))}
+.wb-star:hover{background:rgba(255,185,0,.1);border-color:rgba(255,185,0,.3)}
+.wb-star.on{background:rgba(255,185,0,.15);border-color:rgba(255,185,0,.4);color:#FFB800}
+.wb-note{width:100%;padding:8px 11px;border-radius:9px;box-sizing:border-box;background:rgba(255,255,255,.04);border:1.5px solid var(--border,rgba(255,255,255,.1));color:var(--text-primary,#eef0f8);font-size:12px;outline:none;resize:none;font-family:inherit;margin-bottom:14px;transition:border-color .15s}
+.wb-note:focus{border-color:rgba(15,168,106,.4)}
+.wb-note::placeholder{color:var(--text-tertiary,rgba(140,140,180,.4))}
+.wb-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.wb-btn-p{padding:11px;border-radius:11px;border:none;background:linear-gradient(135deg,#0FA86A,#059669);color:#fff;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.wb-btn-p:hover{transform:translateY(-1px)}
+.wb-btn-s{padding:11px;border-radius:11px;border:1.5px solid var(--border,rgba(255,255,255,.1));background:rgba(255,255,255,.04);color:var(--text-secondary,#9aa0b8);font-size:12px;font-weight:800;cursor:pointer;transition:all .15s}
+.wb-btn-s:hover{background:rgba(255,255,255,.07)}
+/* History list */
+.wb-hist-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border,rgba(255,255,255,.05))}
+.wb-hist-item:last-child{border:none}
+.wb-hist-date{font-size:9px;color:var(--text-tertiary,rgba(140,140,180,.5));font-weight:700;white-space:nowrap;margin-top:2px}
+.wb-hist-scores{display:flex;gap:6px;flex-wrap:wrap}
+.wb-score-pill{font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px}
+.wb-hist-note{font-size:10px;color:var(--text-secondary,#9aa0b8);margin-top:3px;line-height:1.4}
+</style>
+
+<!-- Popup bien-être -->
+<div id="wb-modal">
+<div class="wb-box">
+  <div class="wb-title" id="wb-modal-title"><span id="wb-title-ico">💪</span> <span id="wb-title-txt">Avant la séance</span></div>
+  <div class="wb-sub" id="wb-modal-sub">Comment vous sentez-vous ?</div>
+  <div class="wb-metric">
+    <div class="wb-metric-lbl"><i class="fas fa-bolt" style="color:#FFB800"></i> Niveau d'énergie</div>
+    <div class="wb-stars" id="wb-stars-energy" data-key="energy"></div>
+  </div>
+  <div class="wb-metric">
+    <div class="wb-metric-lbl"><i class="fas fa-moon" style="color:#8B5CF6"></i> Qualité du sommeil</div>
+    <div class="wb-stars" id="wb-stars-sleep" data-key="sleep"></div>
+  </div>
+  <div class="wb-metric" id="wb-stress-row">
+    <div class="wb-metric-lbl"><i class="fas fa-brain" style="color:#3B82F6"></i> Niveau de stress <span style="color:var(--text-tertiary,rgba(140,140,180,.5));font-size:9px">(1=calme, 5=stressé)</span></div>
+    <div class="wb-stars" id="wb-stars-stress" data-key="stress"></div>
+  </div>
+  <div class="wb-metric" id="wb-soreness-row" style="display:none">
+    <div class="wb-metric-lbl"><i class="fas fa-person-walking" style="color:#FF3B3B"></i> Courbatures / douleurs</div>
+    <div class="wb-stars" id="wb-stars-soreness" data-key="soreness"></div>
+  </div>
+  <textarea class="wb-note" id="wb-note" rows="2" placeholder="Note libre (optionnel)…"></textarea>
+  <div class="wb-btns">
+    <button class="wb-btn-s" onclick="wbSkip()">Passer</button>
+    <button class="wb-btn-p" onclick="wbSave()"><i class="fas fa-check"></i> Enregistrer</button>
+  </div>
+</div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const KEY='ironplate_wellbeing';
+let _wbType='before'; // before|after
+let _wbScores={energy:0,sleep:0,stress:0,soreness:0};
+
+function _load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]');}catch(e){return[];}}
+function _save(d){localStorage.setItem(KEY,JSON.stringify(d));}
+
+// Construire les étoiles
+function _buildStars(){
+  ['energy','sleep','stress','soreness'].forEach(key=>{
+    const el=document.getElementById('wb-stars-'+key);
+    if(!el)return;
+    el.innerHTML='';
+    for(let i=1;i<=5;i++){
+      const btn=document.createElement('button');
+      btn.className='wb-star';
+      btn.dataset.val=i;
+      btn.innerHTML='★';
+      btn.onclick=()=>_setScore(key,i);
+      el.appendChild(btn);
+    }
+  });
+}
+function _setScore(key,val){
+  _wbScores[key]=val;
+  const el=document.getElementById('wb-stars-'+key);
+  if(!el)return;
+  el.querySelectorAll('.wb-star').forEach(s=>{
+    s.classList.toggle('on',parseInt(s.dataset.val)<=val);
+  });
+}
+
+// Hook démarrage séance
+const _origStart=window.startWorkoutFromSelection||window.startWorkout;
+// On patche showScreen pour détecter active-workout-screen
+const _origShow=window.showScreen;
+window.showScreen=function(id){
+  if(typeof _origShow==='function') _origShow.apply(this,arguments);
+  if(id==='active-workout-screen'&&typeof activeWorkout!=='undefined'&&!activeWorkout){
+    // Séance vient de démarrer
+    setTimeout(()=>wbShowBefore(),600);
+  }
+};
+
+// Hook fin de séance (saveWorkoutData)
+const _origSave=window.saveWorkoutData;
+window.saveWorkoutData=function(){
+  if(typeof _origSave==='function') _origSave.apply(this,arguments);
+  setTimeout(()=>wbShowAfter(),800);
+};
+
+window.wbShowBefore=function(){
+  _wbType='before';_wbScores={energy:0,sleep:0,stress:0,soreness:0};
+  document.getElementById('wb-title-ico').textContent='💪';
+  document.getElementById('wb-title-txt').textContent='Avant la séance';
+  document.getElementById('wb-modal-sub').textContent='Comment vous sentez-vous ?';
+  document.getElementById('wb-soreness-row').style.display='none';
+  document.getElementById('wb-stress-row').style.display='block';
+  document.getElementById('wb-note').value='';
+  _buildStars();
+  document.getElementById('wb-modal').classList.add('on');
+};
+window.wbShowAfter=function(){
+  _wbType='after';_wbScores={energy:0,sleep:0,stress:0,soreness:0};
+  document.getElementById('wb-title-ico').textContent='🌟';
+  document.getElementById('wb-title-txt').textContent='Après la séance';
+  document.getElementById('wb-modal-sub').textContent='Comment s\'est passée la séance ?';
+  document.getElementById('wb-soreness-row').style.display='block';
+  document.getElementById('wb-stress-row').style.display='none';
+  document.getElementById('wb-note').value='';
+  _buildStars();
+  document.getElementById('wb-modal').classList.add('on');
+};
+window.wbSkip=function(){document.getElementById('wb-modal').classList.remove('on');};
+window.wbSave=function(){
+  const data=_load();
+  data.unshift({
+    id:Date.now(),date:new Date().toISOString(),
+    type:_wbType,scores:{..._wbScores},
+    note:document.getElementById('wb-note').value.trim()
+  });
+  if(data.length>200)data.pop();
+  _save(data);
+  document.getElementById('wb-modal').classList.remove('on');
+  if(typeof showNotification==='function') showNotification('✅ Bien-être enregistré','success');
+};
+// Init stars au chargement
+document.addEventListener('DOMContentLoaded',_buildStars);
+})();
+</script>
+
+<!-- ════════════════════════════════════════════════════════════
+     MODULE 4 — HYDRATATION
+     localStorage: ironplate_hydration
+     Widget HTML déjà injecté dans nutrition-screen
+     ════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+'use strict';
+const KEY='ironplate_hydration';
+
+function _todayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+
+function _load(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(KEY)||'{}');
+    // Auto-reset si nouveau jour
+    const today=_todayKey();
+    if(!raw.date||raw.date!==today) return{date:today,ml:0,goal:raw.goal||2000};
+    return raw;
+  }catch(e){return{date:_todayKey(),ml:0,goal:2000};}
+}
+function _save(d){localStorage.setItem(KEY,JSON.stringify(d));}
+
+function _render(){
+  const d=_load();
+  const pct=Math.min(100,Math.round(d.ml/d.goal*100));
+  const left=Math.max(0,d.goal-d.ml);
+  const curEl=document.getElementById('hyd-current');
+  const barEl=document.getElementById('hyd-bar');
+  const pctEl=document.getElementById('hyd-pct');
+  const leftEl=document.getElementById('hyd-left');
+  const goalEl=document.getElementById('hyd-goal');
+  if(curEl) curEl.textContent=d.ml;
+  if(barEl){
+    barEl.style.width=pct+'%';
+    barEl.style.background=pct>=100?'linear-gradient(90deg,#0FA86A,#059669)':pct>=75?'linear-gradient(90deg,#3B82F6,#60A5FA)':pct>=50?'linear-gradient(90deg,#3B82F6,#60A5FA)':'linear-gradient(90deg,#FF8C00,#FFB800)';
+  }
+  if(pctEl){pctEl.textContent=pct+'%';pctEl.style.color=pct>=100?'#0FA86A':pct>=75?'#3B82F6':'#FFB800';}
+  if(leftEl) leftEl.textContent=left+'ml';
+  if(goalEl) goalEl.textContent=d.goal;
+}
+
+window.hydAdd=function(ml){
+  const d=_load();
+  d.ml=Math.max(0,d.ml+ml);
+  _save(d);
+  _render();
+  if(d.ml>=d.goal&&ml>0&&typeof showNotification==='function')
+    showNotification('💧 Objectif hydratation atteint ! '+d.goal+'ml','success');
+};
+window.hydReset=function(){
+  if(!confirm('Réinitialiser l\'hydratation du jour ?'))return;
+  const d=_load();d.ml=0;_save(d);_render();
+};
+window.hydSetGoal=function(){
+  const d=_load();
+  const v=prompt('Objectif journalier (ml) :',d.goal);
+  if(!v)return;
+  const n=parseInt(v);if(isNaN(n)||n<100)return;
+  d.goal=n;_save(d);_render();
+  if(typeof showNotification==='function') showNotification('🎯 Objectif mis à jour : '+n+'ml/jour','success');
+};
+
+// Render au chargement + quand on revient sur l'onglet nutrition
+document.addEventListener('DOMContentLoaded',_render);
+// Observer showScreen pour refresh
+const _origShow=window.showScreen;
+if(typeof _origShow==='function'){
+  window.showScreen=function(id){
+    _origShow.apply(this,arguments);
+    if(id==='nutrition-screen') setTimeout(_render,100);
+  };
+}
 })();
 </script>
 </body>
