@@ -14093,6 +14093,12 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
                 
                 <!-- ── BOUTONS ACTION — UNE SEULE LIGNE ───────────────── -->
                 <div style="display:flex;gap:8px;justify-content:center;padding:10px 14px 90px;">
+                    <button id="music-workout-btn" onclick="musicToggle()"
+                        title="Musique"
+                        style="display:flex;align-items:center;justify-content:center;padding:10px 14px;background:rgba(255,185,0,.12);border:1.5px solid rgba(255,185,0,.28);color:#FFB800;border-radius:14px;cursor:pointer;transition:all .15s;font-size:16px;"
+                        onmousedown="this.style.transform='scale(.96)'" onmouseup="this.style.transform=''" ontouchstart="this.style.transform='scale(.96)'" ontouchend="this.style.transform=''">
+                        <i class="fas fa-music"></i>
+                    </button>
                     <button id="add-exercise-workout-btn" onclick="addExerciseToWorkout()"
                         title="Ajouter un exercice"
                         style="display:flex;align-items:center;justify-content:center;padding:10px 18px;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;border-radius:14px;cursor:pointer;box-shadow:0 3px 12px rgba(79,110,247,.3);transition:transform .1s;"
@@ -15232,6 +15238,19 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="focus-mode-toggle" checked onchange="if(this.checked)focEnable();else focDisable();">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- Musique auto -->
+                <div class="settings-item">
+                    <div class="settings-row-icon" style="background:rgba(255,185,0,.1);color:#FFB800;"><i class="fas fa-music"></i></div>
+                    <div class="settings-item-info">
+                        <div class="settings-item-title"><i class="fas fa-music"></i> Musique auto</div>
+                        <div class="settings-item-description">Sélection automatique selon l'exercice</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="music-auto-toggle" checked onchange="musicSetMode(this.checked?'auto':'manual')">
                         <span class="slider"></span>
                     </label>
                 </div>
@@ -42378,8 +42397,12 @@ window.addEventListener('beforeunload', function(e) {
 .tb-ctrl-sec:hover{background:rgba(255,255,255,.14);transform:scale(1.07)}
 #tb-player.paused .tb-ring-svg{filter:saturate(.35) brightness(.7)!important}
 #tb-player.paused .tb-pex{opacity:.5}
-/* Canvas feu d'artifice */
-#tb-fw-canvas{position:absolute;inset:0;z-index:20;pointer-events:none}
+/* ── Stepper inputs éditables ─────────────────────────────────── */
+.tb-sv-inp{background:none;border:none;outline:none;color:var(--t1);font-size:22px;font-weight:900;
+  width:60px;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:-1px;
+  font-family:inherit;padding:0;-moz-appearance:textfield;cursor:text}
+.tb-sv-inp::-webkit-inner-spin-button,.tb-sv-inp::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.tb-sv-inp:focus{color:#FF3B3B}
 
 /* ══════════════════════════════════
    SUMMARY v6
@@ -42547,39 +42570,39 @@ window.addEventListener('beforeunload', function(e) {
       <div id="tb-params-cl">
         <div class="tb-g3">
           <div class="tb-f"><label class="tb-lbl">Rounds</label>
-            <div class="tb-stp"><button class="tb-sb" onclick="tbS('rounds',-1,1,30)">−</button>
-              <div class="tb-sm"><span class="tb-sv" id="tbv-rounds">8</span><span class="tb-su">rounds</span></div>
-              <button class="tb-sb" onclick="tbS('rounds',1,1,30)">+</button></div></div>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('rounds',-1,1,995)">−</button>
+              <div class="tb-sm"><input class="tb-sv tb-sv-inp" id="tbv-rounds" type="number" min="1" max="995" value="8" oninput="tbDirect('rounds',this.value)"><span class="tb-su">rounds</span></div>
+              <button class="tb-sb" onclick="tbS('rounds',1,1,995)">+</button></div></div>
           <div class="tb-f"><label class="tb-lbl">Effort</label>
-            <div class="tb-stp"><button class="tb-sb" onclick="tbS('work',-5,5,120)">−</button>
-              <div class="tb-sm"><span class="tb-sv" id="tbv-work">20</span><span class="tb-su">sec</span></div>
-              <button class="tb-sb" onclick="tbS('work',5,5,120)">+</button></div></div>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('work',-1,1,995)">−</button>
+              <div class="tb-sm"><input class="tb-sv tb-sv-inp" id="tbv-work" type="number" min="1" max="995" value="20" oninput="tbDirect('work',this.value)"><span class="tb-su">sec</span></div>
+              <button class="tb-sb" onclick="tbS('work',1,1,995)">+</button></div></div>
           <div class="tb-f"><label class="tb-lbl">Repos</label>
-            <div class="tb-stp"><button class="tb-sb" onclick="tbS('rest',-5,5,120)">−</button>
-              <div class="tb-sm"><span class="tb-sv" id="tbv-rest">10</span><span class="tb-su">sec</span></div>
-              <button class="tb-sb" onclick="tbS('rest',5,5,120)">+</button></div></div>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('rest',-1,1,995)">−</button>
+              <div class="tb-sm"><input class="tb-sv tb-sv-inp" id="tbv-rest" type="number" min="1" max="995" value="10" oninput="tbDirect('rest',this.value)"><span class="tb-su">sec</span></div>
+              <button class="tb-sb" onclick="tbS('rest',1,1,995)">+</button></div></div>
         </div>
       </div>
       <div id="tb-params-cu" style="display:none">
         <div class="tb-g2" style="margin-bottom:9px">
           <div class="tb-f"><label class="tb-lbl">Rounds</label>
-            <div class="tb-stp"><button class="tb-sb" onclick="tbS('rounds',-1,1,30)">−</button>
-              <div class="tb-sm"><span class="tb-sv" id="tbv-rounds-cu">8</span><span class="tb-su">rounds</span></div>
-              <button class="tb-sb" onclick="tbS('rounds',1,1,30)">+</button></div></div>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('rounds',-1,1,995)">−</button>
+              <div class="tb-sm"><input class="tb-sv tb-sv-inp" id="tbv-rounds-cu" type="number" min="1" max="995" value="8" oninput="tbDirect('rounds',this.value)"><span class="tb-su">rounds</span></div>
+              <button class="tb-sb" onclick="tbS('rounds',1,1,995)">+</button></div></div>
           <div class="tb-f"><label class="tb-lbl">Effort</label>
-            <div class="tb-stp"><button class="tb-sb" onclick="tbS('work',-5,5,120)">−</button>
-              <div class="tb-sm"><span class="tb-sv" id="tbv-work-cu">20</span><span class="tb-su">sec</span></div>
-              <button class="tb-sb" onclick="tbS('work',5,5,120)">+</button></div></div>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('work',-1,1,995)">−</button>
+              <div class="tb-sm"><input class="tb-sv tb-sv-inp" id="tbv-work-cu" type="number" min="1" max="995" value="20" oninput="tbDirect('work',this.value)"><span class="tb-su">sec</span></div>
+              <button class="tb-sb" onclick="tbS('work',1,1,995)">+</button></div></div>
         </div>
         <div class="tb-g2">
           <div class="tb-f"><label class="tb-lbl">Repos entre rounds</label>
-            <div class="tb-stp"><button class="tb-sb" onclick="tbS('restser',-5,0,60)">−</button>
-              <div class="tb-sm"><span class="tb-sv" id="tbv-restser">10</span><span class="tb-su">sec</span></div>
-              <button class="tb-sb" onclick="tbS('restser',5,0,60)">+</button></div></div>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('restser',-1,0,995)">−</button>
+              <div class="tb-sm"><input class="tb-sv tb-sv-inp" id="tbv-restser" type="number" min="0" max="995" value="10" oninput="tbDirect('restser',this.value)"><span class="tb-su">sec</span></div>
+              <button class="tb-sb" onclick="tbS('restser',1,0,995)">+</button></div></div>
           <div class="tb-f"><label class="tb-lbl">Repos entre exercices</label>
-            <div class="tb-stp"><button class="tb-sb" onclick="tbS('restex',-5,0,120)">−</button>
-              <div class="tb-sm"><span class="tb-sv" id="tbv-restex">30</span><span class="tb-su">sec</span></div>
-              <button class="tb-sb" onclick="tbS('restex',5,0,120)">+</button></div></div>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('restex',-1,0,995)">−</button>
+              <div class="tb-sm"><input class="tb-sv tb-sv-inp" id="tbv-restex" type="number" min="0" max="995" value="30" oninput="tbDirect('restex',this.value)"><span class="tb-su">sec</span></div>
+              <button class="tb-sb" onclick="tbS('restex',1,0,995)">+</button></div></div>
         </div>
         <div style="background:rgba(79,110,247,.06);border:1px solid rgba(79,110,247,.18);border-radius:10px;padding:10px 12px;margin-bottom:13px;font-size:10px;color:var(--t3);line-height:1.5">
           <i class="fas fa-info-circle" style="color:#4F6EF7;margin-right:5px"></i>Chaque exercice complète ses N rounds avant de passer au suivant.
@@ -42789,7 +42812,7 @@ async function _sayGroq(text){
     const resp=await fetch('https://api.groq.com/openai/v1/audio/speech',{
       method:'POST',
       headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},
-      body:JSON.stringify({model:'playai-tts',voice:'Fritz-PlayAI',input:text,response_format:'mp3'})
+      body:JSON.stringify({model:'playai-tts',voice:'Celeste-PlayAI',input:text,response_format:'mp3'})
     });
     if(!resp.ok)return false;
     const buf=await resp.arrayBuffer();
@@ -42895,16 +42918,30 @@ window.tbBuild=function(mode){
   txt('tb-excnt','(0)');_renderPills();_calcDur();_renderTimeline();_show('tb-builder');
 };
 function _syncC(){
-  txt('tbv-rounds',C.rounds);txt('tbv-work',C.work);txt('tbv-rest',C.rest);
-  txt('tbv-rounds-cu',C.rounds);txt('tbv-work-cu',C.work);
-  txt('tbv-restser',C.restser);txt('tbv-restex',C.restex);
+  function _sv(id,v){const e=document.getElementById(id);if(!e)return;if(e.tagName==='INPUT')e.value=v;else e.textContent=v;}
+  _sv('tbv-rounds',C.rounds);_sv('tbv-work',C.work);_sv('tbv-rest',C.rest);
+  _sv('tbv-rounds-cu',C.rounds);_sv('tbv-work-cu',C.work);
+  _sv('tbv-restser',C.restser);_sv('tbv-restex',C.restex);
 }
 window.tbS=function(k,d,mn,mx){
-  C[k]=Math.max(mn,Math.min(mx,C[k]+d));txt('tbv-'+k,C[k]);
-  if(k==='rounds')txt('tbv-rounds-cu',C[k]);
-  if(k==='work')txt('tbv-work-cu',C[k]);
+  C[k]=Math.max(mn,Math.min(mx,C[k]+d));
+  // Mettre à jour les inputs/spans
+  ['tbv-'+k, k==='rounds'?'tbv-rounds-cu':(k==='work'?'tbv-work-cu':null)].filter(Boolean).forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    if(el.tagName==='INPUT')el.value=C[k];else el.textContent=C[k];
+  });
   _calcDur();_renderExlist();_renderTimeline();
-}
+};
+// Saisie directe dans les champs
+window.tbDirect=function(k,v){
+  const n=parseInt(v);if(isNaN(n)||v==='')return;
+  const mn=k==='restser'||k==='restex'?0:1;
+  C[k]=Math.max(mn,Math.min(995,n));
+  // Sync champ miroir si rounds ou work
+  if(k==='rounds'){const m=document.getElementById('tbv-rounds-cu');if(m)m.value=C[k];}
+  if(k==='work'){const m=document.getElementById('tbv-work-cu');if(m)m.value=C[k];}
+  _calcDur();_renderExlist();_renderTimeline();
+};
 
 function _calcDur(){
   const exs=_allExs();const n=exs.length||1;
@@ -43046,7 +43083,11 @@ window.tbLaunch=function(){
   if(_tbAudioCtx&&_tbAudioCtx.state==='suspended')_tbAudioCtx.resume();
   if(_sfxCtx&&_sfxCtx.state==='suspended')_sfxCtx.resume();
   _say('Préparez-vous');
-  _startPhase('ready',3);
+  // Get Ready immersif — démarre la session après le décompte
+  _doGetReady(()=>{
+    _say(_mW());
+    _startPhase('work',C.work);
+  });
 };
 
 /* Segments */
@@ -43150,6 +43191,7 @@ function _hideNext(){
 
 /* Logique phases */
 function _nextPhase(){
+  if(!_run)return;
   const exs=_allExs();
   if(_phase==='ready'){_say(_mW());_startPhase('work',C.work);return;}
   if(_phase==='work'){
@@ -43496,6 +43538,1575 @@ setTimeout(_renderPills,100);
 
 
 <!-- ════════════════════════════════════════════════════════════
+
+<!-- ════════════════════════════════════════════════════════════════
+     MODULE TABATA v7 — IronPlate ULTIMATE
+     ════════════════════════════════════════════════════════════════ -->
+<style>
+#tb-overlay{position:fixed;inset:0;z-index:20000;display:none;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(8px)}
+#tb-overlay.tb-open{display:flex}
+.tb-shell{width:100%;max-width:480px;height:100%;display:flex;flex-direction:column;position:relative;overflow:hidden;box-shadow:0 0 80px rgba(0,0,0,.6);background:var(--bg,#f0f2f7)}
+.dark-mode .tb-shell{background:#0a0c16}
+@media(min-width:520px){.tb-shell{border-left:1px solid rgba(0,0,0,.07);border-right:1px solid rgba(0,0,0,.07)}}
+.dark-mode .tb-shell{border-color:rgba(255,255,255,.04)!important}
+.tb-scr{display:none;flex-direction:column;height:100%}
+.tb-scr.on{display:flex}
+.tb-scroll{flex:1;overflow-y:auto}
+.tb-shell{--t1:#111827;--t2:#374151;--t3:#9CA3AF;--card:#fff;--card2:#f4f6fb;--bdr:rgba(0,0,0,.08);--inp:#fff;--sh:0 2px 12px rgba(0,0,0,.07)}
+.dark-mode .tb-shell{--t1:#EEF0F8;--t2:#9AA0B8;--t3:rgba(140,140,180,.6);--card:#151826;--card2:#1a1e2e;--bdr:rgba(255,255,255,.07);--inp:#151826;--sh:0 2px 12px rgba(0,0,0,.3)}
+
+/* Header */
+.tb-hdr{display:flex;align-items:center;justify-content:space-between;padding:13px 15px 11px;background:var(--card);border-bottom:1px solid var(--bdr);flex-shrink:0;box-shadow:var(--sh)}
+.tb-hdr-l{display:flex;align-items:center;gap:10px}
+.tb-logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#FF3B3B,#FF7A00);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 14px rgba(255,60,60,.4);flex-shrink:0}
+.tb-hdr-title{font-size:16px;font-weight:900;color:var(--t1)}
+.tb-hdr-sub{font-size:10px;color:var(--t3);font-weight:700;letter-spacing:.5px}
+.tb-icon-btn{width:32px;height:32px;border-radius:8px;background:var(--card2);border:1px solid var(--bdr);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s}
+.tb-icon-btn:hover{background:rgba(255,60,60,.1);color:#FF3B3B;border-color:rgba(255,60,60,.3)}
+.tb-slbl{font-size:10px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--t3);padding:14px 15px 8px}
+
+/* Streak */
+.tb-streak{display:flex;align-items:center;gap:10px;margin:12px 15px 0;padding:10px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(255,180,0,.1),rgba(255,100,0,.07));border:1px solid rgba(255,180,0,.22)}
+.tb-streak-fire{font-size:22px;line-height:1}
+.tb-streak-val{font-size:20px;font-weight:900;color:#FFB800}
+.tb-streak-lbl{font-size:10px;color:var(--t3);font-weight:700}
+.tb-streak-best{margin-left:auto;text-align:right}
+.tb-streak-best-v{font-size:13px;font-weight:800;color:var(--t2)}
+.tb-streak-best-l{font-size:9px;color:var(--t3)}
+
+/* Records */
+.tb-records{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:0 15px}
+.tb-rec{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:9px 7px;text-align:center;box-shadow:var(--sh)}
+.tb-rec-v{font-size:14px;font-weight:900;color:var(--t1)}
+.tb-rec-l{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--t3);margin-top:2px}
+
+/* Présets rapides */
+.tb-presets{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;padding:0 15px;margin-top:10px}
+.tb-preset{padding:9px 10px;border-radius:11px;border:1.5px solid var(--bdr);background:var(--card2);cursor:pointer;transition:all .18s;text-align:center}
+.tb-preset:hover{border-color:rgba(255,60,60,.35);transform:translateY(-2px)}
+.tb-preset-name{font-size:11px;font-weight:800;color:var(--t1)}
+.tb-preset-desc{font-size:9px;color:var(--t3);margin-top:2px}
+.tb-preset-bpm{font-size:9px;font-weight:700;color:#FF3B3B;margin-top:2px}
+
+/* Mode cards */
+.tb-modes{padding:12px 15px 0;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.tb-mc{border-radius:15px;padding:15px 13px 13px;cursor:pointer;border:1.5px solid var(--bdr);background:var(--card);transition:all .22s;position:relative;overflow:hidden;box-shadow:var(--sh)}
+.tb-mc:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.13)}
+.tb-mc:active{transform:scale(.97)}
+.tb-mc-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:10px;transition:transform .2s}
+.tb-mc:hover .tb-mc-ico{transform:scale(1.12) rotate(-5deg)}
+.tb-mc-tag{position:absolute;top:9px;right:9px;font-size:8px;font-weight:800;letter-spacing:.6px;padding:2px 7px;border-radius:20px}
+.tb-mc-lbl{font-size:12px;font-weight:800;color:var(--t1)}
+.tb-mc-desc{font-size:10px;color:var(--t3);margin-top:3px;line-height:1.4}
+.tb-mc-cl{background:linear-gradient(135deg,rgba(255,60,60,.06),rgba(255,120,0,.04));border-color:rgba(255,60,60,.18)}
+.tb-mc-cl .tb-mc-ico{background:rgba(255,60,60,.12);color:#FF3B3B}
+.tb-mc-cl .tb-mc-tag{background:rgba(255,60,60,.12);color:#FF3B3B}
+.tb-mc-cl:hover{border-color:rgba(255,60,60,.5);box-shadow:0 8px 28px rgba(255,60,60,.18)!important}
+.tb-mc-cu{background:linear-gradient(135deg,rgba(79,110,247,.06),rgba(124,58,237,.04));border-color:rgba(79,110,247,.18)}
+.tb-mc-cu .tb-mc-ico{background:rgba(79,110,247,.12);color:#4F6EF7}
+.tb-mc-cu:hover{border-color:rgba(79,110,247,.5);box-shadow:0 8px 28px rgba(79,110,247,.15)!important}
+.tb-mc-ai{grid-column:1/-1;background:linear-gradient(135deg,rgba(15,168,106,.06),rgba(79,110,247,.04));border-color:rgba(15,168,106,.18);padding:13px}
+.tb-mc-ai .tb-mc-ico{background:rgba(15,168,106,.12);color:#0FA86A;margin:0}
+.tb-mc-ai .tb-mc-tag{background:rgba(15,168,106,.12);color:#0FA86A}
+.tb-mc-ai:hover{border-color:rgba(15,168,106,.5);box-shadow:0 8px 28px rgba(15,168,106,.12)!important}
+.tb-mc-ai-inner{display:flex;align-items:center;gap:12px}
+.tb-mc-ai-text .tb-mc-lbl{font-size:13px}
+
+/* Saved programs */
+.tb-saved-item{display:flex;align-items:center;gap:10px;padding:9px 15px;cursor:pointer;border-bottom:1px solid var(--bdr);transition:background .15s}
+.tb-saved-item:hover{background:rgba(79,110,247,.04)}
+.tb-saved-ico{width:32px;height:32px;border-radius:8px;background:rgba(79,110,247,.1);border:1px solid rgba(79,110,247,.18);display:flex;align-items:center;justify-content:center;color:#4F6EF7;font-size:12px;flex-shrink:0}
+.tb-saved-name{font-size:12px;font-weight:700;color:var(--t1)}
+.tb-saved-meta{font-size:10px;color:var(--t3);margin-top:1px}
+.tb-saved-del{width:20px;height:20px;border-radius:5px;background:rgba(255,60,60,.08);border:1px solid rgba(255,60,60,.15);color:#FF3B3B;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;margin-left:auto;flex-shrink:0;transition:all .15s}
+.tb-saved-del:hover{background:rgba(255,60,60,.2)}
+
+/* History */
+.tb-hi{display:flex;align-items:center;gap:11px;padding:11px 15px;cursor:pointer;border-bottom:1px solid var(--bdr);transition:background .15s}
+.tb-hi:hover{background:rgba(255,60,60,.04)}
+.tb-hi-ico{width:38px;height:38px;border-radius:10px;flex-shrink:0;background:rgba(255,60,60,.1);border:1px solid rgba(255,60,60,.18);display:flex;align-items:center;justify-content:center;color:#FF3B3B;font-size:14px}
+.tb-hi-name{font-size:12px;font-weight:700;color:var(--t1)}
+.tb-hi-meta{font-size:10px;color:var(--t3);margin-top:2px}
+.tb-hi-r{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.tb-hi-kcal{font-size:12px;font-weight:800;color:#FF3B3B}
+.tb-hi-del{width:22px;height:22px;border-radius:5px;background:rgba(255,60,60,.08);border:1px solid rgba(255,60,60,.15);color:#FF3B3B;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .15s}
+.tb-hi-del:hover{background:rgba(255,60,60,.2)}
+.tb-empty{text-align:center;padding:26px 20px;color:var(--t3);font-size:11px;line-height:1.9}
+
+/* Builder */
+.tb-bld-hdr{display:flex;align-items:center;gap:10px;padding:11px 15px;background:var(--card);border-bottom:1px solid var(--bdr);flex-shrink:0;box-shadow:var(--sh)}
+.tb-bld-name{font-size:14px;font-weight:800;color:var(--t1);flex:1}
+.tb-dur-tag{padding:4px 11px;border-radius:20px;background:rgba(255,60,60,.1);border:1px solid rgba(255,60,60,.22);font-size:11px;font-weight:800;color:#FF3B3B;white-space:nowrap}
+.tb-body{padding:13px 15px}
+.tb-f{margin-bottom:13px}
+.tb-lbl{font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--t3);display:block;margin-bottom:6px}
+.tb-inp{width:100%;padding:9px 12px;border-radius:10px;box-sizing:border-box;background:var(--inp);border:1.5px solid var(--bdr);color:var(--t1);font-size:13px;font-weight:600;outline:none;transition:all .15s;font-family:inherit}
+.tb-inp:focus{border-color:#FF3B3B;box-shadow:0 0 0 3px rgba(255,60,60,.1)}
+.tb-inp::placeholder{color:var(--t3)}
+.tb-inp option{background:var(--inp);color:var(--t1)}
+.tb-g2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.tb-g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.tb-stp{display:flex;align-items:center;background:var(--inp);border:1.5px solid var(--bdr);border-radius:12px;overflow:hidden;height:56px;transition:border-color .15s}
+.tb-stp:focus-within{border-color:#FF3B3B}
+.tb-sb{width:44px;height:100%;background:none;border:none;color:var(--t2);cursor:pointer;font-size:20px;font-weight:700;transition:all .15s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.tb-sb:hover{background:rgba(255,60,60,.08);color:#FF3B3B}
+.tb-sb:active{transform:scale(.88)}
+.tb-sm{flex:1;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.tb-sv{font-size:22px;font-weight:900;color:var(--t1);line-height:1;font-variant-numeric:tabular-nums}
+/* Editable stepper inputs */
+.tb-sv-inp{background:none;border:none;outline:none;color:var(--t1);font-size:22px;font-weight:900;width:60px;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:-1px;font-family:inherit;padding:0;-moz-appearance:textfield;cursor:text}
+.tb-sv-inp::-webkit-inner-spin-button,.tb-sv-inp::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.tb-sv-inp:focus{color:#FF3B3B}
+.tb-su{font-size:9px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+/* Kcal est */
+.tb-kcal-est{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 12px;border-radius:10px;background:rgba(255,60,60,.06);border:1px solid rgba(255,60,60,.15);margin-bottom:13px}
+.tb-kcal-est-v{font-size:16px;font-weight:900;color:#FF3B3B}
+.tb-kcal-est-l{font-size:10px;color:var(--t3);font-weight:700}
+/* Pills */
+.tb-pills{display:flex;flex-wrap:wrap;gap:6px}
+.tb-pill{padding:5px 12px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;transition:all .16s;border:1.5px solid var(--bdr);background:var(--card2);color:var(--t2)}
+.tb-pill:hover{border-color:rgba(255,60,60,.35);color:#FF3B3B;transform:translateY(-1px)}
+.tb-pill.on{background:rgba(255,60,60,.1);border-color:rgba(255,60,60,.4);color:#FF3B3B}
+.tb-exlist{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.tb-exrow{display:flex;align-items:center;gap:8px;background:var(--inp);border:1.5px solid var(--bdr);border-radius:10px;padding:9px 11px}
+.tb-exrow.custom-ex{border-color:rgba(79,110,247,.25);background:rgba(79,110,247,.04)}
+.tb-exn{width:20px;height:20px;border-radius:5px;flex-shrink:0;background:rgba(255,60,60,.1);color:#FF3B3B;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.tb-exrow.custom-ex .tb-exn{background:rgba(79,110,247,.15);color:#4F6EF7}
+.tb-exlbl{flex:1;font-size:11px;font-weight:700;color:var(--t1)}
+.tb-extm{font-size:9px;color:var(--t3)}
+/* Exercice move buttons */
+.tb-exmove{display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+.tb-exmove-btn{width:18px;height:14px;border-radius:3px;border:none;background:rgba(0,0,0,.05);color:var(--t3);cursor:pointer;font-size:9px;display:flex;align-items:center;justify-content:center;transition:all .12s;padding:0}
+.dark-mode .tb-exmove-btn{background:rgba(255,255,255,.07)}
+.tb-exmove-btn:hover{background:rgba(255,60,60,.1);color:#FF3B3B}
+.tb-exdel{width:24px;height:24px;border-radius:6px;flex-shrink:0;background:rgba(255,60,60,.07);border:1px solid rgba(255,60,60,.15);color:#FF3B3B;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .15s}
+.tb-exdel:hover{background:rgba(255,60,60,.2)}
+.tb-addrow{display:flex;gap:7px;margin-top:9px}
+.tb-addico{padding:9px 15px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,#FF3B3B,#FF7A00);color:#fff;font-size:11px;font-weight:800;flex-shrink:0;display:flex;align-items:center;gap:5px;transition:all .15s;box-shadow:0 3px 10px rgba(255,60,60,.25)}
+.tb-addico:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(255,60,60,.35)}
+.tb-trow{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:10px;margin-bottom:7px;background:var(--card2);border:1px solid var(--bdr)}
+.tb-tlbl{font-size:11px;font-weight:700;color:var(--t2);display:flex;align-items:center;gap:7px}
+.tb-tlbl i{color:var(--t3);font-size:12px}
+.tb-sw{width:40px;height:21px;border-radius:11px;background:rgba(0,0,0,.12);position:relative;cursor:pointer;border:none;transition:background .2s;flex-shrink:0}
+.dark-mode .tb-sw{background:rgba(255,255,255,.1)}
+.tb-sw.on{background:#0FA86A}
+.tb-sw::after{content:'';position:absolute;width:15px;height:15px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.tb-sw.on::after{transform:translateX(19px)}
+/* Timeline */
+.tb-timeline{display:flex;gap:2px;height:18px;border-radius:6px;overflow:hidden;margin-bottom:6px}
+.tb-tl-seg{flex:1;border-radius:2px;min-width:3px}
+.tb-tl-work{background:#FF3B3B}
+.tb-tl-rest{background:rgba(50,120,255,.5)}
+.tb-tl-restex{background:rgba(140,80,220,.4)}
+/* Programme preview list */
+.tb-prog-preview{font-size:10px;color:var(--t3);line-height:1.7;margin-bottom:13px;max-height:80px;overflow-y:auto;background:var(--card2);border-radius:8px;padding:8px 10px;border:1px solid var(--bdr)}
+.tb-start-wrap{padding:11px 15px 18px;flex-shrink:0;background:var(--card);border-top:1px solid var(--bdr)}
+.tb-start-row{display:flex;gap:8px}
+.tb-saveprog-btn{padding:14px 12px;border-radius:13px;border:1.5px solid var(--bdr);background:var(--card2);color:var(--t2);font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
+.tb-saveprog-btn:hover{border-color:rgba(79,110,247,.4);color:#4F6EF7;background:rgba(79,110,247,.06)}
+.tb-startbtn{flex:1;padding:14px;border-radius:13px;border:none;background:linear-gradient(135deg,#FF3B3B,#FF7A00);color:#fff;font-size:14px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 5px 20px rgba(255,60,60,.35);transition:all .2s;letter-spacing:.2px}
+.tb-startbtn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 26px rgba(255,60,60,.48)}
+.tb-startbtn:active:not(:disabled){transform:scale(.97)}
+.tb-startbtn:disabled{opacity:.28;cursor:not-allowed}
+
+/* ── PLAYER ──────────────────────────────────────────────────────── */
+#tb-player{background:#040610;justify-content:space-between;overflow:hidden;color:#fff}
+.tb-pb{position:absolute;inset:0;z-index:0;transition:all .8s cubic-bezier(.4,0,.2,1);pointer-events:none}
+.tb-pb.work{background:radial-gradient(ellipse 120% 80% at 50% -10%,rgba(255,30,30,.6) 0%,rgba(255,80,0,.25) 30%,transparent 65%),radial-gradient(ellipse 50% 30% at 85% 15%,rgba(255,80,0,.2) 0%,transparent 50%)}
+.tb-pb.rest{background:radial-gradient(ellipse 120% 80% at 50% -10%,rgba(30,80,255,.48) 0%,rgba(80,30,200,.18) 30%,transparent 65%)}
+.tb-pb.ready{background:radial-gradient(ellipse 120% 75% at 50% -10%,rgba(255,170,0,.42) 0%,rgba(255,100,0,.18) 35%,transparent 65%)}
+.tb-pb.done{background:radial-gradient(ellipse 120% 80% at 50% -10%,rgba(15,168,106,.52) 0%,rgba(0,200,100,.18) 35%,transparent 65%)}
+.tb-pb::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.008) 2px,rgba(255,255,255,.008) 3px);pointer-events:none;z-index:1}
+.tb-pb::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,rgba(4,6,16,1) 0%,rgba(4,6,16,.75) 38%,rgba(4,6,16,.15) 65%,transparent 100%);pointer-events:none}
+.tb-pfl{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .05s}
+.tb-pfl.go{opacity:.35;transition:none}
+/* GET READY overlay */
+#tb-getready{position:absolute;inset:0;z-index:15;display:none;align-items:center;justify-content:center;flex-direction:column;background:rgba(4,6,16,.85)}
+#tb-getready.on{display:flex}
+.tb-gr-lbl{font-size:13px;font-weight:800;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px}
+.tb-gr-num{font-size:140px;font-weight:900;color:#fff;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-6px;text-shadow:0 0 60px rgba(255,185,0,.6)}
+.tb-gr-num.pulse{animation:tbGRPulse .9s ease}
+@keyframes tbGRPulse{0%{transform:scale(1.4);opacity:.4;color:#FFB800}100%{transform:scale(1);opacity:1;color:#fff}}
+/* Phase flash */
+.tb-phase-flash{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0}
+@keyframes tbFlash{0%{opacity:.45}100%{opacity:0}}
+.tb-phase-flash.flash-work{background:radial-gradient(ellipse at 50% 0%,rgba(255,30,30,.7),transparent 60%);animation:tbFlash .6s ease forwards}
+.tb-phase-flash.flash-rest{background:radial-gradient(ellipse at 50% 0%,rgba(30,80,255,.5),transparent 60%);animation:tbFlash .6s ease forwards}
+.tb-phase-flash.flash-done{background:radial-gradient(ellipse at 50% 50%,rgba(15,168,106,.6),transparent 70%);animation:tbFlash 1s ease forwards}
+/* BPM badge */
+.tb-bpm{position:absolute;top:60px;right:14px;z-index:6;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:4px 9px;backdrop-filter:blur(4px)}
+.tb-bpm-val{font-size:14px;font-weight:900;color:#FF6060}
+.tb-bpm-lbl{font-size:8px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.5px}
+/* Top bar */
+.tb-ptop{position:relative;z-index:5;display:flex;align-items:center;gap:9px;padding:12px 13px 4px}
+.tb-stopbtn{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;background:rgba(255,255,255,.07);color:rgba(255,255,255,.35);font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.tb-stopbtn:hover{background:rgba(255,60,60,.2);color:#FF6060}
+.tb-prog-wrap{flex:1}
+.tb-prog-segs{display:flex;gap:2px;height:7px;border-radius:4px;overflow:hidden}
+.tb-prog-seg{flex:1;border-radius:3px;background:rgba(255,255,255,.1);transition:background .4s}
+.tb-prog-seg.done{background:linear-gradient(90deg,#FF3B3B,#FF7A00)}
+.tb-prog-seg.active{background:rgba(255,120,0,.7);animation:tbSP 1s ease infinite}
+@keyframes tbSP{0%,100%{opacity:.7}50%{opacity:1;background:rgba(255,60,60,.9)}}
+.tb-prog-lbl{font-size:10px;color:rgba(255,255,255,.35);text-align:center;margin-top:4px;font-weight:800;letter-spacing:.3px}
+.tb-vbtn{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;background:rgba(255,255,255,.06);color:rgba(255,255,255,.28);font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.tb-vbtn.on{background:rgba(15,168,106,.18);color:#0FA86A;box-shadow:0 0 8px rgba(15,168,106,.2)}
+/* Phase */
+.tb-pphase-wrap{position:relative;z-index:5;display:flex;justify-content:center;margin-top:4px}
+.tb-pphase{display:inline-flex;align-items:center;gap:6px;padding:5px 18px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;transition:all .5s;backdrop-filter:blur(6px)}
+.tb-pphase.work{background:rgba(255,44,44,.22);color:#FF6060;border:1px solid rgba(255,44,44,.4);box-shadow:0 0 20px rgba(255,44,44,.2)}
+.tb-pphase.rest{background:rgba(40,100,255,.2);color:#6090FF;border:1px solid rgba(40,100,255,.35);box-shadow:0 0 20px rgba(40,100,255,.15)}
+.tb-pphase.ready{background:rgba(255,175,0,.2);color:#FFB800;border:1px solid rgba(255,175,0,.35)}
+.tb-pphase.done{background:rgba(15,168,106,.2);color:#0FA86A;border:1px solid rgba(15,168,106,.35)}
+/* Exercise */
+.tb-pex-wrap{position:relative;z-index:5;text-align:center;padding:4px 16px 0;min-height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.tb-pex{font-size:30px;font-weight:900;color:#fff;line-height:1.15;text-shadow:0 2px 30px rgba(0,0,0,.9);letter-spacing:-.4px}
+@keyframes tbSlideIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.tb-pex.slide{animation:tbSlideIn .35s cubic-bezier(.32,.72,0,1)}
+.tb-pex-next-lbl{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.22);margin-top:5px;display:none}
+.tb-pex-next{font-size:14px;font-weight:700;color:rgba(255,200,100,.75);margin-top:2px;display:none;letter-spacing:.2px}
+.tb-pex-next.zoom{animation:tbZoom 1s ease infinite}
+@keyframes tbZoom{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.08);opacity:1;color:rgba(255,220,100,.95)}}
+/* Ring */
+.tb-ring-wrap{position:relative;z-index:5;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tb-ring-svg{transform:rotate(-90deg);overflow:visible;transition:filter .6s}
+.tb-ring-svg.work-glow{filter:drop-shadow(0 0 32px rgba(255,50,50,.7)) drop-shadow(0 0 10px rgba(255,100,0,.5))}
+.tb-ring-svg.rest-glow{filter:drop-shadow(0 0 28px rgba(40,100,255,.6)) drop-shadow(0 0 8px rgba(80,60,255,.35))}
+.tb-ring-svg.ready-glow{filter:drop-shadow(0 0 24px rgba(255,175,0,.5))}
+.tb-ring-svg.done-glow{filter:drop-shadow(0 0 28px rgba(15,168,106,.65)) drop-shadow(0 0 8px rgba(0,220,120,.35))}
+.tb-rtrack{stroke:rgba(255,255,255,.04)}
+.tb-rtrack-dec{stroke-linecap:round;animation:tbDec 18s linear infinite}
+@keyframes tbDec{to{stroke-dashoffset:-800}}
+.tb-rarc{stroke-linecap:round;transition:stroke-dashoffset .12s linear,stroke .6s ease}
+.tb-rarc-glow{stroke-linecap:round;stroke-opacity:.35;filter:blur(4px);transition:stroke-dashoffset .12s linear,stroke .6s ease}
+.tb-rtick{stroke:rgba(255,255,255,.18);stroke-linecap:round}
+.tb-rtick-lg{stroke:rgba(255,255,255,.4);stroke-linecap:round}
+.tb-rcenter{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.tb-rnum{font-size:96px;font-weight:900;color:#fff;line-height:.9;font-variant-numeric:tabular-nums;text-shadow:0 4px 40px rgba(0,0,0,.9);letter-spacing:-5px;transition:color .5s}
+.tb-rnum.work{text-shadow:0 4px 40px rgba(0,0,0,.9),0 0 40px rgba(255,60,60,.3)}
+.tb-rnum.rest{text-shadow:0 4px 40px rgba(0,0,0,.9),0 0 40px rgba(40,100,255,.25)}
+.tb-runit{font-size:11px;color:rgba(255,255,255,.28);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.tb-rtotal{font-size:16px;font-weight:800;color:rgba(255,255,255,.6);letter-spacing:1px;font-variant-numeric:tabular-nums;margin-top:5px}
+/* Stats */
+.tb-pstats{position:relative;z-index:5;display:flex;justify-content:center;align-items:stretch;background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);backdrop-filter:blur(8px)}
+.tb-pstat{flex:1;text-align:center;padding:10px 4px}
+.tb-pstat+.tb-pstat{border-left:1px solid rgba(255,255,255,.06)}
+.tb-pstat:first-child .tb-psval{font-size:36px;color:#FF6060}
+.tb-pstat:nth-child(3) .tb-psval{font-size:28px;color:rgba(255,255,255,.5)}
+.tb-pstat:last-child .tb-psval{font-size:28px;color:#60B0FF}
+.tb-psval{font-size:30px;font-weight:900;color:#fff;line-height:1}
+.tb-pslbl{font-size:9px;color:rgba(255,255,255,.3);font-weight:800;text-transform:uppercase;letter-spacing:.7px;margin-top:3px}
+.tb-pnext{position:relative;z-index:5;text-align:center;padding:4px 16px;font-size:10px;color:rgba(255,255,255,.22);font-weight:600}
+.tb-pnext span{color:rgba(255,255,255,.5);font-weight:700}
+/* Controls */
+.tb-pctrls{position:relative;z-index:5;display:flex;align-items:center;justify-content:center;gap:16px;padding:6px 16px 20px}
+.tb-ctrl{border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .16s}
+.tb-ctrl-main{width:68px;height:68px;font-size:22px;color:#fff;background:linear-gradient(145deg,#FF4444,#FF7A00);box-shadow:0 4px 24px rgba(255,60,60,.5),0 0 0 0 rgba(255,60,60,.4);animation:tbPR 2.5s ease infinite}
+@keyframes tbPR{0%{box-shadow:0 4px 24px rgba(255,60,60,.5),0 0 0 0 rgba(255,60,60,.4)}60%{box-shadow:0 4px 24px rgba(255,60,60,.5),0 0 0 16px rgba(255,60,60,0)}100%{box-shadow:0 4px 24px rgba(255,60,60,.5),0 0 0 0 rgba(255,60,60,0)}}
+.tb-ctrl-main:hover{transform:scale(1.1);animation:none;box-shadow:0 6px 28px rgba(255,60,60,.6)}
+.tb-ctrl-main:active{transform:scale(.91);animation:none}
+.tb-ctrl-sec{width:46px;height:46px;font-size:15px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1.5px solid rgba(255,255,255,.1)}
+.tb-ctrl-sec:hover{background:rgba(255,255,255,.14);transform:scale(1.07)}
+#tb-player.paused .tb-ring-svg{filter:saturate(.35) brightness(.7)!important}
+#tb-player.paused .tb-pex{opacity:.5}
+#tb-fw-canvas{position:absolute;inset:0;z-index:20;pointer-events:none}
+
+/* ── SUMMARY ─────────────────────────────────────────────────────── */
+.tb-sum-hero{padding:26px 18px 18px;text-align:center;background:linear-gradient(180deg,rgba(15,168,106,.08) 0%,transparent 100%)}
+.tb-sum-icon{width:66px;height:66px;border-radius:18px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:26px}
+.tb-sum-ttl{font-size:19px;font-weight:900;color:var(--t1);margin-bottom:4px}
+.tb-sum-sub{font-size:11px;color:var(--t3);line-height:1.5}
+.tb-sum-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:0 15px 13px}
+.tb-ss{background:var(--card);border:1px solid var(--bdr);border-radius:11px;padding:11px 7px;text-align:center;box-shadow:var(--sh)}
+.tb-ss-v{font-size:18px;font-weight:900;color:var(--t1)}
+.tb-ss-l{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--t3);margin-top:3px}
+/* Record badge */
+.tb-record-badge{display:none;margin:0 15px 11px;padding:9px 14px;border-radius:11px;background:linear-gradient(135deg,rgba(255,185,0,.14),rgba(255,120,0,.09));border:1.5px solid rgba(255,185,0,.35);text-align:center;animation:tbUp .4s ease}
+@keyframes tbUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.tb-record-badge-txt{font-size:12px;font-weight:900;color:#FFB800}
+.tb-record-badge-sub{font-size:10px;color:var(--t3);margin-top:2px}
+/* Exercise breakdown */
+.tb-ex-breakdown{margin:0 15px 13px}
+.tb-ex-breakdown-title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--t3);margin-bottom:7px}
+.tb-ex-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.tb-ex-row-name{font-size:10px;font-weight:700;color:var(--t2);width:90px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-ex-bar-wrap{flex:1;height:5px;background:rgba(0,0,0,.07);border-radius:3px;overflow:hidden}
+.dark-mode .tb-ex-bar-wrap{background:rgba(255,255,255,.07)}
+.tb-ex-bar{height:100%;border-radius:3px;background:#FF3B3B;transition:width .6s cubic-bezier(.32,.72,0,1)}
+.tb-ex-time{font-size:9px;font-weight:800;color:var(--t3);width:30px;text-align:right;flex-shrink:0}
+/* Note séance */
+.tb-note-wrap{margin:0 15px 13px}
+.tb-note-inp{width:100%;padding:9px 12px;border-radius:10px;box-sizing:border-box;background:var(--card2);border:1.5px solid var(--bdr);color:var(--t1);font-size:11px;outline:none;resize:none;font-family:inherit;transition:border-color .15s}
+.tb-note-inp:focus{border-color:#0FA86A}
+.tb-note-inp::placeholder{color:var(--t3)}
+/* Achievement */
+.tb-achievement{display:none;margin:0 15px 13px;padding:12px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(255,180,0,.12),rgba(255,100,0,.08));border:1.5px solid rgba(255,180,0,.3);text-align:center;animation:tbUp .4s ease}
+.tb-ach-icon{font-size:28px;display:block;margin-bottom:5px}
+.tb-ach-title{font-size:13px;font-weight:900;color:#FFB800;margin-bottom:2px}
+.tb-ach-desc{font-size:10px;color:var(--t3)}
+/* Compare */
+.tb-compare{margin:0 15px 13px;padding:11px 13px;background:var(--card2);border:1px solid var(--bdr);border-radius:11px}
+.tb-compare-title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--t3);margin-bottom:8px}
+.tb-compare-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.tb-compare-lbl{font-size:10px;color:var(--t3);width:60px;flex-shrink:0}
+.tb-compare-bar-wrap{flex:1;height:6px;background:rgba(0,0,0,.08);border-radius:3px;overflow:hidden}
+.dark-mode .tb-compare-bar-wrap{background:rgba(255,255,255,.07)}
+.tb-compare-bar{height:100%;border-radius:3px;transition:width .8s cubic-bezier(.32,.72,0,1)}
+.tb-compare-val{font-size:10px;font-weight:800;color:var(--t1);width:36px;text-align:right;flex-shrink:0}
+/* Export */
+.tb-export-btn{display:flex;align-items:center;justify-content:center;gap:7px;margin:0 15px 13px;padding:11px;background:var(--card2);border:1.5px solid var(--bdr);border-radius:11px;cursor:pointer;font-size:12px;font-weight:800;color:var(--t2);transition:all .15s;width:calc(100% - 30px);box-sizing:border-box}
+.tb-export-btn:hover{border-color:rgba(79,110,247,.4);color:#4F6EF7;background:rgba(79,110,247,.06)}
+.tb-sum-acts{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 15px 13px}
+.tb-sbtn{padding:12px;border-radius:11px;border:none;cursor:pointer;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.tb-sbtn-p{background:linear-gradient(135deg,#FF3B3B,#FF7A00);color:#fff;box-shadow:0 4px 14px rgba(255,60,60,.28)}
+.tb-sbtn-s{background:var(--card2);color:var(--t2);border:1.5px solid var(--bdr)!important}
+.tb-sbtn:hover{transform:translateY(-1px)}
+.tb-ai-box{margin:0 15px 13px;padding:12px;background:rgba(15,168,106,.06);border:1px solid rgba(15,168,106,.18);border-radius:11px;font-size:10px;color:var(--t2);line-height:1.7}
+.tb-ai-box-ttl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#0FA86A;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+/* Chart 7j/30j */
+.tb-chart-toggle{display:flex;gap:6px;padding:0 15px 6px}
+.tb-ct-btn{padding:4px 12px;border-radius:16px;font-size:9px;font-weight:800;cursor:pointer;border:1.5px solid var(--bdr);background:var(--card2);color:var(--t3);transition:all .15s}
+.tb-ct-btn.on{background:rgba(255,60,60,.1);border-color:rgba(255,60,60,.35);color:#FF3B3B}
+/* AI MODAL */
+.tb-aim{position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.8);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;padding:18px}
+.tb-aim.open{display:flex}
+.tb-aimbox{background:var(--card);border:1.5px solid var(--bdr);border-radius:17px;padding:18px;width:100%;animation:tbUpA .22s ease;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+@keyframes tbUpA{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.tb-aimhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.tb-aimttl{font-size:14px;font-weight:900;color:var(--t1)}
+.tb-airres{background:rgba(15,168,106,.06);border:1px solid rgba(15,168,106,.15);border-radius:9px;padding:10px;font-size:10px;color:var(--t2);line-height:1.6;max-height:140px;overflow-y:auto;margin-bottom:11px;display:none}
+.tb-aiload{display:none;text-align:center;padding:14px;color:var(--t3);font-size:11px}
+.tb-aiload i{font-size:16px;color:#0FA86A;display:block;margin-bottom:5px}
+.tb-aiacl{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:4px}
+@keyframes tbBounce{0%,100%{transform:scale(1)}35%{transform:scale(1.1)}65%{transform:scale(.96)}}
+.tb-bounce{animation:tbBounce .38s ease}
+@media(max-width:380px){.tb-rnum{font-size:72px}.tb-pex{font-size:22px}.tb-modes{grid-template-columns:1fr}.tb-mc-ai{grid-column:1}}
+</style>
+
+<div id="tb-overlay">
+<div class="tb-shell">
+
+  <!-- AI MODAL -->
+  <div class="tb-aim" id="tb-aim">
+    <div class="tb-aimbox">
+      <div class="tb-aimhdr">
+        <div class="tb-aimttl"><i class="fas fa-robot" style="color:#0FA86A;margin-right:7px"></i>Programme IA</div>
+        <button class="tb-icon-btn" onclick="tbCloseAIM()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="tb-f"><label class="tb-lbl">Objectif</label>
+        <select class="tb-inp" id="tb-aig" style="cursor:pointer">
+          <option value="full_body">Full body</option><option value="perte_gras">Perte de gras</option>
+          <option value="cardio">Cardio</option><option value="force">Force explosive</option>
+          <option value="debutant">Débutant</option>
+        </select></div>
+      <div class="tb-f"><label class="tb-lbl">Durée cible</label>
+        <select class="tb-inp" id="tb-aid" style="cursor:pointer">
+          <option value="4">4 min</option><option value="8">8 min</option>
+          <option value="16" selected>16 min</option><option value="20">20 min</option>
+        </select></div>
+      <div class="tb-aiload" id="tb-aiload"><i class="fas fa-spinner fa-spin"></i>Génération…</div>
+      <div class="tb-airres" id="tb-aires"></div>
+      <div id="tb-aiapply" style="display:none;margin-bottom:9px">
+        <button class="tb-startbtn" onclick="tbApplyAI()" style="padding:11px;font-size:12px;border-radius:11px"><i class="fas fa-check"></i> Utiliser</button>
+      </div>
+      <div class="tb-aiacl">
+        <button class="tb-sbtn tb-sbtn-s" onclick="tbCloseAIM()">Annuler</button>
+        <button class="tb-sbtn tb-sbtn-p" onclick="tbGenAI()" id="tb-aibtn"><i class="fas fa-magic"></i> Générer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="tb-scr on" id="tb-home">
+    <div class="tb-hdr">
+      <div class="tb-hdr-l">
+        <div class="tb-logo"><i class="fas fa-stopwatch" style="color:#fff;font-size:15px"></i></div>
+        <div><div class="tb-hdr-title">Tabata</div><div class="tb-hdr-sub">HIIT · HAUTE INTENSITÉ</div></div>
+      </div>
+      <button class="tb-icon-btn" onclick="tbClose()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="tb-scroll">
+      <!-- Streak -->
+      <div class="tb-streak" id="tb-streak-bar">
+        <div class="tb-streak-fire">🔥</div>
+        <div><div class="tb-streak-val" id="tb-streak-val">0</div><div class="tb-streak-lbl">jours consécutifs</div></div>
+        <div class="tb-streak-best"><div class="tb-streak-best-v" id="tb-streak-best">0</div><div class="tb-streak-best-l">record</div></div>
+      </div>
+      <!-- Records -->
+      <div class="tb-records" id="tb-records-row" style="margin-top:10px">
+        <div class="tb-rec"><div class="tb-rec-v" id="tb-rec-sessions">0</div><div class="tb-rec-l">Sessions</div></div>
+        <div class="tb-rec"><div class="tb-rec-v" id="tb-rec-kcal">0</div><div class="tb-rec-l">kcal total</div></div>
+        <div class="tb-rec"><div class="tb-rec-v" id="tb-rec-rounds">0</div><div class="tb-rec-l">Rounds total</div></div>
+      </div>
+      <!-- Présets rapides -->
+      <div class="tb-slbl">Démarrage rapide</div>
+      <div class="tb-presets">
+        <div class="tb-preset" onclick="tbPreset('classic')">
+          <div class="tb-preset-name">⚡ Tabata Classique</div>
+          <div class="tb-preset-desc">8 rounds · 20s/10s</div>
+          <div class="tb-preset-bpm">4:00 · Norme officielle</div>
+        </div>
+        <div class="tb-preset" onclick="tbPreset('emom10')">
+          <div class="tb-preset-name">🔄 EMOM 10 min</div>
+          <div class="tb-preset-desc">10 rounds · 45s/15s</div>
+          <div class="tb-preset-bpm">10:00 · Every Minute</div>
+        </div>
+        <div class="tb-preset" onclick="tbPreset('3030')">
+          <div class="tb-preset-name">🔥 30-30</div>
+          <div class="tb-preset-desc">10 rounds · 30s/30s</div>
+          <div class="tb-preset-bpm">10:00 · Cardio intense</div>
+        </div>
+        <div class="tb-preset" onclick="tbPreset('pyramid')">
+          <div class="tb-preset-name">🏔️ Pyramide</div>
+          <div class="tb-preset-desc">Effort croissant puis décroissant</div>
+          <div class="tb-preset-bpm">Variable · Force + Cardio</div>
+        </div>
+      </div>
+      <!-- Modes -->
+      <div class="tb-slbl">Créer une session</div>
+      <div class="tb-modes">
+        <div class="tb-mc tb-mc-cl" onclick="tbBuild('classic')">
+          <div class="tb-mc-ico"><i class="fas fa-fire-flame-curved"></i></div>
+          <div class="tb-mc-tag">NORME</div>
+          <div class="tb-mc-lbl">Classique</div>
+          <div class="tb-mc-desc">8 × 20s/10s · 4 min exactes</div>
+        </div>
+        <div class="tb-mc tb-mc-cu" onclick="tbBuild('custom')">
+          <div class="tb-mc-ico"><i class="fas fa-sliders"></i></div>
+          <div class="tb-mc-lbl">Personnalisé</div>
+          <div class="tb-mc-desc">N rounds par exercice</div>
+        </div>
+        <div class="tb-mc tb-mc-ai" onclick="tbOpenAIM()">
+          <div class="tb-mc-ai-inner">
+            <div class="tb-mc-ico"><i class="fas fa-robot"></i></div>
+            <div class="tb-mc-ai-text">
+              <div class="tb-mc-tag" style="position:static;display:inline-block;margin-bottom:4px">IA</div>
+              <div class="tb-mc-lbl">Programme IA</div>
+              <div class="tb-mc-desc">Généré selon votre profil</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Programmes sauvegardés -->
+      <div class="tb-slbl" id="tb-saved-lbl" style="display:none">Programmes sauvegardés</div>
+      <div id="tb-saved-list"></div>
+      <!-- Historique -->
+      <div class="tb-slbl">Historique</div>
+      <div id="tb-histlist"></div>
+      <!-- Chart toggle + chart -->
+      <div class="tb-chart-toggle" id="tb-chart-toggle" style="display:none">
+        <button class="tb-ct-btn on" id="tb-ct-7" onclick="tbChartPeriod(7)">7 jours</button>
+        <button class="tb-ct-btn" id="tb-ct-30" onclick="tbChartPeriod(30)">30 jours</button>
+      </div>
+      <div id="tb-chartzone" style="display:none"></div>
+      <div style="height:18px"></div>
+    </div>
+  </div>
+
+  <!-- BUILDER -->
+  <div class="tb-scr" id="tb-builder">
+    <div class="tb-bld-hdr">
+      <button class="tb-icon-btn tb-back" onclick="tbGoHome()"><i class="fas fa-chevron-left"></i></button>
+      <div class="tb-bld-name" id="tb-bname">Tabata Classique</div>
+      <div class="tb-dur-tag" id="tb-durtag">4:00</div>
+    </div>
+    <div class="tb-scroll"><div class="tb-body">
+      <div class="tb-f"><label class="tb-lbl">Nom</label>
+        <input class="tb-inp" id="tb-sname" type="text" placeholder="Mon Tabata…" maxlength="40"></div>
+      <div id="tb-params-cl">
+        <div class="tb-g3">
+          <div class="tb-f"><label class="tb-lbl">Rounds</label>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('rounds',-1,1,995)">−</button>
+              <div class="tb-sm"><input class="tb-sv tb-sv-inp" id="tbv-rounds" type="number" min="1" max="995" value="8" oninput="tbDirect('rounds',this.value)"><span class="tb-su">rounds</span></div>
+              <button class="tb-sb" onclick="tbS('rounds',1,1,995)">+</button></div></div>
+          <div class="tb-f"><label class="tb-lbl">Effort</label>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('work',-1,1,995)">−</button>
+              <div class="tb-sm"><input class="tb-sv tb-sv-inp" id="tbv-work" type="number" min="1" max="995" value="20" oninput="tbDirect('work',this.value)"><span class="tb-su">sec</span></div>
+              <button class="tb-sb" onclick="tbS('work',1,1,995)">+</button></div></div>
+          <div class="tb-f"><label class="tb-lbl">Repos</label>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('rest',-1,1,995)">−</button>
+              <div class="tb-sm"><input class="tb-sv tb-sv-inp" id="tbv-rest" type="number" min="1" max="995" value="10" oninput="tbDirect('rest',this.value)"><span class="tb-su">sec</span></div>
+              <button class="tb-sb" onclick="tbS('rest',1,1,995)">+</button></div></div>
+        </div>
+      </div>
+      <div id="tb-params-cu" style="display:none">
+        <div class="tb-g2" style="margin-bottom:9px">
+          <div class="tb-f"><label class="tb-lbl">Rounds</label>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('rounds',-1,1,995)">−</button>
+              <div class="tb-sm"><input class="tb-sv tb-sv-inp" id="tbv-rounds-cu" type="number" min="1" max="995" value="8" oninput="tbDirect('rounds',this.value)"><span class="tb-su">rounds</span></div>
+              <button class="tb-sb" onclick="tbS('rounds',1,1,995)">+</button></div></div>
+          <div class="tb-f"><label class="tb-lbl">Effort</label>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('work',-1,1,995)">−</button>
+              <div class="tb-sm"><input class="tb-sv tb-sv-inp" id="tbv-work-cu" type="number" min="1" max="995" value="20" oninput="tbDirect('work',this.value)"><span class="tb-su">sec</span></div>
+              <button class="tb-sb" onclick="tbS('work',1,1,995)">+</button></div></div>
+        </div>
+        <div class="tb-g2">
+          <div class="tb-f"><label class="tb-lbl">Repos entre rounds</label>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('restser',-1,0,995)">−</button>
+              <div class="tb-sm"><input class="tb-sv tb-sv-inp" id="tbv-restser" type="number" min="0" max="995" value="10" oninput="tbDirect('restser',this.value)"><span class="tb-su">sec</span></div>
+              <button class="tb-sb" onclick="tbS('restser',1,0,995)">+</button></div></div>
+          <div class="tb-f"><label class="tb-lbl">Repos entre exercices</label>
+            <div class="tb-stp"><button class="tb-sb" onclick="tbS('restex',-1,0,995)">−</button>
+              <div class="tb-sm"><input class="tb-sv tb-sv-inp" id="tbv-restex" type="number" min="0" max="995" value="30" oninput="tbDirect('restex',this.value)"><span class="tb-su">sec</span></div>
+              <button class="tb-sb" onclick="tbS('restex',1,0,995)">+</button></div></div>
+        </div>
+        <div style="background:rgba(79,110,247,.06);border:1px solid rgba(79,110,247,.18);border-radius:10px;padding:10px 12px;margin-bottom:13px;font-size:10px;color:var(--t3);line-height:1.5">
+          <i class="fas fa-info-circle" style="color:#4F6EF7;margin-right:5px"></i>Chaque exercice complète ses N rounds avant de passer au suivant.
+        </div>
+      </div>
+      <!-- Estimation kcal -->
+      <div class="tb-kcal-est" id="tb-kcal-est">
+        <i class="fas fa-fire" style="color:#FF3B3B;font-size:14px"></i>
+        <span class="tb-kcal-est-v" id="tb-kcal-est-v">~0</span>
+        <span class="tb-kcal-est-l">kcal estimées</span>
+        <span style="margin-left:auto;font-size:10px;color:var(--t3)" id="tb-bpm-est"></span>
+      </div>
+      <!-- Timeline + programme preview -->
+      <div id="tb-timeline-preview" class="tb-timeline"></div>
+      <div id="tb-prog-preview-list" class="tb-prog-preview" style="display:none"></div>
+      <!-- Exercices -->
+      <div class="tb-f">
+        <label class="tb-lbl">Exercices <span id="tb-excnt" style="color:var(--t3)">(0)</span></label>
+        <div class="tb-pills" id="tb-pills"></div>
+        <div class="tb-addrow" style="margin-top:9px">
+          <input class="tb-inp" id="tb-free" type="text" placeholder="Exercice libre…" style="flex:1" onkeydown="if(event.key==='Enter')tbAddFree()">
+          <button class="tb-addico" onclick="tbAddFree()"><i class="fas fa-plus"></i></button>
+        </div>
+      </div>
+      <div id="tb-exwrap" style="display:none;margin-bottom:13px">
+        <label class="tb-lbl">Programme</label>
+        <div class="tb-exlist" id="tb-exlist"></div>
+      </div>
+      <div class="tb-trow"><span class="tb-tlbl"><i class="fas fa-floppy-disk"></i>Enregistrer</span><button class="tb-sw on" id="tb-sw-save" onclick="tbSw('save')"></button></div>
+      <div class="tb-trow"><span class="tb-tlbl"><i class="fas fa-microphone"></i>Coach vocal</span><button class="tb-sw on" id="tb-sw-voice" onclick="tbSw('voice')"></button></div>
+    </div></div>
+    <div class="tb-start-wrap">
+      <div class="tb-start-row">
+        <button class="tb-saveprog-btn" onclick="tbSaveProgram()" title="Sauvegarder ce programme"><i class="fas fa-bookmark"></i></button>
+        <button class="tb-startbtn" id="tb-sbtn" onclick="tbLaunch()" disabled><i class="fas fa-play"></i> Démarrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAYER -->
+  <div class="tb-scr" id="tb-player">
+    <div class="tb-pb ready" id="tb-pb"></div>
+    <div class="tb-pfl" id="tb-pfl"></div>
+    <div class="tb-phase-flash" id="tb-phase-flash"></div>
+    <!-- Get Ready overlay -->
+    <div id="tb-getready">
+      <div class="tb-gr-lbl">PRÉPAREZ-VOUS</div>
+      <div class="tb-gr-num" id="tb-gr-num">3</div>
+    </div>
+    <div class="tb-bpm" id="tb-bpm-badge" style="display:none">
+      <div class="tb-bpm-val" id="tb-bpm-live">—</div>
+      <div class="tb-bpm-lbl">BPM est.</div>
+    </div>
+    <div class="tb-ptop">
+      <button class="tb-stopbtn" onclick="tbAskStop()"><i class="fas fa-stop"></i></button>
+      <div class="tb-prog-wrap">
+        <div class="tb-prog-segs" id="tb-segs"></div>
+        <div class="tb-prog-lbl" id="tb-progl">—</div>
+      </div>
+      <button class="tb-vbtn on" id="tb-vbtn" onclick="tbTogVoice()"><i class="fas fa-microphone"></i></button>
+    </div>
+    <div class="tb-pphase-wrap">
+      <div class="tb-pphase ready" id="tb-pphase"><i class="fas fa-stopwatch" style="margin-right:5px"></i>PRÊT</div>
+    </div>
+    <div class="tb-pex-wrap">
+      <div class="tb-pex" id="tb-pex">Préparez-vous</div>
+      <div class="tb-pex-next-lbl" id="tb-pex-nl">SUIVANT</div>
+      <div class="tb-pex-next" id="tb-pex-next">—</div>
+    </div>
+    <div class="tb-ring-wrap">
+      <svg class="tb-ring-svg ready-glow" id="tb-rsvg" width="256" height="256" viewBox="0 0 256 256">
+        <circle cx="128" cy="128" r="118" fill="none" stroke="rgba(255,255,255,.025)" stroke-width="22"/>
+        <circle class="tb-rtrack" cx="128" cy="128" r="106" fill="none" stroke-width="13"/>
+        <circle class="tb-rtrack-dec" cx="128" cy="128" r="106" fill="none" stroke="rgba(255,255,255,.04)" stroke-width="1.5" stroke-dasharray="5 22" stroke-linecap="round"/>
+        <line class="tb-rtick-lg" x1="128" y1="16" x2="128" y2="30" stroke-width="3"/>
+        <line class="tb-rtick" x1="240" y1="128" x2="226" y2="128" stroke-width="1.8"/>
+        <line class="tb-rtick" x1="128" y1="240" x2="128" y2="226" stroke-width="1.8"/>
+        <line class="tb-rtick" x1="16" y1="128" x2="30" y2="128" stroke-width="1.8"/>
+        <circle class="tb-rarc-glow" id="tb-rarc-glow" cx="128" cy="128" r="106" fill="none" stroke-width="18" stroke="#FF3B3B" stroke-dasharray="665.8" stroke-dashoffset="0"/>
+        <circle class="tb-rarc" id="tb-rarc" cx="128" cy="128" r="106" fill="none" stroke-width="13" stroke="#FF3B3B" stroke-dasharray="665.8" stroke-dashoffset="0"/>
+      </svg>
+      <div class="tb-rcenter">
+        <div class="tb-rnum work" id="tb-rnum">10</div>
+        <div class="tb-runit">sec</div>
+        <div class="tb-rtotal" id="tb-rtotal">00:00</div>
+      </div>
+    </div>
+    <div class="tb-pstats" id="tb-pstats">
+      <div class="tb-pstat"><div class="tb-psval" id="tb-sround">1</div><div class="tb-pslbl">Round</div></div>
+      <div class="tb-pstat"><div class="tb-psval" id="tb-stotal">8</div><div class="tb-pslbl">Total</div></div>
+      <div class="tb-pstat"><div class="tb-psval" id="tb-sex">1</div><div class="tb-pslbl">Exercice</div></div>
+    </div>
+    <div class="tb-pnext">Suivant : <span id="tb-pnext">—</span></div>
+    <div class="tb-pctrls">
+      <button class="tb-ctrl tb-ctrl-sec" onclick="tbPlus10()" title="+10s"><i class="fas fa-plus"></i></button>
+      <button class="tb-ctrl tb-ctrl-main" id="tb-pausebtn" onclick="tbPause()"><i class="fas fa-pause" id="tb-pauseico"></i></button>
+      <button class="tb-ctrl tb-ctrl-sec" onclick="tbSkip()" title="Passer"><i class="fas fa-forward-step"></i></button>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="tb-scr" id="tb-summary">
+    <div class="tb-hdr">
+      <div class="tb-hdr-l">
+        <div class="tb-logo" style="background:linear-gradient(135deg,#0FA86A,#059669)"><i class="fas fa-check" style="color:#fff;font-size:14px"></i></div>
+        <div><div class="tb-hdr-title">Terminé !</div><div class="tb-hdr-sub">RÉSUMÉ DE SESSION</div></div>
+      </div>
+      <button class="tb-icon-btn" onclick="tbClose()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="tb-scroll">
+      <div class="tb-sum-hero">
+        <div class="tb-sum-icon" id="tb-sumico"></div>
+        <div class="tb-sum-ttl" id="tb-sumttl">Excellent travail !</div>
+        <div class="tb-sum-sub" id="tb-sumsub">Session complétée</div>
+      </div>
+      <div class="tb-sum-stats">
+        <div class="tb-ss"><div class="tb-ss-v" id="tb-stime">4:00</div><div class="tb-ss-l">Durée</div></div>
+        <div class="tb-ss"><div class="tb-ss-v" id="tb-srounds">8</div><div class="tb-ss-l">Rounds</div></div>
+        <div class="tb-ss"><div class="tb-ss-v" id="tb-skcal" style="color:#FF3B3B">~80</div><div class="tb-ss-l">kcal</div></div>
+      </div>
+      <!-- Record badge -->
+      <div class="tb-record-badge" id="tb-record-badge">
+        <div class="tb-record-badge-txt" id="tb-record-txt">🏆 Nouveau record !</div>
+        <div class="tb-record-badge-sub" id="tb-record-sub"></div>
+      </div>
+      <!-- Achievement -->
+      <div class="tb-achievement" id="tb-achievement">
+        <span class="tb-ach-icon" id="tb-ach-icon">🏆</span>
+        <div class="tb-ach-title" id="tb-ach-title">Achievement débloqué !</div>
+        <div class="tb-ach-desc" id="tb-ach-desc"></div>
+      </div>
+      <!-- Détail par exercice -->
+      <div class="tb-ex-breakdown" id="tb-ex-breakdown" style="display:none">
+        <div class="tb-ex-breakdown-title">Temps par exercice</div>
+        <div id="tb-ex-breakdown-list"></div>
+      </div>
+      <!-- Comparaison -->
+      <div class="tb-compare" id="tb-compare" style="display:none">
+        <div class="tb-compare-title">VS session précédente</div>
+        <div class="tb-compare-row"><span class="tb-compare-lbl">Durée</span><div class="tb-compare-bar-wrap"><div class="tb-compare-bar" id="tb-cmp-time-bar" style="background:#FF3B3B;width:0%"></div></div><span class="tb-compare-val" id="tb-cmp-time">—</span></div>
+        <div class="tb-compare-row"><span class="tb-compare-lbl">Rounds</span><div class="tb-compare-bar-wrap"><div class="tb-compare-bar" id="tb-cmp-rounds-bar" style="background:#4F6EF7;width:0%"></div></div><span class="tb-compare-val" id="tb-cmp-rounds">—</span></div>
+        <div class="tb-compare-row"><span class="tb-compare-lbl">kcal</span><div class="tb-compare-bar-wrap"><div class="tb-compare-bar" id="tb-cmp-kcal-bar" style="background:#0FA86A;width:0%"></div></div><span class="tb-compare-val" id="tb-cmp-kcal">—</span></div>
+      </div>
+      <!-- Note de séance -->
+      <div class="tb-note-wrap">
+        <label class="tb-lbl" style="padding:0 0 6px">Note de séance</label>
+        <textarea class="tb-note-inp" id="tb-session-note" rows="2" placeholder="Comment s'est passée cette session ? (optionnel)"></textarea>
+      </div>
+      <div class="tb-trow" style="margin:0 15px 11px"><span class="tb-tlbl"><i class="fas fa-floppy-disk"></i>Sauvegarder</span><button class="tb-sw on" id="tb-sumsw" onclick="tbSw('sumsave')"></button></div>
+      <div class="tb-sum-acts">
+        <button class="tb-sbtn tb-sbtn-p" onclick="tbRestart()"><i class="fas fa-rotate-right"></i> Rejouer</button>
+        <button class="tb-sbtn tb-sbtn-s" onclick="tbGoHome()"><i class="fas fa-house"></i> Accueil</button>
+      </div>
+      <button class="tb-export-btn" onclick="tbExportCard()"><i class="fas fa-share-nodes"></i> Partager ma session</button>
+      <button class="tb-export-btn" onclick="tbExportStory()" style="border-color:rgba(139,92,246,.25);color:#8B5CF6"><i class="fas fa-mobile-screen"></i> Story 9:16</button>
+      <div id="tb-aianalysis" style="display:none" class="tb-ai-box">
+        <div class="tb-ai-box-ttl"><i class="fas fa-robot"></i> Analyse IA</div>
+        <div id="tb-aiatxt"></div>
+      </div>
+      <div style="height:16px"></div>
+    </div>
+  </div>
+
+</div></div>
+
+<script>
+(function(){
+'use strict';
+
+const TB_EX=['Burpees','Jump Squats','Mountain Climbers','High Knees','Push-ups',
+ 'Box Jumps','Jumping Jacks','Sprints sur place','Planche dynamique','V-ups',
+ 'Fentes sautées','Squat Thrusters','Corde à sauter','Triceps Dips','Bear Crawl',
+ 'Tuck Jumps','Skater Jumps','Speed Bag','Plank to Downdog','Lateral Shuffles'];
+
+const C={rounds:8,work:20,rest:10,restser:10,restex:30};
+let _mode='classic',_builtinExs=[],_customExs=[];
+let _swSave=true,_swVoice=true,_aiProg=null;
+let _chartPeriod=7;
+function _allExs(){return[..._builtinExs,..._customExs];}
+
+// Player state
+let _run=false,_paus=false,_deadline=0,_pauseRem=0;
+let _raf=null,_chronoRef=null;
+let _phase='ready',_round=0,_exIdx=0,_done=0;
+let _sessionStart=null,_lastSpokenSec=-1,_zoomActive=false;
+let _exTimes={}; // temps par exercice
+const CIRC=665.8;
+
+/* ── Voice ─────────────────────────────────────────────────────── */
+const _syn=window.speechSynthesis;
+let _tbAudioCtx=null,_tbCurrentSrc=null,_tbVoiceCache=null;
+let _sfxCtx=null;
+
+function _sfx(type){
+  try{
+    if(!_sfxCtx)_sfxCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(_sfxCtx.state==='suspended')_sfxCtx.resume();
+    const o=_sfxCtx.createOscillator(),g=_sfxCtx.createGain();
+    o.connect(g);g.connect(_sfxCtx.destination);
+    if(type==='work'){
+      o.frequency.setValueAtTime(880,_sfxCtx.currentTime);
+      o.frequency.setValueAtTime(1100,_sfxCtx.currentTime+.06);
+      g.gain.setValueAtTime(.3,_sfxCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,_sfxCtx.currentTime+.2);
+    } else if(type==='rest'){
+      o.frequency.setValueAtTime(440,_sfxCtx.currentTime);
+      g.gain.setValueAtTime(.2,_sfxCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,_sfxCtx.currentTime+.25);
+    } else if(type==='ready'){
+      o.frequency.setValueAtTime(660,_sfxCtx.currentTime);
+      o.frequency.setValueAtTime(880,_sfxCtx.currentTime+.1);
+      o.frequency.setValueAtTime(1100,_sfxCtx.currentTime+.2);
+      g.gain.setValueAtTime(.25,_sfxCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,_sfxCtx.currentTime+.5);
+    } else if(type==='done'){
+      o.frequency.setValueAtTime(523,_sfxCtx.currentTime);
+      o.frequency.setValueAtTime(659,_sfxCtx.currentTime+.1);
+      o.frequency.setValueAtTime(784,_sfxCtx.currentTime+.2);
+      o.frequency.setValueAtTime(1047,_sfxCtx.currentTime+.35);
+      g.gain.setValueAtTime(.3,_sfxCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,_sfxCtx.currentTime+.6);
+    } else if(type==='beep'){
+      o.frequency.value=800;
+      g.gain.setValueAtTime(.15,_sfxCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,_sfxCtx.currentTime+.08);
+    }
+    o.start(_sfxCtx.currentTime);o.stop(_sfxCtx.currentTime+.7);
+  }catch(e){}
+}
+
+async function _sayGroq(text){
+  try{
+    const key=typeof _aiKeys!=='undefined'&&_aiKeys&&_aiKeys.grok&&_aiKeys.grok.apiKey;
+    if(!key)return false;
+    const resp=await fetch('https://api.groq.com/openai/v1/audio/speech',{method:'POST',headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify({model:'playai-tts',voice:'Celeste-PlayAI',input:text,response_format:'mp3'})});
+    if(!resp.ok)return false;
+    const buf=await resp.arrayBuffer();
+    if(!_tbAudioCtx)_tbAudioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(_tbAudioCtx.state==='suspended')await _tbAudioCtx.resume();
+    const decoded=await _tbAudioCtx.decodeAudioData(buf.slice(0));
+    if(_tbCurrentSrc){try{_tbCurrentSrc.stop();}catch(e){}}
+    const src=_tbAudioCtx.createBufferSource();src.buffer=decoded;src.connect(_tbAudioCtx.destination);src.start(0);_tbCurrentSrc=src;return true;
+  }catch(e){return false;}
+}
+
+function _findFrVoice(){
+  if(_tbVoiceCache)return _tbVoiceCache;
+  const vv=_syn?_syn.getVoices():[];if(!vv.length)return null;
+  const v=vv.find(v=>v.lang==='fr-FR')||vv.find(v=>v.lang==='fr_FR')||vv.find(v=>v.lang.toLowerCase().startsWith('fr'))||vv[0];
+  if(v)_tbVoiceCache=v;return v;
+}
+(function(){
+  if(!_syn)return;
+  const tryLoad=()=>{if(_syn.getVoices().length>0)_findFrVoice();};
+  tryLoad();let t=0;const p=setInterval(()=>{t++;tryLoad();if(t>=30||_tbVoiceCache)clearInterval(p);},100);
+  if('onvoiceschanged' in _syn)_syn.onvoiceschanged=()=>{_findFrVoice();};
+})();
+
+function _speakWS(text,rate,pitch){
+  if(!_syn)return;
+  const u=new SpeechSynthesisUtterance(text);u.lang='fr-FR';u.rate=rate||1.0;u.pitch=pitch||1.0;u.volume=1;
+  const v=_findFrVoice();if(v)u.voice=v;
+  try{if(_syn.speaking)_syn.cancel();_syn.speak(u);}catch(e){setTimeout(()=>{try{_syn.speak(u);}catch(e2){}},100);}
+}
+function _say(t){
+  if(!_swVoice)return;
+  const key=typeof _aiKeys!=='undefined'&&_aiKeys&&_aiKeys.grok&&_aiKeys.grok.apiKey;
+  if(key){_sayGroq(t).then(ok=>{if(!ok)_speakWS(t);});}else _speakWS(t);
+}
+function _cd(sec){
+  if(!_swVoice||!_syn||sec>3||sec<=0||sec===_lastSpokenSec)return;
+  _lastSpokenSec=sec;_sfx('beep');
+  if(_syn.speaking)_syn.cancel();
+  const u=new SpeechSynthesisUtterance(String(sec));u.lang='fr-FR';u.rate=1.2;u.pitch=1.1;u.volume=1;
+  const v=_findFrVoice();if(v)u.voice=v;try{_syn.speak(u);}catch(e){}
+}
+
+/* ── DOM ─────────────────────────────────────────────────────────── */
+const $=id=>document.getElementById(id);
+const txt=(id,v)=>{const e=$(id);if(!e)return;if(e.tagName==='INPUT')e.value=v;else e.textContent=v;};
+const fmt=s=>{const m=Math.floor(s/60),x=s%60;return m+':'+String(x).padStart(2,'0');};
+const fmtH=s=>{const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),x=s%60;return h>0?h+':'+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0'):String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');};
+
+/* ── Navigation ──────────────────────────────────────────────────── */
+function _show(id){['tb-home','tb-builder','tb-player','tb-summary'].forEach(s=>{const e=$(s);if(e)e.classList.toggle('on',s===id);});}
+window.tbGoHome=function(){if(_run){tbAskStop();return;}_show('tb-home');_renderHome();};
+window.tbClose=function(){
+  if(_run){tbAskStop();return;}
+  _doSave();$('tb-overlay').classList.remove('tb-open');document.body.style.overflow='';
+  if(_syn)_syn.cancel();cancelAnimationFrame(_raf);clearInterval(_chronoRef);
+};
+window.tbOpen=function(){
+  $('tb-overlay').classList.add('tb-open');document.body.style.overflow='hidden';
+  _show('tb-home');_renderHome();_renderPills();
+};
+
+/* ── Home ────────────────────────────────────────────────────────── */
+function _renderHome(){_renderStreak();_renderRecords();_renderSaved();_renderHist();}
+
+/* ── Présets rapides ─────────────────────────────────────────────── */
+window.tbPreset=function(type){
+  const presets={
+    classic:{mode:'classic',rounds:8,work:20,rest:10,name:'Tabata Classique',exs:['Burpees','Jump Squats','Mountain Climbers','High Knees']},
+    emom10:{mode:'classic',rounds:10,work:45,rest:15,name:'EMOM 10 min',exs:['Burpees','Jump Squats','Mountain Climbers','Sprints sur place','High Knees']},
+    '3030':{mode:'classic',rounds:10,work:30,rest:30,name:'30-30 Cardio',exs:['Burpees','Mountain Climbers','Jump Squats','Jumping Jacks']},
+    pyramid:{mode:'custom',rounds:5,work:30,restser:10,restex:20,name:'Pyramide',exs:['Push-ups','Squat Thrusters','Planche dynamique']},
+  };
+  const p=presets[type];if(!p)return;
+  _mode=p.mode;_builtinExs=p.exs.filter(e=>TB_EX.includes(e));_customExs=p.exs.filter(e=>!TB_EX.includes(e));
+  C.rounds=p.rounds;C.work=p.work;C.rest=p.rest||10;C.restser=p.restser||10;C.restex=p.restex||30;
+  $('tb-bname').textContent=p.name;$('tb-sname').value=p.name;
+  $('tb-params-cl').style.display=_mode==='classic'?'block':'none';
+  $('tb-params-cu').style.display=_mode==='custom'?'block':'none';
+  _syncC();_renderPills();_renderExlist();_calcDur();_renderTimeline();
+  $('tb-sbtn').disabled=false;txt('tb-excnt','('+_allExs().length+')');_show('tb-builder');
+};
+
+/* ── Builder ─────────────────────────────────────────────────────── */
+window.tbBuild=function(mode){
+  _mode=mode;_builtinExs=[];_customExs=[];
+  $('tb-bname').textContent=mode==='classic'?'Tabata Classique':'Tabata Personnalisé';
+  $('tb-params-cl').style.display=mode==='classic'?'block':'none';
+  $('tb-params-cu').style.display=mode==='custom'?'block':'none';
+  $('tb-sname').value=mode==='classic'?'Tabata Classique':'Mon Tabata Perso';
+  if(mode==='classic'){C.rounds=8;C.work=20;C.rest=10;_syncC();}
+  $('tb-exwrap').style.display='none';$('tb-sbtn').disabled=true;
+  txt('tb-excnt','(0)');_renderPills();_calcDur();_renderTimeline();_show('tb-builder');
+};
+function _syncC(){
+  function _sv(id,v){const e=document.getElementById(id);if(!e)return;if(e.tagName==='INPUT')e.value=v;else e.textContent=v;}
+  _sv('tbv-rounds',C.rounds);_sv('tbv-work',C.work);_sv('tbv-rest',C.rest);
+  _sv('tbv-rounds-cu',C.rounds);_sv('tbv-work-cu',C.work);
+  _sv('tbv-restser',C.restser);_sv('tbv-restex',C.restex);
+}
+window.tbS=function(k,d,mn,mx){
+  C[k]=Math.max(mn,Math.min(mx,C[k]+d));
+  ['tbv-'+k,k==='rounds'?'tbv-rounds-cu':(k==='work'?'tbv-work-cu':null)].filter(Boolean).forEach(id=>{
+    const el=$(id);if(!el)return;if(el.tagName==='INPUT')el.value=C[k];else el.textContent=C[k];
+  });
+  _calcDur();_renderExlist();_renderTimeline();
+};
+window.tbDirect=function(k,v){
+  const n=parseInt(v);if(isNaN(n)||v==='')return;
+  const mn=k==='restser'||k==='restex'?0:1;
+  C[k]=Math.max(mn,Math.min(995,n));
+  if(k==='rounds'){const m=$('tbv-rounds-cu');if(m)m.value=C[k];}
+  if(k==='work'){const m=$('tbv-work-cu');if(m)m.value=C[k];}
+  _calcDur();_renderExlist();_renderTimeline();
+};
+
+function _calcDur(){
+  const exs=_allExs();const n=exs.length||1;
+  let t=0;
+  if(_mode==='classic')t=C.rounds*n*(C.work+C.rest);
+  else{const perEx=C.rounds*C.work+Math.max(0,C.rounds-1)*C.restser;t=n*perEx+Math.max(0,n-1)*C.restex;}
+  txt('tb-durtag',fmt(Math.max(0,t)));
+  const w=(typeof userProfile!=='undefined'&&userProfile.weight)||75;
+  const kcal=Math.round(Math.max(0,t)*w*0.0175/60);
+  txt('tb-kcal-est-v','~'+kcal);
+  const bpm=Math.round(130+C.work/3);txt('tb-bpm-est','~'+bpm+' BPM');
+}
+
+function _renderTimeline(){
+  const tl=$('tb-timeline-preview');const pl=$('tb-prog-preview-list');if(!tl)return;
+  const exs=_allExs();const n=exs.length||1;
+  const segs=[];
+  if(_mode==='classic'){
+    for(let r=0;r<Math.min(C.rounds,16);r++)for(let e=0;e<n;e++){segs.push('work');if(r<C.rounds-1||e<n-1)segs.push('rest');}
+  } else {
+    for(let e=0;e<n;e++){for(let r=0;r<Math.min(C.rounds,8);r++){segs.push('work');if(r<C.rounds-1)segs.push('restser');}if(e<n-1)segs.push('restex');}
+  }
+  tl.innerHTML=segs.slice(0,40).map(s=>`<div class="tb-tl-seg tb-tl-${s==='restser'||s==='restex'?'restex':s}" style="flex:${s==='work'?C.work:s==='restser'?C.restser:C.rest}"></div>`).join('');
+  // Programme preview texte
+  if(pl&&exs.length){
+    pl.style.display='block';
+    let preview='';
+    if(_mode==='classic'){
+      for(let r=0;r<Math.min(C.rounds,3);r++){
+        for(let e=0;e<n;e++){preview+=`R${r+1} · ${exs[e]} ${C.work}s → Repos ${C.rest}s  `;}
+      }
+      if(C.rounds>3)preview+=`… (+${C.rounds-3} rounds)`;
+    } else {
+      for(let e=0;e<Math.min(n,3);e++){
+        preview+=`${exs[e]} : ${C.rounds}×${C.work}s  `;
+      }
+      if(n>3)preview+=`… (+${n-3} exercices)`;
+    }
+    pl.textContent=preview;
+  } else if(pl){pl.style.display='none';}
+}
+
+/* Exercices */
+function _renderPills(){
+  const g=$('tb-pills');if(!g)return;
+  g.innerHTML=TB_EX.map(ex=>`<div class="tb-pill${_builtinExs.includes(ex)?' on':''}" onclick="tbTogEx('${ex.replace(/'/g,"\\'")}')"> ${ex}</div>`).join('');
+}
+window.tbTogEx=function(name){
+  const i=_builtinExs.indexOf(name);if(i>=0)_builtinExs.splice(i,1);else _builtinExs.push(name);
+  _renderPills();_renderExlist();_calcDur();_renderTimeline();
+  $('tb-sbtn').disabled=!_allExs().length;txt('tb-excnt','('+_allExs().length+')');
+};
+window.tbAddFree=function(){
+  const inp=$('tb-free'),v=inp.value.trim();if(!v)return;
+  if(!_customExs.includes(v)&&!_builtinExs.includes(v))_customExs.push(v);
+  inp.value='';_renderPills();_renderExlist();_calcDur();_renderTimeline();
+  $('tb-sbtn').disabled=false;txt('tb-excnt','('+_allExs().length+')');
+};
+function _renderExlist(){
+  const wrap=$('tb-exwrap'),list=$('tb-exlist');if(!wrap||!list)return;
+  const all=_allExs();if(!all.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  const bRows=_builtinExs.map((ex,i)=>`<div class="tb-exrow">
+    <div class="tb-exn">${i+1}</div><span class="tb-exlbl">${ex}</span>
+    <span class="tb-extm">${C.rounds}r·${C.work}s</span>
+    <div class="tb-exmove"><button class="tb-exmove-btn" onclick="tbMoveEx('b',${i},-1)" title="Monter"><i class="fas fa-chevron-up"></i></button><button class="tb-exmove-btn" onclick="tbMoveEx('b',${i},1)" title="Descendre"><i class="fas fa-chevron-down"></i></button></div>
+    <button class="tb-exdel" onclick="tbRmBuiltin(${i})"><i class="fas fa-xmark"></i></button></div>`).join('');
+  const cRows=_customExs.map((ex,i)=>`<div class="tb-exrow custom-ex">
+    <div class="tb-exn">${_builtinExs.length+i+1}</div><span class="tb-exlbl">${ex} <span style="font-size:9px;color:#4F6EF7;font-weight:800">LIBRE</span></span>
+    <span class="tb-extm">${C.rounds}r·${C.work}s</span>
+    <div class="tb-exmove"><button class="tb-exmove-btn" onclick="tbMoveEx('c',${i},-1)"><i class="fas fa-chevron-up"></i></button><button class="tb-exmove-btn" onclick="tbMoveEx('c',${i},1)"><i class="fas fa-chevron-down"></i></button></div>
+    <button class="tb-exdel" onclick="tbRmCustom(${i})"><i class="fas fa-xmark"></i></button></div>`).join('');
+  list.innerHTML=bRows+cRows;
+}
+window.tbMoveEx=function(type,i,dir){
+  const arr=type==='b'?_builtinExs:_customExs;
+  const ni=i+dir;if(ni<0||ni>=arr.length)return;
+  [arr[i],arr[ni]]=[arr[ni],arr[i]];_renderExlist();_renderTimeline();
+};
+window.tbRmBuiltin=function(i){_builtinExs.splice(i,1);_renderPills();_renderExlist();_calcDur();_renderTimeline();if(!_allExs().length)$('tb-sbtn').disabled=true;txt('tb-excnt','('+_allExs().length+')');};
+window.tbRmCustom=function(i){_customExs.splice(i,1);_renderExlist();_calcDur();_renderTimeline();if(!_allExs().length)$('tb-sbtn').disabled=true;txt('tb-excnt','('+_allExs().length+')');};
+
+/* Toggles */
+window.tbSw=function(k){
+  const map={save:'tb-sw-save',voice:'tb-sw-voice',sumsave:'tb-sumsw'};
+  const el=$(map[k]);if(!el)return;el.classList.toggle('on');
+  if(k==='save')_swSave=el.classList.contains('on');
+  if(k==='voice'){_swVoice=el.classList.contains('on');if(!_swVoice&&_syn)_syn.cancel();}
+};
+window.tbTogVoice=function(){_swVoice=!_swVoice;$('tb-vbtn').classList.toggle('on',_swVoice);if(!_swVoice&&_syn)_syn.cancel();};
+
+/* Saved programs */
+window.tbSaveProgram=function(){
+  const name=$('tb-sname')?.value||'Programme';
+  const exs=_allExs();if(!exs.length){alert('Ajoutez des exercices d\'abord.');return;}
+  const progs=_loadProgs();
+  progs.unshift({id:Date.now(),name,mode:_mode,builtin:[..._builtinExs],custom:[..._customExs],rounds:C.rounds,work:C.work,rest:C.rest,restser:C.restser,restex:C.restex});
+  if(progs.length>20)progs.pop();
+  localStorage.setItem('ironplate_tabata_progs',JSON.stringify(progs));
+  const btn=$('tb-sbtn').parentElement.querySelector('.tb-saveprog-btn');
+  if(btn){const orig=btn.innerHTML;btn.innerHTML='<i class="fas fa-check"></i>';btn.style.color='#0FA86A';btn.style.borderColor='rgba(15,168,106,.4)';setTimeout(()=>{btn.innerHTML=orig;btn.style.color='';btn.style.borderColor='';},1500);}
+};
+function _loadProgs(){try{return JSON.parse(localStorage.getItem('ironplate_tabata_progs')||'[]');}catch(e){return[];}}
+function _renderSaved(){
+  const progs=_loadProgs();const lbl=$('tb-saved-lbl'),list=$('tb-saved-list');
+  if(!list)return;
+  if(!progs.length){if(lbl)lbl.style.display='none';list.innerHTML='';return;}
+  if(lbl)lbl.style.display='block';
+  list.innerHTML=progs.slice(0,5).map((p,i)=>{
+    const n=([...(p.builtin||[]),...(p.custom||[])]).length;
+    const dur=p.mode==='classic'?p.rounds*n*(p.work+p.rest):p.rounds*p.work*n;
+    return`<div class="tb-saved-item" onclick="tbLoadProg(${i})">
+      <div class="tb-saved-ico"><i class="fas fa-bookmark"></i></div>
+      <div style="flex:1;min-width:0"><div class="tb-saved-name">${p.name}</div><div class="tb-saved-meta">${p.mode==='classic'?'Classique':'Perso'} · ${n} exo · ${fmt(dur)}</div></div>
+      <button class="tb-saved-del" onclick="event.stopPropagation();tbDelProg(${i})"><i class="fas fa-xmark"></i></button></div>`;
+  }).join('');
+}
+window.tbLoadProg=function(i){
+  const p=_loadProgs()[i];if(!p)return;
+  _mode=p.mode||'classic';_builtinExs=[...(p.builtin||[])];_customExs=[...(p.custom||[])];
+  C.rounds=p.rounds||8;C.work=p.work||20;C.rest=p.rest||10;C.restser=p.restser||10;C.restex=p.restex||30;
+  $('tb-bname').textContent=p.name||'Programme';$('tb-sname').value=p.name||'Programme';
+  $('tb-params-cl').style.display=_mode==='classic'?'block':'none';
+  $('tb-params-cu').style.display=_mode==='custom'?'block':'none';
+  _syncC();_renderPills();_renderExlist();_calcDur();_renderTimeline();
+  $('tb-sbtn').disabled=false;txt('tb-excnt','('+_allExs().length+')');_show('tb-builder');
+};
+window.tbDelProg=function(i){
+  const p=_loadProgs();if(!confirm('Supprimer ce programme ?'))return;
+  p.splice(i,1);localStorage.setItem('ironplate_tabata_progs',JSON.stringify(p));_renderSaved();
+};
+
+/* ── Launch avec Get Ready immersif ─────────────────────────────── */
+window.tbLaunch=function(){
+  const exs=_allExs();if(!exs.length)return;
+  _round=0;_exIdx=0;_done=0;_run=true;_paus=false;
+  _lastSpokenSec=-1;_zoomActive=false;_exTimes={};
+  exs.forEach(e=>_exTimes[e]=0);
+  cancelAnimationFrame(_raf);clearInterval(_chronoRef);
+  _buildSegs();_startChrono();
+  _show('tb-player');
+  $('tb-vbtn').classList.toggle('on',_swVoice);
+  $('tb-player').classList.remove('paused');
+  txt('tb-rtotal','00:00');
+  const bpmBadge=$('tb-bpm-badge');if(bpmBadge)bpmBadge.style.display='block';
+  txt('tb-bpm-live',Math.round(130+C.work/3));
+  _hideNext();
+  if(_tbAudioCtx&&_tbAudioCtx.state==='suspended')_tbAudioCtx.resume();
+  if(_sfxCtx&&_sfxCtx.state==='suspended')_sfxCtx.resume();
+  // Get Ready immersif
+  _doGetReady(()=>{
+    _say('C\'est parti !');
+    _startPhase('work',C.work);
+  });
+};
+
+/* Get Ready countdown dramatique */
+function _doGetReady(cb){
+  const overlay=$('tb-getready');const numEl=$('tb-gr-num');
+  if(!overlay||!numEl){cb();return;}
+  overlay.classList.add('on');
+  _sfx('ready');
+  let count=3;
+  numEl.textContent=count;numEl.classList.add('pulse');
+  _say('Préparez-vous');
+  const iv=setInterval(()=>{
+    count--;
+    if(count<=0){clearInterval(iv);overlay.classList.remove('on');cb();return;}
+    numEl.textContent=count;
+    numEl.classList.remove('pulse');void numEl.offsetWidth;numEl.classList.add('pulse');
+    _sfx('beep');
+  },900);
+}
+
+/* Segments */
+function _buildSegs(){
+  const segs=$('tb-segs');if(!segs)return;
+  const exs=_allExs();const total=C.rounds*exs.length;
+  segs.innerHTML=Array.from({length:Math.min(total,32)},(_,i)=>`<div class="tb-prog-seg" id="tb-seg-${i}"></div>`).join('');
+}
+function _updateSegs(){
+  const exs=_allExs();const total=C.rounds*exs.length;
+  const gDone=_exIdx*C.rounds+_round;
+  for(let i=0;i<Math.min(total,32);i++){
+    const seg=$('tb-seg-'+i);if(!seg)continue;
+    if(i<gDone)seg.className='tb-prog-seg done';
+    else if(i===gDone&&_phase==='work')seg.className='tb-prog-seg active';
+    else seg.className='tb-prog-seg';
+  }
+  txt('tb-progl','Exo '+((_exIdx)+1)+'/'+exs.length+' · Round '+(_round+1)+'/'+C.rounds);
+}
+
+/* Chrono */
+function _startChrono(){
+  clearInterval(_chronoRef);
+  _chronoRef=setInterval(()=>{
+    if(!_run||_paus||_sessionStart===null)return;
+    txt('tb-rtotal',fmtH(Math.floor((Date.now()-_sessionStart)/1000)));
+    // Comptabiliser le temps par exercice
+    if(_phase==='work'){const ex=_allExs()[_exIdx];if(ex)_exTimes[ex]=(_exTimes[ex]||0)+1;}
+  },1000);
+  _sessionStart=Date.now();
+}
+
+/* Phase engine */
+function _startPhase(phase,sec){
+  _phase=phase;_lastSpokenSec=-1;
+  _deadline=Date.now()+sec*1000;
+  _updateUI(phase,sec);
+  cancelAnimationFrame(_raf);_tick();
+}
+function _pDur(p){return{work:C.work,rest:C.rest,restser:C.restser,restex:C.restex,ready:3,done:1}[p]||1;}
+function _tick(){
+  if(!_run)return;
+  if(_paus){_raf=requestAnimationFrame(_tick);return;}
+  const rem=Math.max(0,Math.ceil((_deadline-Date.now())/1000));
+  _updateTimer(rem,_pDur(_phase));
+  _cd(rem);
+  if((_phase==='rest'||_phase==='restex')&&rem<=3&&rem>0)_showNext();
+  else if((_phase==='work'||_phase==='ready')&&_zoomActive)_hideNext();
+  if(rem<=0){_nextPhase();return;}
+  _raf=requestAnimationFrame(_tick);
+}
+function _updateTimer(rem,total){
+  txt('tb-rnum',rem);
+  const arc=$('tb-rarc'),arcG=$('tb-rarc-glow');
+  if(arc||arcG){const off=CIRC*(1-(total>0?rem/total:0));if(arc)arc.style.strokeDashoffset=off;if(arcG)arcG.style.strokeDashoffset=off;}
+  if(rem<=3&&rem>0){const el=$('tb-rnum');if(el){el.classList.remove('tb-bounce');void el.offsetWidth;el.classList.add('tb-bounce');}}
+  _updateSegs();
+}
+function _triggerFlash(phase){
+  const el=$('tb-phase-flash');if(!el)return;
+  el.className='tb-phase-flash';void el.offsetWidth;
+  el.className='tb-phase-flash flash-'+phase;
+}
+function _updateUI(phase,sec){
+  const cols={work:'#FF3B3B',rest:'#3060FF',restser:'#8B5CF6',restex:'#3060FF',ready:'#FFB800',done:'#0FA86A'};
+  const cls={work:'work',rest:'rest',restser:'rest',restex:'rest',ready:'ready',done:'done'};
+  const labels={work:'EFFORT',rest:'REPOS',restser:'REPOS ROUND',restex:'REPOS EXERCICE',ready:'PRÊT',done:'TERMINÉ'};
+  const icons={work:'fa-bolt',rest:'fa-moon',restser:'fa-pause',restex:'fa-arrow-right-arrow-left',ready:'fa-stopwatch',done:'fa-check'};
+  const exs=_allExs();const col=cols[phase]||'#FF3B3B';const c=cls[phase]||'ready';
+  const pb=$('tb-pb'),ph=$('tb-pphase'),arc=$('tb-rarc'),arcG=$('tb-rarc-glow'),fl=$('tb-pfl'),rsvg=$('tb-rsvg'),rnum=$('tb-rnum');
+  if(pb)pb.className='tb-pb '+c;
+  if(ph){ph.innerHTML=`<i class="fas ${icons[phase]||'fa-stopwatch'}" style="margin-right:5px"></i>${labels[phase]||phase.toUpperCase()}`;ph.className='tb-pphase '+c;}
+  if(arc){arc.style.stroke=col;arc.style.strokeDashoffset='0';}
+  if(arcG){arcG.style.stroke=col;arcG.style.strokeDashoffset='0';}
+  if(rsvg)rsvg.setAttribute('class','tb-ring-svg '+c+'-glow');
+  if(rnum)rnum.className='tb-rnum '+c;
+  // Flash de phase
+  _triggerFlash(c);
+  if(fl&&phase!=='ready'&&phase!=='done'){fl.style.background=col;fl.classList.add('go');setTimeout(()=>fl.classList.remove('go'),160);}
+  // Vibration patterns distinctifs
+  if(navigator.vibrate){
+    if(phase==='work')navigator.vibrate([60,30,60]);
+    else if(phase==='rest'||phase==='restex')navigator.vibrate([200]);
+    else if(phase==='done')navigator.vibrate([100,50,100,50,300]);
+  }
+  // Sons
+  if(phase==='work')_sfx('work');else if(phase==='rest'||phase==='restser'||phase==='restex')_sfx('rest');
+  // Exercice name
+  const exname={work:exs[_exIdx]||'GO',rest:'Repos',restser:'Repos — round suivant',restex:'Repos — exercice suivant',ready:'Préparez-vous',done:'Bravo !'}[phase]||'—';
+  const pexEl=$('tb-pex');
+  if(pexEl){pexEl.className='tb-pex';void pexEl.offsetWidth;pexEl.textContent=exname;pexEl.className='tb-pex slide';}
+  // BPM dynamique
+  const bpmVal=phase==='work'?Math.round(155+C.work/4):Math.round(100+C.rest/4);
+  txt('tb-bpm-live',bpmVal);
+  txt('tb-sround',_round+1);txt('tb-stotal',C.rounds);txt('tb-sex',_exIdx+1);
+  const ni=(_exIdx+1)%exs.length;
+  const isAbsLast=(_round+1>=C.rounds&&_exIdx+1>=exs.length);
+  txt('tb-pnext',isAbsLast?'FIN !':(exs[ni]||'—'));
+  _updateSegs();
+  // Sync musique app
+  if(phase==='work'&&window._musPlaying&&window._musPaused&&typeof musPauseResume==='function')musPauseResume();
+  else if(phase==='rest'&&window._musPlaying&&!window._musPaused&&typeof musPauseResume==='function')musPauseResume();
+}
+function _showNext(){
+  if(_zoomActive)return;_zoomActive=true;
+  const exs=_allExs();let n='';
+  if(_mode==='classic')n=exs[(_exIdx+1)%exs.length]||'FIN';
+  else{if(_round+1<C.rounds)n=exs[_exIdx]+' (round '+(_round+2)+')';else if(_exIdx+1<exs.length)n=exs[_exIdx+1];else n='Terminé !';}
+  const lbl=$('tb-pex-nl'),el=$('tb-pex-next');
+  if(lbl)lbl.style.display='block';
+  if(el){el.style.display='block';el.textContent=n;el.classList.add('zoom');}
+}
+function _hideNext(){
+  _zoomActive=false;
+  const lbl=$('tb-pex-nl'),el=$('tb-pex-next');
+  if(lbl)lbl.style.display='none';
+  if(el){el.style.display='none';el.classList.remove('zoom');}
+}
+
+/* Logique phases */
+function _nextPhase(){
+  if(!_run)return;
+  const exs=_allExs();
+  if(_phase==='ready'){_say(_mW());_startPhase('work',C.work);return;}
+  if(_phase==='work'){
+    _done++;_hideNext();
+    const lastRnd=_round+1>=C.rounds,lastEx=_exIdx+1>=exs.length;
+    if(_mode==='classic'){
+      const lastExInRnd=(_exIdx+1)>=exs.length;
+      if(lastExInRnd){if(_round+1>=C.rounds){_phaseDone();return;}_round++;_exIdx=0;_say(_mR());_startPhase('rest',C.rest);}
+      else{_exIdx++;_say(_mR());_startPhase('rest',C.rest);}
+    } else {
+      if(!lastRnd){_round++;if(C.restser>0){_say('Round '+(_round+1));_startPhase('restser',C.restser);}else{_say(_mW());_startPhase('work',C.work);}}
+      else{if(!lastEx){_exIdx++;_round=0;_say('Exercice suivant : '+exs[_exIdx]);if(C.restex>0)_startPhase('restex',C.restex);else{_say(_mW());_startPhase('work',C.work);}}else{_phaseDone();}}
+    }
+    return;
+  }
+  if(['rest','restser','restex'].includes(_phase)){_hideNext();_say(_mW());_startPhase('work',C.work);}
+}
+
+function _phaseDone(){
+  _run=false;cancelAnimationFrame(_raf);clearInterval(_chronoRef);
+  const total=C.rounds*_allExs().length;
+  for(let i=0;i<Math.min(total,32);i++){const s=$('tb-seg-'+i);if(s)s.className='tb-prog-seg done';}
+  const pb=$('tb-pb');if(pb)pb.className='tb-pb done';
+  const ph=$('tb-pphase');if(ph){ph.innerHTML='<i class="fas fa-check" style="margin-right:5px"></i>TERMINÉ';ph.className='tb-pphase done';}
+  const pexEl=$('tb-pex');if(pexEl){pexEl.className='tb-pex slide';pexEl.textContent='Bravo !';}
+  _triggerFlash('done');
+  if(navigator.vibrate)navigator.vibrate([100,50,100,50,300]);
+  _sfx('done');
+  _say('Tabata terminé ! Excellent travail !');
+  // Reprendre la musique app si elle était en pause
+  if(window._musPlaying&&window._musPaused&&typeof musPauseResume==='function')musPauseResume();
+  _tbFireworks();
+  setTimeout(_showSum,2800);
+}
+
+/* Feu d'artifice */
+function _tbFireworks(){
+  const player=$('tb-player');if(!player)return;
+  const cv=document.createElement('canvas');cv.id='tb-fw-canvas';
+  cv.style.cssText='position:absolute;inset:0;z-index:20;pointer-events:none;width:100%;height:100%';
+  cv.width=player.offsetWidth||360;cv.height=player.offsetHeight||640;
+  player.appendChild(cv);
+  const ctx=cv.getContext('2d');const W=cv.width,H=cv.height;
+  const particles=[];
+  const colors=['#FF3B3B','#FF7A00','#FFB800','#0FA86A','#4F6EF7','#FF60A0','#fff','#60D8FF'];
+  function burst(x,y,n){
+    const c=colors[Math.floor(Math.random()*colors.length)];
+    for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=2+Math.random()*6;
+      particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,alpha:1,color:c,size:2+Math.random()*3,gravity:.08+Math.random()*.06,decay:.012+Math.random()*.01,sparkle:Math.random()>.5});}
+  }
+  [{x:W*.25,y:H*.25,t:0},{x:W*.75,y:H*.2,t:200},{x:W*.5,y:H*.15,t:400},{x:W*.15,y:H*.4,t:600},
+   {x:W*.85,y:H*.35,t:800},{x:W*.4,y:H*.1,t:1000},{x:W*.6,y:H*.2,t:1200},{x:W*.5,y:H*.3,t:1500},
+   {x:W*.3,y:H*.15,t:1700},{x:W*.7,y:H*.1,t:1900}].forEach(b=>setTimeout(()=>burst(b.x,b.y,55+Math.floor(Math.random()*30)),b.t));
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);frame++;
+    for(let i=particles.length-1;i>=0;i--){
+      const p=particles[i];ctx.globalAlpha=p.alpha;
+      if(p.sparkle&&frame%3===0){
+        ctx.save();ctx.translate(p.x,p.y);ctx.rotate(frame*.1);ctx.beginPath();
+        for(let k=0;k<4;k++){ctx.lineTo(Math.cos(k*Math.PI/2)*p.size*1.8,Math.sin(k*Math.PI/2)*p.size*1.8);ctx.lineTo(Math.cos((k+.5)*Math.PI/2)*p.size*.6,Math.sin((k+.5)*Math.PI/2)*p.size*.6);}
+        ctx.closePath();ctx.fillStyle=p.color;ctx.fill();ctx.restore();
+      } else {ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fillStyle=p.color;ctx.fill();}
+      ctx.globalAlpha=1;
+      p.x+=p.vx;p.y+=p.vy;p.vy+=p.gravity;p.vx*=.98;p.alpha-=p.decay;
+      if(p.alpha<=0)particles.splice(i,1);
+    }
+    if(frame<220||particles.length>0)requestAnimationFrame(draw);else cv.remove();
+  }
+  requestAnimationFrame(draw);
+}
+
+/* Controls */
+window.tbPause=function(){
+  _paus=!_paus;
+  if(_paus){_pauseRem=Math.max(0,Math.ceil((_deadline-Date.now())/1000));if(_syn)_syn.cancel();$('tb-player').classList.add('paused');}
+  else{_deadline=Date.now()+_pauseRem*1000;_lastSpokenSec=-1;_say('Reprise !');$('tb-player').classList.remove('paused');}
+  const ico=$('tb-pauseico');if(ico)ico.className=_paus?'fas fa-play':'fas fa-pause';
+};
+window.tbPlus10=function(){if(_run)_deadline+=10000;};
+window.tbSkip=function(){if(_run){cancelAnimationFrame(_raf);_deadline=Date.now()-100;_nextPhase();}};
+window.tbAskStop=function(){
+  if(!_run&&!$('tb-player').classList.contains('on'))return;
+  if(confirm('Arrêter la session ?')){
+    _run=false;_paus=false;cancelAnimationFrame(_raf);clearInterval(_chronoRef);
+    if(_syn)_syn.cancel();_hideNext();_show('tb-home');
+  }
+};
+function _mW(){const r=_round+1,t=C.rounds;const a=['C\'est parti !','Explosez !','Tout donner !',r===t?'Dernier round !':'Round '+r+' sur '+t,'Poussez !','Allez !'];return a[Math.floor(Math.random()*a.length)];}
+function _mR(){const a=['Repos !','Soufflez !','Récupérez !','Bien joué !','Respirez !','Excellent !'];return a[Math.floor(Math.random()*a.length)];}
+
+/* ── Summary ─────────────────────────────────────────────────────── */
+function _showSum(){
+  const el=_sessionStart?Math.round((Date.now()-_sessionStart)/1000):0;
+  const w=(typeof userProfile!=='undefined'&&userProfile.weight)||75;
+  const kcal=Math.round(_done*(C.work+(C.rest||C.restser||0))*w*0.0175/60);
+  const exs=_allExs();const maxR=C.rounds*exs.length;
+  const ratio=maxR>0?_done/maxR:0;
+  const tier=ratio>=1?'perf':ratio>=.75?'great':ratio>=.5?'good':'ok';
+  const ico={perf:'fa-trophy',great:'fa-fire-flame-curved',good:'fa-thumbs-up',ok:'fa-circle-check'};
+  const col={perf:'#FFB800',great:'#FF3B3B',good:'#4F6EF7',ok:'#6B7280'};
+  const ttl={perf:'Performance parfaite !',great:'Excellent travail !',good:'Bien joué !',ok:'Bonne session !'};
+  const si=$('tb-sumico');if(si)si.innerHTML=`<i class="fas ${ico[tier]}" style="font-size:28px;color:${col[tier]}"></i>`;
+  txt('tb-sumttl',ttl[tier]);txt('tb-sumsub',fmtH(el)+' · '+exs.slice(0,3).join(', ')+(exs.length>3?'…':''));
+  txt('tb-stime',fmtH(el));txt('tb-srounds',_done);txt('tb-skcal','~'+kcal);
+  const sw=$('tb-sumsw');if(sw)sw.classList.toggle('on',_swSave);
+  const note=$('tb-session-note');if(note)note.value='';
+  _show('tb-summary');
+  _checkRecord(el,_done,kcal);
+  _checkAchievements(kcal);
+  _renderExBreakdown(el);
+  _renderCompare(el,_done,kcal);
+  _aiSum(el,kcal);
+}
+
+/* Record badge */
+function _checkRecord(el,rounds,kcal){
+  const h=_loadH();const badge=$('tb-record-badge');if(!badge)return;
+  badge.style.display='none';
+  if(!h.length)return;
+  const prevBestKcal=Math.max(...h.map(s=>s.kcal||0));
+  const prevBestRounds=Math.max(...h.map(s=>s.rounds||0));
+  let rec='';
+  if(kcal>prevBestKcal)rec='🔥 Nouveau record de calories ! '+kcal+' kcal';
+  else if(rounds>prevBestRounds)rec='⚡ Nouveau record de rounds ! '+rounds+' rounds';
+  if(rec){
+    badge.style.display='block';
+    txt('tb-record-txt',rec);
+    txt('tb-record-sub','Meilleure performance sur ce programme !');
+  }
+}
+
+/* Détail par exercice */
+function _renderExBreakdown(totalEl){
+  const wrap=$('tb-ex-breakdown'),list=$('tb-ex-breakdown-list');if(!wrap||!list)return;
+  const exs=_allExs();
+  const times=exs.map(e=>({name:e,secs:_exTimes[e]||0})).filter(e=>e.secs>0);
+  if(!times.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  const maxT=Math.max(...times.map(e=>e.secs));
+  list.innerHTML=times.map(e=>`
+    <div class="tb-ex-row">
+      <div class="tb-ex-row-name">${e.name}</div>
+      <div class="tb-ex-bar-wrap"><div class="tb-ex-bar" style="width:${Math.round(e.secs/maxT*100)}%"></div></div>
+      <div class="tb-ex-time">${fmt(e.secs)}</div>
+    </div>`).join('');
+}
+
+function _checkAchievements(kcal){
+  const h=_loadH();const total=h.length;
+  let ach=null;
+  if(total===0)ach={icon:'⚡',title:'Premier Tabata !',desc:'Vous venez de terminer votre première session.'};
+  else if(total===9)ach={icon:'🏅',title:'10 sessions !',desc:'Vous avez complété 10 sessions Tabata.'};
+  else if(total===49)ach={icon:'🏆',title:'50 sessions !',desc:'50 sessions — vous êtes un warrior !'};
+  else if(_done>=32)ach={icon:'💪',title:'Machine !',desc:'32 rounds ou plus en une session.'};
+  else if(kcal>=200)ach={icon:'🔥',title:'Brûleur !',desc:'Plus de 200 kcal en une session.'};
+  const streak=_calcStreak(h);
+  if(streak===7)ach={icon:'🗓️',title:'7 jours consécutifs !',desc:'Une semaine sans relâche.'};
+  const el=$('tb-achievement');
+  if(el&&ach){txt('tb-ach-icon',ach.icon);txt('tb-ach-title',ach.title);txt('tb-ach-desc',ach.desc);el.style.display='block';}
+  else if(el){el.style.display='none';}
+}
+
+function _renderCompare(el,rounds,kcal){
+  const h=_loadH();const comp=$('tb-compare');if(!comp)return;
+  if(!h.length){comp.style.display='none';return;}
+  const prev=h[0];comp.style.display='block';
+  const maxT=Math.max(el,prev.elapsed||1),maxR=Math.max(rounds,prev.rounds||1),maxK=Math.max(kcal,prev.kcal||1);
+  const bar=(id,pct,color)=>{const e=$(id);if(e){e.style.background=color;setTimeout(()=>e.style.width=Math.min(100,Math.round(pct*100))+'%',100);}};
+  bar('tb-cmp-time-bar',el/maxT,'#FF3B3B');txt('tb-cmp-time',fmtH(el));
+  bar('tb-cmp-rounds-bar',rounds/maxR,'#4F6EF7');txt('tb-cmp-rounds',rounds);
+  bar('tb-cmp-kcal-bar',kcal/maxK,'#0FA86A');txt('tb-cmp-kcal','~'+kcal);
+}
+
+async function _aiSum(el,kcal){
+  if(typeof _callAI!=='function')return;
+  try{
+    const w=(typeof userProfile!=='undefined'&&userProfile.weight)||75;
+    const p=`Coach Tabata. 2 phrases max, feedback enthousiaste + conseil. Session: ${fmtH(el)}, ${_done} rounds, ${_allExs().join(', ')}, ~${kcal}kcal, ${w}kg. Français.`;
+    const r=await _callAI([{role:'user',content:p}],null,'Expert HIIT. 2 phrases max en français.');
+    if(r&&!r.startsWith('__ERROR__')){$('tb-aianalysis').style.display='block';txt('tb-aiatxt',r);}
+  }catch(e){}
+}
+
+window.tbRestart=function(){_doSave();tbLaunch();};
+
+/* Export carte 16:9 */
+window.tbExportCard=function(){
+  const el=_sessionStart?Math.round((Date.now()-_sessionStart)/1000):0;
+  const w=(typeof userProfile!=='undefined'&&userProfile.weight)||75;
+  const kcal=Math.round(_done*(C.work+(C.rest||0))*w*0.0175/60);
+  const exs=_allExs();
+  const cv=document.createElement('canvas');cv.width=480;cv.height=240;
+  const ctx=cv.getContext('2d');
+  const grad=ctx.createLinearGradient(0,0,480,240);grad.addColorStop(0,'#0a0c16');grad.addColorStop(1,'#1a1030');
+  ctx.fillStyle=grad;ctx.fillRect(0,0,480,240);
+  ctx.fillStyle='rgba(255,60,60,.15)';ctx.fillRect(0,0,480,80);
+  ctx.fillStyle='#FF3B3B';ctx.font='bold 28px system-ui,sans-serif';ctx.fillText('⚡ TABATA',24,46);
+  ctx.strokeStyle='rgba(255,255,255,.1)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(24,60);ctx.lineTo(456,60);ctx.stroke();
+  ctx.font='bold 42px system-ui,sans-serif';ctx.fillStyle='#fff';ctx.fillText(fmtH(el),24,110);
+  ctx.font='bold 14px system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,.45)';ctx.fillText('DURÉE',24,128);
+  ctx.font='bold 42px system-ui,sans-serif';ctx.fillStyle='#FF6060';ctx.fillText(_done,180,110);
+  ctx.font='bold 14px system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,.45)';ctx.fillText('ROUNDS',180,128);
+  ctx.font='bold 42px system-ui,sans-serif';ctx.fillStyle='#FFB800';ctx.fillText('~'+kcal,320,110);
+  ctx.font='bold 14px system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,.45)';ctx.fillText('KCAL',320,128);
+  ctx.font='bold 12px system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,.5)';
+  ctx.fillText(exs.slice(0,4).join(' · ')+(exs.length>4?'…':''),24,168);
+  ctx.font='500 11px system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,.3)';
+  ctx.fillText(new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'}),24,200);
+  ctx.fillText('IronPlate · Tabata',330,200);
+  const a=document.createElement('a');a.download='tabata-'+Date.now()+'.png';a.href=cv.toDataURL('image/png');a.click();
+};
+
+/* Export story 9:16 */
+window.tbExportStory=function(){
+  const el=_sessionStart?Math.round((Date.now()-_sessionStart)/1000):0;
+  const w=(typeof userProfile!=='undefined'&&userProfile.weight)||75;
+  const kcal=Math.round(_done*(C.work+(C.rest||0))*w*0.0175/60);
+  const exs=_allExs();
+  const cv=document.createElement('canvas');cv.width=360;cv.height=640;
+  const ctx=cv.getContext('2d');
+  // Fond
+  const grad=ctx.createLinearGradient(0,0,0,640);grad.addColorStop(0,'#0a0c16');grad.addColorStop(.5,'#100820');grad.addColorStop(1,'#0a1016');
+  ctx.fillStyle=grad;ctx.fillRect(0,0,360,640);
+  // Cercle décoratif
+  ctx.beginPath();ctx.arc(180,280,160,0,Math.PI*2);ctx.strokeStyle='rgba(255,60,60,.12)';ctx.lineWidth=1;ctx.stroke();
+  ctx.beginPath();ctx.arc(180,280,130,0,Math.PI*2);ctx.strokeStyle='rgba(255,60,60,.08)';ctx.lineWidth=1;ctx.stroke();
+  // Logo
+  ctx.fillStyle='#FF3B3B';ctx.font='bold 18px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText('⚡ IRONPLATE TABATA',180,50);
+  ctx.strokeStyle='rgba(255,60,60,.25)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(40,62);ctx.lineTo(320,62);ctx.stroke();
+  // Stats centrales
+  ctx.textAlign='center';
+  ctx.font='bold 72px system-ui,sans-serif';ctx.fillStyle='#fff';ctx.fillText(fmtH(el),180,200);
+  ctx.font='bold 13px system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,.35)';ctx.fillText('DURÉE DE SESSION',180,222);
+  // Rounds + kcal
+  ctx.font='bold 48px system-ui,sans-serif';ctx.fillStyle='#FF6060';ctx.textAlign='left';ctx.fillText(_done,55,310);
+  ctx.font='bold 11px system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,.35)';ctx.fillText('ROUNDS',55,330);
+  ctx.font='bold 48px system-ui,sans-serif';ctx.fillStyle='#FFB800';ctx.textAlign='right';ctx.fillText('~'+kcal,305,310);
+  ctx.font='bold 11px system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,.35)';ctx.fillText('KCAL',305,330);
+  // Exercices
+  ctx.textAlign='center';ctx.font='bold 13px system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,.55)';
+  exs.slice(0,5).forEach((e,i)=>ctx.fillText(e,180,400+i*26));
+  // Date + footer
+  ctx.font='500 11px system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,.25)';
+  ctx.fillText(new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'}),180,590);
+  const a=document.createElement('a');a.download='tabata-story-'+Date.now()+'.png';a.href=cv.toDataURL('image/png');a.click();
+};
+
+/* ── History + streak + records ──────────────────────────────────── */
+function _loadH(){try{return JSON.parse(localStorage.getItem('ironplate_tabata_history')||'[]');}catch(e){return[];}}
+function _doSave(){
+  const sw=$('tb-sumsw');if(!sw||!sw.classList.contains('on')||!_sessionStart)return;
+  const el=Math.round((Date.now()-_sessionStart)/1000);
+  const w=(typeof userProfile!=='undefined'&&userProfile.weight)||75;
+  const kcal=Math.round(_done*(C.work+(C.rest||C.restser||0))*w*0.0175/60);
+  const note=$('tb-session-note');
+  const h=_loadH();
+  h.unshift({id:Date.now(),date:new Date().toISOString(),name:$('tb-sname')?.value||'Tabata',mode:_mode,exercises:_allExs(),rounds:_done,totalRounds:C.rounds*_allExs().length,work:C.work,rest:_mode==='classic'?C.rest:C.restser,elapsed:el,kcal,note:note?note.value.trim():''});
+  if(h.length>50)h.pop();localStorage.setItem('ironplate_tabata_history',JSON.stringify(h));
+  _sessionStart=null;
+}
+function _calcStreak(h){
+  if(!h.length)return 0;
+  const now=new Date();now.setHours(0,0,0,0);
+  const days=h.map(s=>{const d=new Date(s.date);d.setHours(0,0,0,0);return d.getTime();});
+  const uniq=[...new Set(days)].sort((a,b)=>b-a);
+  let streak=0,prev=null;
+  for(const d of uniq){
+    if(prev===null){const diff=Math.floor((now-d)/86400000);if(diff>1)break;streak=1;}
+    else{const diff=Math.floor((prev-d)/86400000);if(diff===1)streak++;else break;}
+    prev=d;
+  }
+  return streak;
+}
+function _renderStreak(){
+  const h=_loadH();const streak=_calcStreak(h);
+  const best=h.length?Math.max(...(function(){
+    const days=h.map(s=>{const d=new Date(s.date);d.setHours(0,0,0,0);return d.getTime();});
+    const uniq=[...new Set(days)].sort((a,b)=>b-a);
+    let best=0,cur=0,prev=null;
+    for(const d of uniq){if(prev===null||Math.floor((prev-d)/86400000)===1)cur++;else cur=1;if(cur>best)best=cur;prev=d;}
+    return[best];
+  })(),0):0;
+  txt('tb-streak-val',streak);txt('tb-streak-best',best);
+}
+function _renderRecords(){
+  const h=_loadH();
+  txt('tb-rec-sessions',h.length);
+  txt('tb-rec-kcal',h.reduce((a,s)=>a+(s.kcal||0),0));
+  txt('tb-rec-rounds',h.reduce((a,s)=>a+(s.rounds||0),0));
+}
+function _renderHist(){
+  const h=_loadH(),list=$('tb-histlist'),zone=$('tb-chartzone'),toggle=$('tb-chart-toggle');if(!list)return;
+  if(!h.length){list.innerHTML='<div class="tb-empty"><i class="fas fa-stopwatch" style="font-size:24px;opacity:.2;display:block;margin-bottom:8px"></i>Aucune session.<br>Lancez votre premier Tabata !</div>';if(zone)zone.style.display='none';if(toggle)toggle.style.display='none';return;}
+  list.innerHTML=h.slice(0,5).map((s,i)=>{
+    const d=new Date(s.date);const ds=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    return`<div class="tb-hi" onclick="tbReplay(${i})">
+      <div class="tb-hi-ico"><i class="fas fa-stopwatch"></i></div>
+      <div style="flex:1;min-width:0"><div class="tb-hi-name">${s.name||'Tabata'}${s.note?` <i class="fas fa-note-sticky" style="font-size:9px;color:#FFB800;margin-left:4px" title="${s.note}"></i>`:''}</div><div class="tb-hi-meta">${ds} · ${fmtH(s.elapsed||0)} · ${(s.exercises||[]).slice(0,2).join(', ')}</div></div>
+      <div class="tb-hi-r"><div class="tb-hi-kcal">~${s.kcal||0} kcal</div><button class="tb-hi-del" onclick="event.stopPropagation();tbDel(${i})"><i class="fas fa-trash-can"></i></button></div>
+    </div>`;
+  }).join('');
+  if(zone){zone.style.display='block';_renderChart(h,_chartPeriod);}
+  if(toggle)toggle.style.display='flex';
+}
+
+window.tbChartPeriod=function(days){
+  _chartPeriod=days;
+  $('tb-ct-7').classList.toggle('on',days===7);
+  $('tb-ct-30').classList.toggle('on',days===30);
+  _renderChart(_loadH(),days);
+};
+
+function _renderChart(h,days){
+  days=days||7;
+  const wrap=$('tb-chartzone');if(!wrap)return;
+  const nowClean=new Date();nowClean.setHours(0,0,0,0);
+  const cnts=new Array(days).fill(0);
+  const kcals=new Array(days).fill(0);
+  h.forEach(function(s){
+    const d=new Date(s.date);d.setHours(0,0,0,0);
+    const df=Math.floor((nowClean-d)/86400000);
+    if(df>=0&&df<days){cnts[days-1-df]++;kcals[days-1-df]+=(s.kcal||0);}
+  });
+  const mx=Math.max.apply(null,cnts.concat([1]));
+  const DAYS=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  // Pour 30j, afficher par semaine
+  const step=days<=7?1:Math.ceil(days/7);
+  let bars='';
+  for(let i=0;i<days;i+=step){
+    const d=new Date(nowClean);d.setDate(nowClean.getDate()-(days-1-i));
+    const isToday=(i===days-1)||(i+step>days-1&&days>7);
+    const c=cnts.slice(i,i+step).reduce((a,b)=>a+b,0);
+    const k=kcals.slice(i,i+step).reduce((a,b)=>a+b,0);
+    const barH=c>0?Math.max(16,Math.round(c/mx*64)):4;
+    let dayLbl=DAYS[d.getDay()];
+    if(step>1){const d2=new Date(d);d2.setDate(d.getDate()+step-1);dayLbl=String(d.getDate())+'/'+String(d.getMonth()+1);}
+    const dateLbl=step===1?String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'):'';
+    const barBg=isToday&&c>0?'linear-gradient(180deg,#FF3B3B,#FF7A00)':c>0?'rgba(255,60,60,.5)':'rgba(255,255,255,.07)';
+    const dayCol=isToday?'#FF3B3B':'var(--t3)';const dayW=isToday?'900':'700';
+    bars+='<div style="flex:1;display:flex;flex-direction:column;align-items:center">'
+      +(c>0?('<div style="font-size:9px;font-weight:800;color:#FF3B3B;margin-bottom:2px">'+c+'</div>'):'<div style="height:14px"></div>')
+      +'<div style="width:100%;height:'+barH+'px;border-radius:4px 4px 0 0;background:'+barBg+';transition:height .4s,background .3s'+(isToday?';box-shadow:0 0 10px rgba(255,60,60,.3)':'')+'"></div>'
+      +(k>0?'<div style="font-size:7px;color:var(--t3);opacity:.6">'+k+'kcal</div>':'')
+      +'<div style="font-size:9px;font-weight:'+dayW+';color:'+dayCol+';margin-top:2px">'+dayLbl+'</div>'
+      +(dateLbl?'<div style="font-size:7px;color:var(--t3);opacity:.55">'+dateLbl+'</div>':'')
+      +'</div>';
+  }
+  wrap.innerHTML='<div class="tb-slbl" style="padding-top:6px">Activité — '+days+' derniers jours</div>'
+    +'<div style="padding:0 15px 8px"><div style="display:flex;align-items:flex-end;gap:3px;height:96px">'+bars+'</div></div>';
+}
+
+window.tbReplay=function(i){
+  const h=_loadH(),s=h[i];if(!s)return;
+  _mode=s.mode||'classic';const exs=s.exercises||[];
+  _builtinExs=exs.filter(e=>TB_EX.includes(e));_customExs=exs.filter(e=>!TB_EX.includes(e));
+  const n=exs.length||1;C.rounds=s.totalRounds?Math.round(s.totalRounds/n):s.rounds||8;
+  C.work=s.work||20;C.rest=s.rest||10;C.restser=s.rest||10;
+  $('tb-bname').textContent=s.name||'Tabata';$('tb-sname').value=s.name||'Tabata';
+  $('tb-params-cl').style.display=_mode==='classic'?'block':'none';
+  $('tb-params-cu').style.display=_mode==='custom'?'block':'none';
+  _syncC();_renderPills();_renderExlist();_calcDur();_renderTimeline();
+  $('tb-sbtn').disabled=false;txt('tb-excnt','('+_allExs().length+')');_show('tb-builder');
+};
+window.tbDel=function(i){const h=_loadH();if(!confirm('Supprimer ?'))return;h.splice(i,1);localStorage.setItem('ironplate_tabata_history',JSON.stringify(h));_renderHist();};
+
+/* AI Modal */
+window.tbOpenAIM=function(){$('tb-aim').classList.add('open');$('tb-aires').style.display='none';$('tb-aiapply').style.display='none';$('tb-aiload').style.display='none';_aiProg=null;};
+window.tbCloseAIM=function(){$('tb-aim').classList.remove('open');};
+window.tbGenAI=async function(){
+  if(typeof _callAI!=='function'){alert('Configurez une clé IA dans les Paramètres.');return;}
+  const goal=$('tb-aig').value,dur=parseInt($('tb-aid').value);
+  const btn=$('tb-aibtn'),load=$('tb-aiload'),res=$('tb-aires');
+  btn.disabled=true;load.style.display='block';res.style.display='none';$('tb-aiapply').style.display='none';
+  const gmap={full_body:'full body',perte_gras:'perte de gras',cardio:'cardio',force:'force explosive',debutant:'débutant'};
+  const w=(typeof userProfile!=='undefined'&&userProfile.weight)||75;const lvl=(typeof userProfile!=='undefined'&&userProfile.level)||'Intermédiaire';
+  const prompt=`Expert Tabata. Programme JSON: objectif=${gmap[goal]}, durée≈${dur}min, ${w}kg, ${lvl}.\nJSON uniquement:\n{"name":"Nom","exercises":["ex1","ex2"],"rounds":8,"workSec":20,"restSec":10,"restBetweenSets":10,"restBetweenEx":30,"description":"1 phrase"}\nExercices: ${TB_EX.join(', ')}`;
+  try{
+    const r=await _callAI([{role:'user',content:prompt}],null,'Expert Tabata. JSON valide uniquement.');
+    let t=(r||'').replace(/```json|```/g,'').trim();const m=t.match(/\{[\s\S]*\}/);if(m)t=m[0];
+    const p=JSON.parse(t);_aiProg=p;
+    res.style.display='block';
+    res.innerHTML=`<strong style="color:var(--t1,#111)">${p.name}</strong><br>${p.description||''}<br><br><i class="fas fa-dumbbell" style="color:#FF3B3B;margin-right:4px"></i><strong>${(p.exercises||[]).join(' · ')}</strong><br><i class="fas fa-stopwatch" style="color:#FFB800;margin-right:4px"></i>${p.workSec||20}s / ${p.restSec||10}s · ${p.rounds||8} rounds`;
+    $('tb-aiapply').style.display='block';
+  }catch(e){res.style.display='block';res.textContent='Erreur. Réessayez.';}
+  load.style.display='none';btn.disabled=false;
+};
+window.tbApplyAI=function(){
+  const p=_aiProg;if(!p)return;tbCloseAIM();
+  _mode='custom';const exsList=p.exercises||[];
+  _builtinExs=exsList.filter(e=>TB_EX.includes(e));_customExs=exsList.filter(e=>!TB_EX.includes(e));
+  C.rounds=p.rounds||8;C.work=p.workSec||20;C.restser=p.restBetweenSets||10;C.restex=p.restBetweenEx||30;
+  $('tb-bname').textContent=p.name||'Programme IA';$('tb-sname').value=p.name||'Programme IA';
+  $('tb-params-cl').style.display='none';$('tb-params-cu').style.display='block';
+  _syncC();_renderPills();_renderExlist();_calcDur();_renderTimeline();
+  $('tb-sbtn').disabled=false;txt('tb-excnt','('+_allExs().length+')');_show('tb-builder');
+};
+
+/* Inject header button */
+function _inject(){
+  if($('tb-hdr-btn'))return;
+  const s=document.querySelector('button[onclick*="showSettingsModal"]');if(!s)return;
+  const btn=document.createElement('button');
+  btn.id='tb-hdr-btn';btn.title='Tabata HIIT';btn.onclick=tbOpen;
+  btn.style.cssText='width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,rgba(255,60,60,.12),rgba(255,120,0,.08));border:1px solid rgba(255,60,60,.25);color:#FF3B3B;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;flex-shrink:0';
+  btn.innerHTML='<i class="fas fa-stopwatch"></i>';
+  btn.onmouseenter=()=>{btn.style.background='linear-gradient(135deg,rgba(255,60,60,.22),rgba(255,120,0,.16))';btn.style.borderColor='rgba(255,60,60,.5)';btn.style.transform='scale(1.06)';};
+  btn.onmouseleave=()=>{btn.style.background='linear-gradient(135deg,rgba(255,60,60,.12),rgba(255,120,0,.08))';btn.style.borderColor='rgba(255,60,60,.25)';btn.style.transform='';};
+  s.parentNode.insertBefore(btn,s);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(_inject,600));
+else setTimeout(_inject,600);
+setTimeout(_renderPills,100);
+
+})();
+</script>
      MODULE SCANNER FRIGO v2 — IronPlate
      ════════════════════════════════════════════════════════════ -->
 <style>
@@ -44354,6 +45965,17 @@ function _focInitObserver(){
     const isActive=tc.classList.contains('active');
     if(isActive&&!_wasActive&&_focEnabled)_focShow();
     if(!isActive&&_wasActive)_focHide();
+    // ── Sync musique avec le timer de repos ────────────────────
+    if(isActive&&!_wasActive){
+      // Timer démarre → pause musique si elle joue
+      if(window._musPlaying&&!window._musPaused&&typeof musPauseResume==='function')
+        musPauseResume();
+    }
+    if(!isActive&&_wasActive){
+      // Timer se ferme → reprendre musique si elle était en pause
+      if(window._musPlaying&&window._musPaused&&typeof musPauseResume==='function')
+        musPauseResume();
+    }
     _wasActive=isActive;
   });
   obs.observe(tc,{attributes:true,attributeFilter:['class']});
@@ -44914,4 +46536,826 @@ if(typeof _origShow==='function'){
 }
 })();
 </script>
+
+<!-- ════════════════════════════════════════════════════════════
+
+<!-- ════════════════════════════════════════════════════════════
+
+<!-- ════════════════════════════════════════════════════════════
+     MODULE MUSIQUE v3 — IronPlate
+     Web Audio API — Musique procédurale — Zéro fichier externe
+     ════════════════════════════════════════════════════════════ -->
+<style>
+#mus-player{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);z-index:9500;
+  display:none;align-items:center;gap:10px;
+  background:rgba(12,14,24,.95);border:1px solid rgba(255,185,0,.3);
+  border-radius:16px;padding:9px 14px;backdrop-filter:blur(14px);
+  box-shadow:0 6px 28px rgba(0,0,0,.45);min-width:250px;max-width:340px;
+  animation:musIn .3s cubic-bezier(.32,.72,0,1)}
+#mus-player.on{display:flex}
+@keyframes musIn{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.mus-p-ico{width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  background:rgba(255,185,0,.15);display:flex;align-items:center;justify-content:center;font-size:16px}
+.mus-p-info{flex:1;min-width:0}
+.mus-p-name{font-size:11px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mus-p-sub{font-size:9px;color:rgba(255,255,255,.38);margin-top:1px}
+/* Visualizer bars */
+.mus-viz{display:flex;align-items:flex-end;gap:2px;height:14px;margin-top:4px}
+.mus-vb{width:3px;border-radius:2px 2px 0 0;background:rgba(255,185,0,.6);transition:height .1s}
+.mus-ctrl{width:28px;height:28px;border-radius:50%;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .15s;flex-shrink:0}
+.mus-ctrl-pp{background:rgba(255,185,0,.2);color:#FFB800}
+.mus-ctrl-pp:hover{background:rgba(255,185,0,.35)}
+.mus-ctrl-next{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6)}
+.mus-ctrl-next:hover{background:rgba(255,255,255,.14)}
+.mus-ctrl-stop{background:rgba(255,60,60,.1);color:#FF4444}
+.mus-ctrl-stop:hover{background:rgba(255,60,60,.22)}
+/* Modal */
+#mus-modal{position:fixed;inset:0;z-index:20500;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(8px)}
+#mus-modal.on{display:flex}
+.mus-sheet{width:100%;max-width:480px;background:var(--card-bg,#151826);border-radius:20px 20px 0 0;
+  padding:20px 18px 32px;animation:musUp .3s cubic-bezier(.32,.72,0,1);max-height:88vh;overflow-y:auto}
+@keyframes musUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mus-m-title{font-size:15px;font-weight:900;color:var(--text-primary,#eef0f8);display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.mus-m-sub{font-size:11px;color:var(--text-tertiary,rgba(140,140,180,.6));margin-bottom:16px}
+.mus-slbl{font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--text-tertiary,rgba(140,140,180,.55));margin-bottom:8px}
+/* Style grid */
+.mus-styles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.mus-style-card{padding:12px 10px;border-radius:12px;cursor:pointer;
+  background:rgba(255,255,255,.04);border:1.5px solid var(--border,rgba(255,255,255,.07));
+  transition:all .2s;text-align:center}
+.mus-style-card:hover{transform:translateY(-2px);border-color:rgba(255,185,0,.3)}
+.mus-style-card.on{background:rgba(255,185,0,.1);border-color:rgba(255,185,0,.45)}
+.mus-style-ico{font-size:24px;display:block;margin-bottom:6px}
+.mus-style-name{font-size:12px;font-weight:800;color:var(--text-primary,#eef0f8)}
+.mus-style-desc{font-size:10px;color:var(--text-tertiary,rgba(140,140,180,.55));margin-top:2px}
+.mus-style-bpm{font-size:9px;font-weight:800;color:rgba(255,185,0,.7);margin-top:3px}
+/* BPM / Tempo slider */
+.mus-tempo-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.mus-tempo-lbl{font-size:11px;font-weight:700;color:var(--text-secondary,#9aa0b8);white-space:nowrap}
+.mus-tempo-val{font-size:14px;font-weight:900;color:#FFB800;min-width:40px;text-align:right}
+input[type=range]#mus-bpm{flex:1;accent-color:#FFB800}
+/* Volume */
+.mus-vol-row{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+input[type=range]#mus-vol{flex:1;accent-color:#FFB800}
+/* URL fallback */
+.mus-url-row{display:flex;gap:7px;margin-bottom:14px}
+.mus-inp{flex:1;padding:9px 11px;border-radius:10px;box-sizing:border-box;
+  background:rgba(255,255,255,.05);border:1.5px solid var(--border,rgba(255,255,255,.1));
+  color:var(--text-primary,#eef0f8);font-size:12px;font-weight:600;outline:none;
+  transition:border-color .15s;font-family:inherit}
+.mus-inp:focus{border-color:#FFB800}
+.mus-inp::placeholder{color:var(--text-tertiary,rgba(140,140,180,.4))}
+.mus-url-btn{padding:9px 14px;border-radius:10px;border:none;
+  background:rgba(255,185,0,.14);color:#FFB800;font-size:11px;font-weight:800;
+  cursor:pointer;flex-shrink:0;transition:all .15s}
+.mus-url-btn:hover{background:rgba(255,185,0,.24)}
+/* Assocs */
+.mus-assoc{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.mus-assoc-row{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:9px;
+  background:rgba(255,185,0,.05);border:1px solid rgba(255,185,0,.14);font-size:11px}
+.mus-assoc-ex{flex:1;font-weight:700;color:var(--text-primary,#eef0f8)}
+.mus-assoc-track{color:rgba(255,185,0,.75);font-size:10px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;max-width:120px}
+.mus-assoc-del{background:none;border:none;color:rgba(255,60,60,.5);cursor:pointer;font-size:11px;padding:0 4px;flex-shrink:0}
+/* Boutons */
+.mus-btn-p{width:100%;padding:13px;border-radius:13px;border:none;
+  background:linear-gradient(135deg,#FFB800,#FF8C00);color:#fff;font-size:13px;font-weight:900;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 16px rgba(255,185,0,.3);transition:all .2s;margin-bottom:8px}
+.mus-btn-p:hover{transform:translateY(-1px)}
+.mus-btn-s{width:100%;padding:11px;border-radius:12px;
+  border:1.5px solid var(--border,rgba(255,255,255,.1));background:rgba(255,255,255,.04);
+  color:var(--text-secondary,#9aa0b8);font-size:12px;font-weight:800;cursor:pointer;
+  transition:all .15s;margin-bottom:8px}
+.mus-btn-s:hover{background:rgba(255,255,255,.07)}
+</style>
+
+<!-- Mini-player -->
+<div id="mus-player">
+  <div class="mus-p-ico" id="mus-p-ico">🎵</div>
+  <div class="mus-p-info">
+    <div class="mus-p-name" id="mus-p-name">—</div>
+    <div class="mus-p-sub" id="mus-p-sub">—</div>
+    <div class="mus-viz" id="mus-viz">
+      <div class="mus-vb" style="height:4px"></div>
+      <div class="mus-vb" style="height:8px"></div>
+      <div class="mus-vb" style="height:6px"></div>
+      <div class="mus-vb" style="height:10px"></div>
+      <div class="mus-vb" style="height:7px"></div>
+      <div class="mus-vb" style="height:4px"></div>
+      <div class="mus-vb" style="height:9px"></div>
+      <div class="mus-vb" style="height:5px"></div>
+    </div>
+  </div>
+  <button class="mus-ctrl mus-ctrl-pp" id="mus-pp-btn" onclick="musPauseResume()"><i class="fas fa-pause" id="mus-pp-ico"></i></button>
+  <button class="mus-ctrl mus-ctrl-next" onclick="musNextStyle()" title="Style suivant"><i class="fas fa-shuffle"></i></button>
+  <button class="mus-ctrl mus-ctrl-stop" onclick="musStop()" title="Arrêter"><i class="fas fa-stop"></i></button>
+</div>
+
+<!-- Audio element pour MP3 fallback -->
+<audio id="mus-audio" preload="none" style="display:none" loop></audio>
+
+<!-- Modal -->
+<div id="mus-modal">
+<div class="mus-sheet">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+    <div class="mus-m-title"><i class="fas fa-music" style="color:#FFB800"></i>Musique de séance</div>
+    <button onclick="musMClose()" style="background:none;border:none;color:var(--text-tertiary,rgba(140,140,180,.5));cursor:pointer;font-size:18px">×</button>
+  </div>
+  <div class="mus-m-sub" id="mus-m-sub">Choisissez un style musical</div>
+
+  <div class="mus-slbl">Style musical</div>
+  <div class="mus-styles" id="mus-styles-grid"></div>
+
+  <!-- Tempo -->
+  <div class="mus-slbl">Tempo</div>
+  <div class="mus-tempo-row">
+    <span class="mus-tempo-lbl"><i class="fas fa-drum" style="margin-right:5px;color:#FFB800"></i>BPM</span>
+    <input type="range" id="mus-bpm" min="80" max="180" value="130" oninput="musUpdateBpm(this.value)">
+    <span class="mus-tempo-val" id="mus-bpm-val">130</span>
+  </div>
+
+  <!-- Volume -->
+  <div class="mus-slbl">Volume</div>
+  <div class="mus-vol-row">
+    <span class="mus-tempo-lbl"><i class="fas fa-volume-up" style="margin-right:5px;color:#FFB800"></i></span>
+    <input type="range" id="mus-vol" min="0" max="100" value="70" oninput="musUpdateVol(this.value)">
+    <span class="mus-tempo-val" id="mus-vol-val">70%</span>
+  </div>
+
+  <!-- MP3 URL fallback -->
+  <div class="mus-slbl">Ou votre propre MP3 (URL directe)</div>
+  <div class="mus-url-row">
+    <input class="mus-inp" id="mus-url-inp" type="url" placeholder="https://…/musique.mp3">
+    <button class="mus-url-btn" onclick="musPlayUrl()"><i class="fas fa-play"></i></button>
+  </div>
+
+  <!-- Associations -->
+  <div id="mus-assoc-sec" style="display:none">
+    <div class="mus-slbl">Associations exercice → style</div>
+    <div class="mus-assoc" id="mus-assoc-list"></div>
+  </div>
+
+  <button class="mus-btn-p" onclick="musMLaunch()"><i class="fas fa-play"></i> Lancer</button>
+  <button class="mus-btn-s" onclick="musMAuto()"><i class="fas fa-shuffle" style="margin-right:6px"></i>Sélection automatique</button>
+</div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ════════════════════════════════════════════════════════
+   STYLES MUSICAUX — Web Audio API Procédural
+   Chaque style = paramètres de synthèse (BPM, patterns, sons)
+   ════════════════════════════════════════════════════════ */
+const MUS_STYLES = [
+  // ── 🔥 FORCE / POIDS LOURDS ──────────────────────────────────
+  {
+    id:'hiphop_gym', name:'Hip-Hop Gym', emoji:'🔥', desc:'Beats 808, basses profondes',
+    bpm:95, cat:['pectoraux','épaules','dos','bras','triceps','biceps','force','jambes'],
+    kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1],
+    bass:[0,3,0,0,5,0,3,0,0,0,5,0,3,0,0,7],
+    bassNote:55, bassOct:0, swing:0.6, sub:true
+  },
+  {
+    id:'hiphop_trap', name:'Trap Power', emoji:'💣', desc:'808 sub, triplets piégés',
+    bpm:88, cat:['pectoraux','dos','jambes','force'],
+    kick:[1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hihat:[1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1],
+    bass:[0,0,0,5,0,0,3,0,7,0,0,5,0,3,0,0],
+    bassNote:41, bassOct:0, swing:0.3, sub:true
+  },
+  {
+    id:'hiphop_boom', name:'Boom Bap', emoji:'🎤', desc:'Samples classiques, groove old school',
+    bpm:90, cat:['épaules','bras','biceps','triceps','général'],
+    kick:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],
+    hihat:[1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0],
+    bass:[0,5,3,0,7,0,5,0,3,0,7,5,0,3,0,5],
+    bassNote:52, bassOct:0, swing:0.65
+  },
+  {
+    id:'metal_hard', name:'Metal Workout', emoji:'⚡', desc:'Distorsion, riffs, blast beats',
+    bpm:160, cat:['pectoraux','épaules','dos','compound','force'],
+    kick:[1,0,1,0,1,1,0,1,1,0,1,0,1,0,1,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],
+    hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    bass:[0,0,5,0,0,0,5,0,0,5,0,0,0,5,0,0],
+    bassNote:41, bassOct:0, swing:0, dist:true
+  },
+  {
+    id:'metal_thrash', name:'Thrash Metal', emoji:'🤘', desc:'Vélocité extrême, double pédale',
+    bpm:175, cat:['dos','pectoraux','force','compound'],
+    kick:[1,1,0,1,1,0,1,1,1,0,1,1,0,1,1,0],
+    snare:[0,0,1,0,0,1,0,0,0,1,0,0,1,0,0,1],
+    hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    bass:[0,7,0,5,0,7,5,0,3,0,7,0,5,3,0,7],
+    bassNote:38, bassOct:0, swing:0, dist:true
+  },
+  {
+    id:'rock_classic', name:'Rock Classique', emoji:'🎸', desc:'Guitares saturées, énergie brute',
+    bpm:140, cat:['pectoraux','dos','épaules','compound'],
+    kick:[1,0,0,0,1,0,0,0,1,0,0,1,1,0,0,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],
+    hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+    bass:[0,0,7,0,5,0,0,5,3,0,0,7,0,5,3,0],
+    bassNote:43, bassOct:0, swing:0, dist:true
+  },
+  {
+    id:'rock_punk', name:'Punk Rock', emoji:'🔊', desc:'Simple, rapide, direct, no bullshit',
+    bpm:155, cat:['pectoraux','épaules','général','force'],
+    kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+    snare:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0],
+    hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    bass:[0,0,5,0,0,5,0,7,0,5,0,0,7,0,5,0],
+    bassNote:45, bassOct:0, swing:0, dist:true
+  },
+  // ── ⚡ CARDIO / HIIT ─────────────────────────────────────────
+  {
+    id:'edm_big', name:'EDM Power', emoji:'🎛️', desc:'Drop massif, synthés, 4x4',
+    bpm:128, cat:['cardio','hiit','endurance'],
+    kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hihat:[1,0,1,0,1,0,1,0,1,1,1,0,1,0,1,1],
+    bass:[0,0,7,0,0,0,5,0,3,0,0,7,0,5,0,0],
+    bassNote:36, bassOct:1, swing:0, lead:true
+  },
+  {
+    id:'edm_prog', name:'Progressive EDM', emoji:'🌊', desc:'Build-ups, tension, release',
+    bpm:132, cat:['cardio','hiit','endurance'],
+    kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,1,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],
+    hihat:[1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,1],
+    bass:[0,5,0,0,7,0,5,3,0,5,0,7,0,5,3,0],
+    bassNote:38, bassOct:1, swing:0, lead:true
+  },
+  {
+    id:'edm_bass', name:'Bass Music', emoji:'🔈', desc:'Drops lourds, basses énormes',
+    bpm:140, cat:['hiit','cardio','sprint'],
+    kick:[1,0,0,1,0,0,1,0,1,0,0,0,1,0,0,1],
+    snare:[0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0],
+    hihat:[1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1],
+    bass:[0,7,0,5,3,0,5,7,0,3,0,7,5,0,3,7],
+    bassNote:36, bassOct:0, swing:0, sub:true, lead:true
+  },
+  {
+    id:'house_tech', name:'House Run', emoji:'🏃', desc:'Groove 4x4, basse syncopée',
+    bpm:124, cat:['course','cardio','vélo','elliptique'],
+    kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+    snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0],
+    hihat:[1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],
+    bass:[0,5,0,7,0,5,3,0,5,0,7,0,5,3,0,5],
+    bassNote:43, bassOct:0, swing:0.15, chord:true
+  },
+  {
+    id:'house_deep', name:'Deep House', emoji:'🎹', desc:'Piano deep, groove hypnotique',
+    bpm:120, cat:['cardio','vélo','endurance'],
+    kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hihat:[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+    bass:[0,3,5,0,3,5,7,0,5,3,0,5,7,0,3,5],
+    bassNote:48, bassOct:0, swing:0.2, chord:true, melody:true
+  },
+  {
+    id:'drum_bass', name:'Drum & Bass', emoji:'🎸', desc:'Breaks rapides, basse roulante',
+    bpm:170, cat:['cardio','hiit','sprint'],
+    kick:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0],
+    snare:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0],
+    hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    bass:[0,5,0,3,7,0,5,3,0,7,5,0,3,5,0,7],
+    bassNote:40, bassOct:0, swing:0
+  },
+  {
+    id:'techno', name:'Techno Hard', emoji:'🤖', desc:'Industriel, kicks martelés',
+    bpm:145, cat:['cardio','hiit','force'],
+    kick:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hihat:[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+    bass:[0,0,7,0,0,7,0,0,5,0,0,7,0,0,5,0],
+    bassNote:36, bassOct:0, swing:0
+  },
+  {
+    id:'techno_minimal', name:'Techno Minimal', emoji:'⚙️', desc:'Répétitif, hypnotique, dense',
+    bpm:138, cat:['cardio','endurance','tapis'],
+    kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+    snare:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0],
+    hihat:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0],
+    bass:[0,0,5,0,7,0,0,5,0,7,0,5,0,0,7,0],
+    bassNote:36, bassOct:0, swing:0
+  },
+  // ── 🏋️ JAMBES / SQUAT ───────────────────────────────────────
+  {
+    id:'trap_legs', name:'Trap Beast', emoji:'💀', desc:'808 sub grave, hi-hats triplets',
+    bpm:85, cat:['jambes','quadriceps','fessiers','ischio'],
+    kick:[1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hihat:[1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1],
+    bass:[0,0,0,7,0,0,5,0,0,3,0,0,5,0,7,0],
+    bassNote:41, bassOct:0, swing:0.3, sub:true
+  },
+  {
+    id:'hiphop_south', name:'Southern Rap', emoji:'🎯', desc:'BPM lent, 808 rebondissant',
+    bpm:80, cat:['jambes','quadriceps','fessiers','ischio'],
+    kick:[1,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hihat:[1,0,1,1,0,1,1,0,1,0,1,1,0,1,1,0],
+    bass:[0,0,5,0,3,0,7,5,0,3,0,5,7,0,5,3],
+    bassNote:43, bassOct:0, swing:0.5, sub:true
+  },
+  // ── ✨ ABDOS / CORE ──────────────────────────────────────────
+  {
+    id:'pop_core', name:'Pop Energy', emoji:'✨', desc:'Mélodique, motivant, lumineux',
+    bpm:120, cat:['abdominaux','gainage','core','général'],
+    kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hihat:[0,0,1,0,0,0,1,0,0,0,1,0,0,1,0,1],
+    bass:[0,3,0,5,0,3,5,0,7,0,5,3,0,5,0,3],
+    bassNote:52, bassOct:0, swing:0, melody:true
+  },
+  {
+    id:'pop_dance', name:'Dance Pop', emoji:'💃', desc:'Synthés lumineux, énergie festive',
+    bpm:126, cat:['abdominaux','core','général','danse'],
+    kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],
+    hihat:[1,0,1,1,0,1,1,0,1,0,1,1,0,1,1,0],
+    bass:[0,5,3,0,5,0,7,3,0,5,0,3,7,0,5,0],
+    bassNote:52, bassOct:0, swing:0.1, melody:true, chord:true
+  },
+  {
+    id:'funk_groove', name:'Funk Power', emoji:'🕺', desc:'Groove, slap bass, cuivres',
+    bpm:108, cat:['abdominaux','bras','épaules','général'],
+    kick:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,0,0],
+    snare:[0,0,1,0,0,1,0,0,0,0,1,0,0,0,1,0],
+    hihat:[1,1,0,1,1,0,1,1,0,1,1,0,1,1,0,1],
+    bass:[0,5,0,3,5,0,7,5,3,0,5,7,0,5,3,0],
+    bassNote:43, bassOct:0, swing:0.4, slap:true
+  },
+  {
+    id:'funk_afro', name:'Afro Funk', emoji:'🌍', desc:'Rythmes africains, percussions chaudes',
+    bpm:112, cat:['abdominaux','core','général'],
+    kick:[1,0,0,1,0,1,0,0,1,0,0,1,0,0,1,0],
+    snare:[0,0,1,0,0,0,1,0,0,1,0,0,0,1,0,0],
+    hihat:[1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,0],
+    bass:[0,3,5,0,7,5,3,0,5,0,3,7,5,0,3,5],
+    bassNote:48, bassOct:0, swing:0.25
+  },
+  // ── 🏃 CARDIO SPÉCIFIQUE ────────────────────────────────────
+  {
+    id:'latin_cardio', name:'Latin Cardio', emoji:'🎺', desc:'Salsa, percussion, festif',
+    bpm:135, cat:['cardio','danse','général'],
+    kick:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0],
+    snare:[0,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0],
+    hihat:[1,0,1,1,0,1,0,1,1,0,1,1,0,1,0,1],
+    bass:[0,3,5,0,7,0,5,3,0,5,3,7,0,3,5,0],
+    bassNote:48, bassOct:0, swing:0.2, chord:true
+  },
+  {
+    id:'reggaeton', name:'Reggaeton', emoji:'🌴', desc:'Dembow, basses, tropical',
+    bpm:100, cat:['cardio','danse','général'],
+    kick:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,0,0],
+    snare:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0],
+    hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    bass:[0,5,0,3,7,0,5,3,0,7,5,0,3,0,5,7],
+    bassNote:45, bassOct:0, swing:0.15, sub:true
+  },
+  {
+    id:'speed_garage', name:'Speed Garage', emoji:'🚀', desc:'UK garage, shuffle, énergie',
+    bpm:130, cat:['cardio','course','vélo'],
+    kick:[1,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0],
+    snare:[0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1],
+    hihat:[1,1,0,1,1,0,1,0,1,1,0,1,0,1,1,0],
+    bass:[0,7,5,0,3,5,7,0,5,3,0,7,5,0,3,0],
+    bassNote:45, bassOct:0, swing:0.35
+  },
+  // ── 🌿 RÉCUP / ÉTIREMENT ────────────────────────────────────
+  {
+    id:'lofi_relax', name:'Lo-Fi Relax', emoji:'🌿', desc:'Calme, zen, récupération active',
+    bpm:75, cat:['étirement','récupération','yoga','mobilité'],
+    kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hihat:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,1],
+    bass:[0,0,0,3,0,0,5,0,0,3,0,0,7,0,0,5],
+    bassNote:48, bassOct:0, swing:0.5, soft:true
+  },
+  {
+    id:'lofi_jazz', name:'Lo-Fi Jazz', emoji:'🎷', desc:'Jazzy, vinyle, ambiant doux',
+    bpm:70, cat:['étirement','récupération','yoga'],
+    kick:[1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],
+    snare:[0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0],
+    hihat:[1,0,1,0,0,1,0,1,0,1,0,0,1,0,0,1],
+    bass:[0,0,3,0,5,0,0,3,7,0,5,0,0,3,5,7],
+    bassNote:50, bassOct:0, swing:0.6, soft:true, melody:true
+  },
+  {
+    id:'ambient', name:'Ambient Flow', emoji:'☁️', desc:'Éthéré, méditation, récup profonde',
+    bpm:60, cat:['étirement','mobilité','récupération','yoga'],
+    kick:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    snare:[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+    hihat:[0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0],
+    bass:[0,0,0,5,0,0,0,3,0,0,7,0,0,5,0,0],
+    bassNote:52, bassOct:0, swing:0.4, soft:true
+  },
+  // ── 🎵 GÉNÉRAL ───────────────────────────────────────────────
+  {
+    id:'workout_mix', name:'Workout Mix', emoji:'🎵', desc:'Mix varié pour toute séance',
+    bpm:130, cat:['général','autre','Général'],
+    kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],
+    hihat:[1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0],
+    bass:[0,5,0,3,7,0,5,0,3,0,7,5,0,3,5,0],
+    bassNote:45, bassOct:0, swing:0.1
+  },
+  {
+    id:'motivational', name:'Motivational', emoji:'💪', desc:'Inspirant, crescendo, émotion',
+    bpm:115, cat:['général','force','cardio'],
+    kick:[1,0,0,0,1,0,0,0,1,0,0,1,1,0,0,0],
+    snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],
+    hihat:[1,0,1,1,0,1,0,1,1,0,1,0,1,1,0,1],
+    bass:[0,3,5,0,7,5,3,0,5,0,7,3,0,5,0,7],
+    bassNote:48, bassOct:0, swing:0.2, melody:true
+  },
+  {
+    id:'electronic_beats', name:'Electronic Beats', emoji:'🔋', desc:'Synthés modernes, énergie pure',
+    bpm:125, cat:['général','cardio','force'],
+    kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0],
+    snare:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0],
+    hihat:[1,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1],
+    bass:[0,5,3,0,7,0,5,3,0,7,5,0,3,0,5,7],
+    bassNote:45, bassOct:0, swing:0, lead:true
+  },
+];
+
+const KEY_MAP  = 'ironplate_exercise_music';
+const KEY_PREF = 'ironplate_music_prefs';
+
+/* ── State ─────────────────────────────────────────────────────── */
+let _actx   = null;
+let _master = null;
+let _playing = false;
+let _paused  = false;
+let _seqRef  = null;  // setInterval séquenceur
+let _step    = 0;
+let _curStyle = null;
+let _curBpm   = 130;
+let _curVol   = 0.7;
+let _selStyleId = null;
+let _curExName  = '';
+let _vizRef     = null;
+let _mode       = 'auto';
+// Nœuds audio actifs
+let _nodes = [];
+// MP3 fallback
+let _mp3Mode = false;
+
+/* ── Prefs ─────────────────────────────────────────────────────── */
+function _lp(){try{const p=JSON.parse(localStorage.getItem(KEY_PREF)||'{}');_mode=p.mode||'auto';_curVol=p.vol||0.7;_curBpm=p.bpm||130;}catch(e){}}
+function _sp(){try{const p=JSON.parse(localStorage.getItem(KEY_PREF)||'{}');p.mode=_mode;p.vol=_curVol;p.bpm=_curBpm;localStorage.setItem(KEY_PREF,JSON.stringify(p));}catch(e){}}
+function _lm(){try{return JSON.parse(localStorage.getItem(KEY_MAP)||'{}');}catch(e){return{};}}
+function _sm(m){localStorage.setItem(KEY_MAP,JSON.stringify(m));}
+_lp();
+
+/* ── Exercice courant ──────────────────────────────────────────── */
+function _exName(){try{if(typeof activeWorkout==='undefined'||!activeWorkout)return '';const e=activeWorkout.exercises.find(x=>x.sets&&x.sets.some(s=>!s.completed));return e?e.name:'';}catch(e){return '';}}
+function _exCat(){
+  try{
+    const ex=activeWorkout?.exercises?.find(x=>x.sets&&x.sets.some(s=>!s.completed));
+    if(!ex)return'général';
+    if(typeof getAllExercises==='function'){const f=getAllExercises().find(x=>x.name===ex.name||x.id===ex.id);if(f?.muscleGroup)return f.muscleGroup.toLowerCase();}
+    const n=ex.name.toLowerCase();
+    if(/squat|jambe|quad|fessier|ischio|mollet|lunge|fente|deadlift|soulevé/.test(n))return'jambes';
+    if(/bench|pec|chest|développé|push|pompe/.test(n))return'pectoraux';
+    if(/pull|row|dos|tirage|traction|rowing/.test(n))return'dos';
+    if(/shoulder|épaule|overhead|military|press/.test(n))return'épaules';
+    if(/curl|bicep|tricep|bras|extension|dip/.test(n))return'bras';
+    if(/abs|abdos?|crunch|plank|planche|gainage|core/.test(n))return'abdominaux';
+    if(/cardio|run|vélo|ellip|rameur|tapis|sprint|bike/.test(n))return'cardio';
+    if(/stretch|étir|yoga|mobil|récup|cool/.test(n))return'étirement';
+    return'général';
+  }catch(e){return'général';}
+}
+
+/* ── Choisir style auto ────────────────────────────────────────── */
+function _autoStyle(cat){
+  const matches=MUS_STYLES.filter(s=>s.cat.some(c=>cat.includes(c)||c.includes(cat)));
+  const pool=matches.length?matches:MUS_STYLES.filter(s=>s.cat.includes('général'));
+  return pool[Math.floor(Math.random()*pool.length)]||MUS_STYLES[0];
+}
+
+/* ════════════════════════════════════════════════════════
+   SYNTHÈSE AUDIO — Web Audio API
+   ════════════════════════════════════════════════════════ */
+function _initCtx(){
+  if(_actx)return true;
+  try{
+    _actx=new(window.AudioContext||window.webkitAudioContext)();
+    _master=_actx.createGain();_master.gain.value=_curVol;_master.connect(_actx.destination);
+    return true;
+  }catch(e){return false;}
+}
+function _resumeCtx(){if(_actx&&_actx.state==='suspended')_actx.resume();}
+
+/* Sons de batterie */
+function _kick(t){
+  const o=_actx.createOscillator(),g=_actx.createGain(),dist=_actx.createWaveShaper();
+  dist.curve=_makeDist(200);dist.oversample='2x';
+  o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(0.01,t+0.5);
+  g.gain.setValueAtTime(1,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.5);
+  o.connect(dist);dist.connect(g);g.connect(_master);
+  o.start(t);o.stop(t+0.5);_nodes.push(o,g,dist);
+}
+function _snare(t,soft){
+  // Bruit blanc filtré
+  const buf=_actx.createBuffer(1,_actx.sampleRate*0.2,_actx.sampleRate);
+  const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1);
+  const src=_actx.createBufferSource();src.buffer=buf;
+  const f=_actx.createBiquadFilter();f.type='highpass';f.frequency.value=soft?1000:2000;
+  const g=_actx.createGain();g.gain.setValueAtTime(soft?0.3:0.7,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.15);
+  src.connect(f);f.connect(g);g.connect(_master);
+  src.start(t);_nodes.push(src,f,g);
+  // Composante tonale
+  const o=_actx.createOscillator();o.frequency.value=soft?200:180;
+  const og=_actx.createGain();og.gain.setValueAtTime(soft?0.15:0.4,t);og.gain.exponentialRampToValueAtTime(0.001,t+0.1);
+  o.connect(og);og.connect(_master);o.start(t);o.stop(t+0.1);_nodes.push(o,og);
+}
+function _hihat(t,open){
+  const buf=_actx.createBuffer(1,_actx.sampleRate*0.05,_actx.sampleRate);
+  const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1);
+  const src=_actx.createBufferSource();src.buffer=buf;
+  const f=_actx.createBiquadFilter();f.type='highpass';f.frequency.value=8000;
+  const g=_actx.createGain();const dur=open?0.12:0.04;
+  g.gain.setValueAtTime(0.3,t);g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+  src.connect(f);f.connect(g);g.connect(_master);src.start(t);_nodes.push(src,f,g);
+}
+function _bass(t,semitones,style){
+  if(semitones===0)return;
+  const freq=style.bassNote*Math.pow(2,(semitones+style.bassOct*12)/12);
+  const o=_actx.createOscillator();
+  o.type=style.sub?'sine':style.slap?'triangle':'sawtooth';
+  if(style.dist){o.type='sawtooth';}
+  o.frequency.value=freq;
+  const g=_actx.createGain();
+  const stepSec=60/(style.bpm*4);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.5,t+0.01);
+  g.gain.exponentialRampToValueAtTime(0.001,t+stepSec*0.85);
+  let node=o;
+  if(style.dist){const d=_actx.createWaveShaper();d.curve=_makeDist(100);d.oversample='2x';o.connect(d);node=d;}
+  node.connect(g);g.connect(_master);o.start(t);o.stop(t+stepSec*0.9);_nodes.push(o,g);
+}
+function _lead(t,semitones,style){
+  if(semitones===0||!style.lead&&!style.melody&&!style.chord)return;
+  const baseFreq=261.63*Math.pow(2,semitones/12);
+  const o=_actx.createOscillator();o.type='square';o.frequency.value=baseFreq*2;
+  const f=_actx.createBiquadFilter();f.type='lowpass';f.frequency.value=2000;f.Q.value=2;
+  const g=_actx.createGain();
+  const stepSec=60/(style.bpm*4);
+  g.gain.setValueAtTime(0.12,t);g.gain.exponentialRampToValueAtTime(0.001,t+stepSec*0.7);
+  o.connect(f);f.connect(g);g.connect(_master);o.start(t);o.stop(t+stepSec*0.8);_nodes.push(o,f,g);
+}
+function _makeDist(amount){
+  const n=256,curve=new Float32Array(n);
+  for(let i=0;i<n;i++){const x=i*2/n-1;curve[i]=((Math.PI+amount)*x)/(Math.PI+amount*Math.abs(x));}
+  return curve;
+}
+
+/* ── Séquenceur ────────────────────────────────────────────────── */
+function _startSeq(style){
+  clearInterval(_seqRef);_nodes=[];_step=0;
+  const stepMs=(60/(style.bpm*4))*1000;
+  // Swing
+  function _getSwingOffset(s,swing){return(s%2===1)?swing*stepMs/1000:0;}
+  _seqRef=setInterval(()=>{
+    if(!_actx||_paused)return;
+    const t=_actx.currentTime+0.01;
+    const s=_step%16;
+    const swing=style.swing||0;
+    const swOff=_getSwingOffset(s,swing);
+    if(style.kick[s]) _kick(t+swOff);
+    if(style.snare[s]) _snare(t+swOff,style.soft);
+    if(style.hihat[s]) _hihat(t+swOff);
+    _bass(t+swOff,style.bass[s],style);
+    _lead(t+swOff,style.bass[s],style);
+    _step++;
+    // Nettoyer les vieux nœuds tous les 64 pas
+    if(_step%64===0)_nodes=[];
+    // Visualizer
+    _updateViz();
+  },stepMs);
+}
+
+/* ── Visualizer ────────────────────────────────────────────────── */
+function _updateViz(){
+  const bars=document.querySelectorAll('.mus-vb');
+  if(!bars.length)return;
+  bars.forEach(b=>{
+    const h=_playing&&!_paused?(4+Math.random()*10)+'px':'4px';
+    b.style.height=h;
+  });
+}
+
+/* ── API publique ──────────────────────────────────────────────── */
+window.musicToggle=function(){
+  _lp();
+  if(_playing){musStop();return;}
+  if(_mode==='auto')musAutoPlay();else musicOpenModal();
+};
+
+window.musAutoPlay=function(){
+  if(!_initCtx())return;_resumeCtx();_mp3Mode=false;
+  const exName=_exName(),cat=_exCat();
+  _curExName=exName;
+  // Association manuelle ?
+  const map=_lm();
+  if(exName&&map[exName]){
+    const saved=map[exName];
+    const style=MUS_STYLES.find(s=>s.id===saved.styleId)||_autoStyle(cat);
+    _startMusic(style);return;
+  }
+  _startMusic(_autoStyle(cat));
+};
+
+function _startMusic(style){
+  if(!_initCtx())return;_resumeCtx();
+  _curStyle=style;_playing=true;_paused=false;
+  window._musPlaying=true;window._musPaused=false;
+  _master.gain.value=_curVol;
+  _startSeq(style);
+  // Player
+  const p=document.getElementById('mus-player');if(p)p.classList.add('on');
+  document.getElementById('mus-p-ico').textContent=style.emoji;
+  document.getElementById('mus-p-name').textContent=style.name;
+  document.getElementById('mus-p-sub').textContent=style.bpm+' BPM · '+style.desc;
+  document.getElementById('mus-pp-ico').className='fas fa-pause';
+  _updateBtn();
+}
+
+window.musPauseResume=function(){
+  if(!_playing)return;
+  _paused=!_paused;
+  window._musPlaying=_playing;window._musPaused=_paused;
+  if(_actx){
+    if(_paused)_actx.suspend().catch(()=>{});
+    else _actx.resume().catch(()=>{});
+  }
+  // MP3 fallback
+  const a=document.getElementById('mus-audio');
+  if(_mp3Mode&&a){_paused?a.pause():a.play().catch(()=>{});}
+  const ico=document.getElementById('mus-pp-ico');
+  if(ico)ico.className=_paused?'fas fa-play':'fas fa-pause';
+  _updateBtn();
+};
+
+window.musNextStyle=function(){
+  if(!_playing)return;
+  clearInterval(_seqRef);_nodes=[];
+  const idx=MUS_STYLES.indexOf(_curStyle);
+  const next=MUS_STYLES[(idx+1)%MUS_STYLES.length];
+  _startMusic(next);
+};
+
+window.musStop=function(){
+  _playing=false;_paused=false;
+  window._musPlaying=false;window._musPaused=false;
+  clearInterval(_seqRef);_nodes=[];
+  if(_actx)try{_actx.suspend().catch(()=>{});}catch(e){}
+  const a=document.getElementById('mus-audio');if(a){a.pause();a.src='';}
+  document.getElementById('mus-player').classList.remove('on');
+  document.querySelectorAll('.mus-vb').forEach(b=>b.style.height='4px');
+  _updateBtn();
+};
+
+window.musicSetMode=function(mode){
+  _mode=mode;_sp();
+  const t=document.getElementById('music-auto-toggle');if(t)t.checked=(mode==='auto');
+};
+
+window.musUpdateBpm=function(v){
+  _curBpm=parseInt(v);
+  document.getElementById('mus-bpm-val').textContent=v;
+  _sp();
+  if(_playing&&_curStyle&&!_mp3Mode){
+    _curStyle={..._curStyle,bpm:_curBpm};
+    clearInterval(_seqRef);_nodes=[];_startSeq(_curStyle);
+    document.getElementById('mus-p-sub').textContent=_curBpm+' BPM · '+_curStyle.desc;
+  }
+};
+window.musUpdateVol=function(v){
+  _curVol=parseInt(v)/100;
+  document.getElementById('mus-vol-val').textContent=v+'%';
+  if(_master)_master.gain.value=_curVol;
+  _sp();
+};
+
+/* Sync séance */
+const _oSWD=window.saveWorkoutData;
+window.saveWorkoutData=function(){musStop();if(typeof _oSWD==='function')_oSWD.apply(this,arguments);};
+
+/* ── Bouton séance update ──────────────────────────────────────── */
+function _updateBtn(){
+  const btn=document.getElementById('music-workout-btn');if(!btn)return;
+  if(_playing&&!_paused){
+    btn.innerHTML='<i class="fas fa-music" style="animation:musBeat .5s ease infinite"></i>';
+    btn.style.background='rgba(255,185,0,.25)';btn.style.borderColor='rgba(255,185,0,.6)';
+  } else if(_paused){
+    btn.innerHTML='<i class="fas fa-pause"></i>';
+    btn.style.background='rgba(255,185,0,.1)';btn.style.borderColor='rgba(255,185,0,.3)';
+  } else {
+    btn.innerHTML='<i class="fas fa-music"></i>';
+    btn.style.background='rgba(255,185,0,.12)';btn.style.borderColor='rgba(255,185,0,.28)';
+  }
+}
+
+/* ── MP3 URL ───────────────────────────────────────────────────── */
+window.musPlayUrl=function(){
+  const url=document.getElementById('mus-url-inp')?.value.trim();
+  if(!url)return;
+  musMClose();
+  _mp3Mode=true;_playing=true;_paused=false;
+  clearInterval(_seqRef);
+  const a=document.getElementById('mus-audio');a.src=url;a.loop=true;
+  a.play().then(()=>{
+    document.getElementById('mus-player').classList.add('on');
+    document.getElementById('mus-p-ico').textContent='🎵';
+    document.getElementById('mus-p-name').textContent='MP3 personnalisé';
+    document.getElementById('mus-p-sub').textContent=url.split('/').pop().substring(0,30);
+    document.getElementById('mus-pp-ico').className='fas fa-pause';
+    _updateBtn();
+  }).catch(e=>{
+    if(typeof showNotification==='function')showNotification('Impossible de lire ce fichier — vérifiez l\'URL','error');
+  });
+};
+
+/* ── Modal ─────────────────────────────────────────────────────── */
+window.musicOpenModal=function(){
+  _lp();
+  _curExName=_exName();const cat=_exCat();
+  const sub=document.getElementById('mus-m-sub');
+  if(sub)sub.textContent=_curExName?'Exercice : '+_curExName+' ('+cat+')':'Choisissez un style musical';
+  // Sync sliders
+  const bpmSlider=document.getElementById('mus-bpm');const volSlider=document.getElementById('mus-vol');
+  if(bpmSlider){bpmSlider.value=_curBpm;document.getElementById('mus-bpm-val').textContent=_curBpm;}
+  if(volSlider){volSlider.value=Math.round(_curVol*100);document.getElementById('mus-vol-val').textContent=Math.round(_curVol*100)+'%';}
+  _musRenderStyles(cat);
+  _musRenderAssoc();
+  document.getElementById('mus-url-inp').value='';
+  _selStyleId=null;
+  document.getElementById('mus-modal').classList.add('on');
+};
+window.musMClose=function(){document.getElementById('mus-modal').classList.remove('on');};
+
+function _musRenderStyles(exCat){
+  const grid=document.getElementById('mus-styles-grid');if(!grid)return;
+  const suggested=MUS_STYLES.filter(s=>s.cat.some(c=>exCat.includes(c)||c.includes(exCat)));
+  grid.innerHTML=MUS_STYLES.map(s=>`
+    <div class="mus-style-card${_selStyleId===s.id?' on':''}" onclick="musSelStyle('${s.id}')">
+      <span class="mus-style-ico">${s.emoji}</span>
+      <div class="mus-style-name">${s.name}</div>
+      <div class="mus-style-desc">${s.desc}</div>
+      <div class="mus-style-bpm">${s.bpm} BPM${suggested.includes(s)?' ✦':''}</div>
+    </div>`).join('');
+}
+window.musSelStyle=function(id){
+  _selStyleId=id;
+  document.querySelectorAll('.mus-style-card').forEach(el=>el.classList.toggle('on',el.getAttribute('onclick').includes("'"+id+"'")));
+};
+
+function _musRenderAssoc(){
+  const map=_lm();const keys=Object.keys(map);
+  const sec=document.getElementById('mus-assoc-sec');const list=document.getElementById('mus-assoc-list');
+  if(!sec||!list)return;
+  if(!keys.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  list.innerHTML=keys.map(k=>{
+    const s=MUS_STYLES.find(x=>x.id===map[k].styleId);
+    return`<div class="mus-assoc-row">
+      <span class="mus-assoc-ex">${k}</span>
+      <span class="mus-assoc-track">${s?s.emoji+' '+s.name:'—'}</span>
+      <button class="mus-assoc-del" onclick="musDelAssoc('${k.replace(/'/g,"\\'")}')">✕</button>
+    </div>`;
+  }).join('');
+}
+window.musDelAssoc=function(n){const m=_lm();delete m[n];_sm(m);_musRenderAssoc();};
+
+window.musMLaunch=function(){
+  musMClose();
+  if(!_initCtx()){if(typeof showNotification==='function')showNotification('Activez le son en interagissant avec la page','info');return;}
+  _resumeCtx();_mp3Mode=false;
+  const style=_selStyleId?MUS_STYLES.find(s=>s.id===_selStyleId)||_autoStyle(_exCat()):_autoStyle(_exCat());
+  // Appliquer BPM custom
+  const finalStyle={...style,bpm:_curBpm};
+  if(_curExName&&_selStyleId){const m=_lm();m[_curExName]={styleId:_selStyleId};_sm(m);}
+  _startMusic(finalStyle);
+};
+window.musMAuto=function(){musMClose();musAutoPlay();};
+
+/* Settings sync */
+const _oSSM=window.showSettingsModal;
+if(typeof _oSSM==='function'){
+  window.showSettingsModal=function(){
+    _oSSM.apply(this,arguments);_lp();
+    const t=document.getElementById('music-auto-toggle');if(t)t.checked=(_mode==='auto');
 </body>
