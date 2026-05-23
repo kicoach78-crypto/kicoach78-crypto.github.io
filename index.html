@@ -15254,6 +15254,19 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
                         <span class="slider"></span>
                     </label>
                 </div>
+
+                <!-- Tracker développeur -->
+                <div class="settings-item">
+                    <div class="settings-row-icon" style="background:rgba(99,102,241,.1);color:#6366f1;"><i class="fas fa-bug"></i></div>
+                    <div class="settings-item-info">
+                        <div class="settings-item-title"><i class="fas fa-bug"></i> Mode développeur</div>
+                        <div class="settings-item-description">Afficher le bouton de suivi debug (🐛)</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="tracker-toggle" onchange="trackerSetEnabled(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
                 
                 <!-- Mode compact -->
                 <div class="settings-item">
@@ -16440,15 +16453,28 @@ let currentTheme = 'default'; // 'default', 'blue', 'green', 'purple', 'red', 's
 
 // ==================== GESTION DU SON ET VIBRATIONS ====================
 
-// Contexte audio partagé — créé une seule fois à la première utilisation
+// ── Déverrouillage AudioContext global (mobile iOS/Android) ──────────
 let _audioCtx = null;
+function _unlockMainAudio(){
+  if(!_audioCtx){
+    try{_audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return;}
+  }
+  if(_audioCtx.state!=='running'){
+    _audioCtx.resume().catch(()=>{});
+    // Son silencieux pour iOS
+    try{const b=_audioCtx.createBuffer(1,1,22050);const s=_audioCtx.createBufferSource();s.buffer=b;s.connect(_audioCtx.destination);s.start(0);}catch(e){}
+  }
+}
+['touchstart','touchend','click','keydown'].forEach(ev=>
+  document.addEventListener(ev,_unlockMainAudio,{passive:true,once:false})
+);
+
 function getAudioContext() {
     if (!_audioCtx || _audioCtx.state === 'closed') {
-        _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        try{_audioCtx = new (window.AudioContext || window.webkitAudioContext)();}catch(e){return null;}
     }
-    // Reprendre si suspendu (politique autoplay navigateurs)
     if (_audioCtx.state === 'suspended') {
-        _audioCtx.resume();
+        _audioCtx.resume().catch(()=>{});
     }
     return _audioCtx;
 }
@@ -16458,6 +16484,7 @@ function playSound(type = 'beep') {
 
     try {
         const audioContext = getAudioContext();
+        if (!audioContext || audioContext.state === 'suspended') return;
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
 
@@ -30271,6 +30298,9 @@ function showSettingsModal() {
     document.getElementById('vibrations-toggle').checked = settings.vibrations;
     document.getElementById('keep-screen-on-toggle').checked = settings.keepScreenOn;
     document.getElementById('auto-timer-toggle').checked = settings.autoTimer;
+    // Sync tracker toggle
+    const trackerTog = document.getElementById('tracker-toggle');
+    if(trackerTog) trackerTog.checked = (localStorage.getItem('ironplate_tracker_enabled')==='true');
     // Sync focus mode toggle
     const focToggle = document.getElementById('focus-mode-toggle');
     if(focToggle) try{const s=JSON.parse(localStorage.getItem('ironplate_focus_mode')||'null');focToggle.checked=(s!==false);}catch(e){focToggle.checked=true;}
@@ -41730,6 +41760,32 @@ window.addEventListener('beforeunload', function(e) {
 
   global.trackerSetActive = function(v){if(v) enable(); else disable();};
   global.trackerToggle    = function(){if(TR.active) disable(); else enable();};
+
+  // ── Contrôle visibilité FAB depuis Paramètres ─────────────────
+  function _applyTrackerVisibility(){
+    const enabled = localStorage.getItem('ironplate_tracker_enabled') === 'true';
+    const fab = document.getElementById('tracker-fab');
+    if(fab) fab.style.display = enabled ? 'flex' : 'none';
+    // Si désactivé, désactiver aussi le tracking
+    if(!enabled && TR.active) disable();
+  }
+  global.trackerSetEnabled = function(v){
+    localStorage.setItem('ironplate_tracker_enabled', v ? 'true' : 'false');
+    _applyTrackerVisibility();
+    if(v && !TR.active) enable();
+  };
+  // Observer le FAB pour le masquer dès sa création si désactivé
+  const _fabObserver = new MutationObserver(function(){
+    const fab = document.getElementById('tracker-fab');
+    if(fab){
+      const enabled = localStorage.getItem('ironplate_tracker_enabled') === 'true';
+      if(!enabled) fab.style.display = 'none';
+    }
+  });
+  _fabObserver.observe(document.body, {childList:true, subtree:false});
+  // Appliquer au chargement
+  document.addEventListener('DOMContentLoaded', _applyTrackerVisibility);
+  setTimeout(_applyTrackerVisibility, 500);
 
   // ── FAB ───────────────────────────────────────────────────────
   var _fabEl=null, _panelOpen=false;
