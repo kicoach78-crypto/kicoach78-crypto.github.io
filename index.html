@@ -37158,36 +37158,25 @@ function _agStatus(msg) {
     if (el) el.textContent = msg;
 }
 
-// ── Synthèse vocale — Groq TTS + fallback Web Speech ─────────────────
-let _agAudioCtx = null;
-let _agCurrentSource = null;
+// ── Synthèse vocale — Google Translate TTS (FR natif) + fallback Web Speech ──
+let _agTtsAudio = null;
 
-async function _agSpeakGroq(text, apiKey) {
+async function _agSpeakGoogle(text) {
     try {
-        const resp = await fetch('https://api.groq.com/openai/v1/audio/speech', {
-            method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ model: 'playai-tts', voice: 'Celeste-PlayAI', input: text, response_format: 'mp3' })
-        });
-        if (!resp.ok) throw new Error('Groq TTS ' + resp.status);
-        const buf = await resp.arrayBuffer();
-        if (!_agAudioCtx) _agAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (_agAudioCtx.state === 'suspended') await _agAudioCtx.resume();
-        const decoded = await _agAudioCtx.decodeAudioData(buf);
-        if (_agCurrentSource) { try { _agCurrentSource.stop(); } catch(e) {} }
-        const src = _agAudioCtx.createBufferSource();
-        src.buffer = decoded;
-        src.connect(_agAudioCtx.destination);
-        src.start(0);
-        _agCurrentSource = src;
+        const encoded = encodeURIComponent(text.substring(0, 200));
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encoded}&tl=fr&client=gtx&ttsspeed=0.9`;
+        if (!_agTtsAudio) {
+            _agTtsAudio = document.createElement('audio');
+            _agTtsAudio.style.display = 'none';
+            document.body.appendChild(_agTtsAudio);
+        }
+        _agTtsAudio.pause();
+        _agTtsAudio.src = url;
+        await _agTtsAudio.play();
         return true;
-    } catch(e) {
-        console.warn('Groq TTS error, fallback WebSpeech:', e.message);
-        return false;
-    }
+    } catch(e) { return false; }
 }
 
-// Fallback Web Speech avec meilleure détection voix FR
 let _agVoiceCache = null;
 function _agFindVoice(lang) {
     if (_agVoiceCache) return _agVoiceCache;
@@ -37217,7 +37206,7 @@ function _agSpeakWS(text) {
     window.speechSynthesis.cancel();
     const lang = (_localeMeta ? _localeMeta.speechCode : 'fr-FR');
     const utt = new SpeechSynthesisUtterance(text);
-    utt.lang=lang; utt.rate=1.05; utt.pitch=1.0; utt.volume=0.9;
+    utt.lang=lang; utt.rate=1.0; utt.pitch=1.0; utt.volume=1.0;
     const v=_agFindVoice(lang); if(v) utt.voice=v;
     const go=()=>window.speechSynthesis.speak(utt);
     if(!v&&window.speechSynthesis.getVoices().length===0) setTimeout(go,200); else go();
@@ -37225,13 +37214,7 @@ function _agSpeakWS(text) {
 
 function _agSpeak(text) {
     if (!AG.speechEnabled) return;
-    // Essayer Groq TTS si clé disponible
-    const groqKey = _aiKeys && _aiKeys.grok && _aiKeys.grok.apiKey;
-    if (groqKey) {
-        _agSpeakGroq(text, groqKey).then(ok => { if (!ok) _agSpeakWS(text); });
-    } else {
-        _agSpeakWS(text);
-    }
+    _agSpeakGoogle(text).then(ok => { if (!ok) _agSpeakWS(text); });
 }
 
 // ── Simulation (desktop / pas de capteur) ───────────────────────────
@@ -43003,11 +42986,19 @@ function _speakWS(text,rate,pitch){
   const v=_findFrVoice();if(v)u.voice=v;
   try{if(_syn.speaking)_syn.cancel();_syn.speak(u);}catch(e){setTimeout(()=>{try{_syn.speak(u);}catch(e2){}},100);}
 }
+// Audio element partagé pour Google TTS dans Tabata
+let _tbTtsAudio=null;
+async function _sayGoogle(t){
+  try{
+    const url='https://translate.google.com/translate_tts?ie=UTF-8&q='+encodeURIComponent(t.substring(0,200))+'&tl=fr&client=gtx&ttsspeed=0.9';
+    if(!_tbTtsAudio){_tbTtsAudio=document.createElement('audio');_tbTtsAudio.style.display='none';document.body.appendChild(_tbTtsAudio);}
+    _tbTtsAudio.pause();_tbTtsAudio.src=url;
+    await _tbTtsAudio.play();return true;
+  }catch(e){return false;}
+}
 function _say(t){
   if(!_swVoice)return;
-  // Web Speech uniquement pour Tabata (phrases courtes en français)
-  // Groq TTS ne supporte pas le français nativement
-  _speakWS(t);
+  _sayGoogle(t).then(ok=>{if(!ok)_speakWS(t);});
 }
 function _cd(sec){
   if(!_swVoice||!_syn||sec>3||sec<=0||sec===_lastSpokenSec)return;
@@ -45648,7 +45639,29 @@ function _initCtx(){
     return true;
   }catch(e){return false;}
 }
-function _resumeCtx(){if(_actx&&_actx.state==='suspended')_actx.resume();}
+async function _resumeCtx(){
+  if(!_actx)return false;
+  if(_actx.state==='suspended')await _actx.resume();
+  if(_actx.state==='interrupted')await _actx.resume(); // iOS Safari
+  return _actx.state==='running';
+}
+
+// Déverrouiller AudioContext au premier tap sur la page (mobile)
+function _unlockAudio(){
+  if(!_actx){_initCtx();}
+  if(_actx&&_actx.state!=='running'){
+    _actx.resume().catch(()=>{});
+    // Jouer un son silencieux pour débloquer iOS
+    try{
+      const buf=_actx.createBuffer(1,1,22050);
+      const src=_actx.createBufferSource();src.buffer=buf;
+      src.connect(_actx.destination);src.start(0);
+    }catch(e){}
+  }
+}
+document.addEventListener('touchstart',_unlockAudio,{once:false,passive:true});
+document.addEventListener('touchend',_unlockAudio,{once:false,passive:true});
+document.addEventListener('click',_unlockAudio,{once:false,passive:true});
 
 /* Sons de batterie */
 function _kick(t){
@@ -45749,22 +45762,18 @@ function _updateViz(){
 }
 
 /* ── API publique ──────────────────────────────────────────────── */
-window.musicToggle=function(){
+window.musicToggle=async function(){
   _lp();
   if(_playing){musStop();return;}
-  // Toujours tenter de reprendre l'AudioContext avant de démarrer
-  if(_actx&&_actx.state==='suspended')_actx.resume();
+  if(!_actx){_initCtx();}
+  if(_actx)await _actx.resume().catch(()=>{});
   if(_mode==='auto')musAutoPlay();else musicOpenModal();
 };
 
-window.musAutoPlay=function(){
-  // Forcer création AudioContext au moment du tap utilisateur
-  if(!_actx){
-    try{_actx=new(window.AudioContext||window.webkitAudioContext)();
-        _master=_actx.createGain();_master.gain.value=_curVol;_master.connect(_actx.destination);
-    }catch(e){return;}
-  }
-  if(_actx.state==='suspended')_actx.resume();
+window.musAutoPlay=async function(){
+  // Créer/débloquer AudioContext synchroniquement si possible
+  if(!_actx){_initCtx();}
+  if(_actx)await _actx.resume().catch(()=>{});
   _mp3Mode=false;
   const exName=_exName(),cat=_exCat();
   _curExName=exName;
@@ -45778,8 +45787,16 @@ window.musAutoPlay=function(){
   _startMusic(_autoStyle(cat));
 };
 
-function _startMusic(style){
-  if(!_initCtx())return;_resumeCtx();
+async function _startMusic(style){
+  if(!_initCtx())return;
+  const running=await _resumeCtx();
+  if(!running){
+    // Dernier recours : recréer l'AudioContext
+    try{
+      _actx=new(window.AudioContext||window.webkitAudioContext)();
+      _master=_actx.createGain();_master.gain.value=_curVol;_master.connect(_actx.destination);
+    }catch(e){return;}
+  }
   _curStyle=style;_playing=true;_paused=false;
   window._musPlaying=true;window._musPaused=false;
   window._musCurStyleId=style?style.id:null;window._musCurBpm=style?style.bpm:130;
@@ -45794,19 +45811,15 @@ function _startMusic(style){
   _updateBtn();
 }
 
-window.musPauseResume=function(){
+window.musPauseResume=async function(){
   if(!_playing)return;
   _paused=!_paused;
   window._musPlaying=_playing;
   window._musPaused=_paused;
   if(_actx){
-    if(_paused)_actx.suspend().catch(()=>{});
-    else _actx.resume().catch(()=>{});
+    if(_paused){clearInterval(_seqRef);await _actx.suspend().catch(()=>{});}
+    else{await _actx.resume().catch(()=>{});if(_curStyle)_startSeq(_curStyle);}
   }
-  // Séquenceur : arrêter/reprendre les steps
-  if(_paused){clearInterval(_seqRef);}
-  else if(_curStyle){_startSeq(_curStyle);}
-  // MP3 fallback
   const a=document.getElementById('mus-audio');
   if(_mp3Mode&&a){_paused?a.pause():a.play().catch(()=>{});}
   const ico=document.getElementById('mus-pp-ico');
