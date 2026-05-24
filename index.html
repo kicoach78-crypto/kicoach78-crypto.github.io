@@ -16477,14 +16477,12 @@ function _ironplateUnlockAll(){
     }
   }
   // 3. Précharger les éléments <audio> TTS (iOS exige play() dans un geste user)
-  ['mus-audio','_agTtsAudio','_tbTtsAudio'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el && el.paused && !el.src){
-      // Jouer un audio vide pour débloquer l'élément
-      el.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
-      el.play().catch(()=>{});el.pause();el.src='';
-    }
-  });
+  // Note: _agTtsAudio et _tbTtsAudio sont des variables JS, pas des IDs DOM
+  const _musAudioEl = document.getElementById('mus-audio');
+  if(_musAudioEl && _musAudioEl.paused && !_musAudioEl.src){
+    _musAudioEl.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+    _musAudioEl.play().catch(()=>{});_musAudioEl.pause();_musAudioEl.src='';
+  }
   // 4. Précharger Web Speech (iOS exige une invocation synchrone dans un geste)
   if(window.speechSynthesis){
     const u=new SpeechSynthesisUtterance('');u.volume=0;
