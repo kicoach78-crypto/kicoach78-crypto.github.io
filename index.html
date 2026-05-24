@@ -37214,7 +37214,36 @@ function _agStatus(msg) {
 }
 
 // ── Synthèse vocale — Google Translate TTS (FR natif) + fallback Web Speech ──
+// ── TTS unifié : Gemini → Google Translate → Web Speech ──────────
 let _agTtsAudio = null;
+
+function _agGeminiKey(){
+    try{return (typeof _aiKeys!=='undefined'&&_aiKeys.gemini?.apiKey)||null;}catch(e){return null;}
+}
+
+async function _agSpeakGemini(text){
+    const key=_agGeminiKey();if(!key)return false;
+    try{
+        const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${key}`,{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({contents:[{parts:[{text}]}],
+                generationConfig:{responseModalities:['AUDIO'],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:'Zephyr'}}}}})
+        });
+        if(!r.ok)return false;
+        const d=await r.json();
+        const b64=d.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+        if(!b64)return false;
+        const bin=atob(b64),buf=new Uint8Array(bin.length);
+        for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);
+        const blob=new Blob([buf],{type:'audio/wav'});
+        const url=URL.createObjectURL(blob);
+        if(!_agTtsAudio){_agTtsAudio=document.createElement('audio');_agTtsAudio.style.display='none';document.body.appendChild(_agTtsAudio);}
+        _agTtsAudio.pause();_agTtsAudio.src=url;
+        await _agTtsAudio.play();
+        setTimeout(()=>URL.revokeObjectURL(url),8000);
+        return true;
+    }catch(e){return false;}
+}
 
 async function _agSpeakGoogle(text) {
     try {
@@ -37269,7 +37298,12 @@ function _agSpeakWS(text) {
 
 function _agSpeak(text) {
     if (!AG.speechEnabled) return;
-    _agSpeakGoogle(text).then(ok => { if (!ok) _agSpeakWS(text); });
+    // Cascade : Gemini TTS (voix naturelle FR) → Google Translate → Web Speech
+    if(_agGeminiKey()){
+        _agSpeakGemini(text).then(ok=>{ if(!ok) _agSpeakGoogle(text).then(ok2=>{ if(!ok2) _agSpeakWS(text); }); });
+    } else {
+        _agSpeakGoogle(text).then(ok => { if (!ok) _agSpeakWS(text); });
+    }
 }
 
 // ── Simulation (desktop / pas de capteur) ───────────────────────────
@@ -43067,8 +43101,28 @@ function _speakWS(text,rate,pitch){
   const v=_findFrVoice();if(v)u.voice=v;
   try{if(_syn.speaking)_syn.cancel();_syn.speak(u);}catch(e){setTimeout(()=>{try{_syn.speak(u);}catch(e2){}},100);}
 }
-// Audio element partagé pour Google TTS dans Tabata
+// TTS unifié Tabata : Gemini → Google Translate → Web Speech
 let _tbTtsAudio=null;
+function _tbGeminiKey(){try{return(typeof _aiKeys!=='undefined'&&_aiKeys.gemini?.apiKey)||null;}catch(e){return null;}}
+async function _sayGemini(t){
+  const key=_tbGeminiKey();if(!key)return false;
+  try{
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${key}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:t}]}],
+        generationConfig:{responseModalities:['AUDIO'],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:'Zephyr'}}}}})
+    });
+    if(!r.ok)return false;
+    const d=await r.json();
+    const b64=d.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;if(!b64)return false;
+    const bin=atob(b64),buf=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);
+    const blob=new Blob([buf],{type:'audio/wav'}),url=URL.createObjectURL(blob);
+    if(!_tbTtsAudio){_tbTtsAudio=document.createElement('audio');_tbTtsAudio.style.display='none';document.body.appendChild(_tbTtsAudio);}
+    _tbTtsAudio.pause();_tbTtsAudio.src=url;
+    await _tbTtsAudio.play();setTimeout(()=>URL.revokeObjectURL(url),8000);return true;
+  }catch(e){return false;}
+}
 async function _sayGoogle(t){
   try{
     const url='https://translate.google.com/translate_tts?ie=UTF-8&q='+encodeURIComponent(t.substring(0,200))+'&tl=fr&client=gtx&ttsspeed=0.9';
@@ -43079,7 +43133,11 @@ async function _sayGoogle(t){
 }
 function _say(t){
   if(!_swVoice)return;
-  _sayGoogle(t).then(ok=>{if(!ok)_speakWS(t);});
+  if(_tbGeminiKey()){
+    _sayGemini(t).then(ok=>{if(!ok)_sayGoogle(t).then(ok2=>{if(!ok2)_speakWS(t);});});
+  } else {
+    _sayGoogle(t).then(ok=>{if(!ok)_speakWS(t);});
+  }
 }
 function _cd(sec){
   if(!_swVoice||!_syn||sec>3||sec<=0||sec===_lastSpokenSec)return;
