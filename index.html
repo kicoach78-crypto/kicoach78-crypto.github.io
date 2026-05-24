@@ -16453,20 +16453,47 @@ let currentTheme = 'default'; // 'default', 'blue', 'green', 'purple', 'red', 's
 
 // ==================== GESTION DU SON ET VIBRATIONS ====================
 
-// ── Déverrouillage AudioContext global (mobile iOS/Android) ──────────
+// ── Unlock audio GLOBAL — iOS/Android ─────────────────────────────
+// Un seul handler qui débloque TOUS les AudioContexts de l'app
 let _audioCtx = null;
-function _unlockMainAudio(){
+let _audioUnlocked = false;
+
+function _ironplateUnlockAll(){
+  if(_audioUnlocked) return;
+  // 1. AudioContext principal (sons séance)
   if(!_audioCtx){
-    try{_audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return;}
+    try{_audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}
   }
-  if(_audioCtx.state!=='running'){
+  if(_audioCtx && _audioCtx.state!=='running'){
     _audioCtx.resume().catch(()=>{});
-    // Son silencieux pour iOS
     try{const b=_audioCtx.createBuffer(1,1,22050);const s=_audioCtx.createBufferSource();s.buffer=b;s.connect(_audioCtx.destination);s.start(0);}catch(e){}
   }
+  // 2. AudioContext musique (exposé par le module musique)
+  if(typeof window._musGetCtx==='function'){
+    const mctx=window._musGetCtx();
+    if(mctx && mctx.state!=='running'){
+      mctx.resume().catch(()=>{});
+      try{const b=mctx.createBuffer(1,1,22050);const s=mctx.createBufferSource();s.buffer=b;s.connect(mctx.destination);s.start(0);}catch(e){}
+    }
+  }
+  // 3. Précharger les éléments <audio> TTS (iOS exige play() dans un geste user)
+  ['mus-audio','_agTtsAudio','_tbTtsAudio'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el && el.paused && !el.src){
+      // Jouer un audio vide pour débloquer l'élément
+      el.src='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+      el.play().catch(()=>{});el.pause();el.src='';
+    }
+  });
+  // 4. Précharger Web Speech (iOS exige une invocation synchrone dans un geste)
+  if(window.speechSynthesis){
+    const u=new SpeechSynthesisUtterance('');u.volume=0;
+    try{window.speechSynthesis.speak(u);window.speechSynthesis.cancel();}catch(e){}
+  }
+  if(_audioCtx && _audioCtx.state==='running') _audioUnlocked=true;
 }
 ['touchstart','touchend','click','keydown'].forEach(ev=>
-  document.addEventListener(ev,_unlockMainAudio,{passive:true,once:false})
+  document.addEventListener(ev,_ironplateUnlockAll,{passive:true,once:false})
 );
 
 function getAudioContext() {
@@ -45703,21 +45730,7 @@ async function _resumeCtx(){
 }
 
 // Déverrouiller AudioContext au premier tap sur la page (mobile)
-function _unlockAudio(){
-  if(!_actx){_initCtx();}
-  if(_actx&&_actx.state!=='running'){
-    _actx.resume().catch(()=>{});
-    // Jouer un son silencieux pour débloquer iOS
-    try{
-      const buf=_actx.createBuffer(1,1,22050);
-      const src=_actx.createBufferSource();src.buffer=buf;
-      src.connect(_actx.destination);src.start(0);
-    }catch(e){}
-  }
-}
-document.addEventListener('touchstart',_unlockAudio,{once:false,passive:true});
-document.addEventListener('touchend',_unlockAudio,{once:false,passive:true});
-document.addEventListener('click',_unlockAudio,{once:false,passive:true});
+window._musGetCtx=function(){return _actx;};
 
 /* Sons de batterie */
 function _kick(t){
