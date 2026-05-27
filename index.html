@@ -16490,9 +16490,9 @@ function _ironplateUnlockAll(){
   }
   if(_audioCtx && _audioCtx.state==='running') _audioUnlocked=true;
 }
-['touchstart','touchend','click','keydown'].forEach(ev=>
-  document.addEventListener(ev,_ironplateUnlockAll,{passive:true,once:false})
-);
+// Unlock au premier touchstart ou click — suffit pour iOS/Android
+document.addEventListener('touchstart', _ironplateUnlockAll, {passive:true, once:true});
+document.addEventListener('click', _ironplateUnlockAll, {passive:true, once:true});
 
 function getAudioContext() {
     if (!_audioCtx || _audioCtx.state === 'closed') {
@@ -41879,7 +41879,7 @@ window.addEventListener('beforeunload', function(e) {
     _fabEl.style.background='#10b981'; icon.textContent='🟢';
   }
 
-  setInterval(function(){fabEnsure();updateFAB();},3000);
+  setInterval(function(){fabEnsure();updateFAB();},10000);
 
   // ── Panel ─────────────────────────────────────────────────────
   var _panelEl=null;
@@ -43166,6 +43166,7 @@ window.tbClose=function(){
 window.tbOpen=function(){
   $('tb-overlay').classList.add('tb-open');document.body.style.overflow='hidden';
   _show('tb-home');_renderHome();_renderPills();
+  _tbMusBtnStart();
 };
 
 /* ── Home ────────────────────────────────────────────────────────── */
@@ -43402,7 +43403,16 @@ function _tbUpdateMusBtn(){
     btn.style.boxShadow='none';btn.innerHTML='<i class="fas fa-music"></i>';
   }
 }
-setInterval(()=>{if($('tb-mus-btn'))_tbUpdateMusBtn();},500);
+// Interval musique Tabata — seulement quand Tabata est ouvert
+let _tbMusBtnInterval = null;
+function _tbMusBtnStart(){
+  if(_tbMusBtnInterval)return;
+  _tbMusBtnInterval=setInterval(()=>{
+    if(document.getElementById('tb-overlay')?.classList.contains('tb-open'))
+      _tbUpdateMusBtn();
+    else{clearInterval(_tbMusBtnInterval);_tbMusBtnInterval=null;}
+  },800);
+}
 
 /* Saved programs */
 window.tbSaveProgram=function(){
