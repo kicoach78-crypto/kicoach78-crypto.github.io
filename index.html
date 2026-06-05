@@ -21290,14 +21290,14 @@ function createSetElement(exerciseIndex, setIndex, set) {
     const historicalSet = isRedoWorkout ? exercise.historicalSets[setIndex] : null;
     
     // Appliquer les valeurs historiques UNIQUEMENT si l'utilisateur n'a pas encore modifié ce set
-    // Le flag _userModified est posé par updateSet() dès la première modification
+    // Les valeurs sont déjà dans set.reps/set.weight via startRedoWorkout — on ne fait que s'assurer qu'elles sont là
     if (isRedoWorkout && historicalSet && !set._userModified) {
         if (isCardio) {
-            set.distance = historicalSet.distance !== undefined ? historicalSet.distance : 5;
-            set.time = historicalSet.time !== undefined ? historicalSet.time : 30;
+            if (historicalSet.distance !== undefined) set.distance = historicalSet.distance;
+            if (historicalSet.time !== undefined) set.time = historicalSet.time;
         } else {
-            set.reps = historicalSet.reps !== undefined ? historicalSet.reps : userProfile.defaultReps;
-            set.weight = historicalSet.weight !== undefined ? historicalSet.weight : userProfile.defaultWeight;
+            if (historicalSet.reps !== undefined) set.reps = historicalSet.reps;
+            if (historicalSet.weight !== undefined) set.weight = historicalSet.weight;
         }
     }
     
@@ -28774,119 +28774,50 @@ function calculateTotalPause(workoutEntry) {
 function redoWorkout(index) {
     const entry = workoutHistory[index];
     if (!entry) return;
-    
-    const workoutData = {
-        name: entry.name,
-        exercises: [],
-        supersets: entry.supersets || []
-    };
-    
-    // CORRECTION CRITIQUE: Restaurer l'ordre EXACT de la séance originale
-    const exercisesByOriginalOrder = [];
-    const exercisesBySuperset = {};
-    
-    // 1. Organiser tous les exercices avec leur position ORIGINALE
-    entry.exercises.forEach((exercise, exIndex) => {
-        const matchingExercise = getAllExercises().find(ex => 
+
+    // Reconstruction dans l'ordre EXACT de l'historique
+    // Approche simplifiée : on itère entry.exercises dans l'ordre original
+    // sans tableau sparse pour éviter tout décalage d'index
+    const exercises = [];
+
+    entry.exercises.forEach((exercise) => {
+        const matchingExercise = getAllExercises().find(ex =>
             ex.name.toLowerCase() === exercise.name.toLowerCase()
-        );
-        
-        if (matchingExercise) {
-            const isCardio = exercise.isCardio || 
-                             matchingExercise.category === 'cardio' ||
-                             exercise.name.toLowerCase().includes('course') ||
-                             exercise.name.toLowerCase().includes('vélo') ||
-                             exercise.name.toLowerCase().includes('rameur');
-            
-            const historicalSets = exercise.sets ? exercise.sets.map(set => {
-                if (isCardio) {
-                    return {
-                        distance: set.distance || 0,  // km/h
-                        time: set.time || 0,           // minutes
-                        completed: false,                        rest: set.rest || exercise.customRest || userProfile.defaultRest
-                    };
-                } else {
-                    return {
-                        reps: set.reps || 0,
-                        weight: set.weight || 0,
-                        completed: false,                        rest: set.rest || exercise.customRest || userProfile.defaultRest
-                    };
-                }
-            }) : [];
-            
-            const exerciseData = {
-                ...exercise,
-                matchingExercise: matchingExercise,
-                historicalSets: historicalSets,
-                originalIndex: exIndex,
-                notes: exercise.notes || '',
-                customRest: exercise.customRest || userProfile.defaultRest,
-                isCardio: isCardio
-            };
-            
-            // Organiser par superset ou standalone
-            if (exercise.supersetId) {
-                if (!exercisesBySuperset[exercise.supersetId]) {
-                    exercisesBySuperset[exercise.supersetId] = [];
-                }
-                exercisesBySuperset[exercise.supersetId].push(exerciseData);
+        ) || { name: exercise.name, muscleGroup: exercise.muscleGroup || '', difficulty: 'Intermédiaire' };
+
+        const isCardio = exercise.isCardio ||
+            matchingExercise.category === 'cardio' ||
+            (typeof isCardioExercise === 'function' && isCardioExercise(matchingExercise));
+
+        // Copier les séries historiques dans l'ordre exact — attachées à chaque série
+        const historicalSets = (exercise.sets || []).map(set => {
+            if (isCardio) {
+                return { distance: set.distance || 0, time: set.time || 0, completed: false,
+                         rest: set.rest || exercise.customRest || userProfile.defaultRest };
             } else {
-                // Exercice standalone - garder sa position exacte
-                exercisesByOriginalOrder[exIndex] = exerciseData;
+                return { reps: set.reps || 0, weight: set.weight || 0, completed: false,
+                         rest: set.rest || exercise.customRest || userProfile.defaultRest };
             }
-        } else {
-            console.warn('Exercice non trouvé:', exercise.name);
-        }
-    });
-    
-    // 2. Si nous avons des supersets sauvegardés, les utiliser pour reconstruire l'ordre
-    if (workoutData.supersets && workoutData.supersets.length > 0) {
-        // Trier les supersets par leur PREMIER exercice dans l'ordre original
-        const sortedSupersets = workoutData.supersets.sort((a, b) => {
-            const firstA = a.exercises && a.exercises.length > 0 ? 
-                Math.min(...a.exercises.map(e => e.exerciseIndex)) : Infinity;
-            const firstB = b.exercises && b.exercises.length > 0 ? 
-                Math.min(...b.exercises.map(e => e.exerciseIndex)) : Infinity;
-            return firstA - firstB;
         });
-        
-        // 3. Reconstruire la séance EXACTEMENT comme elle était
-        const reorderedExercises = [];
-        
-        // Pour chaque position dans la séance originale
-        for (let i = 0; i < entry.exercises.length; i++) {
-            // Vérifier si cette position est occupée par un exercice standalone
-            if (exercisesByOriginalOrder[i]) {
-                reorderedExercises.push(exercisesByOriginalOrder[i]);
-            } else {
-                // Sinon, vérifier si c'est la position d'un superset
-                const supersetAtThisPosition = sortedSupersets.find(superset => {
-                    return superset.exercises && superset.exercises.some(e => e.exerciseIndex === i);
-                });
-                
-                if (supersetAtThisPosition && exercisesBySuperset[supersetAtThisPosition.id]) {
-                    // Ajouter TOUS les exercices de ce superset
-                    const supersetExercises = exercisesBySuperset[supersetAtThisPosition.id]
-                        .sort((a, b) => (a.supersetOrder || 0) - (b.supersetOrder || 0));
-                    
-                    supersetExercises.forEach(ex => {
-                        reorderedExercises.push(ex);
-                    });
-                    
-                    // Avancer l'index pour sauter les autres exercices de ce superset
-                    i += supersetExercises.length - 1;
-                }
-            }
-        }
-        
-        workoutData.exercises = reorderedExercises;
-    } else {
-        // Sans supersets, garder simplement l'ordre original
-        workoutData.exercises = exercisesByOriginalOrder.filter(ex => ex);
-    }
-    
-    if (workoutData.exercises.length > 0) {
-        startRedoWorkout(workoutData);
+
+        exercises.push({
+            matchingExercise,
+            name: exercise.name,
+            isCardio,
+            historicalSets,
+            customRest: exercise.customRest || userProfile.defaultRest,
+            notes: exercise.notes || '',
+            supersetId: exercise.supersetId || null,
+            supersetName: exercise.supersetName || null,
+            supersetColor: exercise.supersetColor || null,
+            supersetOrder: exercise.supersetOrder || null,
+            compactModeOverride: exercise.compactModeOverride,
+            originalIndex: exercises.length
+        });
+    });
+
+    if (exercises.length > 0) {
+        startRedoWorkout({ name: entry.name, exercises, supersets: entry.supersets || [] });
         hideModal('history-detail-modal');
         showNotification('Séance prête à être refaite', 'success');
     } else {
@@ -28894,137 +28825,6 @@ function redoWorkout(index) {
     }
 }
 
-// Celle-ci doit GARDER les séries cochées
-
-// ==================== REPRENDRE UNE SÉANCE INTERROMPUE ====================
-function resumeWorkoutFromHistory(index) {
-    const entry = workoutHistory[index];
-    if (!entry) return;
-    
-    if (!confirm('Reprendre cette séance ?')) {
-        return;
-    }
-    
-    // Supprimer l'entrée de l'historique
-    workoutHistory.splice(index, 1);
-    saveToLocalStorage();
-    
-    // Créer la séance active
-    activeWorkout = {
-        name: entry.name,
-        exercises: [],
-        startTime: new Date(),
-        completedSets: entry.stats.totalSets,
-        totalWeight: entry.stats.totalWeight || 0,
-        totalDistance: 0,
-        totalTime: 0
-    };
-    
-    // Restaurer les exercices avec support cardio
-    entry.exercises.forEach(exercise => {
-        const matchingExercise = getAllExercises().find(ex => 
-            ex.name.toLowerCase() === exercise.name.toLowerCase()
-        ) || {
-            name: exercise.name,
-            muscleGroup: exercise.muscleGroup,
-            difficulty: 'Intermédiaire'
-        };
-        
-        const isCardio = isCardioExercise(matchingExercise) || exercise.isCardio;
-        
-        const restoredSets = exercise.sets.map((set, i) => {
-            if (isCardio) {
-                return {
-                    number: i + 1,
-                    distance: set.distance || 0,
-                    time: set.time || 0,
-                    completed: set.completed || false,
-                    rest: set.rest || exercise.customRest || userProfile.defaultRest
-                };
-            } else {
-                return {
-                    number: i + 1,
-                    reps: set.reps || 0,
-                    weight: set.weight || 0,
-                    completed: set.completed || false,
-                    rest: set.rest || exercise.customRest || userProfile.defaultRest
-                };
-            }
-        });
-        
-        activeWorkout.exercises.push({
-            ...matchingExercise,
-            isCardio: isCardio,
-            sets: restoredSets,
-            customRest: exercise.customRest || userProfile.defaultRest,
-            notes: exercise.notes || '',
-            collapsed: exercise.collapsed || false,
-            compactModeOverride: exercise.compactModeOverride,
-            supersetId: exercise.supersetId,
-            supersetName: exercise.supersetName,
-            supersetColor: exercise.supersetColor,
-            supersetOrder: exercise.supersetOrder
-        });
-    });
-    
-    // Restaurer la durée exacte au moment de la pause
-    let totalElapsedSeconds = entry.duration;
-    
-    // Définir le startTime pour que le timer affiche la durée de pause
-    const now = new Date();
-    activeWorkoutStartTime = new Date(now.getTime() - (totalElapsedSeconds * 1000));
-    activeWorkoutTimer = setInterval(updateWorkoutTimer, 1000);
-    
-    // Mettre à jour immédiatement
-    updateWorkoutTimer();
-    
-    // Restaurer l'état du timer de repos si présent
-    if (entry.timerState && entry.timerState.hasActiveTimer) {
-        currentTimerSeconds = entry.timerState.currentSeconds || userProfile.defaultRest;
-        updateTimerDisplay();
-        document.getElementById('timer-container').classList.add('active');
-        
-        if (entry.timerState.isRunning) {
-            startTimer();
-        }
-    }
-    
-    // Restaurer l'état du superset
-    if (entry.activeSuperset) {
-        currentSupersetExerciseIndex = entry.activeSuperset.exerciseIndex;
-        currentSupersetSetIndex = entry.activeSuperset.setIndex;
-        currentSupersetRoundInfo = entry.activeSuperset.roundInfo;
-    }
-    
-    // Démarrer auto-save si activé
-    if (settings.autoSaveEnabled) {
-        startAutoSave();
-    }
-    
-    const headerTimer = document.getElementById('header-workout-timer');
-    if (headerTimer) {
-        headerTimer.style.display = 'flex';
-    }
-    
-    updateWorkoutDisplay();
-    showScreen('active-workout-screen');
-    showNotification(`✅ Séance reprise - Durée: ${formatDuration(totalElapsedSeconds)}`, 'success');
-}
-
-// Fonction utilitaire pour formater la durée
-function formatDuration(seconds) {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    
-    if (hours > 0) {
-        return `${hours}h ${minutes.toString().padStart(2, '0')}min`;
-    } else {
-        return `${minutes}min ${secs.toString().padStart(2, '0')}s`;
-    }
-}
-
-// MODIFICATION: Fonction pour redémarrer une séance avec les dernières charges
 function startRedoWorkout(workoutData) {
     activeWorkout = {
         name: workoutData.name,
@@ -29036,183 +28836,62 @@ function startRedoWorkout(workoutData) {
         totalTime: 0,
         supersets: workoutData.supersets || {}
     };
-    
-    // Créer un mapping pour organiser les exercices par superset
-    const exercisesBySuperset = {};
-    const standaloneExercises = [];
-    
-    workoutData.exercises.forEach(exercise => {
-        // Créer un objet exercice factice pour la détection
-        const dummyExercise = exercise.matchingExercise || { 
-            name: exercise.name, 
-            category: '' 
-        };
-        
-        const isCardio = exercise.isCardio || isCardioExercise(dummyExercise);
-        
+
+    // Reconstruire dans l'ordre EXACT fourni par redoWorkout
+    workoutData.exercises.forEach((exercise, i) => {
+        const matchingExercise = exercise.matchingExercise ||
+            getAllExercises().find(ex => ex.name.toLowerCase() === exercise.name.toLowerCase()) ||
+            { name: exercise.name, muscleGroup: exercise.muscleGroup || '', difficulty: 'Intermédiaire' };
+
+        const isCardio = exercise.isCardio || (typeof isCardioExercise === 'function' && isCardioExercise(matchingExercise));
+
         const sets = [];
-        
         if (exercise.historicalSets && exercise.historicalSets.length > 0) {
-            // Utiliser les séries historiques
-            exercise.historicalSets.forEach((historicalSet, i) => {
+            exercise.historicalSets.forEach((hs, si) => {
                 if (isCardio) {
-                    sets.push({
-                        number: i + 1,
-                        distance: historicalSet.distance !== undefined ? historicalSet.distance : 5,
-                        time: historicalSet.time !== undefined ? historicalSet.time : 30,
-                        completed: historicalSet.completed || false,
-                        rest: historicalSet.rest || exercise.customRest || userProfile.defaultRest,
-                        isHistorical: true
-                    });
+                    sets.push({ number: si + 1, distance: hs.distance, time: hs.time,
+                                completed: false, rest: hs.rest, isHistorical: true });
                 } else {
-                    sets.push({
-                        number: i + 1,
-                        reps: historicalSet.reps !== undefined ? historicalSet.reps : userProfile.defaultReps,
-                        weight: historicalSet.weight !== undefined ? historicalSet.weight : userProfile.defaultWeight,
-                        completed: historicalSet.completed || false,
-                        rest: historicalSet.rest || exercise.customRest || userProfile.defaultRest,
-                        isHistorical: true
-                    });
+                    sets.push({ number: si + 1, reps: hs.reps, weight: hs.weight,
+                                completed: false, rest: hs.rest, isHistorical: true });
                 }
             });
         } else {
-            // Fallback: créer des séries par défaut
-            const numSets = userProfile.defaultSets;
-            for (let i = 0; i < numSets; i++) {
-                if (isCardio) {
-                    sets.push({
-                        number: i + 1,
-                        distance: 5,
-                        time: 30,
-                        completed: false,
-                        rest: exercise.customRest || userProfile.defaultRest,
-                        isHistorical: false
-                    });
-                } else {
-                    sets.push({
-                        number: i + 1,
-                        reps: userProfile.defaultReps,
-                        weight: userProfile.defaultWeight,
-                        completed: false,
-                        rest: exercise.customRest || userProfile.defaultRest,
-                        isHistorical: false
-                    });
-                }
+            // Fallback : séries par défaut
+            for (let s = 0; s < (userProfile.defaultSets || 3); s++) {
+                sets.push(isCardio
+                    ? { number: s+1, distance: 5, time: 30, completed: false, rest: exercise.customRest || userProfile.defaultRest, isHistorical: false }
+                    : { number: s+1, reps: userProfile.defaultReps, weight: userProfile.defaultWeight, completed: false, rest: exercise.customRest || userProfile.defaultRest, isHistorical: false }
+                );
             }
         }
-        
-        const exerciseData = {
-            ...exercise.matchingExercise,
-            isCardio: isCardio,
-            sets: sets,
+
+        activeWorkout.exercises.push({
+            ...matchingExercise,
+            isCardio,
+            sets,
+            // historicalSets attachés à l'exercice pour createSetElement
+            historicalSets: exercise.historicalSets || [],
             customRest: exercise.customRest || userProfile.defaultRest,
-            supersetId: exercise.supersetId,
-            supersetName: exercise.supersetName,
-            supersetColor: exercise.supersetColor,
-            supersetOrder: exercise.supersetOrder,
-            supersetInfo: exercise.supersetInfo,
-            compactModeOverride: exercise.compactModeOverride,
             notes: exercise.notes || '',
-            historicalSets: exercise.historicalSets || []
-        };
-        
-        // Organiser les exercices par superset
-        if (exercise.supersetId) {
-            if (!exercisesBySuperset[exercise.supersetId]) {
-                exercisesBySuperset[exercise.supersetId] = [];
-            }
-            exercisesBySuperset[exercise.supersetId].push(exerciseData);
-        } else {
-            standaloneExercises.push(exerciseData);
-        }
-    });
-    
-    // Reconstruire l'ordre correct des exercices
-    const allExercises = [...standaloneExercises];
-    
-    // Ajouter les supersets dans l'ordre original
-    if (workoutData.supersets && typeof workoutData.supersets === 'object') {
-        Object.values(workoutData.supersets).forEach(superset => {
-            if (exercisesBySuperset[superset.id]) {
-                // Trier les exercices du superset par ordre
-                const supersetExercises = exercisesBySuperset[superset.id];
-                supersetExercises.sort((a, b) => {
-                    const orderA = a.supersetOrder || 
-                        superset.exercises?.findIndex(e => e.name === a.name) + 1 || 1;
-                    const orderB = b.supersetOrder || 
-                        superset.exercises?.findIndex(e => e.name === b.name) + 1 || 1;
-                    return orderA - orderB;
-                });
-                
-                // Mettre à jour l'ordre dans chaque exercice
-                supersetExercises.forEach((ex, index) => {
-                    ex.supersetOrder = index + 1;
-                    ex.supersetName = superset.name;
-                    ex.supersetColor = superset.color;
-                });
-                
-                allExercises.push(...supersetExercises);
-            }
+            supersetId: exercise.supersetId || null,
+            supersetName: exercise.supersetName || null,
+            supersetColor: exercise.supersetColor || null,
+            supersetOrder: exercise.supersetOrder || null,
+            compactModeOverride: exercise.compactModeOverride
         });
-    }
-    
-    // Assigner les exercices organisés
-    activeWorkout.exercises = allExercises;
-    
+    });
+
     activeWorkoutStartTime = new Date();
     activeWorkoutTimer = setInterval(updateWorkoutTimer, 1000);
-    
-    // Démarrer l'auto-save si activé
     if (settings.autoSaveEnabled) startAutoSave();
-    
-    // Afficher le timer dans le header
+
     const headerTimer = document.getElementById('header-workout-timer');
     if (headerTimer) headerTimer.style.display = 'flex';
-    
+
     updateWorkoutDisplay();
     showScreen('active-workout-screen');
     showNotification('✅ Séance reprise avec succès', 'success');
-}
-
-// Fonction pour réorganiser les supersets dans une séance reprise
-function reorganizeSupersetsInRedo() {
-    if (!activeWorkout.supersets || Object.keys(activeWorkout.supersets).length === 0) return;
-    
-    const supersetExercises = [];
-    const standaloneExercises = [];
-    
-    // Séparer les exercices en supersets et standalone
-    activeWorkout.exercises.forEach(exercise => {
-        if (exercise.supersetId) {
-            supersetExercises.push(exercise);
-        } else {
-            standaloneExercises.push(exercise);
-        }
-    });
-    
-    // Regrouper les supersets par ID
-    const supersetGroups = {};
-    supersetExercises.forEach(exercise => {
-        if (!supersetGroups[exercise.supersetId]) {
-            supersetGroups[exercise.supersetId] = [];
-        }
-        supersetGroups[exercise.supersetId].push(exercise);
-    });
-    
-    // Trier les exercices dans chaque superset par ordre
-    Object.values(supersetGroups).forEach(group => {
-        group.sort((a, b) => (a.supersetOrder || 0) - (b.supersetOrder || 0));
-    });
-    
-    // Recréer la liste des exercices dans l'ordre correct
-    const reorganizedExercises = [...standaloneExercises];
-    
-    // Ajouter les supersets groupés
-    Object.values(supersetGroups).forEach(group => {
-        reorganizedExercises.push(...group);
-    });
-    
-    activeWorkout.exercises = reorganizedExercises;
 }
 
 function deleteWorkoutHistory(index) {
