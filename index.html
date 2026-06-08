@@ -21044,6 +21044,34 @@ function updateWorkoutTimer() {
     }
 }
 
+// ── Flush DOM → state : lit tous les inputs actifs et met à jour activeWorkout ──
+// Doit être appelé AVANT tout swap/réorganisation et AVANT tout re-render
+function flushDomToState() {
+    if (!activeWorkout) return;
+    activeWorkout.exercises.forEach((exercise, ei) => {
+        const isCardio = typeof isCardioExercise === 'function' ? isCardioExercise(exercise) : false;
+        exercise.sets.forEach((set, si) => {
+            const setEl = document.getElementById(`set-${ei}-${si}`);
+            if (!setEl) return;
+            const inputs = setEl.querySelectorAll('input.number-input, input[inputmode="decimal"], input[type="number"]');
+            if (inputs.length >= 1) {
+                const v0 = inputs[0].value;
+                if (v0 !== '' && v0 !== undefined) {
+                    if (isCardio) { const n=parseFloat(v0); if(!isNaN(n)){set.distance=n;set._userModified=true;} }
+                    else { set.reps=v0; set._userModified=true; }
+                }
+            }
+            if (inputs.length >= 2) {
+                const v1 = inputs[1].value;
+                if (v1 !== '' && v1 !== undefined) {
+                    if (isCardio) { const n=parseFloat(v1); if(!isNaN(n)){set.time=n;set._userModified=true;} }
+                    else { const n=parseFloat(v1); if(!isNaN(n)){set.weight=n;set._userModified=true;} }
+                }
+            }
+        });
+    });
+}
+
 function updateWorkoutDisplay() {
     if (!activeWorkout) return;
     
@@ -21108,33 +21136,7 @@ function updateWorkoutDisplay() {
     if (typeof updateWorkoutProgressBar === 'function') updateWorkoutProgressBar();
 
     // ── Flush DOM → state avant re-render ──────────────────────────
-    // Lit les valeurs actuelles de tous les inputs et les écrit dans activeWorkout
-    // Empêche la perte de saisie en cours lors d'un re-render
-    if (activeWorkout) {
-        activeWorkout.exercises.forEach((exercise, ei) => {
-            const isCardio = typeof isCardioExercise === 'function' ? isCardioExercise(exercise) : false;
-            exercise.sets.forEach((set, si) => {
-                const setEl = document.getElementById(`set-${ei}-${si}`);
-                if (!setEl) return;
-                const inputs = setEl.querySelectorAll('input.number-input, input[inputmode="decimal"], input[type="number"]');
-                // Chaque set a 2 inputs : [0]=reps/distance, [1]=weight/time
-                if (inputs.length >= 1) {
-                    const v0 = inputs[0].value;
-                    if (v0 !== '' && v0 !== undefined) {
-                        if (isCardio) { const n=parseFloat(v0); if(!isNaN(n)){set.distance=n;set._userModified=true;} }
-                        else { set.reps=v0; set._userModified=true; }
-                    }
-                }
-                if (inputs.length >= 2) {
-                    const v1 = inputs[1].value;
-                    if (v1 !== '' && v1 !== undefined) {
-                        if (isCardio) { const n=parseFloat(v1); if(!isNaN(n)){set.time=n;set._userModified=true;} }
-                        else { const n=parseFloat(v1); if(!isNaN(n)){set.weight=n;set._userModified=true;} }
-                    }
-                }
-            });
-        });
-    }
+    flushDomToState();
 
     const container = document.getElementById('workout-exercises-container');
     container.innerHTML = '';
@@ -22114,6 +22116,7 @@ function moveExerciseUpInWorkout(index) {
         exercise.supersetColor = null;
     }
     
+    flushDomToState();
     const temp = activeWorkout.exercises[index];
     activeWorkout.exercises[index] = activeWorkout.exercises[index - 1];
     activeWorkout.exercises[index - 1] = temp;
@@ -22177,6 +22180,7 @@ function moveExerciseDownInWorkout(index) {
         exercise.supersetColor = null;
     }
     
+    flushDomToState();
     const temp = activeWorkout.exercises[index];
     activeWorkout.exercises[index] = activeWorkout.exercises[index + 1];
     activeWorkout.exercises[index + 1] = temp;
