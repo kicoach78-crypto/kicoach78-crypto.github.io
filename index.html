@@ -21044,14 +21044,27 @@ function updateWorkoutTimer() {
     }
 }
 
+// ── UID exercice : garantit que chaque exercice a un identifiant unique stable ──
+// Appelé systématiquement après tout push dans activeWorkout.exercises
+function _ensureExUid(ex) {
+    if (!ex._uid) ex._uid = 'ex_' + Date.now() + '_' + Math.floor(Math.random()*1e6);
+    return ex;
+}
+function _ensureAllUids() {
+    if (!activeWorkout) return;
+    activeWorkout.exercises.forEach(ex => _ensureExUid(ex));
+}
+
 // ── Flush DOM → state : lit tous les inputs actifs et met à jour activeWorkout ──
 // Doit être appelé AVANT tout swap/réorganisation et AVANT tout re-render
 function flushDomToState() {
     if (!activeWorkout) return;
     activeWorkout.exercises.forEach((exercise, ei) => {
         const isCardio = typeof isCardioExercise === 'function' ? isCardioExercise(exercise) : false;
+        // Utiliser _uid si disponible pour retrouver les bons éléments DOM
+        const uidOrIdx = exercise._uid || ei;
         exercise.sets.forEach((set, si) => {
-            const setEl = document.getElementById(`set-${ei}-${si}`);
+            const setEl = document.getElementById(`set-${uidOrIdx}-${si}`);
             if (!setEl) return;
             const inputs = setEl.querySelectorAll('input.number-input, input[inputmode="decimal"], input[type="number"]');
             if (inputs.length >= 1) {
@@ -21137,6 +21150,7 @@ function updateWorkoutDisplay() {
 
     // ── Flush DOM → state avant re-render ──────────────────────────
     flushDomToState();
+    _ensureAllUids();
 
     const container = document.getElementById('workout-exercises-container');
     container.innerHTML = '';
@@ -21258,7 +21272,7 @@ function updateWorkoutDisplay() {
                         ${exercise.supersetId ? ` • <span style="color: ${exercise.supersetColor || '#8B5CF6'};"><i class="fas fa-link"></i> ${exercise.supersetName || 'Superset'}</span>` : ''}
                     </div>
                 </div>
-                <div class="sets-container" id="sets-container-${exerciseIndex}">
+                <div class="sets-container" id="sets-container-${exercise._uid||exerciseIndex}">
                     <!-- Séries générées dynamiquement -->
                 </div>
             `}
@@ -21266,10 +21280,11 @@ function updateWorkoutDisplay() {
         
         container.appendChild(exerciseElement);
         
-        const setsContainer = document.getElementById(`sets-container-${exerciseIndex}`);
+        const _uid = exercise._uid || exerciseIndex;
+        const setsContainer = document.getElementById(`sets-container-${_uid}`);
         exercise.sets.forEach((set, setIndex) => {
             const setElement = createSetElement(exerciseIndex, setIndex, set);
-            if (setElement) setsContainer.appendChild(setElement);
+            if (setElement && setsContainer) setsContainer.appendChild(setElement);
         });
     });
 }
@@ -21334,7 +21349,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
     if (useCompactMode) {
         const setElement = document.createElement('div');
         setElement.className = `set-item-compact ${set.completed ? 'completed' : ''}`;
-        setElement.id = `set-${exerciseIndex}-${setIndex}`;
+        setElement.id = `set-${exercise._uid || exerciseIndex}-${setIndex}`;
         setElement.style.minHeight = '60px';
         setElement.style.padding = '10px 12px';
         setElement.style.display = 'grid';
@@ -21442,7 +21457,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
                               font-weight: 700; 
                               height: 36px;" inputmode="decimal" 
                        value="${value1}" 
-                       oninput="updateSet(${exerciseIndex}, ${setIndex}, '${isCardio ? 'distance' : 'reps'}', this.value)" 
+                       oninput="updateSet('${exercise._uid || exerciseIndex}', ${setIndex}, '${isCardio ? 'distance' : 'reps'}', this.value)" 
                        onclick="this.select()">
             </div>
             
@@ -21463,7 +21478,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
                               height: 36px;" inputmode="decimal" 
                        id="weight-input-${exerciseIndex}-${setIndex}"
                        value="${value2}" 
-                       oninput="updateSet(${exerciseIndex}, ${setIndex}, '${isCardio ? 'time' : 'weight'}', this.value);if(!${isCardio})_updateDumbbellViz(${exerciseIndex},${setIndex},this.value);"
+                       oninput="updateSet('${exercise._uid || exerciseIndex}', ${setIndex}, '${isCardio ? 'time' : 'weight'}', this.value);if(!${isCardio})_updateDumbbellViz('${exercise._uid || exerciseIndex}',${setIndex},this.value);"
                        onclick="this.select()">
             </div>
             
@@ -21505,7 +21520,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
                     <i class="fas fa-link"></i> Superset "${exercise.supersetName || 'Sans nom'}" • Exercice ${exercise.supersetOrder}
                 </div>
             ` : ''}
-            ${!isCardio ? `<div id="db-viz-${exerciseIndex}-${setIndex}" style="grid-column:1/-1;margin-top:2px;">${_rmWeightVizSVG(exerciseIndex, setIndex, value2, _rm1RMHasBarbell(exercise.name||''))}</div>` : ''}
+            ${!isCardio ? `<div id="db-viz-${exercise._uid||exerciseIndex}-${setIndex}" style="grid-column:1/-1;margin-top:2px;">${_rmWeightVizSVG(exercise._uid||exerciseIndex, setIndex, value2, _rm1RMHasBarbell(exercise.name||''))}</div>` : ''}
         `;
         
         if (set.completed) {
@@ -21520,7 +21535,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
     // MODE NON-COMPACT
     const setElement = document.createElement('div');
     setElement.className = `set-item ${set.completed ? 'completed' : ''}`;
-    setElement.id = `set-${exerciseIndex}-${setIndex}`;
+    setElement.id = `set-${exercise._uid || exerciseIndex}-${setIndex}`;
     
     // Valeurs selon le type d'exercice
     let value1, value2, unit1, unit2;
@@ -21618,7 +21633,7 @@ function createSetElement(exerciseIndex, setIndex, set) {
                     <i class="fas fa-${isCardio ? 'road' : 'redo'}"></i> ${unit1}
                 </div>
                 <input type="text" class="number-input" value="${value1}" 
-                       oninput="updateSet(${exerciseIndex}, ${setIndex}, '${isCardio ? 'distance' : 'reps'}', this.value)" 
+                       oninput="updateSet('${exercise._uid || exerciseIndex}', ${setIndex}, '${isCardio ? 'distance' : 'reps'}', this.value)" 
                        onclick="this.select()">
             </div>
             
@@ -21629,11 +21644,11 @@ function createSetElement(exerciseIndex, setIndex, set) {
                 <input type="number" inputmode="decimal" class="number-input"
                        id="weight-input-${exerciseIndex}-${setIndex}"
                        value="${value2}" 
-                       oninput="updateSet(${exerciseIndex}, ${setIndex}, '${isCardio ? 'time' : 'weight'}', this.value);if(!${isCardio})_updateDumbbellViz(${exerciseIndex},${setIndex},this.value);" 
+                       oninput="updateSet('${exercise._uid || exerciseIndex}', ${setIndex}, '${isCardio ? 'time' : 'weight'}', this.value);if(!${isCardio})_updateDumbbellViz('${exercise._uid || exerciseIndex}',${setIndex},this.value);" 
                        onclick="this.select()">
             </div>
         </div>
-        ${!isCardio ? `<div style="display:flex;align-items:center;gap:10px;margin:4px 0 0;">${previousSetInfo ? previousSetInfo.replace('</div>','') + `<div id="db-viz-${exerciseIndex}-${setIndex}" style="flex-shrink:0;">${_rmWeightVizSVG(exerciseIndex, setIndex, value2, _rm1RMHasBarbell(exercise.name||''))}</div></div>` : `<div id="db-viz-${exerciseIndex}-${setIndex}">${_rmWeightVizSVG(exerciseIndex, setIndex, value2, _rm1RMHasBarbell(exercise.name||''))}</div>`}` : previousSetInfo}
+        ${!isCardio ? `<div style="display:flex;align-items:center;gap:10px;margin:4px 0 0;">${previousSetInfo ? previousSetInfo.replace('</div>','') + `<div id="db-viz-${exercise._uid||exerciseIndex}-${setIndex}" style="flex-shrink:0;">${_rmWeightVizSVG(exercise._uid||exerciseIndex, setIndex, value2, _rm1RMHasBarbell(exercise.name||''))}</div></div>` : `<div id="db-viz-${exercise._uid||exerciseIndex}-${setIndex}">${_rmWeightVizSVG(exercise._uid||exerciseIndex, setIndex, value2, _rm1RMHasBarbell(exercise.name||''))}</div>`}` : previousSetInfo}
         
         ${supersetInfo}
         
@@ -21694,27 +21709,24 @@ function findPreviousExerciseData(exerciseName) {
 
 function updateSet(exerciseIndex, setIndex, field, value) {
     if (!activeWorkout) return;
-    
-    // RÉPARATION: Nettoyer la valeur
+    // Résoudre l'exercice par _uid si disponible, sinon par index
+    // exerciseIndex peut être un _uid string ou un index numérique
+    let exercise;
+    if (typeof exerciseIndex === 'string' && exerciseIndex.startsWith('ex_')) {
+        exercise = activeWorkout.exercises.find(ex => ex._uid === exerciseIndex);
+    }
+    if (!exercise) exercise = activeWorkout.exercises[exerciseIndex];
+    if (!exercise || !exercise.sets[setIndex]) return;
+
     let cleanedValue = value;
-    
     if (field === 'weight') {
-        // Pour le poids: convertir en nombre, remplacer les virgules par des points
         cleanedValue = parseFloat(value.toString().replace(',', '.')) || 0;
     } else if (field === 'reps') {
-        // Pour les reps: garder comme texte mais nettoyer
         cleanedValue = value.toString().trim();
-        if (cleanedValue === '') {
-            cleanedValue = userProfile.defaultReps;
-        }
+        if (cleanedValue === '') cleanedValue = userProfile.defaultReps;
     }
-    
-    // Mettre à jour la valeur
-    activeWorkout.exercises[exerciseIndex].sets[setIndex][field] = cleanedValue;
-    // Marquer ce set comme modifié par l'utilisateur — empêche l'écrasement par les valeurs historiques
-    activeWorkout.exercises[exerciseIndex].sets[setIndex]._userModified = true;
-    
-    // Recalculer le poids total
+    exercise.sets[setIndex][field] = cleanedValue;
+    exercise.sets[setIndex]._userModified = true;
     recalculateTotalWeight();
 }
 
@@ -22195,13 +22207,11 @@ function moveExerciseDownInWorkout(index) {
 // Fonction pour réduire/développer un exercice
 function toggleExerciseCollapse(exerciseIndex) {
     if (!activeWorkout || !activeWorkout.exercises[exerciseIndex]) return;
-    
-    // Basculer l'état de compression pour cet exercice seulement
     activeWorkout.exercises[exerciseIndex].collapsed = !activeWorkout.exercises[exerciseIndex].collapsed;
-    
-    // Mettre à jour l'affichage correctement en utilisant l'ID spécifique
-    const setsContainer = document.getElementById(`sets-container-${exerciseIndex}`);
-    const exerciseElement = document.getElementById(`sets-container-${exerciseIndex}`)?.closest('.workout-exercise');
+    const ex = activeWorkout.exercises[exerciseIndex];
+    const uid = ex._uid || exerciseIndex;
+    const setsContainer = document.getElementById(`sets-container-${uid}`);
+    const exerciseElement = document.getElementById(`sets-container-${uid}`)?.closest('.workout-exercise');
     
     if (setsContainer && exerciseElement) {
         if (activeWorkout.exercises[exerciseIndex].collapsed) {
@@ -22251,22 +22261,30 @@ function _toggleWeightViz(exerciseIndex) {
     if (!activeWorkout) return;
     const sets = activeWorkout.exercises[exerciseIndex]?.sets || [];
     sets.forEach((_, si) => {
-        const container = document.getElementById(`db-viz-${exerciseIndex}-${si}`);
+        const _ex2=activeWorkout.exercises[exerciseIndex];
+        const _uid2=_ex2?(_ex2._uid||exerciseIndex):exerciseIndex;
+        const container = document.getElementById(`db-viz-${_uid2}-${si}`);
         if (container) container.style.display = _rmVizEnabled ? '' : 'none';
     });
 }
 
 function _updateDumbbellViz(exerciseIndex, setIndex, weightVal) {
-    const container = document.getElementById(`db-viz-${exerciseIndex}-${setIndex}`);
+    // exerciseIndex peut être un _uid ou un index numérique
+    let resolvedIdx = exerciseIndex;
+    if (typeof exerciseIndex === 'string' && exerciseIndex.startsWith('ex_') && activeWorkout) {
+        resolvedIdx = activeWorkout.exercises.findIndex(ex => ex._uid === exerciseIndex);
+        if (resolvedIdx === -1) resolvedIdx = exerciseIndex;
+    }
+    const container = document.getElementById(`db-viz-${resolvedIdx}-${setIndex}`);
     if (!container) return;
     if (!_rmVizEnabled) { container.style.display = 'none'; return; }
     const w = parseFloat(weightVal) || 0;
-    const exName = activeWorkout?.exercises[exerciseIndex]?.name || '';
+    const exName = activeWorkout?.exercises[resolvedIdx]?.name || '';
     const hasBar = _rm1RMHasBarbell(exName);
     // Initialiser explicitement à 1 côté si pas encore défini (évite double-clic)
     const key = `${exerciseIndex}_${setIndex}`;
     if (!hasBar && _rmVizSides[key] === undefined) _rmVizSides[key] = 1;
-    container.innerHTML = w > 0 ? _rmWeightVizSVG(exerciseIndex, setIndex, w, hasBar) : '';
+    container.innerHTML = w > 0 ? _rmWeightVizSVG(exercise._uid||exerciseIndex, setIndex, w, hasBar) : '';
     container.style.display = '';
 }
 
@@ -28896,6 +28914,13 @@ function startRedoWorkout(workoutData) {
     updateWorkoutDisplay();
     showScreen('active-workout-screen');
     showNotification('✅ Séance reprise avec succès', 'success');
+}
+
+function resumeWorkoutFromHistory(index) {
+    const entry = workoutHistory[index];
+    if (!entry) return;
+    // Reprendre une séance auto-sauvegardée — utilise redoWorkout directement
+    redoWorkout(index);
 }
 
 function deleteWorkoutHistory(index) {
