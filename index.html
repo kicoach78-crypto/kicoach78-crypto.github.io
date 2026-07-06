@@ -29335,9 +29335,13 @@ function redoWorkout(index) {
     const entry = workoutHistory[index];
     if (!entry) return;
 
+    // Différence cruciale : reprendre une séance interrompue (auto-save) doit
+    // conserver l'état "complété" de chaque série ; refaire une séance déjà
+    // terminée doit repartir de zéro. Une seule fonction servait les deux
+    // cas et remettait toujours completed à false — c'était le bug.
+    const isResume = entry.isAutoSave === true;
+
     // Reconstruction dans l'ordre EXACT de l'historique
-    // Approche simplifiée : on itère entry.exercises dans l'ordre original
-    // sans tableau sparse pour éviter tout décalage d'index
     const exercises = [];
 
     entry.exercises.forEach((exercise) => {
@@ -29352,11 +29356,13 @@ function redoWorkout(index) {
         // Copier les séries historiques dans l'ordre exact — attachées à chaque série
         const historicalSets = (exercise.sets || []).map(set => {
             if (isCardio) {
-                return { distance: set.distance || 0, time: set.time || 0, completed: false,
+                return { distance: set.distance || 0, time: set.time || 0,
+                         completed: isResume ? !!set.completed : false,
                          rest: set.rest || exercise.customRest || userProfile.defaultRest,
                          vizSides: set.vizSides };
             } else {
-                return { reps: set.reps || 0, weight: set.weight || 0, completed: false,
+                return { reps: set.reps || 0, weight: set.weight || 0,
+                         completed: isResume ? !!set.completed : false,
                          rest: set.rest || exercise.customRest || userProfile.defaultRest,
                          vizSides: set.vizSides };
             }
@@ -29380,15 +29386,20 @@ function redoWorkout(index) {
     });
 
     if (exercises.length > 0) {
-        startRedoWorkout({ name: entry.name, exercises, supersets: entry.supersets || [] });
+        startRedoWorkout({ name: entry.name, exercises, supersets: entry.supersets || [], elapsedSeconds: isResume ? (entry.duration || 0) : 0 }, isResume);
         hideModal('history-detail-modal');
-        showNotification('Séance prête à être refaite', 'success');
+        // La séance auto-sauvegardée ne doit plus traîner en double une fois reprise
+        if (isResume) {
+            workoutHistory = workoutHistory.filter(e => e !== entry);
+            saveToLocalStorage();
+        }
+        showNotification(isResume ? 'Séance reprise — vos séries déjà faites sont conservées' : 'Séance prête à être refaite', 'success');
     } else {
         showNotification('Impossible de retrouver les exercices de cette séance', 'error');
     }
 }
 
-function startRedoWorkout(workoutData) {
+function startRedoWorkout(workoutData, isResume) {
     activeWorkout = {
         name: workoutData.name,
         exercises: [],
@@ -29413,11 +29424,11 @@ function startRedoWorkout(workoutData) {
             exercise.historicalSets.forEach((hs, si) => {
                 if (isCardio) {
                     sets.push({ number: si + 1, distance: hs.distance, time: hs.time,
-                                completed: false, rest: hs.rest, isHistorical: true,
+                                completed: isResume ? !!hs.completed : false, rest: hs.rest, isHistorical: true,
                                 vizSides: hs.vizSides });
                 } else {
                     sets.push({ number: si + 1, reps: hs.reps, weight: hs.weight,
-                                completed: false, rest: hs.rest, isHistorical: true,
+                                completed: isResume ? !!hs.completed : false, rest: hs.rest, isHistorical: true,
                                 vizSides: hs.vizSides });
                 }
             });
@@ -29449,6 +29460,11 @@ function startRedoWorkout(workoutData) {
     });
 
     activeWorkoutStartTime = new Date();
+    if (isResume && workoutData.elapsedSeconds) {
+        // Conserver le temps déjà écoulé avant l'interruption plutôt que de
+        // repartir de zéro — le chrono de séance reste cohérent après reprise.
+        activeWorkoutStartTime = new Date(Date.now() - workoutData.elapsedSeconds * 1000);
+    }
     activeWorkoutTimer = setInterval(updateWorkoutTimer, 1000);
     if (settings.autoSaveEnabled) startAutoSave();
 
@@ -29457,6 +29473,19 @@ function startRedoWorkout(workoutData) {
 
     updateWorkoutDisplay();
     showScreen('active-workout-screen');
+
+    // En reprise : recalculer les totaux (séries complétées, poids, etc.)
+    // à partir de l'état restauré — sans ça les stats affichées repartent
+    // de zéro alors que des séries sont déjà cochées.
+    if (isResume) {
+        let completedCount = 0;
+        activeWorkout.exercises.forEach(ex => {
+            ex.sets.forEach(s => { if (s.completed) completedCount++; });
+        });
+        activeWorkout.completedSets = completedCount;
+        if (typeof recalculateTotalWeight === 'function') recalculateTotalWeight();
+        updateWorkoutDisplay();
+    }
     showNotification('✅ Séance reprise avec succès', 'success');
 }
 
