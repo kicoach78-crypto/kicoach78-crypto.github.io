@@ -12536,6 +12536,18 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
 .sil-disclaimer  { font-size:9px;color:var(--text-tertiary);margin-top:8px;text-align:center;padding:5px 8px;background:var(--card-bg-alt);border-radius:8px;border:1px solid var(--border); }
 
     </style>
+<script>
+// Enregistrement du service worker — défensif, ne bloque jamais le chargement.
+// Ne s'enregistre que sur http(s) (jamais sur file:// où ce n'est pas supporté).
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.protocol === 'http:')) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {
+            // Échec silencieux — l'app continue de fonctionner normalement
+            // avec un accès réseau direct aux CDN, comme avant.
+        });
+    });
+}
+</script>
 </head>
 <body>
     <div class="app-container">
@@ -12666,6 +12678,9 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
                     </div>
                     <div id="wb-home-bars" style="display:none;margin-top:12px;gap:3px;align-items:flex-end;height:32px;"></div>
                 </div>
+
+                <!-- CARTE ALERTE PLATEAU -->
+                <div id="plateau-card-container"></div>
 
                 <!-- DÉMARRAGE RAPIDE -->
                 <div class="screen-section-label"><i class="fas fa-bolt"></i> Démarrage rapide</div>
@@ -14096,11 +14111,11 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
                     <!-- Badge 0/x exercices + micro -->
                     <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
                         <div id="workout-progress-badge" style="font-size:11px;font-weight:800;color:var(--primary);background:var(--primary-glow);padding:4px 10px;border-radius:20px;white-space:nowrap;">0 / 0</div>
-                        <button id="_voice_btn" onclick="toggleVoice()" title="Commande vocale"
+                        <button id="_voice_btn" onclick="toggleVoice()" title="Commande vocale" aria-label="Commande vocale pendant la séance"
                             style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 3px 10px rgba(79,110,247,.35);">
                             <i class="fas fa-microphone"></i>
                         </button>
-                        <button onclick="_openVoiceActionsModal()" title="Mes actions vocales personnalisées"
+                        <button onclick="_openVoiceActionsModal()" title="Mes actions vocales personnalisées" aria-label="Gérer mes actions vocales personnalisées"
                             style="width:32px;height:32px;border-radius:50%;background:var(--card-bg-alt);border:1.5px solid var(--border);color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;position:relative;">
                             <i class="fas fa-sliders"></i>
                             <span id="voice-actions-badge-session" style="display:none;position:absolute;top:-3px;right:-3px;background:#8B5CF6;color:#fff;font-size:8px;font-weight:800;width:14px;height:14px;border-radius:50%;align-items:center;justify-content:center;"></span>
@@ -14188,34 +14203,34 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
     <!-- NAVBAR -->
     <div class="navbar-container">
         <div class="navbar">
-            <div class="nav-item active" data-screen="home-screen" onclick="showScreen('home-screen')">
+            <div class="nav-item active" data-screen="home-screen" onclick="showScreen('home-screen')" role="button" tabindex="0" aria-label="Accueil">
                 <div class="nav-icon"><i class="fas fa-home"></i></div>
                 <div class="nav-text">Accueil</div>
             </div>
-            <div class="nav-item" data-screen="workouts-screen" onclick="showScreen('workouts-screen')">
+            <div class="nav-item" data-screen="workouts-screen" onclick="showScreen('workouts-screen')" role="button" tabindex="0" aria-label="Séances">
                 <div class="nav-icon"><i class="fas fa-dumbbell"></i></div>
                 <div class="nav-text">Séances</div>
             </div>
-            <div class="nav-item" data-screen="calendar-screen" onclick="showScreen('calendar-screen');initCalendarScreen();">
+            <div class="nav-item" data-screen="calendar-screen" onclick="showScreen('calendar-screen');initCalendarScreen();" role="button" tabindex="0" aria-label="Planning">
                 <div class="nav-icon"><i class="fas fa-calendar-week"></i></div>
                 <div class="nav-text">Planning</div>
             </div>
-            <div class="nav-item" data-screen="nutrition-screen" onclick="showScreen('nutrition-screen')">
+            <div class="nav-item" data-screen="nutrition-screen" onclick="showScreen('nutrition-screen')" role="button" tabindex="0" aria-label="Nutrition">
                 <div class="nav-icon"><i class="fas fa-apple-alt"></i></div>
                 <div class="nav-text">Nutrition</div>
             </div>
-            <div class="nav-item" data-screen="history-screen" onclick="showScreen('history-screen')">
+            <div class="nav-item" data-screen="history-screen" onclick="showScreen('history-screen')" role="button" tabindex="0" aria-label="Historique">
                 <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
                 <div class="nav-text">Historique</div>
             </div>
-            <div class="nav-item" data-screen="ai-screen" onclick="showScreen('ai-screen')">
+            <div class="nav-item" data-screen="ai-screen" onclick="showScreen('ai-screen')" role="button" tabindex="0" aria-label="IA Coach">
                 <div class="nav-icon" style="position:relative;">
                     <i class="fas fa-robot"></i>
                     <span id="ai-nav-dot" style="display:none;position:absolute;top:-2px;right:-2px;width:7px;height:7px;border-radius:50%;background:var(--primary);border:1.5px solid var(--card-bg);"></span>
                 </div>
                 <div class="nav-text">IA Coach</div>
             </div>
-            <div class="nav-item" id="coach-nav-item" data-screen="coach-screen" onclick="showScreen('coach-screen')" style="display:none;">
+            <div class="nav-item" id="coach-nav-item" data-screen="coach-screen" onclick="showScreen('coach-screen')" style="display:none;" role="button" tabindex="0" aria-label="Coach">
                 <div class="nav-icon" style="position:relative;">
                     <i class="fas fa-user-tie"></i>
                     <span id="coach-nav-dot" style="display:none;position:absolute;top:-2px;right:-2px;width:7px;height:7px;border-radius:50%;background:#8B5CF6;border:1.5px solid var(--card-bg);"></span>
@@ -14293,7 +14308,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title">Créer une séance</h3>
-            <button class="modal-close" onclick="hideModal('create-workout-modal'); resetCreateWorkoutModal()">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('create-workout-modal'); resetCreateWorkoutModal()">×</button>
         </div>
         <div class="modal-body">
             <input type="text" id="workout-name" placeholder="Nom de la séance" class="number-input" class="u-w-full-mb-14">
@@ -14332,7 +14347,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-pen"></i> Modifier la séance</h3>
-                <button class="modal-close" onclick="hideModal('edit-workout-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('edit-workout-modal')">×</button>
             </div>
             <div class="modal-body">
                 <input type="text" id="edit-workout-name" placeholder="Nom de la séance" class="number-input" class="u-w-full-mb-14">
@@ -14360,7 +14375,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-running"></i> Choisir un exercice</h3>
-                <button class="modal-close" onclick="hideModal('select-exercise-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('select-exercise-modal')">×</button>
             </div>
             <div class="modal-body" style="padding:10px 14px 14px;">
                 <!-- Champ de recherche avec le bon ID attendu par le JS -->
@@ -14387,7 +14402,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-plus-circle"></i> Créer un exercice</h3>
-                <button class="modal-close" onclick="hideModal('custom-exercise-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('custom-exercise-modal')">×</button>
             </div>
             <div class="modal-body">
                 <div class="input-group" class="u-mb-14">
@@ -14443,7 +14458,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-trash"></i> Supprimer l'historique</h3>
-                <button class="modal-close" onclick="hideModal('clear-history-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('clear-history-modal')">×</button>
             </div>
             <div class="modal-body">
                 <p class="u-mb-18 u-text-primary">Êtes-vous sûr de vouloir supprimer TOUT l'historique ? Cette action est irréversible.</p>
@@ -14460,7 +14475,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Supprimer tous les exercices personnalisés</h3>
-                <button class="modal-close" onclick="hideModal('delete-all-exercises-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('delete-all-exercises-modal')">×</button>
             </div>
             <div class="modal-body">
                 <p class="u-mb-18 u-text-primary">Cette action supprimera TOUS vos exercices personnalisés. Cette action est irréversible.</p>
@@ -14478,7 +14493,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Supprimer tous les aliments personnalisés</h3>
-                <button class="modal-close" onclick="hideModal('delete-all-foods-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('delete-all-foods-modal')">×</button>
             </div>
             <div class="modal-body">
                 <p class="u-mb-18 u-text-primary">Cette action supprimera TOUS vos aliments personnalisés. Cette action est irréversible.</p>
@@ -14496,7 +14511,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title" id="history-detail-title"><i class="fas fa-clipboard-list"></i> Détail de la séance</h3>
-                <button class="modal-close" onclick="hideModal('history-detail-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('history-detail-modal')">×</button>
             </div>
             <div class="modal-body">
                 <div class="modal-scrollable" id="history-detail-content">
@@ -14511,7 +14526,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
     <div class="modal-content" style="max-width: 400px;">
         <div class="modal-header">
             <h3 class="modal-title" id="exercise-detail-title"><i class="fas fa-file-alt"></i> Fiche Exercice</h3>
-            <button class="modal-close" onclick="hideModal('exercise-detail-modal')">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('exercise-detail-modal')">×</button>
         </div>
         <div class="modal-body">
             <div class="exercise-detail-modal-content" id="exercise-detail-content">
@@ -14526,7 +14541,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-trash"></i> Supprimer l'exercice</h3>
-                <button class="modal-close" onclick="hideModal('delete-custom-exercise-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('delete-custom-exercise-modal')">×</button>
             </div>
             <div class="modal-body">
                 <p class="u-mb-18 u-text-primary" id="delete-exercise-message">Êtes-vous sûr de vouloir supprimer cet exercice ? Cette action est irréversible et supprimera également cet exercice de toutes les séances où il est utilisé.</p>
@@ -14543,7 +14558,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-pen"></i> Modifier l'exercice</h3>
-                <button class="modal-close" onclick="hideModal('edit-custom-exercise-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('edit-custom-exercise-modal')">×</button>
             </div>
             <div class="modal-body">
                 <div class="input-group" class="u-mb-14">
@@ -14602,7 +14617,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-plus"></i> Ajouter un repas</h3>
-                <button class="modal-close" onclick="hideModal('add-meal-modal'); resetMealForm()">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('add-meal-modal'); resetMealForm()">×</button>
             </div>
             <div class="modal-body">
                 <div class="add-meal-modal-content">
@@ -14656,7 +14671,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-leaf"></i> Ajouter un aliment</h3>
-                <button class="modal-close" onclick="hideModal('add-food-modal'); resetFoodForm()">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('add-food-modal'); resetFoodForm()">×</button>
             </div>
             <div class="modal-body">
                 <div class="input-group" class="u-mb-14">
@@ -14742,7 +14757,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title"><i class="fas fa-search"></i> Rechercher un aliment</h3>
-            <button class="modal-close" onclick="hideModal('food-search-modal')">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('food-search-modal')">×</button>
         </div>
         <div class="modal-body">
             <div class="input-group" class="u-mb-14">
@@ -14782,7 +14797,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-trash"></i> Supprimer l'historique nutrition</h3>
-                <button class="modal-close" onclick="hideModal('clear-nutrition-history-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('clear-nutrition-history-modal')">×</button>
             </div>
             <div class="modal-body">
                 <p class="u-mb-18 u-text-primary">Êtes-vous sûr de vouloir supprimer TOUT l'historique nutrition ? Cette action est irréversible.</p>
@@ -14799,7 +14814,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-pen"></i> Modifier un repas</h3>
-                <button class="modal-close" onclick="hideModal('edit-meal-modal'); resetEditMealForm()">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('edit-meal-modal'); resetEditMealForm()">×</button>
             </div>
             <div class="modal-body">
                 <div class="add-meal-modal-content">
@@ -14846,7 +14861,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-pen"></i> Modifier un aliment</h3>
-                <button class="modal-close" onclick="hideModal('edit-custom-food-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('edit-custom-food-modal')">×</button>
             </div>
             <div class="modal-body">
                 <div class="input-group" class="u-mb-14">
@@ -14926,7 +14941,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title" id="meal-detail-title"><i class="fas fa-receipt"></i> Détail du repas</h3>
-                <button class="modal-close" onclick="hideModal('meal-detail-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('meal-detail-modal')">×</button>
             </div>
             <div class="modal-body">
                 <div class="modal-scrollable" id="meal-detail-content">
@@ -14941,7 +14956,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-balance-scale"></i> Modifier la quantité</h3>
-                <button class="modal-close" onclick="hideModal('edit-food-quantity-modal'); resetFoodEditModal()">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('edit-food-quantity-modal'); resetFoodEditModal()">×</button>
             </div>
             <div class="modal-body">
                 <div id="edit-food-quantity-content">
@@ -14956,7 +14971,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-save"></i> Sauvegarder la séance</h3>
-                <button class="modal-close" onclick="hideModal('save-data-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('save-data-modal')">×</button>
             </div>
             <div class="modal-body">
                 <div class="u-mb-18 u-text-primary">
@@ -14975,7 +14990,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-sliders-h"></i> Recherche Avancée Exercices</h3>
-                <button class="modal-close" onclick="hideModal('advanced-search-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('advanced-search-modal')">×</button>
             </div>
             <div class="modal-body">
                 <div class="filter-selection-container">
@@ -15039,7 +15054,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-sliders-h"></i> Recherche Avancée Aliments</h3>
-                <button class="modal-close" onclick="hideModal('advanced-search-modal-food')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('advanced-search-modal-food')">×</button>
             </div>
             <div class="modal-body">
                 <div class="filter-selection-container">
@@ -15087,7 +15102,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Quitter la séance ?</h3>
-                <button class="modal-close" onclick="hideModal('exit-confirm-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('exit-confirm-modal')">×</button>
             </div>
             <div class="modal-body">
                 <p class="u-mb-18 u-text-primary">Vous avez une séance en cours. Voulez-vous vraiment quitter ?</p>
@@ -15109,7 +15124,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
                     <h3 class="modal-title" data-i18n="settings">Paramètres</h3>
                     <div class="modal-subtitle">Personnaliser l'application</div>
                 </div>
-                <button class="modal-close" onclick="hideModal('settings-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('settings-modal')">×</button>
             </div>
         </div>
         <div class="modal-body">
@@ -15433,7 +15448,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title"><i class="fas fa-palette"></i> Choisir un thème</h3>
-            <button class="modal-close" onclick="hideModal('theme-selection-modal')">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('theme-selection-modal')">×</button>
         </div>
         <div class="modal-body">
             <p style="margin-bottom: 20px; color: var(--text-secondary); text-align: center;">
@@ -15492,7 +15507,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
     <div class="modal-content" style="max-width: 380px;">
         <div class="modal-header">
             <h3 class="modal-title"><i class="fas fa-sticky-note"></i> Notes de l'exercice</h3>
-            <button class="modal-close" onclick="hideModal('exercise-notes-modal')">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('exercise-notes-modal')">×</button>
         </div>
         <div class="modal-body">
             <div style="margin-bottom: 20px; text-align: center;">
@@ -15555,7 +15570,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title"><i class="fas fa-star"></i> Ajouter un repas avec cet aliment</h3>
-            <button class="modal-close" onclick="hideModal('favorite-food-modal')">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('favorite-food-modal')">×</button>
         </div>
         <div class="modal-body">
             <p class="u-mb-18 u-text-primary" id="favorite-food-message">Voulez-vous ajouter un repas avec cet aliment favori ?</p>
@@ -15582,7 +15597,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title"><i class="fas fa-robot" style="color:#7C3AED;margin-right:6px;"></i> Intelligence Artificielle</h3>
-            <button class="modal-close" onclick="hideModal('ai-config-modal')">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('ai-config-modal')">×</button>
         </div>
         <div class="modal-body">
 
@@ -15728,7 +15743,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
                     <div id="ai-chat-model-label" style="font-size:10px;color:rgba(255,255,255,0.75);font-weight:500;"></div>
                 </div>
             </div>
-            <button class="modal-close" onclick="hideModal('ai-assistant-modal')"
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('ai-assistant-modal')"
                 style="background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.3);color:white;">×</button>
         </div>
 
@@ -15780,7 +15795,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
                     <div id="scan-provider-label" style="font-size:10px;color:rgba(255,255,255,.75);">Analyse IA des aliments</div>
                 </div>
             </div>
-            <button class="modal-close" onclick="closeScanModal()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="closeScanModal()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
         </div>
         <div class="modal-body" style="padding:16px;">
 
@@ -15904,7 +15919,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
                     <div style="font-size:10px;color:rgba(255,255,255,.75);">Modifiez les aliments, quantités, ajoutez des éléments manquants</div>
                 </div>
             </div>
-            <button class="modal-close" onclick="hideModal('scan-correction-modal')" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('scan-correction-modal')" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
         </div>
         <div class="modal-body" style="padding:16px;">
             <div id="scan-correction-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
@@ -15939,7 +15954,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
                     <div id="walk-model-label" style="font-size:10px;color:rgba(255,255,255,.75);">Objectif personnalisé IA</div>
                 </div>
             </div>
-            <button class="modal-close" onclick="closeWalkModal()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="closeWalkModal()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
         </div>
         <div class="modal-body" style="padding:16px;">
 
@@ -16021,7 +16036,7 @@ button, .btn, .action-btn, .filter-pill, .nav-item,
     <div class="modal-content" style="max-width:420px;">
         <div class="modal-header">
             <h3 class="modal-title"><i class="fas fa-terminal" style="margin-right:6px;"></i>Runtime Debug</h3>
-            <button class="modal-close" onclick="hideModal('debug-modal')">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('debug-modal')">×</button>
         </div>
         <div class="modal-body">
             <div class="debug-toolbar">
@@ -16766,35 +16781,6 @@ function initApp() {
             }
         }
     }, 1000);
-}
-
-function initializeNutritionHistory() {
-    // Initialiser les 3 périodes
-    loadNutritionHistoryData('day');
-    loadNutritionHistoryData('week');
-    loadNutritionHistoryData('month');
-    
-    // S'assurer que le jour est actif
-    document.querySelectorAll('.nutrition-period').forEach(el => {
-        el.classList.remove('active');
-        el.classList.add('hidden');
-    });
-    
-    const dayElement = document.getElementById('nutrition-history-day');
-    if (dayElement) {
-        dayElement.classList.remove('hidden');
-        dayElement.classList.add('active');
-    }
-    
-    // Activer le bouton "Jour"
-    document.querySelectorAll('.history-nav-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    const dayBtn = document.querySelector('.history-nav-btn[onclick*="day"]');
-    if (dayBtn) {
-        dayBtn.classList.add('active');
-    }
 }
 
 function loadFromLocalStorage() {
@@ -20619,7 +20605,7 @@ function showProgramWorkoutModal(workoutIndex) {
             <div class="modal-content" style="max-width: 500px;">
                 <div class="modal-header">
                     <h3 class="modal-title"><i class="fas fa-calendar-plus"></i> Programmer la séance</h3>
-                    <button class="modal-close" onclick="hideModal('program-workout-modal')">×</button>
+                    <button class="modal-close" aria-label="Fermer" onclick="hideModal('program-workout-modal')">×</button>
                 </div>
                 <div class="modal-body" id="program-workout-content" style="max-height: 70vh; overflow-y: auto;">
                     ${modalContent}
@@ -20702,35 +20688,6 @@ function generateProgrammedSetRow(workoutIndex, exIndex, setIndex, set, isCardio
             </div>
         `;
     }
-}
-
-function generateSetRow(workoutIndex, exIndex, setIndex, set) {
-    return `
-        <div class="programmed-set-row" style="display: flex; gap: 8px; align-items: center; background: var(--bg-primary); padding: 8px; border-radius: var(--radius-sm); flex-wrap: wrap;">
-            <span style="font-weight: 700; min-width: 30px;">S${setIndex + 1}</span>
-            <input type="number" inputmode="decimal" class="program-input" value="${set.reps}" placeholder="Reps" 
-                   style="width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
-                   onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'reps', this.value)"
-                   onfocus="this.select()"
-                   onclick="this.select()">
-            <span>×</span>
-            <input type="number" inputmode="decimal" class="program-input" value="${set.weight}" placeholder="Kg" 
-                   style="width: 70px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
-                   onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'weight', this.value)"
-                   onfocus="this.select()"
-                   onclick="this.select()">
-            <span style="margin: 0 4px;">repos</span>
-            <input type="number" inputmode="decimal" class="program-input" value="${set.rest || 60}" placeholder="s" 
-                   style="width: 60px; padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);"
-                   onchange="updateProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex}, 'rest', this.value)"
-                   onfocus="this.select()"
-                   onclick="this.select()">
-            <span>s</span>
-            <button class="btn btn-sm btn-danger" onclick="removeProgrammedSet(${workoutIndex}, ${exIndex}, ${setIndex})" style="padding: 4px 8px;">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `;
 }
 
 function generateSetRow(workoutIndex, exIndex, setIndex, set) {
@@ -23214,7 +23171,7 @@ function show1RMModal(exerciseIndex) {
                     <div style="font-size:10px;color:rgba(255,255,255,.8);">${hasBarbell ? '<i class="fas fa-circle" style="font-size:7px;margin-right:4px;"></i>Barre détectée' : '<i class="fas fa-circle" style="font-size:7px;margin-right:4px;"></i>Sans barre'} — Calculateur de charge</div>
                 </div>
             </div>
-            <button class="modal-close" onclick="document.getElementById('rm-modal').remove()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="document.getElementById('rm-modal').remove()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
         </div>
         <div class="modal-body" style="padding:18px;">
 
@@ -23721,7 +23678,7 @@ function showCustomRestModal(exerciseIndex) {
         <div class="modal-content" style="max-width: 320px; padding-bottom: 15px;">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-stopwatch"></i> Temps de repos</h3>
-                <button class="modal-close" onclick="this.closest('.modal').remove()">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="this.closest('.modal').remove()">×</button>
             </div>
             <div class="modal-body">
                 ${modalContent}
@@ -24083,43 +24040,6 @@ function updateTimeDisplay() {
     }
 }
 
-function saveCustomRestFromPicker(exerciseIndex) {
-    const modal = document.querySelector('.modal.active');
-    if (!modal) return;
-    
-    // Utiliser votre fonction qui marche
-    const timeValues = getSelectedTimeValues();
-    const totalSeconds = (timeValues.minutes * 60) + timeValues.seconds;
-    
-    // Validation
-    if (totalSeconds < 15) {
-        showNotification('Le temps de repos minimum est de 15 secondes', 'error');
-        return;
-    }
-    
-    if (totalSeconds > 600) {
-        showNotification('Le temps de repos maximum est de 10 minutes', 'error');
-        return;
-    }
-    
-    // Mettre à jour l'exercice
-    if (activeWorkout && activeWorkout.exercises[exerciseIndex]) {
-        activeWorkout.exercises[exerciseIndex].customRest = totalSeconds;
-    }
-    
-    // Fermer le modal
-    modal.remove();
-    
-    // Mettre à jour l'affichage
-    if (activeWorkout) {
-        updateWorkoutDisplay();
-    }
-    
-    // Notification
-    const formattedTime = `${timeValues.minutes.toString().padStart(2, '0')}:${timeValues.seconds.toString().padStart(2, '0')}`;
-    showNotification(`⏱️ Temps de repos défini à ${formattedTime} (${totalSeconds}s)`);
-}
-
 // REMPLACER la fonction getSelectedTimeValues() par cette nouvelle version :
 function getSelectedTimeValues() {
     const minutesPicker = document.getElementById('minutes-picker');
@@ -24147,55 +24067,6 @@ function getSelectedTimeValues() {
 
 
 // ET MODIFIER la fonction saveCustomRestFromPicker pour utiliser la bonne méthode :
-function saveCustomRestFromPicker(exerciseIndex) {
-    const modal = document.querySelector('.modal.active');
-    if (!modal) return;
-    
-    // Récupérer les valeurs - utiliser la nouvelle méthode
-    let timeValues;
-    if (minutesPicker && secondsPicker && typeof minutesPicker.getSelectedValue === 'function') {
-        // Si les pickers 3D sont disponibles
-        timeValues = {
-            minutes: minutesPicker.getSelectedValue() || 0,
-            seconds: secondsPicker.getSelectedValue() || 0
-        };
-    } else {
-        // Sinon utiliser la méthode par sélection CSS
-        timeValues = getSelectedTimeValues();
-    }
-    
-    const totalSeconds = (timeValues.minutes * 60) + timeValues.seconds;
-    
-    // Validation
-    if (totalSeconds < 15) {
-        showNotification('Le temps de repos minimum est de 15 secondes', 'error');
-        return;
-    }
-    
-    if (totalSeconds > 600) { // 10 minutes max
-        showNotification('Le temps de repos maximum est de 10 minutes', 'error');
-        return;
-    }
-    
-    // Mettre à jour l'exercice
-    if (activeWorkout && activeWorkout.exercises[exerciseIndex]) {
-        activeWorkout.exercises[exerciseIndex].customRest = totalSeconds;
-    }
-    
-    // Fermer le modal
-    modal.remove();
-    
-    // Mettre à jour l'affichage
-    if (activeWorkout) {
-        updateWorkoutDisplay();
-    }
-    
-    // Notification avec format MM:SS
-    const formattedTime = `${timeValues.minutes.toString().padStart(2, '0')}:${timeValues.seconds.toString().padStart(2, '0')}`;
-    
-    showNotification(`⏱️ Temps de repos défini à ${formattedTime} (${totalSeconds}s)`);
-}
-
 // Nouvelle fonction pour sauvegarder depuis le picker
 function saveCustomRestFromPicker(exerciseIndex) {
     const modal = document.querySelector('.modal.active');
@@ -24307,7 +24178,7 @@ let modalContent = `
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-link"></i> Créer un superset</h3>
-                <button class="modal-close" onclick="this.closest('.modal').remove()">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="this.closest('.modal').remove()">×</button>
             </div>
             <div class="modal-body">
                 ${modalContent}
@@ -24316,10 +24187,6 @@ let modalContent = `
     `;
     
     document.body.appendChild(modal);
-}
-
-function toggleSupersetSelection(checkbox, exerciseIndex) {
-    checkbox.classList.toggle('checked');
 }
 
 function createSuperset(startExerciseIndex) {
@@ -28770,216 +28637,6 @@ function showWorkoutHistoryDetail(index) {
 
 // ==================== NOUVEAU SYSTÈME D'HISTORIQUE NUTRITIONNEL ====================
 
-function loadNutritionHistoryData(period = 'day') {
-    const containerId = `nutrition-history-${period}`;
-    const container = document.getElementById(containerId);
-    
-    if (!container) {
-        console.error('Container non trouvé:', containerId);
-        return;
-    }
-    
-    // Générer le HTML avec l'architecture UNIFIÉE
-    container.innerHTML = generateNutritionHistoryHTML(period);
-}
-
-function generateNutritionHistoryHTML(period) {
-    // Filtrer les données selon la période
-    const filteredData = getNutritionDataForPeriod(period);
-    
-    if (filteredData.length === 0) {
-        return `
-            <div class="empty-state">
-                <div class="empty-state-icon"><i class="fas fa-utensils"></i></div>
-                <p>Aucun historique nutritionnel pour cette période</p>
-                <p style="font-size: var(--font-size-sm); margin-top: 6px;">Votre historique nutritionnel apparaîtra ici</p>
-            </div>
-        `;
-    }
-    
-    let html = '';
-    
-    // Utiliser la MÊME structure pour toutes les périodes
-    filteredData.forEach(item => {
-        const calorieNeeds = userProfile.calorieNeeds || 2500;
-        const calorieBalance = item.totalCalories - calorieNeeds;
-        
-        html += `
-            <div class="nutrition-history-item">
-                <div class="nutrition-history-header">
-                    <div class="nutrition-history-title">${formatDateForPeriod(item.date, period)}</div>
-                    <div class="nutrition-history-date">${item.mealCount} repas</div>
-                </div>
-                
-                <div class="nutrition-history-totals">
-                    <div class="nutrition-history-total">
-                        <div class="nutrition-history-total-value">${Math.round(item.totalCalories)}</div>
-                        <div class="nutrition-history-total-label">Calories</div>
-                        <div class="history-calories-balance ${calorieBalance <= 0 ? 'positive' : 'negative'}">
-                            ${calorieBalance >= 0 ? '+' : ''}${Math.round(calorieBalance)} kcal
-                        </div>
-                    </div>
-                    <div class="nutrition-history-total">
-                        <div class="nutrition-history-total-value protein">${Math.round(item.totalProtein)}g</div>
-                        <div class="nutrition-history-total-label">Protéines</div>
-                    </div>
-                    <div class="nutrition-history-total">
-                        <div class="nutrition-history-total-value carbs">${Math.round(item.totalCarbs)}g</div>
-                        <div class="nutrition-history-total-label">Glucides</div>
-                    </div>
-                    <div class="nutrition-history-total">
-                        <div class="nutrition-history-total-value fat">${Math.round(item.totalFat)}g</div>
-                        <div class="nutrition-history-total-label">Lipides</div>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 16px;">
-                    ${item.meals.map(meal => {
-                        const mealDate = new Date(meal.date);
-                        return `
-                        <div class="food-item-improved" style="margin-bottom: 10px; cursor: pointer;" onclick="showMealDetail('${meal.id}')">
-                            <div class="food-item-improved-header">
-                                <div class="food-item-improved-name">${meal.name}</div>
-                                <div class="meal-type-badge">${getMealTypeLabel(meal.type)}</div>
-                            </div>
-                            <div class="food-item-improved-details">
-                                <span>${meal.foods.length} aliments</span>
-                                <span>${mealDate.toLocaleTimeString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', {hour: '2-digit', minute: '2-digit'})}</span>
-                            </div>
-                            ${meal.notes ? `
-                                <div style="font-size: var(--font-size-sm); color: var(--text-secondary); margin-top: 8px; font-style: italic;">
-                                    "${meal.notes}"
-                                </div>
-                            ` : ''}
-                        </div>
-                    `}).join('')}
-                </div>
-            </div>
-        `;
-    });
-    
-    return html;
-}
-
-function getNutritionDataForPeriod(period) {
-    const now = new Date();
-    let filteredMeals = [...nutritionHistory];
-    
-    
-    // Filtrer par période
-    if (period === 'day') {
-        const today = now.toISOString().split('T')[0];
-        filteredMeals = nutritionHistory.filter(meal => {
-            const mealDate = new Date(meal.date).toISOString().split('T')[0];
-            return mealDate === today;
-        });
-    } else if (period === 'week') {
-        const oneWeekAgo = new Date(now);
-        oneWeekAgo.setDate(now.getDate() - 7);
-        filteredMeals = nutritionHistory.filter(meal => {
-            const mealDate = new Date(meal.date);
-            return mealDate >= oneWeekAgo;
-        });
-    } else if (period === 'month') {
-        const oneMonthAgo = new Date(now);
-        oneMonthAgo.setMonth(now.getMonth() - 1);
-        filteredMeals = nutritionHistory.filter(meal => {
-            const mealDate = new Date(meal.date);
-            return mealDate >= oneMonthAgo;
-        });
-    }
-    
-    // Grouper par date selon la période
-    const groupedData = {};
-    
-    filteredMeals.forEach(meal => {
-        const mealDate = new Date(meal.date);
-        let dateKey;
-        
-        if (period === 'day') {
-            dateKey = mealDate.toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-            });
-        } else if (period === 'week') {
-            // Grouper par semaine (lundi-dimanche)
-            const weekStart = new Date(mealDate);
-            weekStart.setDate(mealDate.getDate() - mealDate.getDay() + 1); // Lundi
-            dateKey = `Semaine du ${weekStart.toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', {day: '2-digit', month: '2-digit'})}`;
-        } else if (period === 'month') {
-            // Grouper par mois
-            dateKey = mealDate.toLocaleDateString(_localeMeta ? _localeMeta.dateLocale : 'fr-FR', { month: 'long', year: 'numeric' });
-        }
-        
-        if (!groupedData[dateKey]) {
-            groupedData[dateKey] = {
-                date: dateKey,
-                meals: [],
-                totalCalories: 0,
-                totalProtein: 0,
-                totalCarbs: 0,
-                totalFat: 0,
-                mealCount: 0
-            };
-        }
-        
-        // Calculer les macros de ce repas
-        let mealCalories = 0;
-        let mealProtein = 0;
-        let mealCarbs = 0;
-        let mealFat = 0;
-        
-        meal.foods.forEach(foodItem => {
-            const food = getAllFoods().find(f => f.id === foodItem.foodId);
-            if (food) {
-                const ratio = foodItem.quantity / food.quantity;
-                mealCalories += food.calories * ratio;
-                mealProtein += food.protein * ratio;
-                mealCarbs += food.carbs * ratio;
-                mealFat += food.fat * ratio;
-            }
-        });
-        
-        groupedData[dateKey].meals.push({
-            ...meal,
-            calculatedCalories: Math.round(mealCalories),
-            calculatedProtein: Math.round(mealProtein),
-            calculatedCarbs: Math.round(mealCarbs),
-            calculatedFat: Math.round(mealFat)
-        });
-        
-        groupedData[dateKey].totalCalories += mealCalories;
-        groupedData[dateKey].totalProtein += mealProtein;
-        groupedData[dateKey].totalCarbs += mealCarbs;
-        groupedData[dateKey].totalFat += mealFat;
-        groupedData[dateKey].mealCount++;
-    });
-    
-    // Convertir en tableau et trier
-    const result = Object.values(groupedData).sort((a, b) => {
-        // Essayer de parser la date pour le tri
-        try {
-            return new Date(b.date) - new Date(a.date);
-        } catch (e) {
-            // Si on ne peut pas parser, trier par ordre alphabétique inversé
-            return b.date.localeCompare(a.date);
-        }
-    });
-    
-    return result;
-}
-
-function formatDateForPeriod(dateStr, period) {
-    if (period === 'day' || period === 'week') {
-        return dateStr;
-    } else if (period === 'month') {
-        // Capitaliser la première lettre du mois
-        return dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
-    }
-    return dateStr;
-}
-
 function initializeNutritionHistory() {
     
     // Initialiser les 3 périodes
@@ -29186,6 +28843,113 @@ function getExerciseHistory(exerciseName) {
     });
     
     return history;
+}
+
+/** ═══════════════════════════════════════════════════════════
+ *  DÉTECTION DE PLATEAU — analyse la progression du 1RM estimé
+ *  sur les N dernières séances d'un exercice. Si le 1RM stagne
+ *  ou régresse depuis plusieurs séances consécutives, suggère
+ *  une action concrète (deload, variante, changement de reps).
+ *  N'utilise que des données déjà collectées — aucun nouveau
+ *  champ, aucune saisie supplémentaire requise.
+ *  ═══════════════════════════════════════════════════════════ */
+function detectPlateau(exerciseName, minSessions = 4) {
+    const history = getExerciseHistory(exerciseName);
+    // On ne regarde que les entrées "force" (bestSet.oneRM existe) — le
+    // cardio n'est pas concerné par cette détection.
+    const strengthHistory = history.filter(h => h.bestSet && h.bestSet.oneRM > 0);
+    if (strengthHistory.length < minSessions) {
+        return { isPlateau: false, reason: 'Pas assez de séances pour analyser (minimum ' + minSessions + ')' };
+    }
+
+    const recent = strengthHistory.slice(-minSessions);
+    const oneRMs = recent.map(h => h.bestSet.oneRM);
+    const first = oneRMs[0];
+    const last = oneRMs[oneRMs.length - 1];
+    const maxInWindow = Math.max(...oneRMs);
+    const variation = first > 0 ? ((last - first) / first) * 100 : 0;
+
+    // Plateau : le 1RM n'a pas progressé de plus de 2% sur la fenêtre,
+    // et la dernière séance n'est pas un nouveau record.
+    const isPlateau = variation <= 2 && last <= maxInWindow * 1.02;
+
+    if (!isPlateau) {
+        return { isPlateau: false, variation: variation.toFixed(1) };
+    }
+
+    // Choisir une suggestion selon le pattern observé
+    const isRegression = variation < -3;
+    const suggestions = isRegression
+        ? ['Envisagez une semaine de deload (-20% de charge, même volume)',
+           'Vérifiez votre récupération : sommeil, stress, nutrition récents']
+        : ['Changez de rep range (ex: passer de 8-10 à 4-6 reps, ou l\'inverse)',
+           'Essayez une variante de l\'exercice (prise, angle, tempo)',
+           'Ajoutez une séance supplémentaire dédiée à cet exercice cette semaine'];
+
+    return {
+        isPlateau: true,
+        sessionsAnalyzed: recent.length,
+        variation: variation.toFixed(1),
+        isRegression,
+        suggestion: suggestions[Math.floor(Math.random() * suggestions.length)],
+        allSuggestions: suggestions
+    };
+}
+
+/** Scanne tous les exercices pratiqués récemment et retourne ceux en
+ *  plateau — utilisé pour l'alerte proactive sur l'écran d'accueil. */
+function scanAllExercisesForPlateaus() {
+    if (!workoutHistory || !workoutHistory.length) return [];
+    const seen = new Set();
+    const results = [];
+    const recentSessions = workoutHistory.filter(w => !w.isAutoSave).slice(0, 15);
+    recentSessions.forEach(session => {
+        (session.exercises || []).forEach(ex => {
+            const name = ex.name;
+            if (!name || seen.has(name.toLowerCase())) return;
+            seen.add(name.toLowerCase());
+            const result = detectPlateau(name);
+            if (result.isPlateau) {
+                results.push({ exerciseName: name, ...result });
+            }
+        });
+    });
+    return results;
+}
+
+/** Affiche une carte d'alerte plateau sur l'écran d'accueil, si applicable. */
+function _renderPlateauCard() {
+    const container = document.getElementById('plateau-card-container');
+    if (!container) return;
+    const plateaus = scanAllExercisesForPlateaus();
+    if (!plateaus.length) { container.innerHTML = ''; return; }
+
+    const p = plateaus[0]; // le plus pertinent — premier détecté
+    const icon = p.isRegression ? 'fa-arrow-trend-down' : 'fa-minus';
+    const color = p.isRegression ? 'var(--danger)' : 'var(--warning)';
+
+    container.innerHTML = `
+    <div style="margin:0 16px 16px;background:var(--card-bg);border:1px solid ${color}40;border-left:3px solid ${color};border-radius:var(--radius-xl);padding:14px 16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+            <i class="fas ${icon}" style="color:${color};font-size:15px;"></i>
+            <div style="font-size:13px;font-weight:800;color:var(--text-primary);">Plateau détecté — ${p.exerciseName}</div>
+        </div>
+        <div style="font-size:11.5px;color:var(--text-secondary);line-height:1.5;margin-bottom:8px;">
+            ${p.isRegression ? 'Votre 1RM estimé a reculé' : 'Votre 1RM estimé stagne'} sur les ${p.sessionsAnalyzed} dernières séances (${p.variation}%).
+        </div>
+        <div style="font-size:12px;color:var(--text-primary);font-weight:600;background:${color}12;padding:8px 10px;border-radius:8px;">
+            💡 ${p.suggestion}
+        </div>
+    </div>`;
+}
+
+document.addEventListener('DOMContentLoaded', () => setTimeout(_renderPlateauCard, 500));
+const _origShowScreenPlateau = window.showScreen;
+if (typeof _origShowScreenPlateau === 'function') {
+    window.showScreen = function(id) {
+        _origShowScreenPlateau.apply(this, arguments);
+        if (id === 'home-screen') setTimeout(_renderPlateauCard, 150);
+    };
 }
 
 // ==================== CRÉER UN GRAPHIQUE SPARKLINE SVG ====================
@@ -31619,6 +31383,38 @@ let _aiCurrentProvider = null;
 const _AI_KEY      = 'ironplate_ai_config';
 const _AI_KEYS_ALL = 'ironplate_ai_keys_all';
 
+/** Obfuscation légère des clés API en localStorage — PAS un vrai chiffrement
+ *  (impossible sans backend, la clé de "protection" serait de toute façon
+ *  visible dans ce même fichier JS). Ceci empêche seulement la lecture
+ *  triviale en clair dans l'inspecteur localStorage du navigateur.
+ *  ⚠️ Ne jamais utiliser cette app pour vos clés IA sur un ordinateur partagé. */
+function _obfuscate(str) {
+    try {
+        return btoa(unescape(encodeURIComponent(str)).split('').map(c =>
+            String.fromCharCode(c.charCodeAt(0) ^ 42)).join(''));
+    } catch (e) { return str; }
+}
+function _deobfuscate(str) {
+    try {
+        return decodeURIComponent(escape(atob(str).split('').map(c =>
+            String.fromCharCode(c.charCodeAt(0) ^ 42)).join('')));
+    } catch (e) { return str; }
+}
+/** Lecture rétrocompatible : tente le format obfusqué (nouveau), puis
+ *  retombe sur du JSON en clair (anciennes sauvegardes) — aucune clé
+ *  existante ne doit être perdue lors de cette migration. */
+function _safeReadAIStorage(rawValue) {
+    if (!rawValue) return null;
+    try {
+        const deob = _deobfuscate(rawValue);
+        return JSON.parse(deob);
+    } catch (e) {}
+    try {
+        return JSON.parse(rawValue); // ancien format en clair
+    } catch (e) {}
+    return null;
+}
+
 /**
  * Sélectionne automatiquement le meilleur provider disponible pour une tâche.
  * capability: 'vision' | 'general' | 'fast'
@@ -31669,15 +31465,15 @@ function _hasAnyKey() {
 function loadAIConfig() {
     try {
         // Charger la config principale (compatibilité)
-        const saved = localStorage.getItem(_AI_KEY);
-        if (saved) {
-            _aiConfig = JSON.parse(saved);
+        const parsedConfig = _safeReadAIStorage(localStorage.getItem(_AI_KEY));
+        if (parsedConfig) {
+            _aiConfig = parsedConfig;
             _aiCurrentProvider = AI_PROVIDERS[_aiConfig.provider] || null;
         }
         // Charger les clés multi-providers
-        const savedAll = localStorage.getItem(_AI_KEYS_ALL);
-        if (savedAll) {
-            _aiKeys = { ...{ grok: null, gemini: null, claude: null, openrouter: null, mistral: null }, ...JSON.parse(savedAll) };
+        const parsedAll = _safeReadAIStorage(localStorage.getItem(_AI_KEYS_ALL));
+        if (parsedAll) {
+            _aiKeys = { ...{ grok: null, gemini: null, claude: null, openrouter: null, mistral: null }, ...parsedAll };
         } else if (_aiConfig.provider && _aiConfig.apiKey) {
             // Migration : copier la clé existante dans _aiKeys
             _aiKeys[_aiConfig.provider] = { apiKey: _aiConfig.apiKey, model: _aiConfig.model };
@@ -31704,8 +31500,8 @@ function saveAIConfig() {
     _aiConfig = { provider, model, apiKey: key };
     _aiCurrentProvider = AI_PROVIDERS[provider];
 
-    localStorage.setItem(_AI_KEY, JSON.stringify(_aiConfig));
-    localStorage.setItem(_AI_KEYS_ALL, JSON.stringify(_aiKeys));
+    localStorage.setItem(_AI_KEY, _obfuscate(JSON.stringify(_aiConfig)));
+    localStorage.setItem(_AI_KEYS_ALL, _obfuscate(JSON.stringify(_aiKeys)));
 
     _updateAISettingsStatus();
     _showAIFab();
@@ -31926,8 +31722,8 @@ function _removeProviderKey(provider) {
             if (_aiKeys[p]?.apiKey) { _aiConfig = { provider: p, ..._aiKeys[p] }; break; }
         }
     }
-    localStorage.setItem(_AI_KEYS_ALL, JSON.stringify(_aiKeys));
-    localStorage.setItem(_AI_KEY, JSON.stringify(_aiConfig));
+    localStorage.setItem(_AI_KEYS_ALL, _obfuscate(JSON.stringify(_aiKeys)));
+    localStorage.setItem(_AI_KEY, _obfuscate(JSON.stringify(_aiConfig)));
     _refreshConfiguredKeysList();
     _updateAISettingsStatus();
     showNotification('Clé supprimée');
@@ -32960,7 +32756,7 @@ function _showImportChoiceModal(day) {
                     <h3 class="modal-title"><i class="fas fa-robot" style="color:#7C3AED;margin-right:6px;"></i>Importer — ${d.type}</h3>
                     <div class="modal-subtitle">Choisissez la source de chaque exercice</div>
                 </div>
-                <button class="modal-close" onclick="hideModal('ai-import-choice-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('ai-import-choice-modal')">×</button>
             </div>
             <div class="modal-body">
                 ${rows}
@@ -34839,7 +34635,7 @@ function _calOpenPlannedWorkout(calIdx) {
                     <div style="font-size:10px;color:rgba(255,255,255,.75);">${evDate}</div>
                 </div>
             </div>
-            <button class="modal-close" onclick="document.getElementById('cal-launch-modal').remove()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="document.getElementById('cal-launch-modal').remove()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
         </div>
         <div class="modal-body" style="padding:16px;">
             ${ev.detail ? `<div style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px;">${ev.detail}</div>` : ''}
@@ -34995,7 +34791,7 @@ function _calOpenNutritionDay(calIdx) {
                 </div>
                 <div style="font-size:10px;color:rgba(255,255,255,.8);margin-top:2px;">${evDate}${timeInfo}${typeInfo}</div>
             </div>
-            <button class="modal-close" onclick="document.getElementById('cal-meal-modal').remove()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="document.getElementById('cal-meal-modal').remove()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
         </div>
         <div class="modal-body" style="padding:16px;">
             ${mainContent}
@@ -35776,7 +35572,7 @@ function _showConfirm(msg, onConfirm, label, cls) {
             <div class="modal-content" style="max-width:340px;">
                 <div class="modal-header">
                     <h3 class="modal-title">Confirmer</h3>
-                    <button class="modal-close" onclick="hideModal('_gcm')">×</button>
+                    <button class="modal-close" aria-label="Fermer" onclick="hideModal('_gcm')">×</button>
                 </div>
                 <div class="modal-body">
                     <p id="_gcm_msg" style="font-size:13px;color:var(--text-secondary);line-height:1.55;margin-bottom:18px;"></p>
@@ -36308,7 +36104,7 @@ function _setupReminder() {
                 <div class="modal-content" style="max-width:340px;">
                     <div class="modal-header">
                         <h3 class="modal-title"><i class="fas fa-bell" style="color:var(--warning);margin-right:6px;"></i> Rappel d'entraînement</h3>
-                        <button class="modal-close" onclick="hideModal('_reminder_modal')">×</button>
+                        <button class="modal-close" aria-label="Fermer" onclick="hideModal('_reminder_modal')">×</button>
                     </div>
                     <div class="modal-body">
                         <div class="input-label" style="margin-bottom:6px;">Heure du rappel</div>
@@ -38684,7 +38480,7 @@ function _showMultiDayImportModal(trainDays, converted) {
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><i class="fas fa-calendar-check" style="color:var(--primary);margin-right:6px;"></i>Importer le plan</h3>
-                <button class="modal-close" onclick="hideModal('ai-multiday-import-modal')">×</button>
+                <button class="modal-close" aria-label="Fermer" onclick="hideModal('ai-multiday-import-modal')">×</button>
             </div>
             <div class="modal-body" style="padding:16px;">
                 <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;">
@@ -41328,7 +41124,7 @@ window.addEventListener('beforeunload', function(e) {
                     <div style="font-size:10px;color:rgba(255,255,255,.75);">Dites ce que vous voulez faire</div>
                 </div>
             </div>
-            <button class="modal-close" onclick="hideModal('agentic-modal')" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('agentic-modal')" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
         </div>
         <div class="modal-body" style="padding:16px;">
 
@@ -41379,7 +41175,7 @@ window.addEventListener('beforeunload', function(e) {
 </div>
 
 <!-- FAB Navigation agentique (flottant, toujours visible) -->
-<div id="agentic-fab" onclick="showModal('agentic-modal')"
+<div id="agentic-fab" onclick="showModal('agentic-modal')" role="button" tabindex="0" aria-label="Assistant IA vocal global"
     style="position:fixed;bottom:82px;right:max(14px, calc(50% - 240px + 14px));width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#4F6EF7,#7C3AED);color:white;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;box-shadow:0 4px 16px rgba(79,110,247,.45);z-index:998;transition:transform .15s;" title="Assistant IA vocal">
     <i class="fas fa-robot"></i>
 </div>
@@ -41392,7 +41188,7 @@ window.addEventListener('beforeunload', function(e) {
                 <div class="modal-title" style="color:white;font-size:15px;"><i class="fas fa-sliders"></i> Mes actions vocales</div>
                 <div style="font-size:10px;color:rgba(255,255,255,.75);">Apprenez à l'assistant votre façon de parler</div>
             </div>
-            <button class="modal-close" onclick="hideModal('voice-actions-modal')" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('voice-actions-modal')" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
         </div>
         <div class="modal-body" style="padding:16px;">
 
@@ -41440,7 +41236,7 @@ window.addEventListener('beforeunload', function(e) {
     <div class="modal-content">
         <div class="modal-header">
             <div class="modal-title" id="exercise-viz-title">Schéma de l'exercice</div>
-            <button class="modal-close" onclick="hideModal('exercise-viz-modal')">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('exercise-viz-modal')">×</button>
         </div>
         <div class="modal-body" style="padding:16px;">
             <div id="exercise-viz-content" style="min-height:200px;display:flex;align-items:center;justify-content:center;">
@@ -41470,7 +41266,7 @@ window.addEventListener('beforeunload', function(e) {
                 style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:white;border-radius:10px;padding:5px 10px;cursor:pointer;font-size:11px;font-weight:700;">
                 <i class="fas fa-question-circle"></i> Guide
             </button>
-            <button class="modal-close" onclick="_agCloseModal()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="_agCloseModal()" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
         </div>
 
         <!-- Guide d'utilisation collapsible -->
@@ -41723,7 +41519,7 @@ window.addEventListener('beforeunload', function(e) {
   <div class="modal-content">
     <div class="modal-header">
       <div class="modal-title">Enregistrer la séance</div>
-      <button class="modal-close" onclick="hideModal('ag-save-modal')">×</button>
+      <button class="modal-close" aria-label="Fermer" onclick="hideModal('ag-save-modal')">×</button>
     </div>
     <div class="modal-body" style="padding:16px;display:flex;flex-direction:column;gap:12px;">
       <div>
@@ -41760,7 +41556,7 @@ window.addEventListener('beforeunload', function(e) {
                 <h3 class="modal-title" id="cal-event-modal-title">Ajouter un événement</h3>
                 <div style="font-size:10px;color:var(--text-tertiary);margin-top:2px;">Planning hebdomadaire</div>
             </div>
-            <button class="modal-close" onclick="hideModal('cal-event-modal')">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('cal-event-modal')">×</button>
         </div>
         <div class="modal-body" style="padding:16px;">
 
@@ -41892,7 +41688,7 @@ window.addEventListener('beforeunload', function(e) {
                     <div style="font-size:10px;color:rgba(255,255,255,.75);">Séances + recettes pour la semaine</div>
                 </div>
             </div>
-            <button class="modal-close" onclick="hideModal('cal-ai-modal')" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('cal-ai-modal')" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
         </div>
         <div class="modal-body" style="padding:16px;">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
@@ -41938,7 +41734,7 @@ window.addEventListener('beforeunload', function(e) {
                     <div style="font-size:10px;color:rgba(255,255,255,.75);">Photos de progression + analyse IA</div>
                 </div>
             </div>
-            <button class="modal-close" onclick="hideModal('silhouette-modal')" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('silhouette-modal')" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.3);color:white;">×</button>
         </div>
         <div class="modal-body" style="padding:16px;">
 
@@ -42002,7 +41798,7 @@ window.addEventListener('beforeunload', function(e) {
     <div class="modal-content" style="max-height:90vh;overflow-y:auto;">
         <div class="modal-header">
             <h3 class="modal-title" id="silhouette-detail-date">Photo du …</h3>
-            <button class="modal-close" onclick="hideModal('silhouette-detail-modal')">×</button>
+            <button class="modal-close" aria-label="Fermer" onclick="hideModal('silhouette-detail-modal')">×</button>
         </div>
         <div class="modal-body" style="padding:16px;">
             <img id="silhouette-detail-img" style="width:100%;border-radius:12px;max-height:400px;object-fit:contain;background:#0a0a18;margin-bottom:12px;" alt="">
@@ -47115,7 +46911,7 @@ const GOALS={muscle:'Prise de masse',loss:'Perte de poids',endurance:'Endurance'
 
 /* ── Helpers ─────────────────────────────────────── */
 function _g(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
-function _s(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function _s(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){console.warn('[Coach] Échec sauvegarde',k,e.message);return false;}}
 function _rm(k){try{localStorage.removeItem(k);}catch(e){}}
 function _mode(){return _g(CK.MODE,'solo');}
 function _prof(){return _g(CK.PROFILE,{name:'',logo:'',color:'#7C3AED',code:'',tarif:0,accessDays:30});}
@@ -47249,7 +47045,12 @@ const _APP_LS_KEYS=[
   'fitfuel_userProfile','fitfuel_customExercises','fitfuel_customFoods',
   'fitfuel_customWorkouts','fitfuel_workoutHistory','fitfuel_nutritionHistory',
   'fitfuel_dailyNutrition','fitfuel_settings','fitfuel_theme','fitfuel_currentTheme',
-  'fitfuel_compactMode','fitfuel_userPlates'
+  'fitfuel_compactMode','fitfuel_userPlates','fitfuel_darkMode','fitfuel_diary',
+  'ironplate_tabata_history','ironplate_tabata_progs','ironplate_calendar',
+  'ironplate_scan_history','ironplate_pantry','ironplate_frigo_mem',
+  'ironplate_music_prefs','ironplate_weight_unit','ironplate_wellbeing',
+  'ironplate_hydration','ironplate_challenges','ironplate_silhouette',
+  'ironplate_history'
 ];
 
 // Lire/écrire dans le namespace client
@@ -48161,7 +47962,9 @@ window.ckSavePay=function(clientId){
   if(!clients[idx].payments)clients[idx].payments=[];
   clients[idx].payments.push({id:Date.now(),amount,method,date:new Date(date).toISOString()});
   clients[idx].nextPayment=_addMonths(date,1);
-  _s(CK.CLIENTS,clients);document.getElementById('ck-pay-modal')?.remove();
+  const ok=_s(CK.CLIENTS,clients);
+  if(!ok){_notify('⚠️ Échec de la sauvegarde du paiement — réessayez ou libérez de l\'espace de stockage','error',6000);return;}
+  document.getElementById('ck-pay-modal')?.remove();
   _notify('✅ Paiement enregistré');ckOpenClient(clientId);
 };
 
@@ -48701,10 +48504,7 @@ function _fbStartRealtimeListeners(){
   else if(mode==='client'){_fbListenCoachProgram();}
 }
 
-/* ── Helpers LS locaux (réutilisent le même format que le module coach) ── */
-function _g(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
-function _s(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
-
+/* ── _g/_s réutilisés depuis les helpers du module coach ci-dessus ── */
 /* ═══════════════════════════════════════════════════════════
    HOOKS — déclenchent la sync cloud après chaque action locale
    Toujours: sauvegarde locale D'ABORD (comme avant), puis
